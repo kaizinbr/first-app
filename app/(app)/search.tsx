@@ -26,7 +26,7 @@ export default function Index() {
                         source={require("@/assets/images/img1.png")}
                         style={styles.image}
                     />
-                    <Text style={styles.title}>Entrouuuuuuu</Text>
+                    <Text style={styles.title}>Pesquisa</Text>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>

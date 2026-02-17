@@ -1,6 +1,6 @@
 import { Stack } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-
+import { StatusBar } from 'expo-status-bar';
 import { authClient } from "@/lib/auth-client";
 
 export default function Layout() {
@@ -9,6 +9,7 @@ export default function Layout() {
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
+            <StatusBar style="dark" />
             <Stack screenOptions={{ headerShown: false }}>
                 <Stack.Protected guard={!isLoggedIn}>
                     <Stack.Screen name="sign-in" />
