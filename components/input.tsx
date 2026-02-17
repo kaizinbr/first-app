@@ -1,8 +1,30 @@
-import { View, Text, StyleSheet, TextProps, TextInput, TextInputProps } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TextProps,
+    TextInput,
+    TextInputProps,
+} from "react-native";
 
-export default function Input({...props}: TextInputProps) {
+export default function Input({
+    placeholder,
+    value,
+    onChangeText,
+    ...props
+}: TextInputProps & {
+    placeholder?: string;
+    value?: string;
+    onChangeText?: (text: string) => void;
+}) {
     return (
-            <TextInput style={[styles.input]} {...props} />
+        <TextInput
+            style={[styles.input]}
+            placeholder={placeholder}
+            value={value}
+            onChangeText={onChangeText}
+            {...props}
+        />
     );
 }
 
