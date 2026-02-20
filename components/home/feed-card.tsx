@@ -1,11 +1,12 @@
-import { Text, Image, View, StyleSheet, ScrollView } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import api from "@/lib/api";
-import Markdown from "react-native-markdown-display";
-
+import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import { displayPastRelativeTime } from "@/lib/util/time";
+import TiptapRenderer from "@/components/home/card-content copy";
+import { AlbumCard } from "@/components/home/album-section";
 
 type review = {
     id: string;
@@ -211,7 +212,6 @@ export default function FeedCard({ review }: { review: review }) {
     const [content, setContent] = useState<{
         jsonContent: any;
         html: string;
-        markdown: string;
     } | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -232,9 +232,10 @@ export default function FeedCard({ review }: { review: review }) {
         const fecthContent = async () => {
             try {
                 const response = await api.get(
-                    `/review/content/${review.shorten}`,
+                    `/reviews/${review.shorten}/content`,
                 );
                 setContent(response.data);
+                // console.log("Content fetched successfully:", content.html);
             } catch (error) {
                 console.error("Error fetching content:", error);
             }
@@ -245,17 +246,22 @@ export default function FeedCard({ review }: { review: review }) {
     }, []);
 
     return (
-        <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
+        <Pressable
+            // onPress={() => router.push(`/review/${review.shorten}`)}
+            style={({ pressed }) => [
+                styles.main,
+                pressed && styles.mainPressed,
+            ]}
         >
 
             <View style={styles.card}>
-                <View style={styles.cardImage}></View>
+                <Image
+                    source={{ uri: review.Profile.avatar_url! }}
+                    style={styles.cardImage}
+                />
                 {reviewAlbum ? (
                     <View style={styles.cardContent}>
-                        <Text>
+                        <Text style={styles.cardTitle}>
                             {review.Profile.name} avaliou {reviewAlbum.name} de{" "}
                             {reviewAlbum.artists
                                 .map((artist) => artist.name)
@@ -263,44 +269,19 @@ export default function FeedCard({ review }: { review: review }) {
                         </Text>
                         {content ? (
                             <>
-                                <Text>Conteúdo em markdown:</Text>
-                                <Markdown>{content.markdown}</Markdown>
+                                <TiptapRenderer json={content.jsonContent} />
                             </>
                         ) : (
                             <Text>Carregando conteúdo...</Text>
                         )}
 
-                        <View style={styles.albumSection}>
-                            {reviewAlbum ? (
-                                <>
-                                    <Image
-                                        source={{
-                                            uri: reviewAlbum.images[0].url,
-                                        }}
-                                        style={{
-                                            width: 124,
-                                            height: 124,
-                                            borderRadius: 8,
-                                        }}
-                                    />
-                                    <View style={{ marginLeft: 12 }}>
-                                        <Text style={{ fontWeight: "bold" }}>
-                                            {Number(
-                                                Number(review.total),
-                                            ).toFixed(1)}
-                                            /100
-                                        </Text>
-                                        <Text>
-                                            {review.ratings.length} músicas
-                                            avaliadas
-                                        </Text>
-                                    </View>
-                                </>
-                            ) : (
-                                <Text>Carregando álbum...</Text>
-                            )}
-                        </View>
-                        <Text>
+
+                        <AlbumCard
+                            image={reviewAlbum.images[0].url}
+                            value={review.total ? `${Number(review.total).toFixed(1)}/100` : "0.0/100"}
+                            subtitle={review.ratings.length}
+                        />
+                        <Text style={styles.cardDate}>
                             {displayPastRelativeTime(
                                 new Date(review.created_at),
                             )}
@@ -309,80 +290,24 @@ export default function FeedCard({ review }: { review: review }) {
                 ) : null}
             </View>
 
-            {/* <View style={styles.feed}>
-                {loading ? (
-                    <Text>Carregando avaliações...</Text>
-                ) : reviewAlbum ? (
-                    <View style={styles.feedCard}>
-                        <Text>{reviewAlbum.name}</Text>
-                    </View>
-                ) : (
-                    <Text>Álbum não encontrado</Text>
-                )}
-            </View> */}
-        </ScrollView>
+        </Pressable>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        gap: 16,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        width: "100%",
-        paddingHorizontal: 16,
-    },
     main: {
-        flex: 1,
-        backgroundColor: "#fff",
         width: "100%",
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "800",
-        textAlign: "left",
-        marginTop: 32,
-    },
-    h2: {
-        fontSize: 18,
-        fontWeight: "600",
-        textAlign: "left",
-        marginTop: 32,
-    },
-    feed: {
-        gap: 8,
-        marginTop: 20,
-    },
-    feedCard: {
-        height: 120,
-        width: "100%",
-        backgroundColor: "#eee",
+        backgroundColor: "transparent",
         borderRadius: 8,
     },
-    image: {
-        width: "100%",
-        height: 300,
-        marginTop: 20,
-        resizeMode: "contain",
+    mainPressed: {
+        backgroundColor: "#1e1e1e",
     },
-    banner: {
-        flexDirection: "row",
-        gap: 8,
-        marginTop: 20,
-        height: 120,
-    },
-    bannerCard: {
-        height: 120,
-        width: 120,
-        backgroundColor: "#eee",
-        borderRadius: 8,
-    },
-
     card: {
         width: "100%",
-        backgroundColor: "#ddd",
-        padding: 12,
+        backgroundColor: "transparent",
+        color: "#eee",
+        padding: 16,
         borderRadius: 8,
         flexDirection: "row",
         gap: 8,
@@ -391,13 +316,40 @@ const styles = StyleSheet.create({
         width: 32,
         height: 32,
         backgroundColor: "#bbb",
-        borderRadius: 6,
+        borderRadius: 32 * 0.306,
         marginBottom: 8,
     },
     cardContent: {
         flex: 1,
     },
+    cardTitle: {
+        fontWeight: "bold",
+        color: "#eee",
+    },
     albumSection: {
-
-    }
+        flexDirection: "row",
+        alignItems: "flex-start",
+        marginTop: 12,
+        color: "#eee",
+        padding: 12,
+        backgroundColor: "#1e1e1e",
+        borderRadius: 8,
+        borderColor: "#333",
+        borderWidth: .5,
+    },
+    albumSectionValue: {
+        fontWeight: 900,
+        color: "#eee",
+        fontSize: 20,
+    },
+    albumSectionText: {
+        color: "#eee",
+        fontSize: 12,
+        marginTop: 6,
+    },
+    cardDate: {
+        marginTop: 8,
+        color: "#aaa",
+        fontSize: 12,
+    },
 });

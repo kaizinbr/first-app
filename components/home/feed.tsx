@@ -183,7 +183,7 @@ export default function Feed() {
     useEffect(() => {
         const fetchFeedData = async () => {
             try {
-                const response = await api.get("/review/feed");
+                const response = await api.get("/reviews");
                 setFeedData(response.data);
                 // console.log("Feed data fetched successfully:", response.data);
                 // console.log("total reviews:", feedData!.totalReviews);
@@ -202,10 +202,9 @@ export default function Feed() {
             contentContainerStyle={{ flexGrow: 1 }}
             keyboardShouldPersistTaps="handled"
             showsVerticalScrollIndicator={false}
+            style={styles.container}
         >
             <Text style={styles.h2}>avaliações</Text>
-
-            {/* <FeedCard review={revTeste} /> */}
 
             <View style={styles.feed}>
                 {loading ? (
@@ -226,14 +225,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         gap: 16,
-        backgroundColor: "#fff",
-        alignItems: "center",
-        width: "100%",
-        paddingHorizontal: 16,
-    },
-    main: {
-        flex: 1,
-        backgroundColor: "#fff",
         width: "100%",
     },
     title: {
@@ -247,6 +238,8 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         textAlign: "left",
         marginTop: 32,
+        color: "#eeeeee",
+        paddingHorizontal: 16,
     },
     feed: {
         gap: 8,
@@ -255,7 +248,7 @@ const styles = StyleSheet.create({
     feedCard: {
         height: 120,
         width: "100%",
-        backgroundColor: "#eee",
+        // backgroundColor: "#eee",
         borderRadius: 8,
     },
     image: {
@@ -279,7 +272,7 @@ const styles = StyleSheet.create({
 
     card: {
         width: "100%",
-        backgroundColor: "#ddd",
+        backgroundColor: "transparent",
         padding: 12,
         borderRadius: 8,
         flexDirection: "row",

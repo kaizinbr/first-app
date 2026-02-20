@@ -31,12 +31,6 @@ export default function TabsLayout() {
             screenOptions={{
                 headerShown: false,
                 tabBarStyle: styles.tabBar,
-                // tabBarShowLabel: false,
-                // tabBarLabelStyle: {
-                //     height: 0,
-                //     padding: 0,
-                //     margin: 0,
-                // },
                 tabBarItemStyle: styles.tabBarItem,
                 tabBarIconStyle: styles.tabBarIcon,
             }}
@@ -79,6 +73,31 @@ export default function TabsLayout() {
                     tabBarIcon: ({ color }) => (
                         <FontAwesome name="user" size={24} color={color} />
                     ),
+                }}
+            />
+            
+            <Tabs.Screen
+                name="user/[username]"
+                options={{
+                    href: null
+                }}
+            />
+            <Tabs.Screen
+                name="review/[shorten]"
+                options={{
+                    href: null
+                }}
+            />
+            <Tabs.Screen
+                name="album/[id]"
+                options={{
+                    href: null
+                }}
+            />
+            <Tabs.Screen
+                name="artist/[id]"
+                options={{
+                    href: null
                 }}
             />
         </Tabs>

@@ -8,27 +8,39 @@ import {
     KeyboardAvoidingView,
     Image,
     Platform,
+    TextInput,
 } from "react-native";
 
+import { useState, useEffect } from "react";
+import SearchInput from "@/components/search/search-input";
+import SearchTabs from "@/components/search/search-result-tabs";
+import { SearchResponse } from "@/lib/types";
+import { ResultUserBtn } from "@/components/search/result-btns";
+
 export default function Index() {
+    const [searchQuery, setSearchQuery] = useState("");
+    const [debounced, setDebounced] = useState("");
+    const [results, setResults] = useState<SearchResponse | null>(null);
+    const [type, setType] = useState<"tracks" | "artists" | "albums" | "users" | "reviews">("albums");
+    const [loading, setLoading] = useState(false);
+
+
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            <ScrollView
+            {/* <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
-            >
+            > */}
                 <View style={styles.main}>
-                    <Image
-                        source={require("@/assets/images/img1.png")}
-                        style={styles.image}
-                    />
-                    <Text style={styles.title}>Pesquisa</Text>
+                    <SearchInput results={results} setResults={setResults} type={type} />
+                    <SearchTabs results={results} setType={setType} type={type} />
                 </View>
-            </ScrollView>
+            {/* </ScrollView> */}
         </KeyboardAvoidingView>
     );
 }
@@ -39,26 +51,15 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
         padding: 16,
         alignItems: "center",
-        justifyContent: "center",
-    },
-    container: {
-        flex: 1,
-        gap: 16,
-        backgroundColor: "#fff",
-        alignItems: "center",
+        justifyContent: "flex-start",
         width: "100%",
-        marginTop: 20,
-        paddingHorizontal: 16,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginTop: 20,
-    },
-    image: {
+    searchInput: {
         width: "100%",
-        height: 300,
-        marginTop: 20,
-        resizeMode: "contain",
+        padding: 12,
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 8,
+        marginVertical: 16,
     },
 });

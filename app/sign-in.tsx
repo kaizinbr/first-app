@@ -70,16 +70,16 @@ export default function Index() {
 const styles = StyleSheet.create({
     main: {
         flex: 1,
-        backgroundColor: "#fff",
         padding: 16,
         alignItems: "center",
         justifyContent: "center",
         height: "100%",
+        color: "#eeeeee",
     },
     container: {
         flex: 1,
         gap: 16,
-        backgroundColor: "#fff",
+        // backgroundColor: "#161718",
         alignItems: "center",
         width: "100%",
         marginTop: 20,
@@ -89,6 +89,8 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         marginTop: 20,
+        color: "#eeeeee",
+        
     },
     image: {
         width: "100%",

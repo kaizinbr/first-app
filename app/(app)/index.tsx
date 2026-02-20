@@ -49,14 +49,13 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         gap: 16,
-        backgroundColor: "#fff",
         alignItems: "center",
         width: "100%",
-        paddingHorizontal: 16,
+        // backgroundColor: "#161718",
+        color: "#eeeeee",
     },
     main: {
         flex: 1,
-        backgroundColor: "#fff",
         width: "100%",
     },
     title: {
@@ -64,12 +63,15 @@ const styles = StyleSheet.create({
         fontWeight: "800",
         textAlign: "left",
         marginTop: 32,
+        color: "#eeeeee",
+        paddingHorizontal: 16,
     },
     h2: {
         fontSize: 18,
         fontWeight: "600",
         textAlign: "left",
         marginTop: 32,
+        color: "#eeeeee",
     },
     feed: {
         gap: 8,
@@ -78,7 +80,7 @@ const styles = StyleSheet.create({
     feedCard: {
         height: 120,
         width: "100%",
-        backgroundColor: "#eee",
+        backgroundColor: "#1e1e1e",
         borderRadius: 8,
     },
     image: {
@@ -92,11 +94,12 @@ const styles = StyleSheet.create({
         gap: 8,
         marginTop: 20,
         height: 120,
+        paddingHorizontal: 16,
     },
     bannerCard: {
         height: 120,
         width: 120,
-        backgroundColor: "#eee",
+        backgroundColor: "#1e1e1e",
         borderRadius: 8,
     },
 });
