@@ -3,10 +3,12 @@ import { authClient } from "@/lib/auth-client";
 import { Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet } from "react-native";
+import { BlurView } from "expo-blur";
 
 const styles = StyleSheet.create({
     tabBar: {
         height: 56,
+        position: "absolute",
     },
     tabBarItem: {
         borderRadius: 8,
@@ -33,6 +35,14 @@ export default function TabsLayout() {
                 tabBarStyle: styles.tabBar,
                 tabBarItemStyle: styles.tabBarItem,
                 tabBarIconStyle: styles.tabBarIcon,
+                // tabBarBackground: () => (
+                //     <BlurView
+                //     experimentalBlurMethod="dimezisBlurView" // Use WebGL for better performance on supported platforms
+                //         tint="dark" // Can be "light", "dark", or "default"
+                //         intensity={30} // Adjust the intensity of the blur
+                //         style={StyleSheet.absoluteFill} // Ensures the BlurView covers the entire tab bar area
+                //     />
+                // ),
             }}
         >
             <Tabs.Screen
@@ -75,29 +85,29 @@ export default function TabsLayout() {
                     ),
                 }}
             />
-            
+
             <Tabs.Screen
                 name="user/[username]"
                 options={{
-                    href: null
+                    href: null,
                 }}
             />
             <Tabs.Screen
                 name="review/[shorten]"
                 options={{
-                    href: null
+                    href: null,
                 }}
             />
             <Tabs.Screen
                 name="album/[id]"
                 options={{
-                    href: null
+                    href: null,
                 }}
             />
             <Tabs.Screen
                 name="artist/[id]"
                 options={{
-                    href: null
+                    href: null,
                 }}
             />
         </Tabs>

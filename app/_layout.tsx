@@ -8,7 +8,7 @@ import {
     DefaultTheme,
     ThemeProvider,
 } from "@react-navigation/native";
-import { useColorScheme } from "react-native";
+import { useColorScheme, View, StyleSheet } from "react-native";
 
 export default function Layout() {
     const { data: session } = authClient.useSession();
@@ -30,7 +30,7 @@ export default function Layout() {
     return (
         <ThemeProvider value={MyTheme}>
             <SafeAreaView style={{ flex: 1, backgroundColor: MyTheme.colors.background }}>
-                <StatusBar style="light" />
+                <StatusBar style="light" translucent={true} />
                 <Stack screenOptions={{ headerShown: false }}>
                     <Stack.Protected guard={!isLoggedIn}>
                         <Stack.Screen name="sign-in" />
@@ -48,3 +48,31 @@ export default function Layout() {
         </ThemeProvider>
     );
 }
+
+
+const styles = StyleSheet.create({
+    
+    headerWrapper: {
+        width: "100%",
+        height: "100%",
+    },
+    header: {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        zIndex: -10,
+        backgroundColor: "transparent",
+        marginTop: -100,
+    },
+    colorOne: {
+        width: 150,
+        height: 150,
+        borderRadius: 9999,
+        position: "absolute",
+        top: -50,
+        left: -50,
+        backgroundColor: "#1f64d4",
+        filter: "blur(100px)",
+    },
+});

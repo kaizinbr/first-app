@@ -8,59 +8,90 @@ import {
     KeyboardAvoidingView,
     Image,
     Platform,
-    Pressable
+    Pressable,
 } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from "expo-router";
+import api, { apiAuth } from "@/lib/api";
+import { useEffect, useState } from "react";
+import ProfileTabs from "@/components/profile/profile-tabs";
+import { authClient } from "@/lib/auth-client";
+import { Artist } from "@/lib/types";
 
+export default function ArtistPage() {
+    const { id } = useLocalSearchParams();
+    console.log("id from params:", id);
 
-export default function UserProfile() {
-    const { username } = useLocalSearchParams();
+    const [artistData, setArtistData] = useState<Artist | null>(null);
+
+    useEffect(() => {
+        const fetchArtistData = async () => {
+            setArtistData(null);
+            try {
+                const response = await apiAuth(`/artists/${id}`);
+                // console.log("Artist data fetched successfully:", response);
+                setArtistData(response);
+                // console.log("Updated artistData state:", artistData);
+            } catch (error) {
+                console.error("Error fetching artist data:", error);
+            }
+        };
+        fetchArtistData();
+    }, [id]);
+
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-            >
+        <View style={styles.container}>
+            {artistData ? (
                 <View style={styles.main}>
+                    <Text style={styles.title}>{artistData.name}</Text>
                     <Image
-                        source={require("@/assets/images/img1.png")}
+                        source={{ uri: artistData.images[0].url }}
                         style={styles.image}
                     />
-                    <Text style={styles.title}>Perfil de {username}</Text>
+
                 </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+            ) : (
+                <Text style={styles.textDefault}>Loading artist data...</Text>
+            )}
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    main: {
-        flex: 1,
-        backgroundColor: "#fff",
-        padding: 16,
-        alignItems: "center",
-        justifyContent: "center",
-    },
     container: {
         flex: 1,
         gap: 16,
-        backgroundColor: "#fff",
+        backgroundColor: "#161718",
+        color: "#eeeeee",
         alignItems: "center",
         width: "100%",
-        marginTop: 20,
-        paddingHorizontal: 16,
+    },
+    main: {
+        flex: 1,
+        backgroundColor: "#161718",
+        color: "#eeeeee",
+        paddingTop: 16,
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    header: {
+        padding: 16,
+        width: "100%",
+        color: "#eee",
+        borderRadius: 8,
+    },
+    textDefault: {
+        color: "#eee", // A cor clara para o seu modo escuro
+        fontSize: 16,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginTop: 20,
+        color: "#eee",
     },
     image: {
-        width: "100%",
+        width: 300,
         height: 300,
         marginTop: 20,
         resizeMode: "contain",

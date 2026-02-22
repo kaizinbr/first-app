@@ -1,47 +1,71 @@
-import { Text, Image, View, StyleSheet, ScrollView } from "react-native";
+import {
+    Text,
+    Image,
+    View,
+    StyleSheet,
+    ScrollView,
+    Platform,
+    StatusBar as RNStatusBar,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Feed from "@/components/home/feed";
+import Banner from "@/components/home/banner";
+import { LinearGradient } from "expo-linear-gradient";
+import { StatusBar } from "expo-status-bar";
+
+import { useState } from "react";
 
 export default function Index() {
     const { data: session } = authClient.useSession();
+    const statusHeight =
+        Platform.OS === "android" ? RNStatusBar.currentHeight || 0 : 44; // iPhone com notch
+
+    const [scrolled, setScrolled] = useState(false);
+    const LIMIT = 120; // px para mudar o estilo da status bar
 
     const handleLogoff = async () => {
         await authClient.signOut();
     };
 
     return (
-        <SafeAreaView style={styles.container} edges={["top", "left", "right"]}>
+        <>
             <ScrollView
                 contentContainerStyle={{ flexGrow: 1 }}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
+                onScroll={(e) => {
+                    const y = e.nativeEvent.contentOffset.y;
+                    setScrolled(y > LIMIT);
+                }}
+                scrollEventThrottle={16}
+                // style={{
+                //     width: "100%",
+                //     height: "100%",
+                //     position: "absolute",
+                //     top: statusHeight,
+                //     left: 0,
+                //     overflow: "visible",
+                // }}
             >
-                <View style={styles.main}>
-                    <Text style={styles.title}>
-                        Olá, {session?.user?.name || "usuário"}!
-                    </Text>
-                    <ScrollView
-                        // contentContainerStyle={{ maxHeight: 120 }}
-                        keyboardShouldPersistTaps="handled"
-                        showsHorizontalScrollIndicator={false}
-                        horizontal={true}
-                    >
-                        <View style={styles.banner}>
-                            <View style={styles.bannerCard}></View>
-                            <View style={styles.bannerCard}></View>
-                            <View style={styles.bannerCard}></View>
-                            <View style={styles.bannerCard}></View>
-                        </View>
-                    </ScrollView>
-                    <Feed />
-                    {/* <Image
+                <View style={styles.header}>
+                    <View style={styles.colorOne}></View>
+                </View>
+                <SafeAreaView>
+                    <View style={styles.main}>
+                        <Text style={styles.title}>
+                            Olá, {session?.user?.name || "usuário"}!
+                        </Text>
+                        <Banner />
+                        <Feed />
+                        {/* <Image
                         source={require("@/assets/images/img1.png")}
                         style={styles.image}
                     /> */}
-                </View>
+                    </View>
+                </SafeAreaView>
             </ScrollView>
-        </SafeAreaView>
+        </>
     );
 }
 
@@ -51,12 +75,35 @@ const styles = StyleSheet.create({
         gap: 16,
         alignItems: "center",
         width: "100%",
-        // backgroundColor: "#161718",
+        backgroundColor: "transparent",
         color: "#eeeeee",
     },
     main: {
         flex: 1,
         width: "100%",
+    },
+    headerWrapper: {
+        width: "100%",
+        height: "100%",
+    },
+    header: {
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        zIndex: -10,
+        backgroundColor: "transparent",
+        marginTop: -100,
+    },
+    colorOne: {
+        width: 150,
+        height: 150,
+        borderRadius: 9999,
+        position: "absolute",
+        top: -50,
+        left: -50,
+        backgroundColor: "#1f64d4",
+        filter: "blur(100px)",
     },
     title: {
         fontSize: 24,
@@ -88,18 +135,5 @@ const styles = StyleSheet.create({
         height: 300,
         marginTop: 20,
         resizeMode: "contain",
-    },
-    banner: {
-        flexDirection: "row",
-        gap: 8,
-        marginTop: 20,
-        height: 120,
-        paddingHorizontal: 16,
-    },
-    bannerCard: {
-        height: 120,
-        width: 120,
-        backgroundColor: "#1e1e1e",
-        borderRadius: 8,
     },
 });

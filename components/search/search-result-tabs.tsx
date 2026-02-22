@@ -8,7 +8,7 @@ import {
     ScrollView,
     Pressable,
 } from "react-native";
-import { SearchResponse, Track, Album, Artist, User, Review } from "@/lib/types";
+import { SearchResponse, Track, Album, Artist, UserProfile, Review } from "@/lib/types";
 import ChipBtn from "@/components/chip-btn";
 import { ResultUserBtn, ResultAlbumBtn, ResultArtistBtn, ResultTrackBtn } from "@/components/search/result-btns";
 
@@ -24,21 +24,21 @@ function ItemRenderer({ type, item }: { type: string; item: any }) {
     switch (type) {
         case "tracks":
             const track = item as Track;
-            return <ResultTrackBtn name={track.name} id={track.album.id} artists={track.artists.map((a) => a.name)} />;
+            return <ResultTrackBtn data={track} />;
         case "artists":
             const artist = item as Artist;
             return (
-                <ResultArtistBtn name={artist.name} id={artist.id} />
+                <ResultArtistBtn data={artist} />
             );
         case "albums":
             const album = item as Album;
             return (
-                <ResultAlbumBtn name={album.name} id={album.id} artists={album.artists.map((a) => a.name)} />
+                <ResultAlbumBtn data={album} />
             );
         case "users":
-            const user = item as User;
+            const user = item as UserProfile;
             return (
-                <ResultUserBtn name={user.name} username={user.username} />
+                <ResultUserBtn data={user} />
             );
         case "reviews":
             const review = item as Review; // 

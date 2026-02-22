@@ -8,51 +8,77 @@ import {
     KeyboardAvoidingView,
     Image,
     Platform,
-    Pressable
+    Pressable,
 } from "react-native";
-import { useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from "expo-router";
+import api, { apiAuth } from "@/lib/api";
+import { useEffect, useState } from "react";
+import ProfileTabs from "@/components/profile/profile-tabs";
+import { authClient } from "@/lib/auth-client";
+import { UserProfile } from "@/lib/types";
 
-
-export default function UserProfile() {
+export default function UserProfilePage() {
     const { username } = useLocalSearchParams();
+    console.log("Username from params:", username);
+
+    const [profileData, setProfileData] = useState<UserProfile | null>(null);
+
+    useEffect(() => {
+        const fetchProfileData = async () => {
+            setProfileData(null);
+            console.log("Fetching profile data for username:", username, profileData);
+            try {
+                const response = await apiAuth(`/users/${username}`);
+                console.log("Profile data fetched successfully:", response);
+                setProfileData(response);
+                console.log("Updated profileData state:", profileData);
+            } catch (error) {
+                console.error("Error fetching profile data:", error);
+            }
+        };
+        fetchProfileData();
+    }, [username]);
+
     return (
-        <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-            >
+        <View style={styles.container}>
+            {profileData ? (
                 <View style={styles.main}>
-                    <Image
-                        source={require("@/assets/images/img1.png")}
-                        style={styles.image}
-                    />
-                    <Text style={styles.title}>Perfil de {username}</Text>
+                    <ProfileTabs data={profileData} />
                 </View>
-            </ScrollView>
-        </KeyboardAvoidingView>
+            ) : (
+                <Text style={styles.textDefault}>Loading profile data...</Text>
+            )}
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    main: {
-        flex: 1,
-        backgroundColor: "#fff",
-        padding: 16,
-        alignItems: "center",
-        justifyContent: "center",
-    },
     container: {
         flex: 1,
         gap: 16,
-        backgroundColor: "#fff",
+        backgroundColor: "#161718",
+        color: "#eeeeee",
         alignItems: "center",
         width: "100%",
-        marginTop: 20,
-        paddingHorizontal: 16,
+    },
+    main: {
+        flex: 1,
+        backgroundColor: "#161718",
+        color: "#eeeeee",
+        paddingTop: 16,
+        width: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    header: {
+        padding: 16,
+        width: "100%",
+        color: "#eee",
+        borderRadius: 8,
+    },
+    textDefault: {
+        color: "#eee", // A cor clara para o seu modo escuro
+        fontSize: 16,
     },
     title: {
         fontSize: 24,

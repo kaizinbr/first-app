@@ -2,25 +2,17 @@ import * as React from "react";
 import { View, Text, useWindowDimensions, StyleSheet } from "react-native";
 import { TabView, SceneMap, TabBar } from "react-native-tab-view";
 
-const PostsRoute = () => (
-    <View style={styles.scene}>
-        <Text>Posts</Text>
-    </View>
-);
+import { UserProfile } from "@/lib/types";
+import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
 
-const LikesRoute = () => (
-    <View style={styles.scene}>
-        <Text>Likes</Text>
-    </View>
-);
+import PostsRoute from "@/components/profile/posts";
+import ProfileHeader from "@/components/profile/header";
+import AboutRoute from "@/components/profile/about";
+import FollowingRoute from "@/components/profile/following";
+import FollowersRoute from "@/components/profile/followers";
 
-const MediaRoute = () => (
-    <View style={styles.scene}>
-        <Text>Media</Text>
-    </View>
-);
 
-export default function ProfileTabs() {
+export default function ProfileTabs({ data }: { data: UserProfile }) {
     const layout = useWindowDimensions();
 
     const [index, setIndex] = React.useState(0);
@@ -31,31 +23,52 @@ export default function ProfileTabs() {
         { key: "followers", title: "Seguidores" },
     ]);
 
-    const renderScene = SceneMap({
-        reviews: PostsRoute,
-        about: MediaRoute,
-        following: LikesRoute,
-        followers: LikesRoute,
-    });
+    const renderTabBar = (props: any) => (
+        <MaterialTabBar
+            {...props}
+            indicatorStyle={{ backgroundColor: "#eee", height: 3 }}
+            style={{ backgroundColor: "#161718" }}
+            activeColor="#eee"
+            inactiveColor="#777"
+        />
+    );
+
+    const renderScene = React.useCallback(
+        ({ route }: any) => {
+            switch (route.key) {
+                case "reviews":
+                    return <PostsRoute data={data} />;
+                case "about":
+                    return <AboutRoute data={data} />;
+                case "following":
+                    return <FollowingRoute data={data} />;
+                case "followers":
+                    return <FollowersRoute data={data} />;
+                default:
+                    return null;
+            }
+        },
+        [data],
+    );
 
     return (
-        <TabView
-            navigationState={{ index, routes }}
-            style={{ marginTop: 20, flex: 1 }}
-            renderScene={renderScene}
-            onIndexChange={setIndex}
-            initialLayout={{ width: layout.width }}
-            renderTabBar={(props) => (
-                <TabBar
-                    {...props}
-                    indicatorStyle={{ backgroundColor: "#000", height: 3 }}
-                    style={{ backgroundColor: "white", elevation: 0 }}
-                    activeColor="#000"
-                    inactiveColor="#777"
-                    // labelStyle={{ fontWeight: "600" }}
-                />
-            )}
-        />
+        <Tabs.Container
+            renderHeader={() => <ProfileHeader data={data} />} 
+            renderTabBar={renderTabBar}
+        >
+            <Tabs.Tab name="reviews" label="Reviews">
+                <PostsRoute data={data} />
+            </Tabs.Tab>
+            <Tabs.Tab name="about" label="Sobre">
+                <AboutRoute data={data} />
+            </Tabs.Tab>
+            <Tabs.Tab name="following" label="Seguindo">
+                <FollowingRoute data={data} />
+            </Tabs.Tab>
+            <Tabs.Tab name="followers" label="Seguidores">
+                <FollowersRoute data={data} />
+            </Tabs.Tab>
+        </Tabs.Container>
     );
 }
 
@@ -64,5 +77,14 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+    },
+    headerContainer: {
+        padding: 20,
+        backgroundColor: "#161718", // Cor de fundo do header
+        // Adicione o resto do seu estilo de header aqui
+    },
+    textDefault: {
+        color: "#eee", // A cor clara para o seu modo escuro
+        fontSize: 16,
     },
 });

@@ -21,12 +21,12 @@ export interface Artist {
     name: string;
     type: string;
     uri: string;
+    images: Image[];
 }
 
 export interface ArtistDetail extends Artist {
     followers?: Href & { total: number };
     genres?: string[];
-    images?: Image[];
     popularity?: number;
 }
 
@@ -116,7 +116,7 @@ export interface UserArtist {
     name: string;
 }
 
-export interface User {
+export interface UserProfile {
     id: string;
     username: string;
     name: string;
@@ -143,11 +143,11 @@ export interface Review {
     shorten: string;
     content: Record<string, unknown>;
     published: boolean;
-    created_at: string;
-    updated_at: string;
+    created_at: Date;
+    updated_at: Date;
     album_id: string;
     user_id: string;
-    Profile: User;
+    Profile: UserProfile;
 };
 
 export interface Rating {
@@ -161,6 +161,6 @@ export interface SearchResponse {
     tracks: TracksResult;
     artists: ArtistsResult;
     albums: AlbumsResult;
-    users: User[];
+    users: UserProfile[];
     reviews: Review[];
 }

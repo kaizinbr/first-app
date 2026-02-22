@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 interface GradientCardProps {
     image: string;
     value: string;
-    subtitle?: string;
+    subtitle?: number;
     onPress?: () => void;
 }
 
