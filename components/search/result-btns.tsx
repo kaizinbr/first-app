@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     pressedBtnMain: {
-        backgroundColor: "#f0f0f0",
+        backgroundColor: "#3a3a3a",
         width: "100%",
         padding: 8,
         borderRadius: 16,
@@ -148,9 +148,10 @@ const styles = StyleSheet.create({
     },
     btnText: {
         fontWeight: "bold",
+        color: "#eeeeee",
     },
     btnSubtext: {
-        color: "#6d6d6d",
+        color: "#9d9d9d",
         fontSize: 12,
         fontWeight: "bold",
     },

@@ -31,7 +31,7 @@ export default function Input({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: "#161718",
         width: "100%",
         gap: 16,
     },
@@ -40,6 +40,8 @@ const styles = StyleSheet.create({
         padding: 10,
         borderWidth: 1,
         borderColor: "#ccc",
+        color: "#eeeeee",
+        
         borderRadius: 12,
         width: "100%",
     },

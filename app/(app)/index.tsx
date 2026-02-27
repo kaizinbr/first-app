@@ -5,8 +5,10 @@ import {
     StyleSheet,
     ScrollView,
     Platform,
+    Pressable,
     StatusBar as RNStatusBar,
 } from "react-native";
+import { useRouter, Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Feed from "@/components/home/feed";
@@ -23,10 +25,6 @@ export default function Index() {
 
     const [scrolled, setScrolled] = useState(false);
     const LIMIT = 120; // px para mudar o estilo da status bar
-
-    const handleLogoff = async () => {
-        await authClient.signOut();
-    };
 
     return (
         <>
@@ -57,6 +55,24 @@ export default function Index() {
                             Olá, {session?.user?.name || "usuário"}!
                         </Text>
                         <Banner />
+                        <Link
+                            href={{
+                                pathname: "/create/review/[id]",
+                                params: { id: "2ffVa2UhHUDwMHnr685zJ4" },
+                            }}
+                            style={{
+                                marginTop: 16,
+                                paddingVertical: 12,
+                                paddingHorizontal: 20,
+                                backgroundColor: "#1f64d4",
+                                borderRadius: 8,
+                                alignSelf: "flex-start",
+                                color: "#eeeeee",
+                            }}
+                        >
+                            Criar Resenha
+                        </Link>
+                        <Text style={styles.h2}>O que está rolando?</Text>
                         <Feed />
                         {/* <Image
                         source={require("@/assets/images/img1.png")}

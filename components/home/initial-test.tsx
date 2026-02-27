@@ -10,10 +10,17 @@ import ProfileHeader from "@/components/profile/header";
 import AboutRoute from "@/components/profile/about";
 import FollowingRoute from "@/components/profile/following";
 import FollowersRoute from "@/components/profile/followers";
-import PostEditor from "@/components/reviews/rich-text";
 
-
-export default function ProfileTabs({ data }: { data: UserProfile }) {
+export function Header() {
+    return (
+        <View style={styles.scene1}>
+            <View style={styles.header}>
+                                <View style={styles.colorOne}></View>
+                            </View>
+        </View>
+    );
+}
+export default function Inicio({ data }: { data: UserProfile }) {
     const layout = useWindowDimensions();
 
     const [index, setIndex] = React.useState(0);
@@ -85,7 +92,35 @@ const styles = StyleSheet.create({
         // Adicione o resto do seu estilo de header aqui
     },
     textDefault: {
-        color: "#eee", // A cor clara para o seu modo escuro
+        color: "#eee", 
         fontSize: 16,
+    },
+
+    scene1: {
+        padding: 20,
+        backgroundColor: "#161718",
+    },
+
+    header: {
+        padding: 16,
+        width: "100%",
+        color: "#eee",
+        borderRadius: 8,
+        height: "100%",
+        position: "absolute",
+        top: 0,
+        zIndex: -10,
+        backgroundColor: "transparent",
+        marginTop: -100,
+    },
+    colorOne: {
+        width: 150,
+        height: 150,
+        borderRadius: 9999,
+        position: "absolute",
+        top: -50,
+        left: -50,
+        backgroundColor: "#1f64d4",
+        filter: "blur(100px)",
     },
 });

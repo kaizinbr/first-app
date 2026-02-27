@@ -93,8 +93,8 @@ export default function SearchTabs({ results, setType, type }: Props) {
                 ItemSeparatorComponent={() => (
                     <View
                         style={{
-                            height: 1,
-                            backgroundColor: "#E0E0E0",
+                            height: .5,
+                            backgroundColor: "#3d3d3d",
                             // marginVertical: 10,
                         }}
                     />

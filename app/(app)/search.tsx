@@ -16,6 +16,7 @@ import SearchInput from "@/components/search/search-input";
 import SearchTabs from "@/components/search/search-result-tabs";
 import { SearchResponse } from "@/lib/types";
 import { ResultUserBtn } from "@/components/search/result-btns";
+import PostEditor from "@/components/reviews/rich-text";
 
 export default function Index() {
     const [searchQuery, setSearchQuery] = useState("");
@@ -38,6 +39,7 @@ export default function Index() {
             > */}
                 <View style={styles.main}>
                     <SearchInput results={results} setResults={setResults} type={type} />
+                    <PostEditor />
                     <SearchTabs results={results} setType={setType} type={type} />
                 </View>
             {/* </ScrollView> */}
@@ -48,7 +50,7 @@ export default function Index() {
 const styles = StyleSheet.create({
     main: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: "#161718",
         padding: 16,
         alignItems: "center",
         justifyContent: "flex-start",
@@ -58,8 +60,9 @@ const styles = StyleSheet.create({
         width: "100%",
         padding: 12,
         borderWidth: 1,
-        borderColor: "#ccc",
+        borderColor: "#b8b8b8",
         borderRadius: 8,
         marginVertical: 16,
+        color: "#eeeeee",
     },
 });

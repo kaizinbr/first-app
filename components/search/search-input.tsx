@@ -15532,6 +15532,7 @@ export default function SearchInput({
                 style={styles.searchInput}
                 value={searchQuery}
                 onChangeText={setSearchQuery}
+                placeholderTextColor="#9c9c9c"
             />
             {/* <Text style={{ marginTop: 20 }}>
                 Último termo buscado: {debounced}
@@ -15546,7 +15547,6 @@ export default function SearchInput({
 const styles = StyleSheet.create({
     main: {
         // flex: 1,
-        backgroundColor: "#fff",
         // padding: 16,
         maxHeight: 200,
         alignItems: "center",
@@ -15560,5 +15560,6 @@ const styles = StyleSheet.create({
         borderColor: "#ccc",
         borderRadius: 8,
         marginVertical: 16,
+            color: "#eeeeee",
     },
 });
