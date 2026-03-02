@@ -32,17 +32,10 @@ export default function Index() {
             style={{ flex: 1 }}
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-            {/* <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-            > */}
                 <View style={styles.main}>
                     <SearchInput results={results} setResults={setResults} type={type} />
-                    <PostEditor />
                     <SearchTabs results={results} setType={setType} type={type} />
                 </View>
-            {/* </ScrollView> */}
         </KeyboardAvoidingView>
     );
 }

@@ -2,6 +2,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ColorValue, Image, Text, TouchableOpacity, View } from "react-native";
 import api from "@/lib/api";
 import { useState, useEffect } from "react";
+import { getColors } from "react-native-image-colors";
+
+import { Palette } from "@/lib/types";
 
 interface GradientCardProps {
     image: string;
@@ -18,26 +21,30 @@ export function AlbumCard({
 }: GradientCardProps) {
     const Wrapper = onPress ? TouchableOpacity : View;
 
-    const [colors, setColors] = useState<{"DarkMuted": string, "DarkVibrant": string, "Muted": string, "Vibrant": string    } | any>(null);
-
+    const [colors, setColors] = useState<Palette | any>(null);
 
     useEffect(() => {
-        const url = image;
-
-        api.post("/colors", { imageUrl: url })
-            .then((response) => {
-                setColors(response.data);
-                // console.log("Cores extraídas:", response.data);
-            })
-            .catch((error) => {
-                console.error("Erro ao extrair cores:", error);
-            });
+        const fetchColors = async () => {
+            try {
+                const result = await getColors(image, {
+                    fallback: "#000",
+                    cache: true,
+                    key: image,
+                });
+                setColors(result);
+                // console.log("Colors fetched for album image:", result);
+            } catch (error) {
+                console.error("Error fetching colors:", error);
+            }
+        };
+        fetchColors();
+        // setColors(colors);
     }, []);
 
     return (
         <Wrapper style={{ marginTop: 12 }} activeOpacity={0.8}>
-            <LinearGradient
-                colors={[colors?.Vibrant || "#282b30", "#282b30"]}
+            {colors && (<LinearGradient
+                colors={[colors.darkVibrant != "#000000" ? colors.darkVibrant : colors.muted, "#282b30"]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
                 style={{
@@ -82,7 +89,8 @@ export function AlbumCard({
                         </Text>
                     )}
                 </View>
-            </LinearGradient>
+            </LinearGradient>)
+            }
         </Wrapper>
     );
 }

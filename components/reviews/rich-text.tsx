@@ -16,8 +16,7 @@ import type {
 } from "react-native-enriched";
 import { EnrichedTextInput } from "react-native-enriched";
 
-export default function PostEditor() {
-    const ref = useRef<EnrichedTextInputInstance>(null);
+export default function PostEditor({ref}: {ref: React.RefObject<EnrichedTextInputInstance | null>}) {
     const [conteudoHtml, setConteudoHtml] = useState<OnChangeHtmlEvent | null>(
         null,
     );
@@ -50,7 +49,7 @@ export default function PostEditor() {
                     placeholder="O que você está pensando?"
                     placeholderTextColor="#777"
                     onChangeHtml={(html) => {
-                        setConteudoHtml(html);
+                        setConteudoHtml(html.nativeEvent);
                         // console.log("Conteúdo HTML atualizado:", html);
                     }}
                     onChangeState={handleStateChange}

@@ -2,7 +2,7 @@ import axios from "axios";
 import { authClient } from "@/lib/auth-client";
 
 const api = axios.create({
-    baseURL: "http://192.168.18.152:3000/api",
+    baseURL: "https://mobile-backend-psi.vercel.app/api",
     timeout: 10000,
     headers: {
         "Content-Type": "application/json",
@@ -14,9 +14,25 @@ export async function apiAuth(path: string) {
     const headers = {
         Cookie: cookies,
     };
-    const response = await fetch(`http://192.168.18.152:3000/api${path}`, {
+    const response = await fetch(`https://mobile-backend-psi.vercel.app/api${path}`, {
         headers,
         credentials: "omit",
+    });
+    const data = await response.json();
+    return data;
+}
+
+export async function apiAuthPost(path: string, body: any) {
+    const cookies = authClient.getCookie();
+    const headers = {
+        Cookie: cookies,
+        "Content-Type": "application/json",
+    };
+    const response = await fetch(`https://mobile-backend-psi.vercel.app/api${path}`, {
+        method: "POST",
+        headers,
+        credentials: "omit",
+        body: JSON.stringify(body),
     });
     const data = await response.json();
     return data;

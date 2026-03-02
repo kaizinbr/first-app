@@ -46,6 +46,15 @@ export interface Album {
     total_tracks: number;
     type: string;
     uri: string;
+    tracks: {
+        href: string;
+        items: Track[];
+        limit: number;
+        next: string | null;
+        offset: number;
+        previous: string | null;
+        total: number;
+    };
 }
 
 // Track
@@ -163,4 +172,14 @@ export interface SearchResponse {
     albums: AlbumsResult;
     users: UserProfile[];
     reviews: Review[];
+}
+
+export interface Palette {
+    dominant: string;
+    vibrant: string;
+    darkVibrant: string;
+    lightVibrant: string;
+    muted: string;
+    darkMuted: string;
+    lightMuted: string;
 }

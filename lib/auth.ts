@@ -1,5 +1,5 @@
-import { betterAuth } from "better-auth";
 import { expo } from "@better-auth/expo";
+import { betterAuth } from "better-auth";
 
 export const auth = betterAuth({
     plugins: [expo()],
@@ -7,7 +7,7 @@ export const auth = betterAuth({
         enabled: true, // Enable authentication using email and password.
     },
     trustedOrigins: [
-        "myapp://",
+        "firstapp://",
         // Development mode - Expo's exp:// scheme with local IP ranges
         ...(process.env.NODE_ENV === "development"
             ? [

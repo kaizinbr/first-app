@@ -27,6 +27,6 @@
         "production": {}
     },
     "expo": {
-        "scheme": "myapp"
+        "scheme": "firstapp"
     }
 }

@@ -1,33 +1,46 @@
-import Button from "@/components/button";
-import Input from "@/components/input";
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
-    Pressable,
-    TextInput,
-} from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { authClient } from "@/lib/auth-client";
-import { Album, Review } from "@/lib/types";
 import PostEditor from "@/components/reviews/rich-text";
+import TrackRating from "@/components/reviews/tracks";
+import { apiAuth, apiAuthPost } from "@/lib/api";
+import { Album, Review } from "@/lib/types";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useRef, useState } from "react";
+import {
+    Image,
+    ScrollView,
+    StyleSheet,
+    Text,
+    TextInput,
+    View,
+    Pressable,
+} from "react-native";
+
+import type { EnrichedTextInputInstance } from "react-native-enriched";
 
 export default function ReviewPage() {
     const { id } = useLocalSearchParams();
     console.log("id from params:", id);
+
+    const editorRef = useRef<EnrichedTextInputInstance>(null);
 
     const [reviewData, setReviewData] = useState<{
         reviewed: boolean;
         rating: Review | null;
         albumData: Album;
     } | null>(null);
+
+    const [total, setTotal] = useState(0);
+    const [ratings, setRatings] = useState<
+        {
+            id: string;
+            value: number;
+            favorite: boolean;
+            comment: string;
+            skip: boolean;
+        }[]
+    >([]);
+    const [rawText, setRawText] = useState("");
+    const [jsonContent, setJsonContent] = useState({});
+    const [useMedia, setUseMedia] = useState(true);
 
     useEffect(() => {
         const fetchReviewData = async () => {
@@ -36,14 +49,93 @@ export default function ReviewPage() {
             try {
                 const response = await apiAuth(`/me/reviewed/${id}`);
                 // console.log("Album data fetched successfully:", response);
+                if (response.reviewed && response.rating) {
+                    setRatings(response.rating.ratings);
+                    setTotal(response.rating.total);
+                    // console.log("avaliou")
+                } else {
+                    setRatings(
+                        response.albumData.tracks.items.map((track: any) => ({
+                            id: track.id,
+                            value: 0,
+                            favorite: false,
+                            comment: "",
+                            skip: false,
+                        })),
+                    );
+                    setTotal(0);
+                    // console.log("não avaliou", ratings)
+                }
+
+                // console.log("Ratings state initialized:", ratings);
                 setReviewData(response);
-                // console.log("Updated albumData state:", albumData);
             } catch (error) {
                 console.error("Error fetching album data:", error);
             }
         };
         fetchReviewData();
     }, [id]);
+
+    const handleTotalChange = (e: any) => {
+        if (e.target.value === "") {
+            setTotal(0);
+            return;
+        } else if (isNaN(Number(e.target.value))) {
+            return;
+        }
+
+        if (Number(e.target.value) > 100) {
+            setTotal(100);
+            return;
+        } else if (Number(e.target.value) < 0) {
+            setTotal(0);
+            return;
+        }
+        setTotal(Number(e.target.value));
+    };
+
+    const handleSubmit = async () => {
+        // e.preventDefault();
+        console.log(ratings);
+
+        const cumulativeRating = ratings.reduce(
+            (acc, rating) => acc + rating.value,
+            0,
+        );
+
+        let finalRating;
+        if (useMedia) {
+            finalRating = cumulativeRating / ratings.length;
+        } else {
+            finalRating = total;
+        }
+
+        const reviewHTMLContent = await editorRef.current?.getHTML();
+
+        const response = await apiAuthPost(`/reviews/upsert`, {
+            albumId: id,
+            ratings,
+            review: rawText,
+            html: reviewHTMLContent,
+            total: total,
+            published: true,
+        });
+
+        console.log("Response from saving review:", response);
+
+        if (!response.saved) {
+            console.error("Error saving ratings", response.data);
+            return;
+        } else {
+            console.log("Ratings saved/updated", response.data);
+            // setShorten(response.data.data.shorten);
+            // router.push(`/r/${response.data.data.shorten}`);
+        }
+
+        // tracks.forEach((track) => {
+        //     sessionStorage.removeItem(track.id);
+        // });
+    };
 
     return (
         <ScrollView
@@ -78,15 +170,50 @@ export default function ReviewPage() {
                         <View style={styles.inputWrapper}>
                             <TextInput
                                 style={styles.input}
-                                placeholder="Digite a nota (0-5)"
+                                placeholder="0"
                                 keyboardType="numeric"
+                                value={total === 0 ? "" : total.toString()}
+                                
+                                onChangeText={(text) => handleTotalChange({ target: { value: text } })}
                             />
                             <Text style={styles.inputSide}>/100</Text>
                         </View>
                     </View>
                     <View style={styles.textSec}>
-                        <PostEditor />
+                        <PostEditor ref={editorRef} />
                     </View>
+                    <View style={styles.tracks}>
+                        <Text style={styles.textDefault}>Músicas:</Text>
+                        {reviewData.albumData.tracks.items.map((track: any) => (
+                            <TrackRating
+                                key={track.id}
+                                trackData={track}
+                                reviewData={
+                                    reviewData.rating
+                                        ? reviewData.rating.ratings.find(
+                                              (r) => r.id === track.id,
+                                          ) || null
+                                        : null
+                                }
+                                setRatings={setRatings}
+                            />
+                        ))}
+                    </View>
+                    <Pressable
+                        onPress={handleSubmit}
+                        style={{
+                            backgroundColor: "#1f64d4",
+                            paddingVertical: 12,
+                            paddingHorizontal: 20,
+                            borderRadius: 8,
+                            alignSelf: "flex-start",
+                            marginBottom: 32,
+                        }}
+                    >
+                        <Text style={{ color: "#eeeeee", fontSize: 16 }}>
+                            Salvar Resenha
+                        </Text>
+                    </Pressable>
                 </View>
             ) : (
                 <Text style={styles.textDefault}>Loading album data...</Text>
@@ -99,6 +226,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         gap: 16,
+        marginBottom: 56,
     },
     main: {
         flex: 1,
@@ -140,7 +268,6 @@ const styles = StyleSheet.create({
     inputWrapper: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 8,
     },
     input: {
         fontSize: 24,
@@ -149,5 +276,10 @@ const styles = StyleSheet.create({
     inputSide: {
         fontSize: 24,
         color: "#eeeeee",
+    },
+    tracks: {
+        width: "100%",
+        gap: 12,
+        padding: 16,
     },
 });
