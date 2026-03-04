@@ -1,61 +1,47 @@
 import * as React from "react";
-import { View, Text, useWindowDimensions, StyleSheet } from "react-native";
-import { TabView, SceneMap, TabBar } from "react-native-tab-view";
-
-import { UserProfile } from "@/lib/types";
+import { View, StyleSheet } from "react-native";
 import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
+import { UserProfile } from "@/lib/types";
 
 import PostsRoute from "@/components/profile/posts";
 import ProfileHeader from "@/components/profile/header";
 import AboutRoute from "@/components/profile/about";
 import FollowingRoute from "@/components/profile/following";
 import FollowersRoute from "@/components/profile/followers";
-import PostEditor from "@/components/reviews/rich-text";
 
+// O seu novo componente otimizado
+import FixedTopBar from "@/components/profile/fixed-top-bar";
 
 export default function ProfileTabs({ data }: { data: UserProfile }) {
-    const layout = useWindowDimensions();
 
-    const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
-        { key: "reviews", title: "Reviews" },
-        { key: "about", title: "Sobre" },
-        { key: "following", title: "Seguindo" },
-        { key: "followers", title: "Seguidores" },
-    ]);
+    // 1. A SOLUÇÃO DO CRASH: useCallback memoriza a renderização
+    const renderHeader = React.useCallback(() => {
+        return (
+            <View style={styles.headerWrapper}>
+                {/* O seu perfil que rola normalmente */}
+                <ProfileHeader data={data} />
+                
+                {/* A barrinha inteligente que acabamos de criar */}
+                <FixedTopBar title={data.name || "Perfil"} />
+            </View>
+        );
+    }, [data.name]); // Só recria se o nome do usuário mudar
 
-    const renderTabBar = (props: any) => (
+    const renderTabBar = React.useCallback((props: any) => (
         <MaterialTabBar
             {...props}
-            indicatorStyle={{ backgroundColor: "#eee", height: 3 }}
+            indicatorStyle={{ backgroundColor: "#00a8ff", height: 3 }}
             style={{ backgroundColor: "#161718" }}
             activeColor="#eee"
             inactiveColor="#777"
         />
-    );
-
-    const renderScene = React.useCallback(
-        ({ route }: any) => {
-            switch (route.key) {
-                case "reviews":
-                    return <PostsRoute data={data} />;
-                case "about":
-                    return <AboutRoute data={data} />;
-                case "following":
-                    return <FollowingRoute data={data} />;
-                case "followers":
-                    return <FollowersRoute data={data} />;
-                default:
-                    return null;
-            }
-        },
-        [data],
-    );
+    ), []);
 
     return (
         <Tabs.Container
-            renderHeader={() => <ProfileHeader data={data} />} 
+            renderHeader={renderHeader}
             renderTabBar={renderTabBar}
+            headerContainerStyle={{ shadowOpacity: 0, elevation: 0 }} // Remove a sombra padrão feia do Android
         >
             <Tabs.Tab name="reviews" label="Reviews">
                 <PostsRoute data={data} />
@@ -74,18 +60,8 @@ export default function ProfileTabs({ data }: { data: UserProfile }) {
 }
 
 const styles = StyleSheet.create({
-    scene: {
+    headerWrapper: {
+        width: "100%",
         flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    headerContainer: {
-        padding: 20,
-        backgroundColor: "#161718", // Cor de fundo do header
-        // Adicione o resto do seu estilo de header aqui
-    },
-    textDefault: {
-        color: "#eee", // A cor clara para o seu modo escuro
-        fontSize: 16,
     },
 });

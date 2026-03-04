@@ -9,7 +9,6 @@ import TiptapRenderer from "@/components/home/card-content copy";
 import { AlbumCard } from "@/components/home/album-section";
 import { Review } from "@/lib/types";
 
-
 type SpotifyAlbum = {
     album_type: string;
     total_tracks: number;
@@ -43,7 +42,6 @@ type SpotifyAlbum = {
     popularity: number;
 };
 
-
 export default function FeedCard({ review }: { review: Review }) {
     const { data: session } = authClient.useSession();
 
@@ -69,13 +67,18 @@ export default function FeedCard({ review }: { review: Review }) {
         };
 
         const fetchContent = async () => {
-
             if (!review.shorten) {
                 console.error("Review shorten is undefined");
                 return;
             }
 
-            if (!Array.isArray(review.content.content) || review.content.content.length === 0 || !Array.isArray(review.content.content[0].content) || review.content.content[0].content.length === 0 || review.content.content[0].content[0].text === "") {
+            if (
+                !Array.isArray(review.content.content) ||
+                review.content.content.length === 0 ||
+                !Array.isArray(review.content.content[0].content) ||
+                review.content.content[0].content.length === 0 ||
+                review.content.content[0].content[0].text === ""
+            ) {
                 console.warn("Review content is empty");
                 return;
             }
@@ -103,7 +106,6 @@ export default function FeedCard({ review }: { review: Review }) {
                 pressed && styles.mainPressed,
             ]}
         >
-
             <View style={styles.card}>
                 <Image
                     source={{ uri: review.Profile.avatar_url! }}
@@ -121,14 +123,15 @@ export default function FeedCard({ review }: { review: Review }) {
                             <>
                                 <TiptapRenderer json={content.jsonContent} />
                             </>
-                        ) : (
-                            null
-                        )}
-
+                        ) : null}
 
                         <AlbumCard
                             image={reviewAlbum.images[0].url}
-                            value={review.total ? `${Number(review.total).toFixed(1)}/100` : "0.0/100"}
+                            value={
+                                review.total
+                                    ? `${Number(review.total).toFixed(1)}/100`
+                                    : "0.0/100"
+                            }
                             subtitle={review.ratings.length}
                         />
                         <Text style={styles.cardDate}>
@@ -139,7 +142,6 @@ export default function FeedCard({ review }: { review: Review }) {
                     </View>
                 ) : null}
             </View>
-
         </Pressable>
     );
 }
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#1e1e1e",
         borderRadius: 8,
         borderColor: "#333",
-        borderWidth: .5,
+        borderWidth: 0.5,
     },
     albumSectionValue: {
         fontWeight: 900,

@@ -59,6 +59,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                 flexGrow: 1,
                 width: "100%",
                 paddingTop: 324,
+                minHeight: 1500,
             }}
             showsVerticalScrollIndicator={false}
         />

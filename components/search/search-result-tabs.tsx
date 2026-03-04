@@ -89,7 +89,7 @@ export default function SearchTabs({ results, setType, type }: Props) {
                 data={tab.data as any}
                 keyExtractor={(item: any) => item.id}
                 showsVerticalScrollIndicator={false}
-                style={{ width: layout.width, paddingHorizontal: 16, height: "100%" }}
+                style={{ width: "100%", paddingHorizontal: 16, height: "100%" }}
                 ItemSeparatorComponent={() => (
                     <View
                         style={{
@@ -111,44 +111,51 @@ export default function SearchTabs({ results, setType, type }: Props) {
             <ScrollView
                 keyboardShouldPersistTaps="handled"
                 showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.chipsContainer}
+                contentContainerStyle={styles.scroll}
                 horizontal={true}
             >
-                <ChipBtn
-                    label="Tracks"
-                    onPress={() => {
-                        setType("tracks");
-                        setIndex(0);
-                    }}
-                />
-                <ChipBtn
-                    label="Artists"
-                    onPress={() => {
-                        setType("artists");
-                        setIndex(1);
-                    }}
-                />
-                <ChipBtn
-                    label="Albums"
-                    onPress={() => {
-                        setType("albums");
-                        setIndex(2);
-                    }}
-                />
-                <ChipBtn
-                    label="Users"
-                    onPress={() => {
-                        setType("users");
-                        setIndex(3);
-                    }}
-                />
-                <ChipBtn
-                    label="Reviews"
-                    onPress={() => {
-                        setType("reviews");
-                        setIndex(4);
-                    }}
-                />
+                <View style={styles.container}>
+                    <ChipBtn
+                        label="Albums"
+                        onPress={() => {
+                            setType("albums");
+                            setIndex(2);
+                        }}
+                        selected={type === "albums"}
+                    />
+                    <ChipBtn
+                        label="Músicas"
+                        onPress={() => {
+                            setType("tracks");
+                            setIndex(0);
+                        }}
+                        selected={type === "tracks"}
+                    />
+                    <ChipBtn
+                        label="Artistas"
+                        onPress={() => {
+                            setType("artists");
+                            setIndex(1);
+                        }}
+                        selected={type === "artists"}
+                    />
+                    <ChipBtn
+                        label="Pessoas"
+                        onPress={() => {
+                            setType("users");
+                            setIndex(3);
+                        }}
+                        selected={type === "users"}
+                    />
+                    <ChipBtn
+                        label="Reviews"
+                        onPress={() => {
+                            setType("reviews");
+                            setIndex(4);
+                        }}
+                        selected={type === "reviews"}
+                    />
+                </View>
             </ScrollView>
 
             {renderScene({ route: routes[index] })}
@@ -161,17 +168,22 @@ const styles = StyleSheet.create({
     main: {
         flex: 1,
         // backgroundColor: "red",
-        padding: 16,
+        paddingVertical: 16,
         alignItems: "center",
         justifyContent: "flex-start",
         width: "100%",
     },
-    chipsContainer: {
+    scroll: {
         flexDirection: "row",
         justifyContent: "flex-start",
-        marginBottom: 16,
         gap: 10,
         height: 50,
         // width: "100%",
+    },
+    
+    container: {
+        flexDirection: "row",
+        gap: 8,
+        paddingHorizontal: 16,
     },
 });

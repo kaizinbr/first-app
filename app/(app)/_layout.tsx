@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { Tabs } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet } from "react-native";
-import { BlurView } from "expo-blur";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const styles = StyleSheet.create({
     tabBar: {

@@ -6,6 +6,8 @@ import { getColors } from "react-native-image-colors";
 
 import { Palette } from "@/lib/types";
 
+import { selectRightColor } from "@/lib/util/selectRightColor";
+
 interface GradientCardProps {
     image: string;
     value: string;
@@ -43,54 +45,58 @@ export function AlbumCard({
 
     return (
         <Wrapper style={{ marginTop: 12 }} activeOpacity={0.8}>
-            {colors && (<LinearGradient
-                colors={[colors.darkVibrant != "#000000" ? colors.darkVibrant : colors.muted, "#282b30"]}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-                style={{
-                    padding: 12,
-                    borderRadius: 8,
-                    borderWidth: 1,
-                    borderColor: "#333",
-                    flexDirection: "row",
-                    overflow: "hidden",
-                }}
-            >
-                <Image
-                    source={{ uri: image }}
+            {colors && (
+                <LinearGradient
+                    colors={[
+                        selectRightColor(colors),
+                        "#282b30",
+                    ]}
+                    start={{ x: 0, y: 0.5 }}
+                    end={{ x: 1, y: 0.5 }}
                     style={{
-                        width: 120,
-                        height: 120,
+                        padding: 12,
                         borderRadius: 8,
-                        objectFit: "cover",
+                        borderWidth: 1,
+                        borderColor: "#333",
+                        flexDirection: "row",
+                        overflow: "hidden",
                     }}
-                />
-
-                <View style={{ marginLeft: 12, flexShrink: 1 }}>
-                    <Text
+                >
+                    <Image
+                        source={{ uri: image }}
                         style={{
-                            color: "#eee",
-                            fontSize: 22,
-                            fontWeight: "900",
+                            width: 120,
+                            height: 120,
+                            borderRadius: 8,
+                            objectFit: "cover",
                         }}
-                    >
-                        {value}
-                    </Text>
+                    />
 
-                    {subtitle && (
+                    <View style={{ marginLeft: 12, flexShrink: 1 }}>
                         <Text
                             style={{
-                                marginTop: 4,
-                                color: "#d1d5db",
-                                fontSize: 12,
+                                color: "#eee",
+                                fontSize: 22,
+                                fontWeight: "900",
                             }}
                         >
-                            {subtitle} músicas avaliadas
+                            {value}
                         </Text>
-                    )}
-                </View>
-            </LinearGradient>)
-            }
+
+                        {subtitle && (
+                            <Text
+                                style={{
+                                    marginTop: 4,
+                                    color: "#d1d5db",
+                                    fontSize: 12,
+                                }}
+                            >
+                                {subtitle} músicas avaliadas
+                            </Text>
+                        )}
+                    </View>
+                </LinearGradient>
+            )}
         </Wrapper>
     );
 }

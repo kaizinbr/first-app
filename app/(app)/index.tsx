@@ -6,81 +6,32 @@ import {
     ScrollView,
     Platform,
     Pressable,
+    Animated,
     StatusBar as RNStatusBar,
 } from "react-native";
 import { useRouter, Link } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Feed from "@/components/home/feed";
 import Banner from "@/components/home/banner";
 import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import HomeHeader from "@/components/home/header";
 
 export default function Index() {
-    const { data: session } = authClient.useSession();
-    const statusHeight =
-        Platform.OS === "android" ? RNStatusBar.currentHeight || 0 : 44; // iPhone com notch
 
-    const [scrolled, setScrolled] = useState(false);
-    const LIMIT = 120; // px para mudar o estilo da status bar
+    const scrollOffsetY = useRef(new Animated.Value(0)).current;
+    const handleScroll = Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
+        { useNativeDriver: false } // Lembre-se que height e backgroundColor não aceitam useNativeDriver: true
+    );
 
     return (
         <>
-            <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
-                onScroll={(e) => {
-                    const y = e.nativeEvent.contentOffset.y;
-                    setScrolled(y > LIMIT);
-                }}
-                scrollEventThrottle={16}
-                // style={{
-                //     width: "100%",
-                //     height: "100%",
-                //     position: "absolute",
-                //     top: statusHeight,
-                //     left: 0,
-                //     overflow: "visible",
-                // }}
-            >
-                <View style={styles.header}>
-                    <View style={styles.colorOne}></View>
-                </View>
-                <SafeAreaView>
-                    <View style={styles.main}>
-                        <Text style={styles.title}>
-                            Olá, {session?.user?.name || "usuário"}!
-                        </Text>
-                        <Banner />
-                        <Link
-                            href={{
-                                pathname: "/create/review/[id]",
-                                params: { id: "2ffVa2UhHUDwMHnr685zJ4" },
-                            }}
-                            style={{
-                                marginTop: 16,
-                                paddingVertical: 12,
-                                paddingHorizontal: 20,
-                                backgroundColor: "#1f64d4",
-                                borderRadius: 8,
-                                alignSelf: "flex-start",
-                                color: "#eeeeee",
-                            }}
-                        >
-                            Criar Resenha
-                        </Link>
-                        <Text style={styles.h2}>O que está rolando?</Text>
-                        <Feed />
-                        {/* <Image
-                        source={require("@/assets/images/img1.png")}
-                        style={styles.image}
-                    /> */}
-                    </View>
-                </SafeAreaView>
-            </ScrollView>
+            <HomeHeader value={scrollOffsetY} />
+            <Feed onScrollAnimado={handleScroll} />
         </>
     );
 }
@@ -125,7 +76,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "800",
         textAlign: "left",
-        marginTop: 32,
+        // marginTop: 32,
         color: "#eeeeee",
         paddingHorizontal: 16,
     },
