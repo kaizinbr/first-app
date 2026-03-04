@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
 
@@ -6,9 +6,10 @@ import { getColors } from "react-native-image-colors";
 import { useState, useEffect } from "react";
 import { Palette } from "@/lib/types";
 import Avatar from "@/components/core/user-avatar";
+import { selectRightColor } from "@/lib/util/selectRightColor";
 
 export default function ProfileHeader({ data }: { data: UserProfile }) {
-    const [colors, setColors] = useState<Palette | any>(null);
+    const [colors, setColors] = useState<Palette | any>("8065ef");
 
     useEffect(() => {
         const fetchColors = async () => {
@@ -28,27 +29,44 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
 
     return (
         <View style={styles.scene}>
-            <View style={styles.header}>
+            <View
+                style={{
+                    ...styles.header,
+                    backgroundColor: selectRightColor(colors) || "#161718",
+                }}
+            >
                 <View style={styles.wrapper}>
                     <Image
                         source={{ uri: data.avatar_url }}
                         style={[
                             styles.avatar,
-                            { width: 112, height: 112, borderRadius: 112 * 0.306 },
+                            {
+                                width: 112,
+                                height: 112,
+                                borderRadius: 112 * 0.306,
+                            },
                         ]}
                     />
-                    <View style={styles.pronouns}>
-                        <Text style={styles.pronounstext}>{data.pronouns}</Text>
-                    </View>
+                    {data.pronouns && (
+                        <View style={styles.pronouns}>
+                            <Text style={styles.pronounstext}>
+                                {data.pronouns}
+                            </Text>
+                        </View>
+                    )}
                 </View>
                 <Text style={styles.name}>{data.name}</Text>
                 <Text style={styles.username}>@{data.username}</Text>
-                {/* <Text style={styles.textDefault}>
-                    Pronouns: {data.pronouns}
-                </Text>
-                <Text style={styles.textDefault}>
-                    Verified: {data.verified ? "Yes" : "No"}
-                </Text> */}
+                <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
+                    <Text style={styles.textDefault}>0 reviews</Text>
+                    <Text style={styles.textDefault}>0 seguidores</Text>
+                    <Text style={styles.textDefault}>0 seguindo</Text>
+                </View>
+                <Pressable style={styles.followBtn}>
+                    <Text style={{ color: "#eee", fontWeight: "bold" }}>
+                        Seguir
+                    </Text>
+                </Pressable>
             </View>
         </View>
     );
@@ -56,16 +74,16 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
 
 const styles = StyleSheet.create({
     scene: {
-        padding: 20,
-        backgroundColor: "#161718",
+        // backgroundColor: "red",
     },
 
     header: {
         padding: 16,
-        paddingTop: 48,
+        paddingTop: 84,
+        paddingBottom: 32,
         width: "100%",
         color: "#eee",
-        borderRadius: 8,
+        borderRadius: 0,
         alignItems: "center",
     },
     wrapper: {
@@ -77,7 +95,7 @@ const styles = StyleSheet.create({
     },
     textDefault: {
         color: "#eee", // A cor clara para o seu modo escuro
-        fontSize: 16,
+        fontSize: 14,
     },
     name: {
         fontWeight: "bold",
@@ -85,7 +103,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
     },
     username: {
-        color: "#929292",
+        color: "#b9b9b9",
         fontSize: 14,
     },
     pronouns: {
@@ -107,5 +125,12 @@ const styles = StyleSheet.create({
     },
     avatar: {
         backgroundColor: "#bbb",
+    },
+    followBtn: {
+        marginTop: 16,
+        paddingHorizontal: 24,
+        paddingVertical: 8,
+        borderRadius: 9999,
+        backgroundColor: "#8065ef",
     },
 });

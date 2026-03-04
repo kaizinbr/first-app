@@ -5,26 +5,7 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const styles = StyleSheet.create({
-    tabBar: {
-        height: 56,
-        position: "absolute",
-    },
-    tabBarItem: {
-        borderRadius: 8,
-        // height: 56,
-        margin: 0,
-        alignItems: "center",
-        justifyContent: "center",
-        bottom: 0,
-    },
-    tabBarIcon: {
-        // height: 50,
-        width: 24,
-    },
-});
-
-export default function TabsLayout() {
+export default function TabsDynamicLayout() {
     const { data: session } = authClient.useSession();
     const isLoggedIn = !!session;
 
@@ -46,7 +27,7 @@ export default function TabsLayout() {
             }}
         >
             <Tabs.Screen
-                name="index"
+                name="(home)"
                 options={{
                     headerShown: false,
                     title: "Home",
@@ -61,7 +42,7 @@ export default function TabsLayout() {
                 }}
             />
             <Tabs.Screen
-                name="search"
+                name="(search)"
                 options={{
                     headerShown: false,
                     title: "Pesquisa",
@@ -76,7 +57,7 @@ export default function TabsLayout() {
                 }}
             />
             <Tabs.Screen
-                name="profile"
+                name="(profile)"
                 options={{
                     headerShown: false,
                     title: "Perfil",
@@ -85,37 +66,25 @@ export default function TabsLayout() {
                     ),
                 }}
             />
-
-            <Tabs.Screen
-                name="user/[username]"
-                options={{
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
-                name="review/[shorten]"
-                options={{
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
-                name="album/[id]"
-                options={{
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
-                name="artist/[id]"
-                options={{
-                    href: null,
-                }}
-            />
-            <Tabs.Screen
-                name="create/review/[id]"
-                options={{
-                    href: null,
-                }}
-            />
         </Tabs>
     );
 }
+
+const styles = StyleSheet.create({
+    tabBar: {
+        height: 56,
+        position: "absolute",
+    },
+    tabBarItem: {
+        borderRadius: 8,
+        // height: 56,
+        margin: 0,
+        alignItems: "center",
+        justifyContent: "center",
+        bottom: 0,
+    },
+    tabBarIcon: {
+        // height: 50,
+        width: 24,
+    },
+});

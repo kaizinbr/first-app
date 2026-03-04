@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import { useRouter, Href } from "expo-router";
+import { useRouter, Href, Link } from "expo-router";
 import {
     SearchResponse,
     Track,
@@ -50,7 +50,9 @@ export function ResultArtistBtn({ data }: { data: Artist }) {
         >
             <Image
                 source={{
-                    uri: data.images![2]?.url || `https://api.dicebear.com/8.x/initials/png?seed=${data.id}`,
+                    uri:
+                        data.images![2]?.url ||
+                        `https://api.dicebear.com/8.x/initials/png?seed=${data.id}`,
                 }}
                 style={styles.avatar}
             />
@@ -61,15 +63,14 @@ export function ResultArtistBtn({ data }: { data: Artist }) {
     );
 }
 
-export function ResultAlbumBtn({
-    data
-}: {
-    data: Album;
-}) {
+export function ResultAlbumBtn({ data }: { data: Album }) {
     const router = useRouter();
 
     const handlePress = () => {
-        router.navigate(`/album/${data.id}`);
+        router.push({
+            pathname: `/album/[id]`,
+            params: { id: data.id },
+        });
     };
     return (
         <Pressable
@@ -81,23 +82,23 @@ export function ResultAlbumBtn({
         >
             <Image
                 source={{
-                    uri: data.images![2]?.url || `https://api.dicebear.com/8.x/initials/png?seed=${data.id}`,
+                    uri:
+                        data.images![2]?.url ||
+                        `https://api.dicebear.com/8.x/initials/png?seed=${data.id}`,
                 }}
                 style={styles.image}
             />
             <View style={styles.btnTextWrapper}>
                 <Text style={styles.btnText}>{data.name}</Text>
-                <Text style={styles.btnSubtext}>{data.artists.map((a) => a.name).join(", ")}</Text>
+                <Text style={styles.btnSubtext}>
+                    {data.artists.map((a) => a.name).join(", ")}
+                </Text>
             </View>
         </Pressable>
     );
 }
 
-export function ResultTrackBtn({
-    data
-}: {
-    data: Track;
-}) {
+export function ResultTrackBtn({ data }: { data: Track }) {
     const router = useRouter();
 
     const handlePress = () => {
@@ -114,13 +115,17 @@ export function ResultTrackBtn({
         >
             <Image
                 source={{
-                    uri: data.album.images![2]?.url || `https://api.dicebear.com/8.x/initials/png?seed=${data.album.id}`,
+                    uri:
+                        data.album.images![2]?.url ||
+                        `https://api.dicebear.com/8.x/initials/png?seed=${data.album.id}`,
                 }}
                 style={styles.image}
             />
             <View style={styles.btnTextWrapper}>
                 <Text style={styles.btnText}>{data.name}</Text>
-                <Text style={styles.btnSubtext}>{data.artists.map((a) => a.name).join(", ")}</Text>
+                <Text style={styles.btnSubtext}>
+                    {data.artists.map((a) => a.name).join(", ")}
+                </Text>
             </View>
         </Pressable>
     );

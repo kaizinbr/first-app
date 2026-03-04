@@ -11,7 +11,6 @@ import { View, Text, useWindowDimensions, StyleSheet, Pressable } from "react-na
 import { Tabs, MaterialTabBar, useHeaderMeasurements } from "react-native-collapsible-tab-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// Atenção: Use o Animated do REANIMATED, pois essa biblioteca usa ele!
 import Animated, { 
     useAnimatedStyle, 
     interpolate, 
@@ -45,20 +44,16 @@ export default function Header({ data }: { data: UserProfile }) {
     
     const insets = useSafeAreaInsets();
     
-    // Esse hook mágico pega a rolagem EXATA de qualquer aba que estiver ativa
     const { top } = useHeaderMeasurements();
 
     const fixedBarStyle = useAnimatedStyle(() => {
         return {
-            // Se a header subiu -100px, nós empurramos a barra +100px pra baixo.
-            // Ela fica perfeitamente imóvel na tela!
             transform: [{ translateY: -top.value }],
         };
     });
 
     const bgOpacityStyle = useAnimatedStyle(() => {
         return {
-            // Usamos o valor positivo (-top.value) para a matemática ficar fácil de entender
             opacity: interpolate(-top.value, [100, 160], [0, 1], Extrapolation.CLAMP)
         };
     });
@@ -73,10 +68,8 @@ export default function Header({ data }: { data: UserProfile }) {
         <View style={styles.headerWrapper}>
             <ProfileHeader data={data} />
 
-            {/* A BARRINHA PEQUENA CONGELADA */}
             <Animated.View style={[styles.fixedTopBar, { height: insets.top + 50 }, fixedBarStyle]}>
                 
-                {/* Fundo escuro */}
                 <Animated.View style={[StyleSheet.absoluteFill, styles.fixedBg, bgOpacityStyle]} />
 
                 <View style={[styles.fixedTopBarContent, { marginTop: insets.top }]}>

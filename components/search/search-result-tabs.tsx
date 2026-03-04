@@ -8,9 +8,21 @@ import {
     ScrollView,
     Pressable,
 } from "react-native";
-import { SearchResponse, Track, Album, Artist, UserProfile, Review } from "@/lib/types";
+import {
+    SearchResponse,
+    Track,
+    Album,
+    Artist,
+    UserProfile,
+    Review,
+} from "@/lib/types";
 import ChipBtn from "@/components/chip-btn";
-import { ResultUserBtn, ResultAlbumBtn, ResultArtistBtn, ResultTrackBtn } from "@/components/search/result-btns";
+import {
+    ResultUserBtn,
+    ResultAlbumBtn,
+    ResultArtistBtn,
+    ResultTrackBtn,
+} from "@/components/search/result-btns";
 
 type Props = {
     results: SearchResponse | null;
@@ -22,26 +34,20 @@ type Props = {
 
 function ItemRenderer({ type, item }: { type: string; item: any }) {
     switch (type) {
+        case "albums":
+            const album = item as Album;
+            return <ResultAlbumBtn data={album} />;
         case "tracks":
             const track = item as Track;
             return <ResultTrackBtn data={track} />;
         case "artists":
             const artist = item as Artist;
-            return (
-                <ResultArtistBtn data={artist} />
-            );
-        case "albums":
-            const album = item as Album;
-            return (
-                <ResultAlbumBtn data={album} />
-            );
+            return <ResultArtistBtn data={artist} />;
         case "users":
             const user = item as UserProfile;
-            return (
-                <ResultUserBtn data={user} />
-            );
+            return <ResultUserBtn data={user} />;
         case "reviews":
-            const review = item as Review; // 
+            const review = item as Review; //
             return (
                 <View style={{ padding: 10 }}>
                     <Text style={{ fontWeight: "bold" }}>
@@ -93,7 +99,7 @@ export default function SearchTabs({ results, setType, type }: Props) {
                 ItemSeparatorComponent={() => (
                     <View
                         style={{
-                            height: .5,
+                            height: 0.5,
                             backgroundColor: "#3d3d3d",
                             // marginVertical: 10,
                         }}
@@ -159,7 +165,6 @@ export default function SearchTabs({ results, setType, type }: Props) {
             </ScrollView>
 
             {renderScene({ route: routes[index] })}
-
         </View>
     );
 }
@@ -180,7 +185,7 @@ const styles = StyleSheet.create({
         height: 50,
         // width: "100%",
     },
-    
+
     container: {
         flexDirection: "row",
         gap: 8,

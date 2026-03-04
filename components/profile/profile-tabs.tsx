@@ -8,30 +8,32 @@ import ProfileHeader from "@/components/profile/header";
 import AboutRoute from "@/components/profile/about";
 import FollowingRoute from "@/components/profile/following";
 import FollowersRoute from "@/components/profile/followers";
-
-// O seu novo componente otimizado
 import FixedTopBar from "@/components/profile/fixed-top-bar";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function ProfileTabs({ data }: { data: UserProfile }) {
+    const insets = useSafeAreaInsets();
+    
+    // 1. DEFINIMOS A ALTURA EXATA AQUI E USAMOS EM TODOS OS LUGARES
+    const FIXED_BAR_HEIGHT = insets.top + 50;
 
-    // 1. A SOLUÇÃO DO CRASH: useCallback memoriza a renderização
     const renderHeader = React.useCallback(() => {
         return (
             <View style={styles.headerWrapper}>
-                {/* O seu perfil que rola normalmente */}
                 <ProfileHeader data={data} />
                 
-                {/* A barrinha inteligente que acabamos de criar */}
-                <FixedTopBar title={data.name || "Perfil"} />
+                <FixedTopBar title={data.name || "Perfil"} height={FIXED_BAR_HEIGHT} />
             </View>
         );
-    }, [data.name]); // Só recria se o nome do usuário mudar
+    }, [data.name, FIXED_BAR_HEIGHT]);
 
     const renderTabBar = React.useCallback((props: any) => (
         <MaterialTabBar
             {...props}
-            indicatorStyle={{ backgroundColor: "#00a8ff", height: 3 }}
-            style={{ backgroundColor: "#161718" }}
+            scrollEnabled={true}
+            
+            indicatorStyle={{ backgroundColor: "#8065ef", height: 3 }}
+            style={{ backgroundColor: "#161718", elevation: 0, zIndex: 10 }}
             activeColor="#eee"
             inactiveColor="#777"
         />
@@ -41,7 +43,8 @@ export default function ProfileTabs({ data }: { data: UserProfile }) {
         <Tabs.Container
             renderHeader={renderHeader}
             renderTabBar={renderTabBar}
-            headerContainerStyle={{ shadowOpacity: 0, elevation: 0 }} // Remove a sombra padrão feia do Android
+            headerContainerStyle={{ shadowOpacity: 0, elevation: 0 }}
+            minHeaderHeight={FIXED_BAR_HEIGHT}
         >
             <Tabs.Tab name="reviews" label="Reviews">
                 <PostsRoute data={data} />

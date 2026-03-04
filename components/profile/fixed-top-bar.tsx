@@ -6,17 +6,17 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { UserProfile } from "@/lib/types";
 
-export default function FixedTopBar({ title }: { title: string }) {
+export default function FixedTopBar({ title, height }: { title: string; height: number }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
     
     // Puxa a medida de rolagem de forma segura
-    const { top } = useHeaderMeasurements();
+    const measurements = useHeaderMeasurements();
 
     // Animações rodando na UI Thread (zero travamentos)
     const animatedStyle = useAnimatedStyle(() => {
         // Fallback para 0 caso o valor seja undefined no primeiro frame
-        const scrollValue = top?.value ?? 0;
+        const scrollValue = measurements.top?.value ?? 0;
         
         // Conforme a header sobe (fica negativo), nós empurramos a barra pra baixo (positivo)
         const translateY = Math.abs(scrollValue);
@@ -29,7 +29,7 @@ export default function FixedTopBar({ title }: { title: string }) {
     });
 
     const titleStyle = useAnimatedStyle(() => {
-        const scrollValue = top?.value ?? 0;
+        const scrollValue = measurements.top?.value ?? 0;
         const translateY = Math.abs(scrollValue);
         const opacity = interpolate(translateY, [120, 160], [0, 1], Extrapolation.CLAMP);
 
@@ -38,8 +38,8 @@ export default function FixedTopBar({ title }: { title: string }) {
 
     return (
         <Animated.View 
-            style={[styles.fixedBar, { height: insets.top + 50, paddingTop: insets.top }, animatedStyle]}
-            pointerEvents="box-none" // 👈 CRUCIAL: Impede que a barra invisível bloqueie cliques no perfil
+            style={[styles.fixedBar, { height: height, paddingTop: insets.top }, animatedStyle]}
+            pointerEvents="box-none"
         >
             <Pressable onPress={() => router.back()} style={styles.backButton}>
                 <Text style={{ color: "#eee", fontSize: 24, fontWeight: "bold" }}>←</Text>

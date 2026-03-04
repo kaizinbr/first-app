@@ -7,11 +7,7 @@ import {
     ScrollView,
 } from "react-native";
 import { UserProfile, Review } from "@/lib/types";
-import { useEffect, useState } from "react";
-import api, { apiAuth } from "@/lib/api";
 import { Tabs } from "react-native-collapsible-tab-view";
-
-import FeedCard from "@/components/home/feed-card";
 
 export default function AboutRoute({ data }: { data: UserProfile }) {
 
@@ -19,7 +15,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
     
     return (
         <Tabs.ScrollView
-            contentContainerStyle={{ flexGrow: 1, paddingTop: 324 }}
+            contentContainerStyle={{ flexGrow: 1, width: "100%", padding: 16, paddingBottom: 80, paddingTop: 432 }}
             showsVerticalScrollIndicator={false}
         >
             <View style={styles.scene}>
