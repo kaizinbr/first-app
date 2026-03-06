@@ -1,12 +1,24 @@
-import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import {
+    Text,
+    View,
+    StyleSheet,
+    ScrollView,
+    Pressable,
+    useWindowDimensions,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import api from "@/lib/api";
 import { Image } from "expo-image";
-import { useEffect, useState } from "react";
-import { displayPastRelativeTime } from "@/lib/util/time";
-import TiptapRenderer from "@/components/home/card-content copy";
-import { AlbumCard } from "@/components/home/album-section";
+import { useEffect, useState, useRef } from "react";
+import { useSharedValue } from "react-native-reanimated";
+import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
+import { renderItem } from "@/components/home/banner/render-item";
+import * as React from "react";
+
+import { selectRightColor } from "@/lib/util/selectRightColor";
+import { getColors } from "react-native-image-colors";
+import { Palette } from "@/lib/types";
 
 type review = {
     id: string;
@@ -74,9 +86,15 @@ type SpotifyAlbum = {
 };
 
 export default function Banner() {
-    const { data: session } = authClient.useSession();
+    const { width } = useWindowDimensions();
+    const progress = useSharedValue<number>(0);
 
-    const [reviewAlbum, setReviewAlbum] = useState<SpotifyAlbum | null>(null);
+    const carouselRef = useRef<ICarouselInstance>(null);
+
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const [currentColor, setCurrentColor] = useState("#161718");
+
+    const [reviewAlbum, setReviewAlbum] = useState<SpotifyAlbum | any>(null);
     const [bannerData, setBannerData] = useState<
         | {
               title: string;
@@ -89,6 +107,7 @@ export default function Banner() {
           }[]
         | null
     >(null);
+    const [colors, setColors] = useState<Palette | any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -97,7 +116,7 @@ export default function Banner() {
                 setLoading(true);
                 const response = await api.get(`/banner`);
                 setBannerData(response.data);
-                // console.log(response.data);
+                
 
                 setLoading(false);
                 // console.log("Content fetched successfully:", content.html);
@@ -109,47 +128,54 @@ export default function Banner() {
         fecthContent();
     }, []);
 
+    useEffect(() => {
+        console.log("Current index:", currentIndex);
+        // setCurrentIndex(currentIndex);
+    }, [currentIndex, bannerData]);
+
     return (
-        <ScrollView
-            keyboardShouldPersistTaps="handled"
-            showsHorizontalScrollIndicator={false}
-            horizontal={true}
-            style={styles.main}
-        >
-            <View style={styles.banner}>
-                {loading && (
-                    <View style={styles.bannerCard}>
-                        <Text style={styles.bannerTitle}>Carregando...</Text>
-                    </View>
-                )}
-                {!loading &&
-                    bannerData?.map((item, index) => (
-                        <Pressable
-                            style={({ pressed }) => [
-                                {...styles.bannerCard, backgroundColor: item.darkVibrant},
-                                pressed && styles.bannerCardPressed,
-                            ]}
-                            onPress={() => {
-                                // Handle card press, e.g., navigate to album details
-                            }}
-                            key={index}
-                        >
-                            <View style={styles.bannerContent}>
-                                <Text style={styles.bannerTitle}>
-                                    {item.title}
-                                </Text>
-                                {/* <Text style={styles.bannerArtist}>
-                                {bannerData.artist}
-                            </Text> */}
-                            </View>
-                            <Image
-                                source={{ uri: `${item.src}` }}
-                                style={styles.bannerImage}
-                            />
-                        </Pressable>
-                    ))}
-            </View>
-        </ScrollView>
+        <>
+            {loading ? (
+                <View style={[styles.banner, { width }]}>
+                    <Text style={{ color: "#eee" }}>Carregando...</Text>
+                </View>
+            ) : (
+                <View id="carousel-component">
+                    <Carousel
+                        ref={carouselRef}
+                        autoPlayInterval={2000}
+                        data={bannerData || []}
+                        loop={true}
+                        pagingEnabled={true}
+                        snapEnabled={true}
+                        style={{
+                            width: width,
+                            height: 258,
+                        }}
+                        width={width}
+                        mode="parallax"
+                        modeConfig={{
+                            parallaxScrollingScale: 0.9,
+                            parallaxScrollingOffset: 50,
+                        }}
+                        onProgressChange={(
+                            offsetProgress,
+                            absoluteProgress,
+                        ) => {
+                            progress.value = absoluteProgress;
+                            const newIndex = Math.round(absoluteProgress);
+                            if (newIndex !== currentIndex) {
+                                setCurrentIndex(newIndex);
+                            }
+                        }}
+                        renderItem={renderItem({
+                            rounded: true,
+                            colorFill: true,
+                        })}
+                    />
+                </View>
+            )}
+        </>
     );
 }
 
@@ -169,7 +195,7 @@ const styles = StyleSheet.create({
     },
     bannerCard: {
         height: 210,
-        width: 130,
+        // width: width,
         backgroundColor: "#1e1e1e",
         borderRadius: 12,
         padding: 16,

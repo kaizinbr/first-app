@@ -6,11 +6,11 @@ export function selectRightColor(colors: Palette) {
         return colors.darkVibrant;
     } else if (colors.muted && colors.muted !== "#000000") {
         return colors.muted;
-    } else if (colors.vibrant && colors.vibrant !== "#000000") {
-        return colors.vibrant;
     } else if (colors.dominant && colors.dominant !== "#000000") {
         return colors.dominant;
+    } else if (colors.vibrant && colors.vibrant !== "#000000") {
+        return colors.vibrant;
     } else {
-        return "#282b30";
+        return "#2458aa";
     }
 }

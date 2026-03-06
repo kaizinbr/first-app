@@ -2,7 +2,7 @@ import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { authClient } from "@/lib/auth-client";
-// import { ThemeProvider } from "@/components/theme/context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
     DarkTheme,
     DefaultTheme,
@@ -30,27 +30,29 @@ export default function Layout() {
     return (
         <ThemeProvider value={MyTheme}>
             <SafeAreaProvider>
-                <SafeAreaView
-                    edges={["bottom", "left", "right"]}
-                    style={{
-                        flex: 1,
-                        backgroundColor: MyTheme.colors.background,
-                    }}
-                >
-                    <StatusBar style="light" translucent={true} />
-                    <Stack screenOptions={{ headerShown: false }}>
-                        <Stack.Protected guard={!isLoggedIn}>
-                            <Stack.Screen name="sign-in" />
-                            <Stack.Screen name="sign-up" />
-                        </Stack.Protected>
-                        <Stack.Protected guard={isLoggedIn}>
-                            <Stack.Screen
-                                name="(app)"
-                                options={{ headerShown: false }}
-                            />
-                        </Stack.Protected>
-                    </Stack>
-                </SafeAreaView>
+                <GestureHandlerRootView style={{ flex: 1 }}>
+                    <SafeAreaView
+                        edges={["bottom", "left", "right"]}
+                        style={{
+                            flex: 1,
+                            backgroundColor: MyTheme.colors.background,
+                        }}
+                    >
+                        <StatusBar style="light" translucent={true} />
+                        <Stack screenOptions={{ headerShown: false }}>
+                            <Stack.Protected guard={!isLoggedIn}>
+                                <Stack.Screen name="sign-in" />
+                                <Stack.Screen name="sign-up" />
+                            </Stack.Protected>
+                            <Stack.Protected guard={isLoggedIn}>
+                                <Stack.Screen
+                                    name="(app)"
+                                    options={{ headerShown: false }}
+                                />
+                            </Stack.Protected>
+                        </Stack>
+                    </SafeAreaView>
+                </GestureHandlerRootView>
             </SafeAreaProvider>
         </ThemeProvider>
     );

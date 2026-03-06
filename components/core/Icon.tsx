@@ -52,7 +52,7 @@ export default function Icon({ type, ...props }: Props) {
         return (
             <Svg
                 fill="none"
-                // viewBox="0 0 25 24"
+                viewBox="0 0 28 24"
                 // xmlns="http://www.w3.org/2000/svg"
 
                 {...props}
@@ -132,7 +132,7 @@ export default function Icon({ type, ...props }: Props) {
         return (
             <Svg
                 fill="none"
-                viewBox="0 0 28 28"
+                viewBox="0 0 32 32"
                 // xmlns="http://www.w3.org/2000/svg"
                 {...props}
             >

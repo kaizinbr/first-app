@@ -62,7 +62,7 @@ export default function TabsDynamicLayout() {
                     headerShown: false,
                     title: "Perfil",
                     tabBarIcon: ({ color }) => (
-                        <FontAwesome name="user" size={24} color={color} />
+                        <FontAwesome name="user" size={20} color={color} />
                     ),
                 }}
             />
@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
     tabBar: {
         height: 56,
         position: "absolute",
+        backgroundColor: "#161718",
     },
     tabBarItem: {
         borderRadius: 8,

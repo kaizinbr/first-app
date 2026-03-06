@@ -21,6 +21,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { StatusBar } from "expo-status-bar";
 
 import { useState, useRef } from "react";
+import BannerCarousel from "@/components/home/banner/carousel";
 
 export default function HomeHeader({ value }: any) {
     const { data: session } = authClient.useSession();
@@ -28,6 +29,8 @@ export default function HomeHeader({ value }: any) {
     const Header_Max_Height = 374;
     const Header_Min_Height = insets.top;
     const Scroll_Distance = Header_Max_Height - Header_Min_Height;
+
+    const [headerColor, setHeaderColor] = useState("#161718");
 
     const animatedHeaderHeight = value.interpolate({
         inputRange: [0, Scroll_Distance],
@@ -37,7 +40,7 @@ export default function HomeHeader({ value }: any) {
 
     const animatedHeaderColor = value.interpolate({
         inputRange: [0, Scroll_Distance],
-        outputRange: ["#181D31", "#161718"],
+        outputRange: [headerColor, "#161718"],
         extrapolate: "clamp",
     });
 
@@ -77,6 +80,7 @@ export default function HomeHeader({ value }: any) {
                     flex: 1,
                 }}
             >
+                {/* <Banner /> */}
                 <Banner />
             </Animated.View>
         </Animated.View>
