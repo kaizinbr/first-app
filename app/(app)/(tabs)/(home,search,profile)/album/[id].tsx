@@ -21,6 +21,8 @@ import { getColors } from "react-native-image-colors";
 
 import { Palette } from "@/lib/types";
 
+import AlbumScreen from "@/components/albuns/main";
+
 export default function AlbumPage() {
     const { id } = useLocalSearchParams();
     console.log("id from params:", id);
@@ -55,171 +57,15 @@ export default function AlbumPage() {
     }, [id]);
 
     return (
-        <ScrollView
-            contentContainerStyle={{ flexGrow: 1 }}
-            keyboardShouldPersistTaps="handled"
-            showsVerticalScrollIndicator={false}
-            // style={{
-            //     width: "100%",
-            //     height: "100%",
-            //     position: "absolute",
-            //     top: statusHeight,
-            //     left: 0,
-            //     overflow: "visible",
-            // }}
-        >
-            <View style={styles.container}>
-                {albumData ? (
-                    <View style={styles.main}>
-                        <Text style={styles.title}>{albumData.name}</Text>
-                        <Text style={styles.textDefault}>
-                            {albumData.artists
-                                .map((artist) => artist.name)
-                                .join(", ")}
-                        </Text>
-                        <Image
-                            source={{ uri: albumData.images[0].url }}
-                            style={styles.image}
-                        />
-                        <View style={{ width: "100%", marginTop: 20 }}>
-                            <Text style={styles.textDefault}>
-                                react-native-image-colors
-                            </Text>
-                            {colors && (
-                                <>
-                                    <View
-                                        style={{
-                                            backgroundColor: colors.dominant,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            dominante
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            backgroundColor: colors.average,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            average
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            backgroundColor: colors.vibrant,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            vibrant
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            backgroundColor: colors.darkVibrant,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            darkVibrant
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            backgroundColor:
-                                                colors.lightVibrant,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            lightVibrant
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            backgroundColor: colors.darkMuted,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            darkMuted
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            backgroundColor: colors.lightMuted,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            lightMuted
-                                        </Text>
-                                    </View>
-                                    <View
-                                        style={{
-                                            backgroundColor: colors.muted,
-                                            height: 50,
-                                            borderRadius: 8,
-                                            marginBottom: 10,
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            justifyContent: "center",
-                                        }}
-                                    >
-                                        <Text style={styles.textDefault}>
-                                            muted
-                                        </Text>
-                                    </View>
-                                </>
-                            )}
-                        </View>
-
-                    </View>
-                ) : (
-                    <Text style={styles.textDefault}>
-                        Loading album data...
-                    </Text>
-                )}
-            </View>
-        </ScrollView>
+        <>
+            {albumData && colors ? (
+                <AlbumScreen albumData={albumData} colors={colors} />
+            ) : (
+                <View style={styles.main}>
+                    <Text style={styles.title}>Carregando álbum...</Text>
+                </View>
+            )}
+        </>
     );
 }
 

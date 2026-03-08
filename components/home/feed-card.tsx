@@ -1,6 +1,7 @@
 import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
+import { useRouter, Href, Link } from "expo-router";
 import api from "@/lib/api";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
@@ -43,6 +44,8 @@ type SpotifyAlbum = {
 };
 
 export default function FeedCard({ review }: { review: Review }) {
+    
+        const router = useRouter();
     const { data: session } = authClient.useSession();
 
     const [reviewAlbum, setReviewAlbum] = useState<SpotifyAlbum | null>(null);
@@ -100,7 +103,7 @@ export default function FeedCard({ review }: { review: Review }) {
 
     return (
         <Pressable
-            // onPress={() => router.push(`/review/${review.shorten}`)}
+            onPress={() => router.push(`/review/${review.shorten}`)}
             style={({ pressed }) => [
                 styles.main,
                 pressed && styles.mainPressed,

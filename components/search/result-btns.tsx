@@ -65,6 +65,7 @@ export function ResultArtistBtn({ data }: { data: Artist }) {
 
 export function ResultAlbumBtn({ data }: { data: Album }) {
     const router = useRouter();
+    // console.log("Renderizando ResultAlbumBtn para:", data.name);
 
     const handlePress = () => {
         router.push({
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     image: {
         width: 40,
         height: 40,
-        borderRadius: 12,
+        borderRadius: 4,
         backgroundColor: "#ccc",
     },
 });

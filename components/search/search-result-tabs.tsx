@@ -1,28 +1,27 @@
-import React, { useState } from "react";
-import {
-    View,
-    Text,
-    useWindowDimensions,
-    FlatList,
-    StyleSheet,
-    ScrollView,
-    Pressable,
-} from "react-native";
-import {
-    SearchResponse,
-    Track,
-    Album,
-    Artist,
-    UserProfile,
-    Review,
-} from "@/lib/types";
 import ChipBtn from "@/components/chip-btn";
 import {
-    ResultUserBtn,
     ResultAlbumBtn,
     ResultArtistBtn,
     ResultTrackBtn,
+    ResultUserBtn,
 } from "@/components/search/result-btns";
+import {
+    Album,
+    Artist,
+    Review,
+    SearchResponse,
+    Track,
+    UserProfile,
+} from "@/lib/types";
+import React, { useState } from "react";
+import {
+    FlatList,
+    ScrollView,
+    StyleSheet,
+    Text,
+    useWindowDimensions,
+    View,
+} from "react-native";
 
 type Props = {
     results: SearchResponse | null;
@@ -36,9 +35,11 @@ function ItemRenderer({ type, item }: { type: string; item: any }) {
     switch (type) {
         case "albums":
             const album = item as Album;
+            console.log("Renderizando álbum:", type);
             return <ResultAlbumBtn data={album} />;
         case "tracks":
             const track = item as Track;
+            console.log("Renderizando faixa:", type);
             return <ResultTrackBtn data={track} />;
         case "artists":
             const artist = item as Artist;
@@ -62,18 +63,19 @@ function ItemRenderer({ type, item }: { type: string; item: any }) {
 }
 
 export default function SearchTabs({ results, setType, type }: Props) {
+    console.log("Renderizando SearchTabs com type:", type);
     const layout = useWindowDimensions();
     const [index, setIndex] = useState(0);
 
     // Normalizando os dados da API para listas simples
     const tabsData = [
+        { key: "albums", title: "Albums", data: results?.albums?.items ?? [] },
         { key: "tracks", title: "Songs", data: results?.tracks?.items ?? [] },
         {
             key: "artists",
             title: "Artists",
             data: results?.artists?.items ?? [],
         },
-        { key: "albums", title: "Albums", data: results?.albums?.items ?? [] },
         { key: "users", title: "Users", data: results?.users ?? [] },
         { key: "reviews", title: "Reviews", data: results?.reviews ?? [] },
     ];
@@ -122,10 +124,10 @@ export default function SearchTabs({ results, setType, type }: Props) {
             >
                 <View style={styles.container}>
                     <ChipBtn
-                        label="Albums"
+                        label="Albuns"
                         onPress={() => {
                             setType("albums");
-                            setIndex(2);
+                            setIndex(0);
                         }}
                         selected={type === "albums"}
                     />
@@ -133,7 +135,7 @@ export default function SearchTabs({ results, setType, type }: Props) {
                         label="Músicas"
                         onPress={() => {
                             setType("tracks");
-                            setIndex(0);
+                            setIndex(1);
                         }}
                         selected={type === "tracks"}
                     />
@@ -141,7 +143,7 @@ export default function SearchTabs({ results, setType, type }: Props) {
                         label="Artistas"
                         onPress={() => {
                             setType("artists");
-                            setIndex(1);
+                            setIndex(2);
                         }}
                         selected={type === "artists"}
                     />
@@ -188,6 +190,8 @@ const styles = StyleSheet.create({
 
     container: {
         flexDirection: "row",
+        // alignItems: "center",
+        justifyContent: "flex-start",
         gap: 8,
         paddingHorizontal: 16,
     },

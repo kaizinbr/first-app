@@ -1,19 +1,12 @@
-import Button from "@/components/button";
 import Input from "@/components/input";
 import {
-    Text,
-    View,
     StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
-    TextInput,
+    View
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { useState, useEffect } from "react";
 import api from "@/lib/api";
+import { useEffect, useState } from "react";
 
 import { SearchResponse } from "@/lib/types";
 
@@ -54,7 +47,7 @@ export default function SearchInput({
     }, [debounced]);
 
     return (
-        <View style={[styles.main, { paddingTop: insets.top }]}>
+        <View style={[styles.main, { paddingTop: insets.top + 16 }]}>
             <Input
                 placeholder="Pesquisar..."
                 style={styles.searchInput}

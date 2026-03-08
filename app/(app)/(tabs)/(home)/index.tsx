@@ -7,7 +7,6 @@ import {
     Platform,
     Pressable,
     Animated,
-    StatusBar as RNStatusBar,
 } from "react-native";
 import { useRouter, Link } from "expo-router";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";

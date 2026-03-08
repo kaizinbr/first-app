@@ -15,7 +15,7 @@ import {
 interface FeedProps {
     onScrollAnimado: any; 
 }
-export default function Feed({ onScrollAnimado }: FeedProps) {
+export default function PageContent({ onScrollAnimado }: FeedProps) {
     const { data: session } = authClient.useSession();
 
     const [reviews, setReviews] = useState<Review[]>([]);

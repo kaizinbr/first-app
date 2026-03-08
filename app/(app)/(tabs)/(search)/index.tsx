@@ -19,8 +19,6 @@ import { ResultUserBtn } from "@/components/search/result-btns";
 import PostEditor from "@/components/reviews/rich-text";
 
 export default function Index() {
-    const [searchQuery, setSearchQuery] = useState("");
-    const [debounced, setDebounced] = useState("");
     const [results, setResults] = useState<SearchResponse | null>(null);
     const [type, setType] = useState<"tracks" | "artists" | "albums" | "users" | "reviews">("albums");
     const [loading, setLoading] = useState(false);

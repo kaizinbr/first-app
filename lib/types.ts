@@ -102,7 +102,7 @@ export interface ArtistsResult extends SearchPagination {
     items: ArtistDetail[];
 }
 
-export interface AlbumsResult extends SearchPagination {
+export interface albunsResult extends SearchPagination {
     items: Album[];
 }
 
@@ -151,25 +151,26 @@ export interface Review {
     total: string;
     shorten: string;
     content: Record<string, unknown>;
+    html: string;
     published: boolean;
     created_at: Date;
     updated_at: Date;
     album_id: string;
     user_id: string;
     Profile: UserProfile;
-};
+}
 
 export interface Rating {
     id: string;
     value: number;
     favorite: boolean;
-};
+}
 
 // Response principal
 export interface SearchResponse {
     tracks: TracksResult;
     artists: ArtistsResult;
-    albums: AlbumsResult;
+    albums: albunsResult;
     users: UserProfile[];
     reviews: Review[];
 }
