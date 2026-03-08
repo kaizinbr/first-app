@@ -1,13 +1,66 @@
 import Icon from "@/components/core/Icon";
 import { authClient } from "@/lib/auth-client";
-import { Tabs } from "expo-router";
+import { useState, useEffect } from "react";
+import { Tabs, Redirect, Stack } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { apiAuth } from "@/lib/api";
 
 export default function TabsDynamicLayout() {
-    const { data: session } = authClient.useSession();
+    const { data: session, isPending } = authClient.useSession();
     const isLoggedIn = !!session;
+
+    const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(
+        null,
+    );
+    const [isProfileLoading, setIsProfileLoading] = useState(true);
+
+    useEffect(() => {
+        // Se não tem sessão, não precisamos buscar o perfil
+        if (!session) {
+            setIsProfileLoading(false);
+            return;
+        }
+
+        async function checkProfile() {
+            try {
+                const response = await apiAuth("/me");
+                setIsProfilePublic(response.public);
+                // console.log("Perfil do usuário:", response.public);
+            } catch (error) {
+                console.error("Erro ao buscar perfil:", error);
+                setIsProfilePublic(false); 
+            } finally {
+                setIsProfileLoading(false);
+            }
+        }
+
+        checkProfile();
+    }, [session]);
+
+    if (isPending || (session && isProfileLoading)) {
+        return (
+            <View
+                style={{
+                    flex: 1,
+                    backgroundColor: "#161718",
+                    justifyContent: "center",
+                    alignItems: "center",
+                }}
+            >
+                <ActivityIndicator size="large" color="#00a8ff" />
+            </View>
+        );
+    }
+
+    if (!session) {
+        return <Redirect href="/(auth)/sign-in" />;
+    }
+
+    if (isProfilePublic === false) {
+        return <Redirect href="/(app)/onboarding" />;
+    }
 
     return (
         <Tabs

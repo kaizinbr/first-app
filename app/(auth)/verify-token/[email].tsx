@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useLocalSearchParams } from "expo-router";
 
 import Button from "@/components/button";
 import Input from "@/components/input";
@@ -12,22 +13,38 @@ import {
     TextInput,
     Platform,
 } from "react-native";
+import OTPInput from "@/components/auth/otp-input";
 
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
-export default function Index() {
-    const [email, setEmail] = useState("");
+interface OTPInputProps {
+    length?: number;
+    onComplete: (code: string) => void;
+}
+
+export default function VerifyToken() {
+    const { email } = useLocalSearchParams();
+    console.log("Email recebido nos params:", email);
     const [name, setName] = useState("");
     const [password, setPassword] = useState("");
+    const [otp, setOtp] = useState("");
+
+    const router = useRouter();
 
     const handleSignUp = async () => {
-        const response = await authClient.signIn.email({
-            email,
-            password,
-            callbackURL: "/",
+        const { data, error } = await authClient.signIn.emailOtp({
+            email: email as string,
+            otp: otp,
+                
         });
 
-        console.log("Sign Up response:", response);
+        console.log("Resposta da verificação do OTP:", { data, error });
+
+        // if (data?.success) {
+        //     router.push("/(app)/(tabs)/(home)");
+        // } else {
+        //     alert("Código de verificação inválido. Tente novamente.");
+        // }
     };
 
     return (
@@ -36,26 +53,20 @@ export default function Index() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
+                contentContainerStyle={{ flexGrow: 1, paddingTop: 50 }}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.main}>
-                    <Text style={styles.title}>Olá, entre na sua conta</Text>
+                    <Text style={styles.title}>
+                        Confirme o código de verificação
+                    </Text>
                     <View style={styles.container}>
-                        <Input
-                            placeholder="Email"
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                        />
-                        <Input
-                            placeholder="Password"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
+                        <View style={{ marginBottom: 16 }}>
+                            Enviamos um código de 6 dígitos para o seu e-mail:{" "}
+                            {email as string}
+                        </View>
+                        <OTPInput length={6} onComplete={setOtp} />
                         <Button onPress={handleSignUp}>Entrar</Button>
                     </View>
                     <Link href="/sign-up" style={{ marginTop: 16 }}>
@@ -90,7 +101,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginTop: 20,
         color: "#eeeeee",
-        
     },
     image: {
         width: "100%",

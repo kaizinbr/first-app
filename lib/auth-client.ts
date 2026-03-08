@@ -1,10 +1,15 @@
 import { expoClient } from "@better-auth/expo/client";
+import { oneTimeTokenClient } from "better-auth/client/plugins"
+
+import { emailOTPClient } from "better-auth/client/plugins"
 import { createAuthClient } from "better-auth/react";
 import * as SecureStore from "expo-secure-store";
 
 export const authClient = createAuthClient({
     baseURL: "https://mobile-backend-psi.vercel.app", 
     plugins: [
+        oneTimeTokenClient(),
+        emailOTPClient(),
         expoClient({
             scheme: "firstapp",
             storagePrefix: "firstapp",

@@ -13,21 +13,39 @@ import {
     Platform,
 } from "react-native";
 
-import { Link } from "expo-router";
+import { Link, useRouter } from "expo-router";
 
 export default function Index() {
     const [email, setEmail] = useState("");
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
+
+    const [errorMessage, setErrorMessage] = useState("");
+
+
+    const emailRegex =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    const router = useRouter();
 
     const handleSignUp = async () => {
-        const response = await authClient.signIn.email({
+        setErrorMessage("");
+        if (!emailRegex.test(email)) {
+            setErrorMessage("Por favor, insira um e-mail válido."); 
+            return;
+        }
+
+        const response = await authClient.emailOtp.sendVerificationOtp({
             email,
-            password,
-            callbackURL: "/",
+            type: "sign-in",
         });
 
         console.log("Sign Up response:", response);
+
+        if (response.data!.success) {
+            router.push({
+                pathname: "/(auth)/verify-token/[email]",
+                params: { email },
+            });
+        }
     };
 
     return (
@@ -36,12 +54,12 @@ export default function Index() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
             <ScrollView
-                contentContainerStyle={{ flexGrow: 1 }}
+                contentContainerStyle={{ flexGrow: 1, paddingTop: 50 }}
                 keyboardShouldPersistTaps="handled"
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.main}>
-                    <Text style={styles.title}>Olá, entre na sua conta</Text>
+                    <Text style={styles.title}>Olá, insira seu e-mail</Text>
                     <View style={styles.container}>
                         <Input
                             placeholder="Email"
@@ -49,18 +67,18 @@ export default function Index() {
                             onChangeText={setEmail}
                             keyboardType="email-address"
                             autoCapitalize="none"
+                            autoComplete="email"
+                            inputMode="email"
+                            error={errorMessage ? true : false}
                         />
-                        <Input
-                            placeholder="Password"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
-                        <Button onPress={handleSignUp}>Entrar</Button>
+                        {errorMessage ? (
+                            <Text style={styles.error}>{errorMessage}</Text>
+                        ) : null}
+                        <Button onPress={handleSignUp}>Continuar</Button>
                     </View>
-                    <Link href="/sign-up" style={{ marginTop: 16 }}>
+                    {/* <Link href="/sign-up" style={{ marginTop: 16 }}>
                         Não tem uma conta? Entre aqui
-                    </Link>
+                    </Link> */}
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -90,12 +108,16 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginTop: 20,
         color: "#eeeeee",
-        
     },
     image: {
         width: "100%",
         height: 300,
         marginTop: 20,
         resizeMode: "contain",
+    },
+    error: {
+        color: "#ff4d4f",
+        marginTop: -8,
+        marginBottom: 8,
     },
 });

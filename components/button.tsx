@@ -31,7 +31,7 @@ export default function Button({ children, route, ...props }: ButtonProps) {
 
 const styles = StyleSheet.create({
     button: {
-        backgroundColor: "#007AFF",
+        backgroundColor: "#8065ef",
         padding: 12,
         borderRadius: 12,
         width: "100%",

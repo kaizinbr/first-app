@@ -12,7 +12,9 @@ import { useColorScheme, View, StyleSheet } from "react-native";
 
 export default function Layout() {
     const { data: session } = authClient.useSession();
-    const isLoggedIn = !!session;
+    console.log("Session data in layout:", session);
+    const isLoggedIn = false;
+    console.log("Is user logged in?", isLoggedIn);
     const colorScheme = useColorScheme();
 
     const MyTheme = {
@@ -31,26 +33,15 @@ export default function Layout() {
         <ThemeProvider value={MyTheme}>
             <SafeAreaProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
-                    <SafeAreaView
-                        edges={["bottom", "left", "right"]}
-                        style={{
-                            flex: 1,
-                            backgroundColor: MyTheme.colors.background,
-                        }}
-                    >
+                    <SafeAreaView edges={["bottom", "left", "right"]} style={{ flex: 1, backgroundColor: MyTheme.colors.background }}>
                         <StatusBar style="light" translucent={true} />
+                        
+                        {/* DEIXE O STACK LIMPO E ESTÁTICO */}
                         <Stack screenOptions={{ headerShown: false }}>
-                            <Stack.Protected guard={!isLoggedIn}>
-                                <Stack.Screen name="sign-in" />
-                                <Stack.Screen name="sign-up" />
-                            </Stack.Protected>
-                            <Stack.Protected guard={isLoggedIn}>
-                                <Stack.Screen
-                                    name="(app)"
-                                    options={{ headerShown: false }}
-                                />
-                            </Stack.Protected>
+                            <Stack.Screen name="(auth)" />
+                            <Stack.Screen name="(app)" />
                         </Stack>
+
                     </SafeAreaView>
                 </GestureHandlerRootView>
             </SafeAreaProvider>
