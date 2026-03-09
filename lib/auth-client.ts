@@ -6,7 +6,8 @@ import { createAuthClient } from "better-auth/react";
 import * as SecureStore from "expo-secure-store";
 
 export const authClient = createAuthClient({
-    baseURL: "https://mobile-backend-psi.vercel.app", 
+    baseURL: "http://192.168.18.152:3000", 
+    // baseURL: "https://mobile-backend-psi.vercel.app", 
     plugins: [
         oneTimeTokenClient(),
         emailOTPClient(),

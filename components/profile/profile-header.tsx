@@ -7,9 +7,15 @@ import { useState, useEffect } from "react";
 import { Palette } from "@/lib/types";
 import Avatar from "@/components/core/user-avatar";
 import { selectRightColor } from "@/lib/util/selectRightColor";
+import { darkenColor,getHeaderColor } from "@/lib/util/workWithColors";
 
 export default function ProfileHeader({ data }: { data: UserProfile }) {
-    const [colors, setColors] = useState<Palette | any>("8065ef");
+    const [colors, setColors] = useState<Palette | any>({
+        dominant: "#8065ef",
+        vibrant: "#8065ef",
+        darkVibrant: "#8065ef",
+        muted: "#8065ef",
+    });
 
     useEffect(() => {
         const fetchColors = async () => {
@@ -18,7 +24,10 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
                     fallback: "#000",
                     cache: true,
                     key: data.avatar_url,
+                    quality: "low",
                 });
+
+                console.log("Colors fetched successfully:", result);
                 setColors(result);
             } catch (error) {
                 console.error("Error fetching colors:", error);
@@ -32,7 +41,8 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
             <View
                 style={{
                     ...styles.header,
-                    backgroundColor: selectRightColor(colors) || "#161718",
+                    backgroundColor:
+                        getHeaderColor(colors) || "#161718",
                 }}
             >
                 <View style={styles.wrapper}>
@@ -59,8 +69,8 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
                 <Text style={styles.username}>@{data.username}</Text>
                 <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
                     <Text style={styles.textDefault}>0 reviews</Text>
-                    <Text style={styles.textDefault}>0 seguidores</Text>
                     <Text style={styles.textDefault}>0 seguindo</Text>
+                    <Text style={styles.textDefault}>0 seguidores</Text>
                 </View>
                 <Pressable style={styles.followBtn}>
                     <Text style={{ color: "#eee", fontWeight: "bold" }}>

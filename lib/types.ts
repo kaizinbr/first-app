@@ -184,3 +184,18 @@ export interface Palette {
     darkMuted: string;
     lightMuted: string;
 }
+
+export interface Asset {
+    assetId: null | string;
+    base64: null | string;
+    duration: null | number;
+    exif: null | object;
+    fileName: string;
+    fileSize: number;
+    height: number;
+    mimeType: string;
+    rotation: null | number;
+    type: string;
+    uri: string;
+    width: number;
+}
