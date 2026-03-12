@@ -160,6 +160,10 @@ export interface Review {
     Profile: UserProfile;
 }
 
+export interface ReviewWithAlbum extends Review {
+    album: Album;
+}
+
 export interface Rating {
     id: string;
     value: number;

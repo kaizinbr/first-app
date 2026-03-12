@@ -1,108 +1,123 @@
+import FeedCard from "@/components/home/feed-card";
+import api from "@/lib/api";
+import { Review } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
 import {
-    Text,
-    Image,
-    View,
+    ActivityIndicator,
+    FlatList,
     StyleSheet,
-    ScrollView,
-    Platform,
-    Pressable,
-    StatusBar as RNStatusBar,
-    Dimensions,
+    Text,
+    View,
     Animated,
 } from "react-native";
-import { useRouter, Link } from "expo-router";
-import {
-    useSafeAreaInsets,
-    SafeAreaView,
-} from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Banner from "@/components/home/banner";
-import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar } from "expo-status-bar";
 
-import { useState, useRef } from "react";
-import BannerCarousel from "@/components/home/banner/carousel";
+const HEADER_MAX_HEIGHT = 424;
 
-export default function HomeHeader({ value }: any) {
-    const { data: session } = authClient.useSession();
+export default function FeedHeader({
+    activeColor,
+    onColorChange,
+    scrollOffsetY,
+}: {
+    activeColor: string;
+    onColorChange: (color: string) => void;
+    scrollOffsetY: Animated.Value;
+}) {
     const insets = useSafeAreaInsets();
-    const Header_Max_Height = 374;
+    const { data: session } = authClient.useSession();
+
     const Header_Min_Height = insets.top;
-    const Scroll_Distance = Header_Max_Height - Header_Min_Height;
+    const Scroll_Distance = HEADER_MAX_HEIGHT - Header_Min_Height;
 
-    const [headerColor, setHeaderColor] = useState("#161718");
-
-    const animatedHeaderHeight = value.interpolate({
-        inputRange: [0, Scroll_Distance],
-        outputRange: [Header_Max_Height, Header_Min_Height],
+    const bannerOpacity = scrollOffsetY.interpolate({
+        inputRange: [0, Scroll_Distance / 1.5],
+        outputRange: [1, 0],
         extrapolate: "clamp",
     });
 
-    const animatedHeaderColor = value.interpolate({
+    const bannerScale = scrollOffsetY.interpolate({
         inputRange: [0, Scroll_Distance],
-        outputRange: [headerColor, "#161718"],
+        outputRange: [1, 0.8],
         extrapolate: "clamp",
     });
 
-    const bannerOpacity = value.interpolate({
-        inputRange: [0, Scroll_Distance / 1.5], // Termina a animação um pouco antes do final
-        outputRange: [1, 0], // Vai de 100% visível para 0%
-        extrapolate: "clamp",
-    });
-
-    const bannerScale = value.interpolate({
+    const titleTranslate = scrollOffsetY.interpolate({
         inputRange: [0, Scroll_Distance],
-        outputRange: [1, 0.8], // Vai do tamanho normal (1) para 80% (0.8)
+        outputRange: [0, -10],
         extrapolate: "clamp",
     });
 
     return (
-        <Animated.View
-            style={[
-                styles.header,
-                {
-                    height: animatedHeaderHeight,
-                    backgroundColor: animatedHeaderColor,
-                    paddingTop: insets.top,
-                    overflow: "hidden",
-                },
-            ]}
-        >
-            <Text style={styles.title}>
-                Olá, {session?.user?.name || "usuário"}!
-            </Text>
-            <Animated.View
-                style={{
-                    opacity: bannerOpacity,
-                    transform: [{ scale: bannerScale }],
-                    width: "100%",
-                    alignItems: "center",
-                    flex: 1,
-                }}
-            >
-                {/* <Banner /> */}
-                <Banner />
-            </Animated.View>
-        </Animated.View>
+        // Este View tem a altura exata do header — o gradiente fica atrás de tudo
+        <View style={{ height: HEADER_MAX_HEIGHT }}>
+            {/* GRADIENTE — rola junto pois está dentro da FlatList */}
+            <LinearGradient
+                colors={[activeColor, "#161718"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={StyleSheet.absoluteFill}
+            />
+            {/* Camada de profundidade */}
+            <LinearGradient
+                colors={["transparent", "rgba(22,23,24,1)"]}
+                start={{ x: 0.5, y: 0.1 }}
+                end={{ x: 0.5, y: 1 }}
+                style={StyleSheet.absoluteFill}
+            />
+
+            {/* Conteúdo do header */}
+            <View style={[styles.headerContent, { paddingTop: insets.top }]}>
+                <Animated.Text
+                    style={[
+                        styles.title,
+                        { transform: [{ translateY: titleTranslate }] },
+                    ]}
+                >
+                    Olá, {session?.user?.name || "usuário"}!
+                </Animated.Text>
+
+                <Animated.View
+                    style={{
+                        opacity: bannerOpacity,
+                        // transform: [{ scale: bannerScale }],
+                        width: "100%",
+                        flex: 1,
+                        alignItems: "center",
+                    }}
+                >
+                    <Banner onColorChange={onColorChange} />
+                </Animated.View>
+            </View>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
-    header: {
-        position: "absolute", // Position the header absolutely at the top
-        top: 0,
-        left: 0,
-        right: 0,
+    container: { flex: 1, width: "100%" },
+    headerContent: {
+        flex: 1,
         justifyContent: "center",
         alignItems: "flex-start",
-        zIndex: 1, // Ensure the header is above the scroll view content
         gap: 16,
+        marginBottom: 80,
     },
     title: {
         fontSize: 24,
         fontWeight: "800",
-        textAlign: "left",
+        color: "#eeeeee",
+        paddingHorizontal: 16,
         marginTop: 24,
+    },
+    feed: { paddingBottom: 56 },
+    h2: {
+        fontSize: 18,
+        fontWeight: "600",
+        textAlign: "left",
+        marginTop: 32,
+        marginBottom: 16,
         color: "#eeeeee",
         paddingHorizontal: 16,
     },

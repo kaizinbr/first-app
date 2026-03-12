@@ -10,7 +10,7 @@ export function darkenColor(color: string, amount: number) {
         color = chroma(color).darken(1.5).hex();
     }
 
-    console.log("Darkening color:", color, "by amount:", amount);
+    // console.log("Darkening color:", color, "by amount:", amount);
 
     return chroma(color).darken(amount).hex();
 }
@@ -28,14 +28,32 @@ export function getHeaderColor(colors: Palette) {
     } else {
         finalColor = "#2458aa";
     }
-    console.log(chroma(colors.muted).luminance());
+    // console.log(chroma(colors.muted).luminance());
 
     if (chroma(finalColor).luminance() > 0.4) {
         finalColor = chroma(finalColor).darken(1.5).hex();
     }
 
 
-    console.log("Darkening color:", finalColor, "by amount: 0.4");
+    // console.log("Darkening color:", finalColor, "by amount: 0.4");
 
     return chroma(finalColor).darken(0.4).hex();
+}
+
+
+export function getBannerColor(color: string) {
+    let finalColor = color;
+    
+    // console.log(chroma(finalColor).luminance());
+
+    if (chroma(finalColor).luminance() > 0.6) {
+        finalColor = chroma(finalColor).darken(1).hex();
+    }    
+    if (chroma(finalColor).luminance() < 0.02) {
+        finalColor = chroma(finalColor).brighten(1).hex();
+    }
+
+    // console.log("Darkening color:", finalColor, "by amount: 0.4");
+
+    return finalColor;
 }

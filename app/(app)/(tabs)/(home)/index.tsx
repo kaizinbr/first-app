@@ -1,39 +1,48 @@
-import {
-    Text,
-    Image,
-    View,
-    StyleSheet,
-    ScrollView,
-    Platform,
-    Pressable,
-    Animated,
-} from "react-native";
-import { useRouter, Link } from "expo-router";
-import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
-import { authClient } from "@/lib/auth-client";
+import { useRef, useState } from "react";
+import { View, StyleSheet, Animated } from "react-native";
 import Feed from "@/components/home/feed";
-import Banner from "@/components/home/banner";
-import { LinearGradient } from "expo-linear-gradient";
-import { StatusBar } from "expo-status-bar";
-
-import { useState, useRef } from "react";
-import HomeHeader from "@/components/home/header";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Index() {
-
     const scrollOffsetY = useRef(new Animated.Value(0)).current;
+    const [activeColor, setActiveColor] = useState("#161718");
+
+    const insets = useSafeAreaInsets();
+
     const handleScroll = Animated.event(
         [{ nativeEvent: { contentOffset: { y: scrollOffsetY } } }],
-        { useNativeDriver: false } // Lembre-se que height e backgroundColor não aceitam useNativeDriver: true
+        { useNativeDriver: false }
     );
 
+    const statusBarOpacity = scrollOffsetY.interpolate({
+        inputRange: [300, 374],
+        outputRange: [0, 1],
+        extrapolate: "clamp",
+    });
+
     return (
-        <>
-            <HomeHeader value={scrollOffsetY} />
-            <Feed onScrollAnimado={handleScroll} />
-        </>
+        <View style={styles.container}>
+            <Feed
+                onScrollAnimado={handleScroll}
+                activeColor={activeColor}
+                onColorChange={setActiveColor}
+                scrollOffsetY={scrollOffsetY}
+            />
+            {/* fundo da barra de status ao rolar tantos pixels */}
+            <Animated.View
+                style={[
+                    styles.statusBarBg,
+                    {
+                        height: insets.top,
+                        opacity: statusBarOpacity,
+                    },
+                ]}
+                pointerEvents="none"
+            />
+        </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -43,6 +52,13 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "transparent",
         color: "#eeeeee",
+    },statusBarBg: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "#161718",
+        zIndex: 10,
     },
     main: {
         flex: 1,

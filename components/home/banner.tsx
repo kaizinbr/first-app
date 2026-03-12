@@ -16,7 +16,7 @@ import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 import { renderItem } from "@/components/home/banner/render-item";
 import * as React from "react";
 
-import { selectRightColor } from "@/lib/util/selectRightColor";
+import { getBannerColor } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
 import { Palette } from "@/lib/types";
 
@@ -85,7 +85,11 @@ type SpotifyAlbum = {
     popularity: number;
 };
 
-export default function Banner() {
+interface BannerProps {
+    onColorChange: (color: string) => void;
+}
+
+export default function Banner({ onColorChange }: BannerProps) {
     const { width } = useWindowDimensions();
     const progress = useSharedValue<number>(0);
 
@@ -100,6 +104,7 @@ export default function Banner() {
               title: string;
               artist: string;
               src: string;
+              dominant: string;
               darkVibrant: string;
               lightVibrant: string;
               textColor: string;
@@ -116,7 +121,19 @@ export default function Banner() {
                 setLoading(true);
                 const response = await api.get(`/banner`);
                 setBannerData(response.data);
-                
+
+                const result = await getColors(response.data[0]?.src, {
+                    fallback: "#000",
+                    cache: true,
+                    key: response.data[0]?.src,
+                });
+                // setPalette(result);
+
+                const dominantColor =
+                    (result as any)?.dominant ||
+                    (result as any)?.primary ||
+                    "#161718";
+                onColorChange(dominantColor);
 
                 setLoading(false);
                 // console.log("Content fetched successfully:", content.html);
@@ -143,14 +160,15 @@ export default function Banner() {
                 <View id="carousel-component">
                     <Carousel
                         ref={carouselRef}
-                        autoPlayInterval={2000}
+                        autoPlayInterval={4000}
+                        // autoPlay={true}
                         data={bannerData || []}
                         loop={true}
                         pagingEnabled={true}
                         snapEnabled={true}
                         style={{
                             width: width,
-                            height: 258,
+                            height: 224,
                         }}
                         width={width}
                         mode="parallax"
@@ -158,7 +176,7 @@ export default function Banner() {
                             parallaxScrollingScale: 0.9,
                             parallaxScrollingOffset: 50,
                         }}
-                        onProgressChange={(
+                        onProgressChange={async (
                             offsetProgress,
                             absoluteProgress,
                         ) => {
@@ -166,6 +184,23 @@ export default function Banner() {
                             const newIndex = Math.round(absoluteProgress);
                             if (newIndex !== currentIndex) {
                                 setCurrentIndex(newIndex);
+                                // Pega a cor do item que ficou em foco
+                                const item =
+                                    bannerData?.[
+                                        newIndex % (bannerData?.length ?? 1)
+                                    ];
+                                const result = await getColors(item!.src, {
+                                    fallback: "#000",
+                                    cache: true,
+                                    key: item?.src,
+                                });
+                                // setPalette(result);
+
+                                const dominantColor =
+                                    getBannerColor((result as any)?.dominant ||
+                                    (result as any)?.primary ||
+                                    "#161718");
+                                onColorChange(dominantColor);
                             }
                         }}
                         renderItem={renderItem({

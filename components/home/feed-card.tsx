@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { displayPastRelativeTime } from "@/lib/util/time";
 import TiptapRenderer from "@/components/home/card-content copy";
 import { AlbumCard } from "@/components/home/album-section";
-import { Review } from "@/lib/types";
+import { ReviewWithAlbum } from "@/lib/types";
 
 type SpotifyAlbum = {
     album_type: string;
@@ -43,9 +43,8 @@ type SpotifyAlbum = {
     popularity: number;
 };
 
-export default function FeedCard({ review }: { review: Review }) {
-    
-        const router = useRouter();
+export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
+    const router = useRouter();
     const { data: session } = authClient.useSession();
 
     const [reviewAlbum, setReviewAlbum] = useState<SpotifyAlbum | null>(null);
@@ -56,18 +55,18 @@ export default function FeedCard({ review }: { review: Review }) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const fetchFeedData = async () => {
-            try {
-                const response = await api.get(`/albuns/${review.album_id}`);
-                setReviewAlbum(response.data);
-                // console.log("Feed data fetched successfully:", response.data);
-                // console.log("total reviews:", feedData!.totalReviews);
-            } catch (error) {
-                console.error("Error fetching feed data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
+        // const fetchFeedData = async () => {
+        //     try {
+        //         const response = await api.get(`/albuns/${review.album_id}`);
+        //         setReviewAlbum(response.data);
+        //         // console.log("Feed data fetched successfully:", response.data);
+        //         // console.log("total reviews:", feedData!.totalReviews);
+        //     } catch (error) {
+        //         console.error("Error fetching feed data:", error);
+        //     } finally {
+        //         setLoading(false);
+        //     }
+        // };
 
         const fetchContent = async () => {
             if (!review.shorten) {
@@ -97,7 +96,7 @@ export default function FeedCard({ review }: { review: Review }) {
             }
         };
 
-        fetchFeedData();
+        // fetchFeedData();
         fetchContent();
     }, []);
 
@@ -114,11 +113,11 @@ export default function FeedCard({ review }: { review: Review }) {
                     source={{ uri: review.Profile.avatar_url! }}
                     style={styles.cardImage}
                 />
-                {reviewAlbum ? (
+                {review.album ? (
                     <View style={styles.cardContent}>
                         <Text style={styles.cardTitle}>
-                            {review.Profile.name} avaliou {reviewAlbum.name} de{" "}
-                            {reviewAlbum.artists
+                            {review.Profile.name} avaliou {review.album.name} de{" "}
+                            {review.album.artists
                                 .map((artist) => artist.name)
                                 .join(", ")}
                         </Text>
@@ -129,7 +128,7 @@ export default function FeedCard({ review }: { review: Review }) {
                         ) : null}
 
                         <AlbumCard
-                            image={reviewAlbum.images[0].url}
+                            image={review.album.images[0].url}
                             value={
                                 review.total
                                     ? `${Number(review.total).toFixed(1)}/100`
