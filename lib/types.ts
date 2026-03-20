@@ -168,6 +168,8 @@ export interface Rating {
     id: string;
     value: number;
     favorite: boolean;
+    comment: string;
+    skip: boolean;
 }
 
 // Response principal

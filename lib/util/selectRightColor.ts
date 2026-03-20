@@ -14,7 +14,7 @@ export function selectRightColor(colors: Palette, position?: "first" | "second")
     } else {
         finalColor = "#2458aa";
     }
-    console.log("Selected color:", finalColor);
+    // console.log("Selected color:", finalColor);
 
     if (chroma(finalColor).luminance() < 0.5) {
         finalColor = chroma(finalColor).brighten(1.5).hex();

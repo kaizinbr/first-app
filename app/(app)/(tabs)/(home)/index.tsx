@@ -28,7 +28,6 @@ export default function Index() {
                 onColorChange={setActiveColor}
                 scrollOffsetY={scrollOffsetY}
             />
-            {/* fundo da barra de status ao rolar tantos pixels */}
             <Animated.View
                 style={[
                     styles.statusBarBg,

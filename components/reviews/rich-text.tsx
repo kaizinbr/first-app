@@ -1,118 +1,195 @@
-import React, { useRef, useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
     View,
-    Button,
     Pressable,
-    Text
+    Text,
 } from "react-native";
-// Importamos o componente da biblioteca
-import type {
-    OnChangeHtmlEvent,
-    OnChangeStateEvent,
-    EnrichedTextInputInstance
-} from "react-native-enriched";
-import { EnrichedTextInput } from "react-native-enriched";
+import {
+    MarkdownTextInput,
+    parseExpensiMark,
+} from "@expensify/react-native-live-markdown";
+import { markdownStyle } from "@/components/reviews/markdown-style";
+import { AlbumCard } from "@/components/home/album-section";
+import { Album, Review, Palette } from "@/lib/types";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { parseMarkdown } from "@/lib/parser";
 
-export default function PostEditor({ref}: {ref: React.RefObject<EnrichedTextInputInstance | null>}) {
-    const [conteudoHtml, setConteudoHtml] = useState<OnChangeHtmlEvent | null>(
-        null,
-    );
-    const [activeStyles, setActiveStyles] = useState({
-        bold: false,
-        italic: false,
-        underline: false,
-    });
+// Tipos
+type MarkdownStyle = {
+    bold?: boolean;
+    italic?: boolean;
+    strikethrough?: boolean;
+    code?: boolean;
+};
 
-    const handleStateChange = (event: any) => {
-        // O evento traz exatamente o que está ativo no cursor naquele momento
-        const state = event.nativeEvent;
+interface PostEditorProps {
+    onChange?: (text: string) => void;
+    initialValue?: string;
+    placeholder?: string;
+    minHeight?: number;
 
-        setActiveStyles({
-            bold: state.bold,
-            italic: state.italic,
-            underline: state.underline,
-        });
+    reviewData: {
+        reviewed: boolean;
+        rating: Review | null;
+        album: Album;
     };
+    total: number;
+}
+
+// Botão da toolbar isolado pra evitar re-renders desnecessários
+const ToolbarButton = React.memo(
+    ({
+        label,
+        active,
+        onPress,
+        style,
+    }: {
+        label: string;
+        active: boolean;
+        onPress: () => void;
+        style?: object;
+    }) => (
+        <Pressable
+            style={[styles.button, active && styles.buttonActive]}
+            onPress={onPress}
+            hitSlop={8}
+        >
+            <Text
+                style={[styles.buttonText, active && styles.textActive, style]}
+            >
+                {label}
+            </Text>
+        </Pressable>
+    ),
+);
+
+export default function PostEditor({
+    onChange,
+    initialValue = "",
+    placeholder = "O que você está pensando?",
+    minHeight = 300,
+    reviewData,
+    total,
+}: PostEditorProps) {
+
+    const insets = useSafeAreaInsets();
+    const [value, setValue] = useState(initialValue);
+    const [selection, setSelection] = useState({ start: 0, end: 0 });
+
+    const handleChange = useCallback(
+        (text: string) => {
+            setValue(text);
+            onChange?.(text);
+        },
+        [onChange],
+    );
+
+    // Insere markdown na posição do cursor
+    const wrapSelection = useCallback(
+        (syntax: string) => {
+            const before = value.slice(0, selection.start);
+            const selected = value.slice(selection.start, selection.end);
+            const after = value.slice(selection.end);
+
+            const wrapped = `${syntax}${selected || "texto"}${syntax}`;
+            const newValue = `${before}${wrapped}${after}`;
+
+            setValue(newValue);
+            onChange?.(newValue);
+        },
+        [value, selection, onChange],
+    );
+
+    const insertBlock = useCallback(
+        (prefix: string) => {
+            const before = value.slice(0, selection.start);
+            const after = value.slice(selection.end);
+
+            // Garante que começa numa linha nova
+            const needsNewLine = before.length > 0 && !before.endsWith("\n");
+            const newValue = `${before}${needsNewLine ? "\n" : ""}${prefix}${after}`;
+
+            setValue(newValue);
+            onChange?.(newValue);
+        },
+        [value, selection, onChange],
+    );
 
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            behavior={"padding"}
+            keyboardVerticalOffset={insets.top + 50}
             style={styles.container}
         >
-            <View style={styles.editorContainer}>
-                <EnrichedTextInput
-                    ref={ref}
+            <View style={[styles.editorContainer]}>
+                <AlbumCard
+                    image={reviewData.album.images[0].url}
+                    value={
+                        total ? `${Number(total).toFixed(1)}/100` : "0.0/100"
+                    }
+                    subtitle={reviewData.rating?.ratings.length || 0}
+                    editor
+                />
+                <MarkdownTextInput
+                    value={value}
+                    parser={parseMarkdown}
+                    onChangeText={handleChange}
+                    onSelectionChange={(e) =>
+                        setSelection(e.nativeEvent.selection)
+                    }
+                    placeholder={placeholder}
+                    placeholderTextColor="#555"
+                    multiline
+                    scrollEnabled={true}
+                    // nestedScrollEnabled={true}
+
                     style={styles.input}
-                    placeholder="O que você está pensando?"
-                    placeholderTextColor="#777"
-                    onChangeHtml={(html) => {
-                        setConteudoHtml(html.nativeEvent);
-                        // console.log("Conteúdo HTML atualizado:", html);
-                    }}
-                    onChangeState={handleStateChange}
+                    markdownStyle={markdownStyle}
                 />
             </View>
 
+            {/* Toolbar */}
             <View style={styles.toolbar}>
-                {/* Botão de Negrito (B) */}
-                <Pressable
-                    style={[
-                        styles.button,
-                        activeStyles.bold && styles.buttonActive,
-                    ]}
-                    onPress={() => ref.current?.toggleBold()}
-                >
-                    <Text
-                        style={[
-                            styles.buttonText,
-                            activeStyles.bold && styles.textActive,
-                            { fontWeight: "bold" },
-                        ]}
-                    >
-                        B
-                    </Text>
-                </Pressable>
+                <ToolbarButton
+                    label="B"
+                    active={false}
+                    onPress={() => wrapSelection("**")}
+                    style={{ fontWeight: "bold" }}
+                />
+                <ToolbarButton
+                    label="I"
+                    active={false}
+                    onPress={() => wrapSelection("_")}
+                    style={{ fontStyle: "italic" }}
+                />
+                <ToolbarButton
+                    label="S"
+                    active={false}
+                    onPress={() => wrapSelection("~~")}
+                    style={{ textDecorationLine: "line-through" }}
+                />
 
-                {/* Botão de Itálico (I) */}
-                <Pressable
-                    style={[
-                        styles.button,
-                        activeStyles.italic && styles.buttonActive,
-                    ]}
-                    onPress={() => ref.current?.toggleItalic()}
-                >
-                    <Text
-                        style={[
-                            styles.buttonText,
-                            activeStyles.italic && styles.textActive,
-                            { fontStyle: "italic" },
-                        ]}
-                    >
-                        I
-                    </Text>
-                </Pressable>
+                {/* Separador */}
+                <View style={styles.separator} />
 
-                {/* Botão de Sublinhado (U) */}
-                <Pressable
-                    style={[
-                        styles.button,
-                        activeStyles.underline && styles.buttonActive,
-                    ]}
-                    onPress={() => ref.current?.toggleUnderline()}
-                >
-                    <Text
-                        style={[
-                            styles.buttonText,
-                            activeStyles.underline && styles.textActive,
-                            { textDecorationLine: "underline" },
-                        ]}
-                    >
-                        U
-                    </Text>
-                </Pressable>
+                <ToolbarButton
+                    label="H1"
+                    active={false}
+                    onPress={() => insertBlock("# ")}
+                />
+                <ToolbarButton
+                    label="H2"
+                    active={false}
+                    onPress={() => insertBlock("## ")}
+                />
+                <ToolbarButton
+                    label="❝"
+                    active={false}
+                    onPress={() => insertBlock("> ")}
+                />
             </View>
         </KeyboardAvoidingView>
     );
@@ -121,47 +198,57 @@ export default function PostEditor({ref}: {ref: React.RefObject<EnrichedTextInpu
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        // height: "100%",
         backgroundColor: "#161718",
-        justifyContent: "flex-end",
     },
     editorContainer: {
-        height: 300, // Funciona perfeitamente aqui!
-        width: "100%",
-        backgroundColor: "#222", // Cor de fundo do editor
+        flex: 1,
+        maxHeight: "100%",
+        // minHeight: "100%",
+        backgroundColor: "transparent",
         borderRadius: 8,
         padding: 12,
     },
     input: {
         flex: 1,
-        color: "#eee", // O MODO ESCURO FUNCIONA DE PRIMEIRA!
+        paddingTop: 16,
+        minHeight: 100,
+        // height: "100%",
+        color: "#eee",
         fontSize: 16,
         textAlignVertical: "top",
     },
     toolbar: {
         flexDirection: "row",
+        alignItems: "center",
         backgroundColor: "#1a1a1c",
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderTopWidth: 1,
-        borderTopColor: "#333",
-        gap: 12, // Espaçamento moderno entre os botões
+        borderTopColor: "#2a2a2a",
+        gap: 4,
+    },
+    separator: {
+        width: 1,
+        height: 24,
+        backgroundColor: "#333",
+        marginHorizontal: 8,
     },
     button: {
-        width: 40,
-        height: 40,
-        borderRadius: 8,
+        width: 36,
+        height: 36,
+        borderRadius: 6,
         alignItems: "center",
         justifyContent: "center",
-        backgroundColor: "transparent",
     },
     buttonActive: {
-        backgroundColor: "#333", // Fundo mais claro quando o botão está ativado
+        backgroundColor: "#333",
     },
     buttonText: {
-        color: "#777", // Cor apagada por padrão
-        fontSize: 18,
+        color: "#666",
+        fontSize: 16,
     },
     textActive: {
-        color: "#eee", // Fica branquinho quando a formatação está ativa
+        color: "#eee",
     },
 });

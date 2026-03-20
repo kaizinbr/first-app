@@ -27,9 +27,8 @@ export default function AlbumHeader({
             style={[
                 styles.container,
                 {
-                    height: maxHeight + 24,
+                    minHeight: 264,
                     justifyContent: "flex-end",
-                    paddingBottom: 24,
                 },
             ]}
         >
@@ -38,24 +37,6 @@ export default function AlbumHeader({
                     source={{ uri: data.images[0].url }}
                     style={styles.albumArt}
                 />
-                <Text style={styles.albumType}>
-                    {(() => {
-                        switch (data.type) {
-                            case "album":
-                                return "Álbum";
-                            case "single":
-                                return "Single/EP";
-                            case "compilation":
-                                return "Compilação";
-                            default:
-                                return "Outro";
-                        }
-                    })()}
-                </Text>
-                <Text style={styles.albumTitle}>{data.name}</Text>
-                <Text style={styles.albumArtist}>
-                    {data.artists.map((artist: any) => artist.name).join(", ")}
-                </Text>
             </Animated.View>
         </Animated.View>
     );
@@ -63,16 +44,19 @@ export default function AlbumHeader({
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        // flex: 1,
         paddingHorizontal: 16,
         backgroundColor: "transparent",
     },
     albumArt: {
-        width: 200,
-        height: 200,
-        borderRadius: 12,
-        marginTop: 100,
-        marginBottom: 28,
+        width: "20%",
+        height: "auto",
+        aspectRatio: 1,
+        minHeight: 128,
+        minWidth: 128,
+        borderRadius: 10,
+        marginTop: 112,
+        marginBottom: 32,
         alignSelf: "center",
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 10 },
@@ -80,10 +64,10 @@ const styles = StyleSheet.create({
         shadowRadius: 15,
         elevation: 10,
     },
-    albumType: { color: "#eee", fontSize: 12, fontWeight: "600" },
+    albumType: { color: "#c4c4c4", fontSize: 12, fontWeight: "500" },
     albumTitle: {
         color: "#fff",
-        fontSize: 32,
+        fontSize: 22,
         fontWeight: "900",
         marginTop: 4,
     },

@@ -100,6 +100,24 @@ export default function AlbumScreen({
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}
                 />
+                <LinearGradient
+                    colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
+                    start={{ x: 1, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
+                />
+                {/* <View
+                    style={{
+                        width: 150,
+                        height: 150,
+                        backgroundColor: colors.muted,
+                        position: "absolute",
+                        zIndex: 100,
+                        right: -20,
+                        top: 0,
+                        filter: "blur(60px)",
+                    }}
+                ></View> */}
                 {/* Camada 2: Uma sombra que vem de baixo pra criar a "profundidade" do mesh */}
                 <LinearGradient
                     colors={["transparent", "rgba(22, 23, 24, 1)"]}
@@ -133,18 +151,30 @@ export default function AlbumScreen({
             </Animated.View>
 
             {/* BOTÃO VOLTAR */}
+
             <Pressable
-                onPress={() => router.back()}
-                style={[styles.backButton, { top: insets.top }]}
+                onPress={() =>
+                    router.push({
+                        pathname: `/(app)/create/review/[id]`,
+                        params: { id: albumData.id },
+                    })
+                }
+                style={({ pressed }) => [
+                    styles.reviewButton,
+                    {
+                        backgroundColor: pressed
+                            ? darkenColor(selectRightColor(colors), 0.2)
+                            : darkenColor(selectRightColor(colors), 0.7),
+                    },
+                ]}
             >
                 <Text
-                    style={{ color: "#eee", fontSize: 24, fontWeight: "bold" }}
+                    style={{ color: "#eee", fontSize: 16, fontWeight: "bold" }}
                 >
-                    ←
+                    Avaliar álbum
                 </Text>
             </Pressable>
 
-            {/* O CONTEÚDO DA PÁGINA */}
             <Animated.ScrollView
                 onScroll={onScroll}
                 scrollEventThrottle={16}
@@ -159,6 +189,8 @@ export default function AlbumScreen({
                 <AlbumData data={albumData} />
                 <Tracklist albumTracks={albumData.tracks.items} />
                 <AlbumExtraData data={albumData} />
+
+                <View style={{ height: 124 }} />
             </Animated.ScrollView>
         </View>
     );
@@ -168,7 +200,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#161718", // Cor de fundo do resto do app
-        marginBottom: 100, // Para dar um respiro no final da lista
     },
     gradientContainer: {
         position: "absolute",
@@ -197,6 +228,20 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         justifyContent: "center",
+    },
+    reviewButton: {
+        position: "absolute",
+        left: 16,
+        right: 16,
+        bottom: 64,
+        zIndex: 11,
+        // height: 40,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#1c494f",
+        borderRadius: 12,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
     },
 
     // AQUI ESTÁ O SEGREDO DO ENCAIXE PERFEITO

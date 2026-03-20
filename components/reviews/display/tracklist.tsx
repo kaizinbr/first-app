@@ -16,35 +16,46 @@ import Animated, {
     interpolate,
     Extrapolation,
 } from "react-native-reanimated";
-import { Track } from "@/lib/types";
-import TrackItem from "@/components/albuns/track-item";
+import { Track, Review, Rating } from "@/lib/types";
+import TrackItem from "@/components/reviews/display/track-item";
 
-export default function Tracklist({ albumTracks }: { albumTracks: Track[] }) {
+export default function Tracklist({
+    albumTracks,
+    review,
+}: {
+    albumTracks: Track[];
+    review: Review;
+}) {
+
+    const newData = albumTracks.map((track) => {
+        const ratingForTrack = review.ratings.find(
+            (rating) => rating.id === track.id,
+        );
+        return {
+            ...track,
+            userRating: ratingForTrack ? ratingForTrack.value : null,
+        };
+    });
+
     return (
         <View style={[styles.container]}>
             <View style={{ marginTop: 24 }}>
-                <View
-            style={
-                styles.trackRow}
-        >
-            <View style={styles.numberColumn}>
-                <Text style={styles.listHeaderText}>#</Text>
-            </View>
+                <View style={styles.trackRow}>
+                    <View style={styles.numberColumn}>
+                        <Text style={styles.listHeaderText}>#</Text>
+                    </View>
 
-            <View style={styles.infoColumn}>
-                    <Text style={styles.listHeaderText} numberOfLines={1}>
-                    
-                        Título
-                    </Text>
-            </View>
+                    <View style={styles.infoColumn}>
+                        <Text style={styles.listHeaderText} numberOfLines={1}>
+                            Título
+                        </Text>
+                    </View>
 
-            <View style={styles.actionColumn}>
-                <Text style={styles.listHeaderText}>
-                    Tempo
-                </Text>
-            </View>
-        </View>
-                {albumTracks.map((track) => (
+                    <View style={styles.actionColumn}>
+                        <Text style={styles.listHeaderText}>Total</Text>
+                    </View>
+                </View>
+                {newData.map((track) => (
                     <TrackItem
                         key={track.id}
                         track={track}

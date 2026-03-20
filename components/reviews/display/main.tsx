@@ -1,20 +1,24 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import Animated, {
-    useAnimatedStyle,
-    useAnimatedScrollHandler,
-    useSharedValue,
-    interpolate,
-    Extrapolation,
-} from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import React from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, {
+    Extrapolation,
+    interpolate,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    useSharedValue,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Review, Album, Palette } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
+import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
+import ReviewScore from "@/components/reviews/display/score";
+import ReviewContent from "@/components/reviews/display/review-content";
+import Tracklist from "@/components/reviews/display/tracklist";
+import { Album, Palette, Review } from "@/lib/types";
+import { selectRightColor } from "@/lib/util/selectRightColor";
+import { darkenColor } from "@/lib/util/workWithColors";
 
 export default function AlbumScreen({
     reviewData,
@@ -30,7 +34,7 @@ export default function AlbumScreen({
 
     const scrollY = useSharedValue(0);
 
-    const HEADER_MAX_HEIGHT = 420; // Tamanho total da área do gradiente
+    const HEADER_MAX_HEIGHT = 264; // Tamanho total da área do gradiente
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
@@ -74,13 +78,7 @@ export default function AlbumScreen({
             [1, 0],
             Extrapolation.CLAMP,
         );
-        const scale = interpolate(
-            scrollY.value,
-            [-100, 0, SCROLL_DISTANCE],
-            [1.1, 1, 0.8],
-            Extrapolation.CLAMP,
-        );
-        return { opacity, transform: [{ scale }] };
+        return { opacity };
     });
 
     return (
@@ -100,6 +98,12 @@ export default function AlbumScreen({
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}
                 />
+                                <LinearGradient
+                                    colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
+                                    start={{ x: 1, y: 0 }}
+                                    end={{ x: 0, y: 1 }}
+                                    style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
+                                />
                 {/* Camada 2: Uma sombra que vem de baixo pra criar a "profundidade" do mesh */}
                 <LinearGradient
                     colors={["transparent", "rgba(22, 23, 24, 1)"]}
@@ -162,26 +166,33 @@ export default function AlbumScreen({
                 onScroll={onScroll}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
+                style={{ zIndex: 1, marginBottom: 56 }}
             >
+                <View
+                    style={{
+                        backgroundColor: "transparent",
+                        paddingBottom: 16,
+                        flexDirection: "row",
+                    }}
+                >
                     <AlbumHeader
                         maxHeight={HEADER_MAX_HEIGHT}
                         data={albumData}
                         headerContentStyle={headerContentStyle}
                     />
-
-                {/* O CONTEÚDO SÓLIDO: Começa exatamente onde o gradiente termina */}
-                <View style={styles.lowerContent}>
-                    <Text style={styles.sectionTitle}>
-                        Avaliação de kako triste
-                    </Text>
-                    <Text style={styles.score}>89.5/100</Text>
-                    <Text style={styles.date}>21/12/2025</Text>
-
-                    {/* Falsos cards para dar rolagem */}
-                    {[...Array(20)].map((_, i) => (
-                        <View key={i} style={styles.fakeReviewCard} />
-                    ))}
+                    <AlbumData
+                        data={albumData}
+                        headerContentStyle={headerContentStyle}
+                    />
                 </View>
+                <ReviewScore review={reviewData} />
+                <ReviewContent review={reviewData} />
+                <Tracklist
+                    review={reviewData}
+                    albumTracks={albumData.tracks.items}
+                />
+                <AlbumExtraData data={albumData} />
+                <View style={{ height: 100 }} /> 
             </Animated.ScrollView>
         </View>
     );
@@ -190,7 +201,8 @@ export default function AlbumScreen({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#161718", // Cor de fundo do resto do app
+        backgroundColor: "#161718",
+        // paddingBottom: 100,
     },
     gradientContainer: {
         position: "absolute",
@@ -224,17 +236,21 @@ const styles = StyleSheet.create({
     // AQUI ESTÁ O SEGREDO DO ENCAIXE PERFEITO
     lowerContent: {
         backgroundColor: "#161718", // A mesma cor que o gradiente termina
-        paddingHorizontal: 20,
-        paddingTop: 24,
-        minHeight: 1000,
+        paddingHorizontal: 16,
     },
-    sectionTitle: { color: "#fff", fontSize: 18, fontWeight: "bold" },
-    score: { color: "#fff", fontSize: 36, fontWeight: "900", marginTop: 8 },
-    date: { color: "#777", fontSize: 14, marginTop: 4 },
     fakeReviewCard: {
         height: 80,
         backgroundColor: "#1e1e1e",
         borderRadius: 8,
         marginTop: 12,
+    },
+    moreData: {
+        marginTop: 24,
+        padding: 16,
+        backgroundColor: "#1e1e1e",
+    },
+    extraInfo: {
+        color: "#777",
+        fontSize: 14,
     },
 });

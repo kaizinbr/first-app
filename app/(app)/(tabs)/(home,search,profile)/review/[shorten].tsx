@@ -1,29 +1,17 @@
-import Button from "@/components/button";
-import Input from "@/components/input";
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
-    Pressable,
-    Animated,
-} from "react-native";
-import { useLocalSearchParams } from "expo-router";
 import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState, useRef } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { authClient } from "@/lib/auth-client";
-import { Review, Album } from "@/lib/types";
+import { Album, Review } from "@/lib/types";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+    StyleSheet,
+    Text,
+    View
+} from "react-native";
 
 import { getColors } from "react-native-image-colors";
 
 import { Palette } from "@/lib/types";
 
-import AlbumHeader from "@/components/reviews/display/header";
-import PageContent from "@/components/reviews/display/content";
 import AlbumScreen from "@/components/reviews/display/main";
 
 export default function ReviewPage() {
@@ -45,7 +33,7 @@ export default function ReviewPage() {
                     "Album data fetched successfully:",
                     reviewDataRes[0].album_id,
                 );
-                setReviewData(reviewDataRes);
+                setReviewData(reviewDataRes[0]);
 
                 const albumDataRes = await api(
                     `/albuns/${reviewDataRes[0].album_id}`,
@@ -75,7 +63,11 @@ export default function ReviewPage() {
     return (
         <>
             {reviewData && albumData ? (
-                <AlbumScreen reviewData={reviewData} albumData={albumData} colors={colors} />
+                <AlbumScreen
+                    reviewData={reviewData}
+                    albumData={albumData}
+                    colors={colors}
+                />
             ) : (
                 <View style={styles.container}>
                     <Text style={styles.title}>Carregando...</Text>
@@ -93,7 +85,7 @@ const styles = StyleSheet.create({
         color: "#eeeeee",
         alignItems: "center",
         width: "100%",
-        marginBottom: 100,
+        marginBottom: 200,
         marginTop: 300,
     },
     main: {

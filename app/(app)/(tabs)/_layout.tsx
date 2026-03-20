@@ -3,7 +3,7 @@ import { authClient } from "@/lib/auth-client";
 import { useState, useEffect } from "react";
 import { Tabs, Redirect, Stack } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { StyleSheet, View, ActivityIndicator } from "react-native";
+import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { apiAuth } from "@/lib/api";
 
@@ -30,7 +30,7 @@ export default function TabsDynamicLayout() {
                 // console.log("Perfil do usuário:", response.public);
             } catch (error) {
                 console.error("Erro ao buscar perfil:", error);
-                setIsProfilePublic(false); 
+                setIsProfilePublic(false);
             } finally {
                 setIsProfileLoading(false);
             }
@@ -63,63 +63,69 @@ export default function TabsDynamicLayout() {
     }
 
     return (
-        <Tabs
-            screenOptions={{
-                headerShown: false,
-                tabBarStyle: styles.tabBar,
-                tabBarItemStyle: styles.tabBarItem,
-                tabBarIconStyle: styles.tabBarIcon,
-                // tabBarBackground: () => (
-                //     <BlurView
-                //     experimentalBlurMethod="dimezisBlurView" // Use WebGL for better performance on supported platforms
-                //         tint="dark" // Can be "light", "dark", or "default"
-                //         intensity={30} // Adjust the intensity of the blur
-                //         style={StyleSheet.absoluteFill} // Ensures the BlurView covers the entire tab bar area
-                //     />
-                // ),
-            }}
-        >
-            <Tabs.Screen
-                name="(home)"
-                options={{
+        <>
+            {/* <View style={{ position: "absolute", top: 40, left: 20, zIndex: 100 }}>
+                <Text>+</Text>
+            </View> */}
+        
+            <Tabs
+                screenOptions={{
                     headerShown: false,
-                    title: "Home",
-                    tabBarIcon: ({ color }) => (
-                        <Icon
-                            type="home"
-                            color={color}
-                            size={24}
-                            style={{ height: 24, width: 24 }}
-                        />
-                    ),
+                    tabBarStyle: styles.tabBar,
+                    tabBarItemStyle: styles.tabBarItem,
+                    tabBarIconStyle: styles.tabBarIcon,
+                    // tabBarBackground: () => (
+                    //     <BlurView
+                    //     experimentalBlurMethod="dimezisBlurView" // Use WebGL for better performance on supported platforms
+                    //         tint="dark" // Can be "light", "dark", or "default"
+                    //         intensity={30} // Adjust the intensity of the blur
+                    //         style={StyleSheet.absoluteFill} // Ensures the BlurView covers the entire tab bar area
+                    //     />
+                    // ),
                 }}
-            />
-            <Tabs.Screen
-                name="(search)"
-                options={{
-                    headerShown: false,
-                    title: "Pesquisa",
-                    tabBarIcon: ({ color }) => (
-                        <Icon
-                            type="search"
-                            color={color}
-                            size={24}
-                            style={{ height: 24, width: 24 }}
-                        />
-                    ),
-                }}
-            />
-            <Tabs.Screen
-                name="(profile)"
-                options={{
-                    headerShown: false,
-                    title: "Perfil",
-                    tabBarIcon: ({ color }) => (
-                        <FontAwesome name="user" size={20} color={color} />
-                    ),
-                }}
-            />
-        </Tabs>
+            >
+                <Tabs.Screen
+                    name="(home)"
+                    options={{
+                        headerShown: false,
+                        title: "Home",
+                        tabBarIcon: ({ color }) => (
+                            <Icon
+                                type="home"
+                                color={color}
+                                size={24}
+                                style={{ height: 24, width: 24 }}
+                            />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="(search)"
+                    options={{
+                        headerShown: false,
+                        title: "Pesquisa",
+                        tabBarIcon: ({ color }) => (
+                            <Icon
+                                type="search"
+                                color={color}
+                                size={24}
+                                style={{ height: 24, width: 24 }}
+                            />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="(profile)"
+                    options={{
+                        headerShown: false,
+                        title: "Perfil",
+                        tabBarIcon: ({ color }) => (
+                            <FontAwesome name="user" size={20} color={color} />
+                        ),
+                    }}
+                />
+            </Tabs>
+        </>
     );
 }
 
@@ -131,7 +137,7 @@ const styles = StyleSheet.create({
     },
     tabBarItem: {
         borderRadius: 8,
-        // height: 56,
+        height: 56,
         margin: 0,
         alignItems: "center",
         justifyContent: "center",

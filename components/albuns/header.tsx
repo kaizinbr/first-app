@@ -50,8 +50,11 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
     },
     albumArt: {
-        width: 200,
-        height: 200,
+        width: "60%",
+        height: "auto",
+        aspectRatio: 1,
+        minHeight: 200,
+        minWidth: 200,
         borderRadius: 12,
         marginTop: 100,
         marginBottom: 32,

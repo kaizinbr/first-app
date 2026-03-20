@@ -13,6 +13,7 @@ interface GradientCardProps {
     value: string;
     subtitle?: number;
     onPress?: () => void;
+    editor?: boolean;
 }
 
 export function AlbumCard({
@@ -20,10 +21,13 @@ export function AlbumCard({
     value,
     subtitle,
     onPress,
+    editor,
 }: GradientCardProps) {
     const Wrapper = onPress ? TouchableOpacity : View;
 
     const [colors, setColors] = useState<Palette | any>(null);
+
+    const imgSize = editor ? 80 : 120;
 
     useEffect(() => {
         const fetchColors = async () => {
@@ -47,15 +51,12 @@ export function AlbumCard({
         <Wrapper style={{ marginTop: 12 }} activeOpacity={0.8}>
             {colors && (
                 <LinearGradient
-                    colors={[
-                        selectRightColor(colors),
-                        "#282b30",
-                    ]}
+                    colors={[selectRightColor(colors), "#282b30"]}
                     start={{ x: 0, y: 0.5 }}
                     end={{ x: 1, y: 0.5 }}
                     style={{
                         padding: 12,
-                        borderRadius: 8,
+                        borderRadius: 14,
                         borderWidth: 1,
                         borderColor: "#333",
                         flexDirection: "row",
@@ -65,14 +66,25 @@ export function AlbumCard({
                     <Image
                         source={{ uri: image }}
                         style={{
-                            width: 120,
-                            height: 120,
+                            width: imgSize,
+                            height: imgSize,
                             borderRadius: 8,
                             objectFit: "cover",
                         }}
                     />
 
                     <View style={{ marginLeft: 12, flexShrink: 1 }}>
+                        {editor && (
+                            <Text
+                                style={{
+                                    color: "#e9eaeb",
+                                    fontSize: 12,
+                                    marginBottom: 4,
+                                }}
+                            >
+                                Avaliação
+                            </Text>
+                        )}
                         <Text
                             style={{
                                 color: "#eee",
@@ -82,8 +94,7 @@ export function AlbumCard({
                         >
                             {value}
                         </Text>
-
-                        {subtitle && (
+                        {/* {subtitle && (
                             <Text
                                 style={{
                                     marginTop: 4,
@@ -93,7 +104,7 @@ export function AlbumCard({
                             >
                                 {subtitle} músicas avaliadas
                             </Text>
-                        )}
+                        )} */}
                     </View>
                 </LinearGradient>
             )}
