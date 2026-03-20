@@ -15,6 +15,8 @@ import { Album, Track, Review, Palette } from "@/lib/types";
 import PostEditor from "@/components/reviews/rich-text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+
 export default function ReviewStep({
     reviewData,
     total,
@@ -22,8 +24,7 @@ export default function ReviewStep({
     goBack,
     onSubmit,
     text,
-    setText
-
+    setText,
 }: {
     reviewData: {
         reviewed: boolean;
@@ -41,21 +42,24 @@ export default function ReviewStep({
 
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
-            <View
-                style={styles.header}
-            >
-                <Pressable onPress={goBack}>
-                    <Text style={styles.textDefault}>Cancelar</Text>
+            <View style={styles.header}>
+                <Pressable onPress={goBack} style={[{ top: 8 }]}>
+                    <AltArrowLeft size={32} color="#eee" />
                 </Pressable>
                 {/* <Text style={styles.textDefault}>{reviewData.album.name}</Text> */}
 
-                <Pressable onPress={onSubmit}>
+                <Pressable onPress={onSubmit} style={styles.btn}>
                     <Text style={styles.textDefault}>Publicar</Text>
                 </Pressable>
             </View>
             {/* Rich text editor */}
             <View style={styles.editorContainer}>
-                <PostEditor onChange={setText} reviewData={reviewData} total={total} />
+                <PostEditor
+                    onChange={setText}
+                    reviewData={reviewData}
+                    initialValue={reviewData.rating ? reviewData.rating.review : ""}
+                    total={total}
+                />
             </View>
         </View>
     );
@@ -119,5 +123,11 @@ const styles = StyleSheet.create({
     inputSide: {
         fontSize: 24,
         color: "#eeeeee",
+    },
+    btn: {
+        paddingVertical: 4,
+        paddingHorizontal: 16,
+        backgroundColor: "#00a8ff",
+        borderRadius: 999,
     },
 });

@@ -17,6 +17,7 @@ import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
 import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import Tracklist from "@/components/albuns/tracklist";
+import { AltArrowLeft } from '@solar-icons/react-native/Outline'
 
 export default function AlbumScreen({
     albumData,
@@ -106,19 +107,6 @@ export default function AlbumScreen({
                     end={{ x: 0, y: 1 }}
                     style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
                 />
-                {/* <View
-                    style={{
-                        width: 150,
-                        height: 150,
-                        backgroundColor: colors.muted,
-                        position: "absolute",
-                        zIndex: 100,
-                        right: -20,
-                        top: 0,
-                        filter: "blur(60px)",
-                    }}
-                ></View> */}
-                {/* Camada 2: Uma sombra que vem de baixo pra criar a "profundidade" do mesh */}
                 <LinearGradient
                     colors={["transparent", "rgba(22, 23, 24, 1)"]}
                     start={{ x: 0.5, y: 0.2 }}
@@ -151,6 +139,13 @@ export default function AlbumScreen({
             </Animated.View>
 
             {/* BOTÃO VOLTAR */}
+            
+            <Pressable
+                onPress={() => router.back()}
+                style={[styles.backButton, { top: insets.top + 4 }]}
+            >
+                <AltArrowLeft  size={32} color="#eee" />
+            </Pressable>
 
             <Pressable
                 onPress={() =>

@@ -1,5 +1,6 @@
 // import { Host, Slider } from "@expo/ui/jetpack-compose";
-import Slider from "@react-native-community/slider";
+import { Slider } from "react-native-awesome-slider";
+import { useSharedValue } from "react-native-reanimated";
 import React, { useRef, useState, useEffect, use } from "react";
 import {
     KeyboardAvoidingView,
@@ -11,13 +12,16 @@ import {
     Text,
     TextInput,
 } from "react-native";
-import { Album, Track, Review, Rating } from "@/lib/types";
+import { Album, Track, Review, Rating, Palette } from "@/lib/types";
+import { selectRightColor } from "@/lib/util/selectRightColor";
+import { darkenColor } from "@/lib/util/workWithColors";
 
 export function TrackRating({
     trackData,
     reviewData,
     setRatings,
     initialValue,
+    colors,
 }: {
     trackData: Track;
     reviewData:
@@ -40,26 +44,57 @@ export function TrackRating({
         >
     >;
     initialValue?: number;
+    colors: Palette | any;
 }) {
     const [value, setValue] = useState(
         reviewData ? reviewData.value : initialValue || 0,
     );
-    const handleChange = (num: number) => {
-        const numericValue = Number(num.toFixed(2));
-        if (!isNaN(numericValue) && numericValue >= 0 && numericValue <= 100) {
-            setValue(numericValue);
-            setRatings((prevRatings) =>
-                prevRatings.map((rating) =>
-                    rating.id === trackData.id
-                        ? { ...rating, value: numericValue }
-                        : rating,
-                ),
-            );
+
+    // progress sincronizado com o estado
+    const progress = useSharedValue(
+        reviewData ? reviewData.value : initialValue || 0,
+    );
+    const min = useSharedValue(0);
+    const max = useSharedValue(100);
+
+    const handleSliderChange = (num: number) => {
+        const numericValue = Math.round(num); // slider pode dar decimais mesmo com step=1
+        progress.value = numericValue;
+        setValue(numericValue);
+        setRatings((prevRatings) =>
+            prevRatings.map((rating) =>
+                rating.id === trackData.id
+                    ? { ...rating, value: numericValue }
+                    : rating,
+            ),
+        );
+    };
+
+    // Handler específico do input — recebe string
+    const handleInputChange = (text: string) => {
+        if (text === "" || text === ".") {
+            setValue(0);
+            progress.value = 0;
+            return;
         }
+        const numericValue = parseFloat(text);
+        if (isNaN(numericValue)) return;
+        const clamped = Math.min(100, Math.max(0, numericValue));
+        setValue(clamped);
+        progress.value = clamped;
+        setRatings((prevRatings) =>
+            prevRatings.map((rating) =>
+                rating.id === trackData.id
+                    ? { ...rating, value: clamped }
+                    : rating,
+            ),
+        );
     };
 
     useEffect(() => {
-        setValue(reviewData ? reviewData.value : initialValue || 0);
+        const newValue = reviewData ? reviewData.value : initialValue || 0;
+        setValue(newValue);
+        progress.value = newValue; // atualiza o slider ao trocar de música
     }, [trackData, reviewData, initialValue]);
 
     return (
@@ -73,7 +108,7 @@ export function TrackRating({
                 >
                     {trackData.name}
                 </Text>
-                <Text style={{ color: "#777", fontSize: 14, marginBottom:0 }}>
+                <Text style={{ color: "#777", fontSize: 14, marginBottom: 0 }}>
                     {trackData.artists.map((artist) => artist.name).join(", ")}
                 </Text>
 
@@ -82,24 +117,41 @@ export function TrackRating({
                     <View style={styles.inputWrapper}>
                         <TextInput
                             style={styles.input}
+                            value={value === 0 ? "" : value.toString()}
+                            onChangeText={handleInputChange}
                             placeholder="0"
                             keyboardType="numeric"
-                            value={value === 0 ? "" : value.toString()}
-                            onChangeText={(num) => handleChange(Number(num))}
                         />
                         <Text style={styles.inputSide}>/100</Text>
                     </View>
                 </View>
                 <Slider
-                    value={value}
-                    minimumValue={0}
-                    maximumValue={100}
-                    step={1}
-                    minimumTrackTintColor="#1DB954"
-                    maximumTrackTintColor="#777"
-                    thumbTintColor="#1DB954"
-                    onValueChange={handleChange}
-                    style={{ width: "100%", height: 40 }}
+                    progress={progress}
+                    minimumValue={min}
+                    maximumValue={max}
+                    // step={1}
+                    // minimumTrackTintColor="#1DB954"
+                    // maximumTrackTintColor="#777"
+                    // thumbTintColor="#1DB954"
+                    onValueChange={handleSliderChange}
+                    style={{ width: "100%", marginBottom: 16 }}
+                    theme={{
+                        minimumTrackTintColor: darkenColor(
+                            selectRightColor(colors),
+                            0.1,
+                        ),
+                        maximumTrackTintColor: "#333",
+                        bubbleBackgroundColor: darkenColor(
+                            selectRightColor(colors),
+                            0.5,
+                        ),
+                        
+                    }}
+                    containerStyle={{
+                        height: 12, // grossura da trilha
+                        borderRadius: 6,
+                    }}
+                    thumbWidth={18}
                 />
             </View>
         </KeyboardAvoidingView>
@@ -109,7 +161,7 @@ export function TrackRating({
 export default function TrackRater({
     reviewData,
     setRatings,
-    
+    colors,
 }: {
     reviewData: {
         reviewed: boolean;
@@ -127,6 +179,7 @@ export default function TrackRater({
             }[]
         >
     >;
+    colors: Palette | any;
 }) {
     const [currentTrack, setCurrentTrack] = useState(0);
     const [trackData, setTrackData] = useState<Track | null>(null);
@@ -161,6 +214,7 @@ export default function TrackRater({
                 reviewData={trackRating}
                 setRatings={setRatings}
                 initialValue={0}
+                colors={colors}
             />
 
             <View
@@ -187,7 +241,9 @@ export default function TrackRater({
                 >
                     <Text style={{ color: "#eee" }}>Anterior</Text>
                 </Pressable>
-                <Text style={{ color: "#777", fontSize: 14, alignSelf: "center" }}>
+                <Text
+                    style={{ color: "#777", fontSize: 14, alignSelf: "center" }}
+                >
                     {currentTrack + 1}/{reviewData.album.tracks.items.length}
                 </Text>
                 <Pressable
@@ -231,7 +287,7 @@ const styles = StyleSheet.create({
         color: "#eee",
         borderRadius: 8,
     },
-    
+
     textDefault: {
         color: "#eee",
         fontSize: 16,

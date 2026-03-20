@@ -30,8 +30,8 @@ export async function apiAuthPost(path: string, body: any) {
         Cookie: cookies,
         "Content-Type": "application/json",
     };
-    // const response = await fetch(`https://api.kaizin.work/api${path}`, {
-    const response = await fetch(`http://192.168.18.152:3000/api${path}`, {
+    const response = await fetch(`https://api.kaizin.work/api${path}`, {
+    // const response = await fetch(`http://192.168.18.152:3000/api${path}`, {
         method: "POST",
         headers,
         credentials: "omit",

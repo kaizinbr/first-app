@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { Tabs, Redirect, Stack } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { HomeSmileAngle , MinimalisticMagnifier, User } from '@solar-icons/react-native/Bold'
 import { apiAuth } from "@/lib/api";
 
 export default function TabsDynamicLayout() {
@@ -17,7 +17,6 @@ export default function TabsDynamicLayout() {
     const [isProfileLoading, setIsProfileLoading] = useState(true);
 
     useEffect(() => {
-        // Se não tem sessão, não precisamos buscar o perfil
         if (!session) {
             setIsProfileLoading(false);
             return;
@@ -74,28 +73,15 @@ export default function TabsDynamicLayout() {
                     tabBarStyle: styles.tabBar,
                     tabBarItemStyle: styles.tabBarItem,
                     tabBarIconStyle: styles.tabBarIcon,
-                    // tabBarBackground: () => (
-                    //     <BlurView
-                    //     experimentalBlurMethod="dimezisBlurView" // Use WebGL for better performance on supported platforms
-                    //         tint="dark" // Can be "light", "dark", or "default"
-                    //         intensity={30} // Adjust the intensity of the blur
-                    //         style={StyleSheet.absoluteFill} // Ensures the BlurView covers the entire tab bar area
-                    //     />
-                    // ),
                 }}
             >
                 <Tabs.Screen
                     name="(home)"
                     options={{
                         headerShown: false,
-                        title: "Home",
+                        tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <Icon
-                                type="home"
-                                color={color}
-                                size={24}
-                                style={{ height: 24, width: 24 }}
-                            />
+                            <HomeSmileAngle size={28} color={color} />
                         ),
                     }}
                 />
@@ -103,14 +89,9 @@ export default function TabsDynamicLayout() {
                     name="(search)"
                     options={{
                         headerShown: false,
-                        title: "Pesquisa",
+                        tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <Icon
-                                type="search"
-                                color={color}
-                                size={24}
-                                style={{ height: 24, width: 24 }}
-                            />
+                            <MinimalisticMagnifier size={28} color={color} />
                         ),
                     }}
                 />
@@ -118,9 +99,9 @@ export default function TabsDynamicLayout() {
                     name="(profile)"
                     options={{
                         headerShown: false,
-                        title: "Perfil",
+                        tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <FontAwesome name="user" size={20} color={color} />
+                            <User size={28} color={color} />
                         ),
                     }}
                 />
@@ -138,6 +119,7 @@ const styles = StyleSheet.create({
     tabBarItem: {
         borderRadius: 8,
         height: 56,
+        width: 56,
         margin: 0,
         alignItems: "center",
         justifyContent: "center",
@@ -145,6 +127,7 @@ const styles = StyleSheet.create({
     },
     tabBarIcon: {
         // height: 50,
-        width: 24,
+        // width: 24,
+        flex: 1,
     },
 });

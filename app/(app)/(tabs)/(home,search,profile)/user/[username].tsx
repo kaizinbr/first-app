@@ -16,22 +16,52 @@ import { useEffect, useState } from "react";
 import ProfileTabs from "@/components/profile/profile-tabs";
 import { authClient } from "@/lib/auth-client";
 import { UserProfile } from "@/lib/types";
+import { getColors } from "react-native-image-colors";
+import { darkenColor } from "@/lib/util/workWithColors";
+import { selectRightColor } from "@/lib/util/selectRightColor";
+import { Palette } from "@/lib/types";
 
 export default function UserProfilePage() {
     const { username } = useLocalSearchParams();
     console.log("Username from params:", username);
 
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
+    const [colors, setColors] = useState<Palette | any>(null);
+    const [dominantColor, setDominantColor] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchProfileData = async () => {
             setProfileData(null);
-            console.log("Fetching profile data for username:", username, profileData);
+            console.log(
+                "Fetching profile data for username:",
+                username,
+                profileData,
+            );
             try {
                 const response = await apiAuth(`/users/${username}`);
                 console.log("Profile data fetched successfully:", response);
                 setProfileData(response);
                 console.log("Updated profileData state:", profileData);
+
+                getColors(response.avatar_url, {
+                    fallback: "#000",
+                    cache: true,
+                    key: response.avatar_url,
+                })
+                    .then((colors) => {
+                        const newColor = darkenColor(
+                            selectRightColor(colors as any),
+                            0.5,
+                        );
+                        console.log(
+                            "Colors fetched for profile avatar:",
+                            colors,
+                        );
+                        console.log("Darkened color:", newColor);
+                        setDominantColor(newColor);
+                        setColors(colors);
+                    })
+                    .catch(console.error);
             } catch (error) {
                 console.error("Error fetching profile data:", error);
             }
@@ -41,9 +71,13 @@ export default function UserProfilePage() {
 
     return (
         <View style={styles.container}>
-            {profileData ? (
+            {profileData && dominantColor && colors ? (
                 <View style={styles.main}>
-                    <ProfileTabs data={profileData} />
+                    <ProfileTabs
+                        data={profileData}
+                        dominantColor={dominantColor}
+                        colors={colors}
+                    />
                 </View>
             ) : (
                 <Text style={styles.textDefault}>Loading profile data...</Text>

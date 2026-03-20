@@ -10,6 +10,7 @@ import {
     View,
     Animated,
 } from "react-native";
+import {usePaginatedReviews} from "@/lib/util/usePaginatedReviews";
 
 import FeedHeader from "@/components/home/header";
 
@@ -26,92 +27,8 @@ export default function Feed({
     onColorChange,
     scrollOffsetY,
 }: FeedProps) {
-    const [reviews, setReviews] = useState<ReviewWithAlbum[]>([]);
-    const [loadingInitial, setLoadingInitial] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [hasMore, setHasMore] = useState(true);
+    const { reviews, loadingInitial, loadingMore, hasMore, loadMore, onMomentumScrollBegin } = usePaginatedReviews({ endpoint: "/reviews" });
 
-    const isFetching = useRef(false);
-    const onEndReachedCalledDuringMomentum = useRef(true);
-    const hasMoreRef = useRef(true);
-    const nextPageRef = useRef(1);
-    const requestedPagesRef = useRef(new Set<number>());
-    const loadedIdsRef = useRef(new Set<ReviewWithAlbum["id"]>());
-    const mountedRef = useRef(true);
-
-    const updateHasMore = (value: boolean) => {
-        hasMoreRef.current = value;
-        setHasMore(value);
-    };
-
-    useEffect(() => {
-        void fetchPage(1, true);
-        return () => { mountedRef.current = false; };
-    }, []);
-
-    const fetchPage = async (pageNumber: number, replace = false) => {
-        if (isFetching.current) return;
-        if (!replace && !hasMoreRef.current) return;
-        if (!replace && requestedPagesRef.current.has(pageNumber)) return;
-
-        requestedPagesRef.current.add(pageNumber);
-        isFetching.current = true;
-
-        // if (replace) setLoadingInitial(true);
-        // else setLoadingMore(true);
-
-        try {
-            const response = await api.get(`/reviews?p=${pageNumber}`);
-            const payload = response.data;
-            const incomingReviews: ReviewWithAlbum[] = Array.isArray(payload?.reviews)
-                ? payload.reviews
-                : Array.isArray(payload) ? payload : [];
-
-            if (!mountedRef.current) return;
-
-            if (replace) {
-                loadedIdsRef.current.clear();
-                requestedPagesRef.current.clear();
-                requestedPagesRef.current.add(1);
-                updateHasMore(true);
-            }
-
-            const uniqueReviews: ReviewWithAlbum[] = [];
-            for (const review of incomingReviews) {
-                if (!loadedIdsRef.current.has(review.id)) {
-                    loadedIdsRef.current.add(review.id);
-                    uniqueReviews.push(review);
-                }
-            }
-
-            if (replace) setReviews(uniqueReviews);
-            else if (uniqueReviews.length > 0) {
-                setReviews((prev) => [...prev, ...uniqueReviews]);
-            }
-
-            if (incomingReviews.length === 0 || (!replace && uniqueReviews.length === 0)) {
-                updateHasMore(false);
-                return;
-            }
-
-            nextPageRef.current = pageNumber + 1;
-        } catch (error) {
-            requestedPagesRef.current.delete(pageNumber);
-            console.error("Error fetching feed data:", error);
-        } finally {
-            if (!mountedRef.current) return;
-            setLoadingInitial(false);
-            setLoadingMore(false);
-            isFetching.current = false;
-        }
-    };
-
-    const loadMore = () => {
-        if (onEndReachedCalledDuringMomentum.current) return;
-        if (!hasMoreRef.current || loadingInitial || loadingMore || isFetching.current) return;
-        onEndReachedCalledDuringMomentum.current = true;
-        void fetchPage(nextPageRef.current);
-    };
 
     if (loadingInitial) {
         return (
@@ -132,9 +49,7 @@ export default function Feed({
             renderItem={({ item }) => <FeedCard review={item} />}
             onEndReached={loadMore}
             onEndReachedThreshold={0.2}
-            onMomentumScrollBegin={() => {
-                onEndReachedCalledDuringMomentum.current = false;
-            }}
+            onMomentumScrollBegin={onMomentumScrollBegin}
             onScroll={onScrollAnimado}
             scrollEventThrottle={16}
             ListHeaderComponent={

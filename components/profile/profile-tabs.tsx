@@ -1,7 +1,7 @@
 import * as React from "react";
 import { View, StyleSheet } from "react-native";
 import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
-import { UserProfile } from "@/lib/types";
+import { UserProfile, Palette } from "@/lib/types";
 
 import PostsRoute from "@/components/profile/posts";
 import ProfileHeader from "@/components/profile/header";
@@ -10,34 +10,51 @@ import FollowingRoute from "@/components/profile/following";
 import FollowersRoute from "@/components/profile/followers";
 import FixedTopBar from "@/components/profile/fixed-top-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { getColors } from "react-native-image-colors";
+import { darkenColor } from "@/lib/util/workWithColors";
+import { selectRightColor } from "@/lib/util/selectRightColor";
 
-export default function ProfileTabs({ data }: { data: UserProfile }) {
+export default function ProfileTabs({
+    data,
+    dominantColor = "#161718",
+    colors,
+    itsUser = false,
+}: {
+    data: UserProfile;
+    dominantColor: string;
+    colors: Palette;
+    itsUser?: boolean;
+}) {
     const insets = useSafeAreaInsets();
-    
-    // 1. DEFINIMOS A ALTURA EXATA AQUI E USAMOS EM TODOS OS LUGARES
+
     const FIXED_BAR_HEIGHT = insets.top + 50;
 
     const renderHeader = React.useCallback(() => {
         return (
             <View style={styles.headerWrapper}>
-                <ProfileHeader data={data} />
-                
-                <FixedTopBar title={data.name || "Perfil"} height={FIXED_BAR_HEIGHT} />
+                <ProfileHeader data={data} dominantColor={dominantColor} itsUser={itsUser} />
+                <FixedTopBar
+                    title={data.name || "Perfil"}
+                    height={FIXED_BAR_HEIGHT}
+                    dominantColor={dominantColor}
+                />
             </View>
         );
     }, [data.name, FIXED_BAR_HEIGHT]);
 
-    const renderTabBar = React.useCallback((props: any) => (
-        <MaterialTabBar
-            {...props}
-            scrollEnabled={true}
-            
-            indicatorStyle={{ backgroundColor: "#8065ef", height: 3 }}
-            style={{ backgroundColor: "#161718", elevation: 0, zIndex: 10 }}
-            activeColor="#eee"
-            inactiveColor="#777"
-        />
-    ), []);
+    const renderTabBar = React.useCallback(
+        (props: any) => (
+            <MaterialTabBar
+                {...props}
+                scrollEnabled={true}
+                indicatorStyle={{ backgroundColor: "#8065ef", height: 3 }}
+                style={{ backgroundColor: "#161718", elevation: 0, zIndex: 10 }}
+                activeColor="#eee"
+                inactiveColor="#777"
+            />
+        ),
+        [],
+    );
 
     return (
         <Tabs.Container
@@ -45,6 +62,7 @@ export default function ProfileTabs({ data }: { data: UserProfile }) {
             renderTabBar={renderTabBar}
             headerContainerStyle={{ shadowOpacity: 0, elevation: 0 }}
             minHeaderHeight={FIXED_BAR_HEIGHT}
+            
         >
             <Tabs.Tab name="reviews" label="Reviews">
                 <PostsRoute data={data} />
@@ -65,6 +83,6 @@ export default function ProfileTabs({ data }: { data: UserProfile }) {
 const styles = StyleSheet.create({
     headerWrapper: {
         width: "100%",
-        flex: 1,
+        // flex: 1,
     },
 });

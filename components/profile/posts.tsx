@@ -6,61 +6,91 @@ import {
     StyleSheet,
     ScrollView,
 } from "react-native";
-import { UserProfile, Review } from "@/lib/types";
-import { useEffect, useState } from "react";
+import { UserProfile, ReviewWithAlbum } from "@/lib/types";
+import { useEffect, useState, useCallback } from "react";
 import api, { apiAuth } from "@/lib/api";
 import { Tabs } from "react-native-collapsible-tab-view";
-
+import { ActivityIndicator } from "react-native";
 import FeedCard from "@/components/home/feed-card";
+import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
 
 export default function PostsRoute({ data }: { data: UserProfile }) {
-    const [userPosts, setUserPosts] = useState<{
-        totalReviews: number;
-        reviews: Review[];
-    } | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchUserPosts = async () => {
-            try {
-                const response = await api.get(
-                    `/users/${data.username}/reviews`,
-                );
-                setUserPosts(response.data);
-                // console.log("Feed data fetched successfully:", response.data);
-                // console.log("total reviews:", UserPosts!.totalReviews);
-            } catch (error) {
-                console.error("Error fetching feed data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserPosts();
-    }, []);
+    const { reviews, loadingInitial, loadingMore, hasMore, loadMoreForTabs } =
+        usePaginatedReviews({ endpoint: `/users/${data.username}/reviews` });
 
     const ItemSeparator = () => {
         return <View style={styles.separator} />;
     };
 
-    // 2. Criamos a função que vai renderizar cada item da lista
-    const renderItem = ({ item }: { item: Review }) => (
-        <FeedCard review={item} />
+    const handleScroll = useCallback(
+        (event: any) => {
+            const { layoutMeasurement, contentOffset, contentSize } =
+                event.nativeEvent;
+            const distanceFromEnd =
+                contentSize.height - layoutMeasurement.height - contentOffset.y;
+            if (distanceFromEnd < 300) {
+                loadMoreForTabs();
+            }
+        },
+        [loadMoreForTabs],
     );
 
     return (
         <Tabs.FlatList
-            data={userPosts?.reviews || []} // Passamos o array de dados aqui
-            keyExtractor={(item) => item.id.toString()} // Como ele identifica cada item único
-            renderItem={renderItem} // A função que desenha o card
-            ItemSeparatorComponent={ItemSeparator} // O SEPARADOR ENTRA AQUI!
+            data={reviews}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <FeedCard review={item} />}
+            ItemSeparatorComponent={ItemSeparator}
+            onEndReached={() => {
+                console.log("onEndReached fired");
+                loadMoreForTabs();
+            }}
+            onEndReachedThreshold={0.5}
             contentContainerStyle={{
                 paddingBottom: 80,
                 flexGrow: 1,
                 width: "100%",
-                paddingTop: 432,
+                // backgroundColor: "red",
             }}
             showsVerticalScrollIndicator={false}
+            ListFooterComponent={
+                loadingMore ? (
+                    <ActivityIndicator
+                        size="small"
+                        color="#00a8ff"
+                        style={{ marginTop: 20 }}
+                    />
+                ) : !hasMore && reviews.length > 0 ? (
+                    <Text
+                        style={{
+                            color: "#777",
+                            textAlign: "center",
+                            marginTop: 20,
+                        }}
+                    >
+                        Fim!
+                    </Text>
+                ) : null
+            }
+            ListEmptyComponent={
+                loadingInitial ? (
+                    <ActivityIndicator
+                        size="large"
+                        color="#00a8ff"
+                        style={{ marginTop: 40 }}
+                    />
+                ) : (
+                    <Text
+                        style={{
+                            color: "#eee",
+                            textAlign: "center",
+                            marginTop: 40,
+                        }}
+                    >
+                        Nenhuma avaliação ainda.
+                    </Text>
+                )
+            }
         />
     );
 }

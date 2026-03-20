@@ -1,21 +1,33 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
+import api, { apiAuth } from "@/lib/api";
 
 import { getColors } from "react-native-image-colors";
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Palette } from "@/lib/types";
-import Avatar from "@/components/core/user-avatar";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor,getHeaderColor } from "@/lib/util/workWithColors";
+import { VerifiedCheck } from "@solar-icons/react-native/Bold";
+import { LinearGradient } from "expo-linear-gradient";
 
-export default function ProfileHeader({ data }: { data: UserProfile }) {
+export default function ProfileHeader({
+    data,
+    dominantColor,
+    itsUser,
+}: {
+    data: UserProfile;
+    dominantColor: string;
+    itsUser?: boolean;
+}) {
     const [colors, setColors] = useState<Palette | any>({
         dominant: "#8065ef",
         vibrant: "#8065ef",
         darkVibrant: "#8065ef",
         muted: "#8065ef",
     });
+    const [folowersCount, setFollowersCount] = useState(0);
+    const [followingCount, setFollowingCount] = useState(0);
+    const [reviewsCount, setReviewsCount] = useState(0);
+    const [isFollowing, setIsFollowing] = useState(false);
 
     useEffect(() => {
         const fetchColors = async () => {
@@ -36,15 +48,60 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
         fetchColors();
     }, []);
 
+    useEffect(() => {
+        const fetchFollowersCount = async () => {
+            try {
+                const response = await api(`/users/${data.username}/followers`);
+                setFollowersCount(response.data.followers.length);
+            } catch (error) {   
+                console.error("Error fetching followers count:", error);
+            }
+        };
+        const fetchFollowingCount = async () => {
+            try {
+                const response = await api(`/users/${data.username}/followings`);
+                setFollowingCount(response.data.followings.length);
+            } catch (error) {
+                console.error("Error fetching following count:", error);
+            }
+        };
+        
+        const checkIfFollowing = async () => {
+            try {                const response = await apiAuth(`/users/${data.username}/follow-check`);
+                setIsFollowing(response.data.isFollowing);
+            } catch (error) {   
+                console.error("Error checking following status:", error);
+            }
+        };
+        checkIfFollowing();
+        fetchFollowersCount();
+        fetchFollowingCount();
+    }, [data.username]);
+
+    // const dominantColor = colors ? selectRightColor(colors) : "#8065ef";
+
     return (
         <View style={styles.scene}>
-            <View
-                style={{
-                    ...styles.header,
-                    backgroundColor:
-                        getHeaderColor(colors) || "#161718",
-                }}
-            >
+            <LinearGradient
+                colors={[dominantColor, "#161718"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={StyleSheet.absoluteFill}
+            />
+            <LinearGradient
+                colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
+                start={{ x: 1, y: 0 }}
+                end={{ x: 0, y: 1 }}
+                style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
+            />
+            <LinearGradient
+                colors={["transparent", "rgba(22,23,24,1)"]}
+                start={{ x: 0.5, y: 0.1 }}
+                end={{ x: 0.5, y: 1 }}
+                style={StyleSheet.absoluteFill}
+            />
+
+            <View style={styles.header}>
                 <View style={styles.wrapper}>
                     <Image
                         source={{ uri: data.avatar_url }}
@@ -58,25 +115,56 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
                         ]}
                     />
                     {data.pronouns && (
-                        <View style={styles.pronouns}>
+                        <View
+                            style={[
+                                styles.pronouns,
+                                // { backgroundColor: dominantColor },
+                            ]}
+                        >
                             <Text style={styles.pronounstext}>
                                 {data.pronouns}
                             </Text>
                         </View>
                     )}
                 </View>
-                <Text style={styles.name}>{data.name}</Text>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 4,
+                    }}
+                >
+                    <Text style={styles.name}>{data.name}</Text>{" "}
+                    {data.verified && (
+                        <Text>
+                            <VerifiedCheck size={18} color="#8065ef" />
+                        </Text>
+                    )}
+                </View>
                 <Text style={styles.username}>@{data.username}</Text>
                 <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
                     <Text style={styles.textDefault}>0 reviews</Text>
-                    <Text style={styles.textDefault}>0 seguindo</Text>
-                    <Text style={styles.textDefault}>0 seguidores</Text>
+                    <Text style={styles.textDefault}>{followingCount} seguindo</Text>
+                    <Text style={styles.textDefault}>{folowersCount} seguidores</Text>
                 </View>
-                <Pressable style={styles.followBtn}>
-                    <Text style={{ color: "#eee", fontWeight: "bold" }}>
-                        Seguir
-                    </Text>
-                </Pressable>
+                {itsUser ? (
+                    <Pressable style={styles.followBtn}>
+                        <Text style={{ color: "#eee", fontWeight: "bold" }}>
+                            Editar perfil
+                        </Text>
+                    </Pressable>
+                ) : (
+                    <Pressable
+                        style={[
+                            styles.followBtn,
+                            { backgroundColor: "#8065ef" },
+                        ]}
+                    >
+                        <Text style={{ color: "#eee", fontWeight: "bold" }}>
+                            Seguir
+                        </Text>
+                    </Pressable>
+                )}
             </View>
         </View>
     );
@@ -84,16 +172,14 @@ export default function ProfileHeader({ data }: { data: UserProfile }) {
 
 const styles = StyleSheet.create({
     scene: {
-        // backgroundColor: "red",
+        overflow: "hidden",
+        position: "relative",
     },
-
     header: {
         padding: 16,
         paddingTop: 84,
         paddingBottom: 32,
         width: "100%",
-        color: "#eee",
-        borderRadius: 0,
         alignItems: "center",
     },
     wrapper: {
@@ -111,6 +197,9 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         color: "#eee",
         fontSize: 18,
+        alignItems: "center",
+        flexDirection: "row",
+        gap: 4,
     },
     username: {
         color: "#b9b9b9",

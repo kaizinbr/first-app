@@ -1,5 +1,7 @@
 import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
+import { truncateMarkdown } from "@/lib/util/truncate";
+
 import { authClient } from "@/lib/auth-client";
 import { useRouter, Href, Link } from "expo-router";
 import api from "@/lib/api";
@@ -43,6 +45,8 @@ type SpotifyAlbum = {
     popularity: number;
 };
 
+const MAX_PREVIEW_CHARS = 500;
+
 export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
     const router = useRouter();
     const { data: session } = authClient.useSession();
@@ -53,6 +57,14 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
         html: string;
     } | null>(null);
     const [loading, setLoading] = useState(true);
+
+        const previewContent = review.review
+        ? truncateMarkdown(review.review, MAX_PREVIEW_CHARS)
+        : null;
+
+    const isTruncated = review.review
+        ? review.review.length > MAX_PREVIEW_CHARS
+        : false;
 
     useEffect(() => {
         // const fetchFeedData = async () => {
@@ -67,6 +79,8 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
         //         setLoading(false);
         //     }
         // };
+
+        console.log("Review data received in FeedCard:", review);
 
         const fetchContent = async () => {
             if (!review.shorten) {
@@ -123,7 +137,36 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                         </Text>
                         {content ? (
                             <>
-                                <TiptapRenderer json={content.jsonContent} />
+                                {/* <TiptapRenderer json={content.jsonContent} /> */}
+                                <EnrichedMarkdownText
+                                    markdown={previewContent ? previewContent : ""}
+                                    markdownStyle={{
+                                        paragraph: {
+                                            color: "#eee",
+                                            fontSize: 14,
+                                            marginTop: 4,
+                                            lineHeight: 20,
+                                        },
+                                        h1: {
+                                            color: "#eee",
+                                            fontSize: 18,
+                                            fontWeight: "bold",
+                                            lineHeight: 24,
+                                            marginTop: 8,
+                                        },
+                                        h2: {
+                                            color: "#eee",
+                                            fontSize: 16,
+                                            fontWeight: "bold",
+                                            marginTop: 4,
+                                            lineHeight: 20,
+                                        },
+                                    }}
+                                    //   onLinkPress={({ url }) => Linking.openURL(url)}
+                                />
+                                {isTruncated && (
+                            <Text style={styles.readMore}>ler mais</Text>
+                        )}
                             </>
                         ) : null}
 
@@ -205,5 +248,11 @@ const styles = StyleSheet.create({
         marginTop: 8,
         color: "#aaa",
         fontSize: 12,
+    },
+    readMore: {
+        marginTop: 8,
+        color: "#8065ef",
+        fontSize: 14,
+        fontWeight: "bold",
     },
 });

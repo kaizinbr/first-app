@@ -102,7 +102,7 @@ export default function ReviewPage() {
             console.log("Ratings saved/updated", response.data);
 
             setShorten(response.data.shorten);
-            router.push({
+            router.replace({
                 pathname: `/review/[shorten]`,
                 params: { shorten: response.data.shorten }
             });

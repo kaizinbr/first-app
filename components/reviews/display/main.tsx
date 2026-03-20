@@ -19,6 +19,7 @@ import Tracklist from "@/components/reviews/display/tracklist";
 import { Album, Palette, Review } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
+import { AltArrowLeft  } from '@solar-icons/react-native/Linear'
 
 export default function AlbumScreen({
     reviewData,
@@ -152,13 +153,9 @@ export default function AlbumScreen({
             {/* BOTÃO VOLTAR */}
             <Pressable
                 onPress={() => router.back()}
-                style={[styles.backButton, { top: insets.top }]}
+                style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <Text
-                    style={{ color: "#eee", fontSize: 24, fontWeight: "bold" }}
-                >
-                    ←
-                </Text>
+                <AltArrowLeft  size={32} color="#eee" />
             </Pressable>
 
             {/* O CONTEÚDO DA PÁGINA */}

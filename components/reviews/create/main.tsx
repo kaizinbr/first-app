@@ -12,7 +12,7 @@ import Animated, {
     runOnJS,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import TrackRating from "@/components/reviews/tracks";
+import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 
 import AlbumData from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
@@ -21,8 +21,6 @@ import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import TrackRater from "@/components/reviews/create/track-rating";
 import ReviewStep from "@/components/reviews/create/review";
-
-import CustomRangeSliderExample from "@/components/reviews/create/track-rating";
 
 export default function ReviewCreateMain({
     reviewData,
@@ -36,7 +34,7 @@ export default function ReviewCreateMain({
     useMedia,
     setUseMedia,
     handleSubmit,
-    text, 
+    text,
     setText,
 }: {
     reviewData: {
@@ -193,17 +191,9 @@ export default function ReviewCreateMain({
 
                     <Pressable
                         onPress={() => router.back()}
-                        style={[styles.backButton, { top: insets.top }]}
+                        style={[styles.backButton, { top: insets.top + 4 }]}
                     >
-                        <Text
-                            style={{
-                                color: "#eee",
-                                fontSize: 24,
-                                fontWeight: "bold",
-                            }}
-                        >
-                            ←
-                        </Text>
+                        <AltArrowLeft size={32} color="#eee" />
                     </Pressable>
 
                     <Animated.ScrollView
@@ -313,6 +303,7 @@ export default function ReviewCreateMain({
                                 <TrackRater
                                     reviewData={reviewData}
                                     setRatings={setRatings}
+                                    colors={colors}
                                 />
 
                                 <Pressable
