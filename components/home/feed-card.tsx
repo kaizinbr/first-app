@@ -80,7 +80,7 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
         //     }
         // };
 
-        console.log("Review data received in FeedCard:", review);
+        // console.log("Review data received in FeedCard:", review);
 
         const fetchContent = async () => {
             if (!review.shorten) {

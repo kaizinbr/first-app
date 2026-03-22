@@ -10,10 +10,7 @@ import { getColors } from "react-native-image-colors";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { Palette } from "@/lib/types";
-
-const blurhash =
-    "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
-
+import { SkeletonProfile } from "@/components/core/skeletons";
 export default function Index() {
     const { data: session } = authClient.useSession();
 
@@ -68,8 +65,9 @@ export default function Index() {
                     itsUser={true}
                 />
             ) : (
-                <Text>Loading profile data...</Text>
+                <SkeletonProfile />
             )}
+            
             {/* <Button onPress={handleLogoff}>Logoff</Button> */}
         </>
     );

@@ -8,6 +8,7 @@ import {
     UserProfile,
     Review,
 } from "@/lib/types";
+import {AvatarNoPress} from "@/components/core/avatar";
 
 import { Image } from "expo-image";
 
@@ -24,7 +25,10 @@ export function ResultUserBtn({ data }: { data: UserProfile }) {
             ]}
             onPress={handlePress}
         >
-            <Image source={{ uri: data.avatar_url }} style={styles.avatar} />
+            <AvatarNoPress
+                data={data}
+                size={40}
+            />
             <View style={styles.btnTextWrapper}>
                 <Text style={styles.btnText}>{data.name}</Text>
                 <Text style={styles.btnSubtext}>@{data.username}</Text>
@@ -136,18 +140,20 @@ const styles = StyleSheet.create({
     btnMain: {
         backgroundColor: "transparent",
         width: "100%",
-        padding: 8,
-        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 12,
 
         flexDirection: "row",
         alignItems: "center",
         gap: 10,
     },
     pressedBtnMain: {
-        backgroundColor: "#3a3a3a",
+        backgroundColor: "#222",
         width: "100%",
-        padding: 8,
-        borderRadius: 16,
+        paddingVertical: 12,
+        paddingHorizontal: 12,
+        borderRadius: 12,
         flexDirection: "row",
         alignItems: "center",
         gap: 10,

@@ -6,10 +6,12 @@ import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
 import { HomeSmileAngle , MinimalisticMagnifier, User } from '@solar-icons/react-native/Bold'
 import { apiAuth } from "@/lib/api";
+import {AvatarNoPress} from "@/components/core/avatar";
 
 export default function TabsDynamicLayout() {
     const { data: session, isPending } = authClient.useSession();
     const isLoggedIn = !!session;
+    const [profile, setProfile] = useState<any>(null);
 
     const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(
         null,
@@ -26,7 +28,8 @@ export default function TabsDynamicLayout() {
             try {
                 const response = await apiAuth("/me");
                 setIsProfilePublic(response.public);
-                // console.log("Perfil do usuário:", response.public);
+                setProfile(response);
+                console.log("Perfil do usuário:", response.public);
             } catch (error) {
                 console.error("Erro ao buscar perfil:", error);
                 setIsProfilePublic(false);
@@ -66,7 +69,6 @@ export default function TabsDynamicLayout() {
             {/* <View style={{ position: "absolute", top: 40, left: 20, zIndex: 100 }}>
                 <Text>+</Text>
             </View> */}
-        
             <Tabs
                 screenOptions={{
                     headerShown: false,
@@ -101,7 +103,11 @@ export default function TabsDynamicLayout() {
                         headerShown: false,
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <User size={28} color={color} />
+                            profile ? (
+                                <AvatarNoPress data={profile} size={28} />
+                            ) : (
+                                <User size={28} color={color} />
+                            )
                         ),
                     }}
                 />

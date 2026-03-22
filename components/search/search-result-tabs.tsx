@@ -185,7 +185,7 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         gap: 10,
         height: 50,
-        // width: "100%",
+        minWidth: "100%",
     },
 
     container: {
@@ -194,5 +194,6 @@ const styles = StyleSheet.create({
         justifyContent: "flex-start",
         gap: 8,
         paddingHorizontal: 16,
+        // flex: 1,
     },
 });

@@ -1,17 +1,24 @@
 import {
     View,
     Text,
-    Image,
     Button,
     StyleSheet,
     ScrollView,
-    Pressable
+    Pressable,
+    FlatList,
+    useWindowDimensions,
 } from "react-native";
 import { UserProfile, Review } from "@/lib/types";
 import { Tabs } from "react-native-collapsible-tab-view";
-import { ArrowRightUp } from '@solar-icons/react-native/Linear'
+import { ArrowRightUp } from "@solar-icons/react-native/Linear";
+import { Image } from "expo-image";
 
 export default function AboutRoute({ data }: { data: UserProfile }) {
+    const GAP = 8;
+    const COLUMNS = 4; // quantas colunas quer
+
+    const { width } = useWindowDimensions();
+    const itemSize = (width - 48 - GAP * (COLUMNS + 1)) / COLUMNS;
     return (
         <Tabs.ScrollView
             contentContainerStyle={{
@@ -26,13 +33,13 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
             <View style={styles.scene}>
                 <View style={styles.sec}>
                     {data.bio && (
-                        <View >
+                        <View>
                             <Text style={styles.title}>Bio</Text>
                             <Text style={styles.textDefault}>{data.bio}</Text>
                         </View>
                     )}
                     {data.location && (
-                        <View >
+                        <View>
                             <Text style={styles.title}>Location</Text>
                             <Text style={styles.textDefault}>
                                 {data.location}
@@ -40,7 +47,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                         </View>
                     )}
 
-                    <View >
+                    <View>
                         <Text style={styles.title}>Membro desde</Text>
                         <Text style={styles.textDefault}>
                             {new Date(data.created_at).toLocaleDateString(
@@ -55,16 +62,90 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                     </View>
                 </View>
                 {data.site && (
-                    <Pressable style={[styles.sec, { flexDirection: "row", alignItems: "center", justifyContent: "space-between" }]} onPress={() => {
-                        // Lógica para abrir o site, por exemplo, usando Linking
-                    }}>
-                        <Text style={styles.textDefault}>{data.site}</Text> 
+                    <Pressable
+                        style={[
+                            styles.sec,
+                            {
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            },
+                        ]}
+                        onPress={() => {
+                            // Lógica para abrir o site, por exemplo, usando Linking
+                        }}
+                    >
+                        <Text style={styles.textDefault}>{data.site}</Text>
                         <ArrowRightUp size={18} color="#eee" />
                     </Pressable>
                 )}
-                <Text style={styles.textDefault}>
-                    Verified: {data.verified ? "Yes" : "No"}
-                </Text>
+                {data.favorites[0].albuns.length > 0 ||
+                    (data.favorites[0].artists.length > 0 && (
+                        <View style={styles.sec}>
+                            {data.favorites[0].albuns.length > 0 && (
+                                <View style={{ width: "100%" }}>
+                                    <Text style={styles.title}>
+                                        Álbuns favoritos
+                                    </Text>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            flexWrap: "wrap",
+                                            gap: GAP,
+                                            marginTop: 8,
+                                            width: "100%",
+                                        }}
+                                    >
+                                        {data.favorites[0].albuns.map(
+                                            (album: any) => (
+                                                <Image
+                                                    key={album.id}
+                                                    source={{ uri: album.src }}
+                                                    style={{
+                                                        width: itemSize,
+                                                        height: itemSize,
+                                                        borderRadius: 8,
+                                                    }}
+                                                    contentFit="cover"
+                                                />
+                                            ),
+                                        )}
+                                    </View>
+                                </View>
+                            )}
+                            {data.favorites[0].artists.length > 0 && (
+                                <View style={{ width: "100%" }}>
+                                    <Text style={styles.title}>
+                                        Artistas favoritos
+                                    </Text>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            flexWrap: "wrap",
+                                            gap: GAP,
+                                            marginTop: 8,
+                                            width: "100%",
+                                        }}
+                                    >
+                                        {data.favorites[0].artists.map(
+                                            (artist: any) => (
+                                                <Image
+                                                    key={artist.id}
+                                                    source={{ uri: artist.src }}
+                                                    style={{
+                                                        width: itemSize,
+                                                        height: itemSize,
+                                                        borderRadius: 9999,
+                                                    }}
+                                                    contentFit="cover"
+                                                />
+                                            ),
+                                        )}
+                                    </View>
+                                </View>
+                            )}
+                        </View>
+                    ))}
             </View>
         </Tabs.ScrollView>
     );

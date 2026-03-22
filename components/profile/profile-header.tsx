@@ -65,17 +65,27 @@ export default function ProfileHeader({
                 console.error("Error fetching following count:", error);
             }
         };
-        
-        const checkIfFollowing = async () => {
-            try {                const response = await apiAuth(`/users/${data.username}/follow-check`);
-                setIsFollowing(response.data.isFollowing);
-            } catch (error) {   
-                console.error("Error checking following status:", error);
+        const fetchReviewsCount = async () => {
+            try {
+                const response = await api(`/users/${data.username}/reviews`);
+                setReviewsCount(response.data.totalReviews);
+            } catch (error) {
+                console.error("Error fetching reviews count:", error);
             }
         };
-        checkIfFollowing();
+        
+        // const checkIfFollowing = async () => {
+        //     try {                const response = await apiAuth(`/users/${data.username}/follow-check`);
+        //         setIsFollowing(response.data);
+        //         console.log(`Is following ${data.username}:`, response.data);
+        //     } catch (error) {   
+        //         console.error("Error checking following status:", error);
+        //     }
+        // };
+        // checkIfFollowing();
         fetchFollowersCount();
         fetchFollowingCount();
+        fetchReviewsCount();
     }, [data.username]);
 
     // const dominantColor = colors ? selectRightColor(colors) : "#8065ef";
@@ -143,7 +153,7 @@ export default function ProfileHeader({
                 </View>
                 <Text style={styles.username}>@{data.username}</Text>
                 <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
-                    <Text style={styles.textDefault}>0 reviews</Text>
+                    <Text style={styles.textDefault}>{reviewsCount} reviews</Text>
                     <Text style={styles.textDefault}>{followingCount} seguindo</Text>
                     <Text style={styles.textDefault}>{folowersCount} seguidores</Text>
                 </View>

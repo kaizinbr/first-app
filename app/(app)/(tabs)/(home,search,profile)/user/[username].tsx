@@ -20,6 +20,7 @@ import { getColors } from "react-native-image-colors";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { Palette } from "@/lib/types";
+import { SkeletonProfile } from "@/components/core/skeletons";
 
 export default function UserProfilePage() {
     const { username } = useLocalSearchParams();
@@ -80,7 +81,7 @@ export default function UserProfilePage() {
                     />
                 </View>
             ) : (
-                <Text style={styles.textDefault}>Loading profile data...</Text>
+                <SkeletonProfile />
             )}
         </View>
     );
