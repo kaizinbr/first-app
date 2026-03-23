@@ -29,8 +29,23 @@ export interface ArtistDetail extends Artist {
     genres?: string[];
     popularity?: number;
 }
+export interface ArtistResponse extends Artist {
+    followers?: Href & { total: number };
+    genres?: string[];
+    popularity?: number;
+    type: string;
+    uri: string;
+    description: string;
+    wikipediaUrl: string;
+    wikipediaThumbnail: string;
+    origin: string;
+    gender: null;
+    beginDate: string;
+    endDate: null;
+    tags: string[];
+    disambiguation: string;
+}
 
-// Album
 export interface Album {
     album_type: string;
     artists: Artist[];

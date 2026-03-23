@@ -5,6 +5,7 @@ import {
     Button,
     StyleSheet,
     ScrollView,
+    ActivityIndicator,
 } from "react-native";
 import { UserProfile, Review } from "@/lib/types";
 import { useEffect, useState } from "react";
@@ -46,11 +47,30 @@ export default function FollowingRoute({ data }: { data: UserProfile }) {
 
     return (
         <Tabs.FlatList
-            data={userFollowings?.followings || []} // Passamos o array de dados aqui
-            keyExtractor={(item) => item.id.toString()} // Como ele identifica cada item único
-            renderItem={({ item }) => <UserCards data={item} />} // A função que desenha o card
+            data={userFollowings?.followings || []}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => <UserCards data={item} />}
             ItemSeparatorComponent={ItemSeparator}
-            ListEmptyComponent={<Text style={styles.textDefault}>No following users found.</Text>}
+            ListEmptyComponent={
+                loading ? (
+                    <ActivityIndicator
+                        size="large"
+                        color="#8065ef"
+                        style={{ marginTop: 40 }}
+                    />
+                ) : (
+                    <Text
+                        style={{
+                            color: "#eee",
+                            textAlign: "center",
+                            marginTop: 40,
+                        }}
+                    >
+                        Parece que {data.name || data.username} não segue
+                        ninguém ainda.
+                    </Text>
+                )
+            }
             contentContainerStyle={{
                 flexGrow: 1,
                 width: "100%",

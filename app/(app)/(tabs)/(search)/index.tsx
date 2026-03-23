@@ -31,8 +31,8 @@ export default function Index() {
             behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
                 <View style={styles.main}>
-                    <SearchInput results={results} setResults={setResults} type={type} />
-                    <SearchTabs results={results} setType={setType} type={type} />
+                    <SearchInput results={results} setResults={setResults} type={type} setLoading={setLoading} />
+                    <SearchTabs results={results} setType={setType} type={type} loading={loading} />
                 </View>
         </KeyboardAvoidingView>
     );

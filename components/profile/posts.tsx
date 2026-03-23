@@ -76,7 +76,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                 loadingInitial ? (
                     <ActivityIndicator
                         size="large"
-                        color="#00a8ff"
+                        color="#8065ef"
                         style={{ marginTop: 40 }}
                     />
                 ) : (

@@ -5,6 +5,7 @@ import {
     Button,
     StyleSheet,
     ScrollView,
+    ActivityIndicator,
 } from "react-native";
 import { UserProfile, Review } from "@/lib/types";
 import { useEffect, useState } from "react";
@@ -50,7 +51,25 @@ export default function FollowingRoute({ data }: { data: UserProfile }) {
             keyExtractor={(item) => item.id.toString()} // Como ele identifica cada item único
             renderItem={({ item }) => <UserCards data={item} />} // A função que desenha o card
             ItemSeparatorComponent={ItemSeparator}
-            ListEmptyComponent={<Text style={styles.textDefault}>No followers users found.</Text>}
+            ListEmptyComponent={
+                                        loading ? (
+                                            <ActivityIndicator
+                                                size="large"
+                                                color="#8065ef"
+                                                style={{ marginTop: 40 }}
+                                            />
+                                        ) : (
+                                            <Text
+                                                style={{
+                                                    color: "#eee",
+                                                    textAlign: "center",
+                                                    marginTop: 40,
+                                                }}
+                                            >
+                                                Parece que {data.name || data.username} não tem seguidores ainda...
+                                            </Text>
+                                        )
+                                    }
             contentContainerStyle={{
                 flexGrow: 1,
                 width: "100%",

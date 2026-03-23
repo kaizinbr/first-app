@@ -21,6 +21,7 @@ import {
     Text,
     useWindowDimensions,
     View,
+    ActivityIndicator,
 } from "react-native";
 
 type Props = {
@@ -29,6 +30,7 @@ type Props = {
     setType: (
         type: "tracks" | "artists" | "albums" | "users" | "reviews",
     ) => void;
+    loading: boolean;
 };
 
 function ItemRenderer({ type, item }: { type: string; item: any }) {
@@ -62,7 +64,7 @@ function ItemRenderer({ type, item }: { type: string; item: any }) {
     }
 }
 
-export default function SearchTabs({ results, setType, type }: Props) {
+export default function SearchTabs({ results, setType, type, loading }: Props) {
     console.log("Renderizando SearchTabs com type:", type);
     const layout = useWindowDimensions();
     const [index, setIndex] = useState(0);
@@ -110,6 +112,13 @@ export default function SearchTabs({ results, setType, type }: Props) {
                 renderItem={({ item }) => (
                     <ItemRenderer type={route.key} item={item} />
                 )}
+                ListEmptyComponent={
+                    loading ? (
+                        <View style={{ padding: 20 }}>
+                            <ActivityIndicator size="large" color="#8065ef" />
+                        </View>
+                    ) : null
+                }
             />
         );
     };

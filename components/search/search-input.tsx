@@ -14,10 +14,12 @@ export default function SearchInput({
     results,
     setResults,
     type,
+    setLoading
 }: {
     results: SearchResponse | null;
     setResults: (results: SearchResponse | null) => void;
-    type: "tracks" | "artists" | "albums" | "users" | "reviews";
+    type: "tracks" | "artists" | "albums" | "users" | "reviews";    
+    setLoading: (loading: boolean) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState("");
     const [debounced, setDebounced] = useState("");
@@ -36,10 +38,12 @@ export default function SearchInput({
 
         console.log("Pesquisar por:", debounced);
 
+        setLoading(true);
         api.get(`/search?q=${debounced}`)
             .then((response) => {
                 // console.log("Resultados da pesquisa:", response.data);
                 setResults(response.data);
+                setLoading(false);
             })
             .catch((error) => {
                 console.error("Erro na pesquisa:", error);

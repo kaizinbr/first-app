@@ -1,7 +1,7 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
-import api, { apiAuth } from "@/lib/api";
+import api, { apiAuth, apiAuthPost } from "@/lib/api";
 
 import { getColors } from "react-native-image-colors";
 import { useState, useEffect, use } from "react";
@@ -53,13 +53,15 @@ export default function ProfileHeader({
             try {
                 const response = await api(`/users/${data.username}/followers`);
                 setFollowersCount(response.data.followers.length);
-            } catch (error) {   
+            } catch (error) {
                 console.error("Error fetching followers count:", error);
             }
         };
         const fetchFollowingCount = async () => {
             try {
-                const response = await api(`/users/${data.username}/followings`);
+                const response = await api(
+                    `/users/${data.username}/followings`,
+                );
                 setFollowingCount(response.data.followings.length);
             } catch (error) {
                 console.error("Error fetching following count:", error);
@@ -73,22 +75,40 @@ export default function ProfileHeader({
                 console.error("Error fetching reviews count:", error);
             }
         };
-        
-        // const checkIfFollowing = async () => {
-        //     try {                const response = await apiAuth(`/users/${data.username}/follow-check`);
-        //         setIsFollowing(response.data);
-        //         console.log(`Is following ${data.username}:`, response.data);
-        //     } catch (error) {   
-        //         console.error("Error checking following status:", error);
-        //     }
-        // };
-        // checkIfFollowing();
+
+        const checkIfFollowing = async () => {
+            try {
+                const response = await apiAuth(
+                    `/users/${data.username}/follow-check`,
+                );
+                setIsFollowing(response.isFollowing);
+                console.log(response);
+            } catch (error) {
+                console.error("Error checking following status:", error);
+            }
+        };
+        checkIfFollowing();
         fetchFollowersCount();
         fetchFollowingCount();
         fetchReviewsCount();
     }, [data.username]);
 
-    // const dominantColor = colors ? selectRightColor(colors) : "#8065ef";
+    function handleFollowToggle() {
+        // Lógica para seguir ou deixar de seguir o usuário
+        if (isFollowing) {
+            const response = apiAuthPost(`/users/${data.username}/relation`, {
+                ACTION: "UNFOLLOW",
+            });
+            console.log("Deixar de seguir", response);
+        } else {
+            // Lógica para seguir
+            const response = apiAuthPost(`/users/${data.username}/relation`, {
+                ACTION: "FOLLOW",
+            });
+            console.log("Seguir", response);
+        }
+        setIsFollowing(!isFollowing);
+    }
 
     return (
         <View style={styles.scene}>
@@ -153,9 +173,15 @@ export default function ProfileHeader({
                 </View>
                 <Text style={styles.username}>@{data.username}</Text>
                 <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
-                    <Text style={styles.textDefault}>{reviewsCount} reviews</Text>
-                    <Text style={styles.textDefault}>{followingCount} seguindo</Text>
-                    <Text style={styles.textDefault}>{folowersCount} seguidores</Text>
+                    <Text style={styles.textDefault}>
+                        {reviewsCount} reviews
+                    </Text>
+                    <Text style={styles.textDefault}>
+                        {followingCount} seguindo
+                    </Text>
+                    <Text style={styles.textDefault}>
+                        {folowersCount} seguidores
+                    </Text>
                 </View>
                 {itsUser ? (
                     <Pressable style={styles.followBtn}>
@@ -167,11 +193,16 @@ export default function ProfileHeader({
                     <Pressable
                         style={[
                             styles.followBtn,
-                            { backgroundColor: "#8065ef" },
+                            {
+                                backgroundColor: isFollowing
+                                    ? "transparent"
+                                    : "#8065ef",
+                            },
                         ]}
+                        onPress={handleFollowToggle}
                     >
                         <Text style={{ color: "#eee", fontWeight: "bold" }}>
-                            Seguir
+                            {isFollowing ? "Seguindo" : "Seguir"}
                         </Text>
                     </Pressable>
                 )}
@@ -240,6 +271,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 24,
         paddingVertical: 8,
         borderRadius: 9999,
-        backgroundColor: "#8065ef",
+        borderWidth: 1,
+        borderColor: "#8065ef",
     },
 });

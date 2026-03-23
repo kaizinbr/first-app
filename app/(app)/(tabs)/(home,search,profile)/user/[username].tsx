@@ -1,15 +1,6 @@
 import Button from "@/components/button";
 import Input from "@/components/input";
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
-    Pressable,
-} from "react-native";
+import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import api, { apiAuth } from "@/lib/api";
 import { useEffect, useState } from "react";
@@ -26,6 +17,7 @@ export default function UserProfilePage() {
     const { username } = useLocalSearchParams();
     console.log("Username from params:", username);
 
+    const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [colors, setColors] = useState<Palette | any>(null);
     const [dominantColor, setDominantColor] = useState<string | null>(null);
@@ -61,10 +53,14 @@ export default function UserProfilePage() {
                         console.log("Darkened color:", newColor);
                         setDominantColor(newColor);
                         setColors(colors);
+                        setTimeout(() => {
+                            setLoading(false);
+                        }, 2000);
                     })
                     .catch(console.error);
             } catch (error) {
                 console.error("Error fetching profile data:", error);
+                setLoading(false);
             }
         };
         fetchProfileData();
@@ -72,7 +68,12 @@ export default function UserProfilePage() {
 
     return (
         <View style={styles.container}>
-            {profileData && dominantColor && colors ? (
+            {loading ? (
+                <View style={styles.overlay}>
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
+            ) : null}
+            {profileData && dominantColor && colors && (
                 <View style={styles.main}>
                     <ProfileTabs
                         data={profileData}
@@ -80,8 +81,6 @@ export default function UserProfilePage() {
                         colors={colors}
                     />
                 </View>
-            ) : (
-                <SkeletonProfile />
             )}
         </View>
     );
@@ -125,4 +124,20 @@ const styles = StyleSheet.create({
         marginTop: 20,
         resizeMode: "contain",
     },
+    overlayContainer: {
+        flex: 1,
+        justifyContent: "center",
+    },
+    overlay: {
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        backgroundColor: "#161718",
+        zIndex: 10,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+    },
+
 });

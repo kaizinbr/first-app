@@ -10,9 +10,6 @@ import FollowingRoute from "@/components/profile/following";
 import FollowersRoute from "@/components/profile/followers";
 import FixedTopBar from "@/components/profile/fixed-top-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { getColors } from "react-native-image-colors";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { selectRightColor } from "@/lib/util/selectRightColor";
 
 export default function ProfileTabs({
     data,

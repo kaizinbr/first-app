@@ -1,27 +1,17 @@
-import Button from "@/components/button";
-import Input from "@/components/input";
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
-    Pressable,
-} from "react-native";
+import { Text, View, StyleSheet, Image, ActivityIndicator } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import api, { apiAuth } from "@/lib/api";
 import { useEffect, useState } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { authClient } from "@/lib/auth-client";
-import { Artist } from "@/lib/types";
+import { ArtistResponse, Palette } from "@/lib/types";
+import ArtistScreen from "@/components/artists/main";
+import { getColors } from "react-native-image-colors";
 
 export default function ArtistPage() {
     const { id } = useLocalSearchParams();
     console.log("id from params:", id);
 
-    const [artistData, setArtistData] = useState<Artist | null>(null);
+    const [artistData, setArtistData] = useState<ArtistResponse | null>(null);
+    const [colors, setColors] = useState<Palette | any>(null);
 
     useEffect(() => {
         const fetchArtistData = async () => {
@@ -30,7 +20,17 @@ export default function ArtistPage() {
                 const response = await apiAuth(`/artists/${id}`);
                 // console.log("Artist data fetched successfully:", response);
                 setArtistData(response);
-                // console.log("Updated artistData state:", artistData);
+
+                if (response.images && response.images.length > 0) {
+                    const imageUrl = response.images[0].url;
+                    const colors = await getColors(imageUrl, {
+                        fallback: "#1e1e1e",
+                        cache: true,
+                        key: imageUrl,
+                    });
+                    setColors(colors);
+                    // console.log("Colors fetched for album image:", colors);
+                }
             } catch (error) {
                 console.error("Error fetching artist data:", error);
             }
@@ -40,17 +40,12 @@ export default function ArtistPage() {
 
     return (
         <View style={styles.container}>
-            {artistData ? (
-                <View style={styles.main}>
-                    <Text style={styles.title}>{artistData.name}</Text>
-                    <Image
-                        source={{ uri: artistData.images[0].url }}
-                        style={styles.image}
-                    />
-
-                </View>
+            {artistData && colors ? (
+                <ArtistScreen data={artistData} colors={colors} />
             ) : (
-                <Text style={styles.textDefault}>Loading artist data...</Text>
+                <View style={styles.overlay}>
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
             )}
         </View>
     );
@@ -59,41 +54,18 @@ export default function ArtistPage() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        gap: 16,
         backgroundColor: "#161718",
-        color: "#eeeeee",
-        alignItems: "center",
         width: "100%",
     },
-    main: {
-        flex: 1,
-        backgroundColor: "#161718",
-        color: "#eeeeee",
-        paddingTop: 16,
-        width: "100%",
-        alignItems: "center",
+    overlay: {
         justifyContent: "center",
-    },
-    header: {
-        padding: 16,
-        width: "100%",
-        color: "#eee",
-        borderRadius: 8,
-    },
-    textDefault: {
-        color: "#eee", // A cor clara para o seu modo escuro
-        fontSize: 16,
-    },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginTop: 20,
-        color: "#eee",
-    },
-    image: {
-        width: 300,
-        height: 300,
-        marginTop: 20,
-        resizeMode: "contain",
+        alignItems: "center",
+        position: "absolute",
+        backgroundColor: "#161718",
+        zIndex: 10,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
 });
