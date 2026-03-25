@@ -17,8 +17,10 @@ import Animated, {
     Extrapolation,
 } from "react-native-reanimated";
 import { Album } from "@/lib/types";
+import { useRouter } from "expo-router";
 
 export default function AlbumData({ data }: any) {
+    const router = useRouter();
     return (
         <View style={[styles.container]}>
             <Text style={styles.albumType}>
@@ -38,9 +40,11 @@ export default function AlbumData({ data }: any) {
                 {data.total_tracks} faixa{data.total_tracks > 1 ? "s" : ""}
             </Text>
             <Text style={styles.albumTitle}>{data.name}</Text>
-            <Text style={styles.albumArtist}>
-                {data.artists.map((artist: any) => artist.name).join(", ")}
-            </Text>
+            <Pressable onPress={() => router.push(`/artist/${data.artists[0].id}`)}>
+                <Text style={styles.albumArtist}>
+                    {data.artists.map((artist: any) => artist.name).join(", ")}
+                </Text>
+            </Pressable>
         </View>
     );
 }

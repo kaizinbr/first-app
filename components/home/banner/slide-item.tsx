@@ -107,9 +107,16 @@ export const SlideItem: React.FC<Props> = (props) => {
                             ]}
                             start={{ x: 0, y: 0 }}
                             end={{ x: 1, y: 0 }}
-                            style={[styles.gradient, { start: "59%" }]}
+                            style={[styles.gradient]}
                         />
-                        {/* <View style={[styles.gradient, { end: 10, backgroundColor: "red", zIndex: 100, position: "absolute" }]}></View> */}
+                        {/* <View
+                            style={[
+                                styles.gradient,
+                                {
+                                    backgroundColor: "red",
+                                },
+                            ]}
+                        ></View> */}
                         <Image
                             source={{ uri: item.src }}
                             style={styles.img}
@@ -135,7 +142,7 @@ export const SlideItem: React.FC<Props> = (props) => {
 
 const styles = StyleSheet.create({
     back: {
-        width: "60%",
+        // width: "60%",
         height: "100%",
         alignItems: "center",
         justifyContent: "center",
@@ -143,10 +150,11 @@ const styles = StyleSheet.create({
         zIndex: 10,
     },
     gradient: {
-        width: "20%",
+        // width: "20%",
         height: "100%",
-        alignItems: "center",
-        justifyContent: "center",
+        aspectRatio: 1,
+        // alignItems: "center",
+        // justifyContent: "center",
         // marginRight: 224,
         zIndex: 10,
         position: "absolute",

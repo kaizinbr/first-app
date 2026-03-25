@@ -75,6 +75,7 @@ export default function TabsDynamicLayout() {
                     tabBarStyle: styles.tabBar,
                     tabBarItemStyle: styles.tabBarItem,
                     tabBarIconStyle: styles.tabBarIcon,
+                    tabBarActiveTintColor: "#8065ef",
                 }}
             >
                 <Tabs.Screen

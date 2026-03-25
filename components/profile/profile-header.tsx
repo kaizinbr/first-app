@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
 import api, { apiAuth, apiAuthPost } from "@/lib/api";
-
+import { useRouter } from "expo-router";
 import { getColors } from "react-native-image-colors";
 import { useState, useEffect, use } from "react";
 import { Palette } from "@/lib/types";
@@ -18,6 +18,7 @@ export default function ProfileHeader({
     dominantColor: string;
     itsUser?: boolean;
 }) {
+    const router = useRouter();
     const [colors, setColors] = useState<Palette | any>({
         dominant: "#8065ef",
         vibrant: "#8065ef",
@@ -184,7 +185,9 @@ export default function ProfileHeader({
                     </Text>
                 </View>
                 {itsUser ? (
-                    <Pressable style={styles.followBtn}>
+                    <Pressable style={[styles.followBtn, { backgroundColor: "#8065ef" }]}
+                        onPress={() => router.push("/edit")}
+                    >
                         <Text style={{ color: "#eee", fontWeight: "bold" }}>
                             Editar perfil
                         </Text>

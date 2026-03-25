@@ -15,7 +15,7 @@ import api, { apiAuth } from "@/lib/api";
 import { useEffect, useState } from "react";
 import ProfileTabs from "@/components/profile/profile-tabs";
 import { authClient } from "@/lib/auth-client";
-import { Album } from "@/lib/types";
+import { Album, UserProfile } from "@/lib/types";
 
 import { getColors } from "react-native-image-colors";
 
@@ -27,6 +27,7 @@ export default function AlbumPage() {
     const { id } = useLocalSearchParams();
     console.log("id from params:", id);
 
+    const [userData, setUserData] = useState<any>(null);
     const [albumData, setAlbumData] = useState<Album | null>(null);
 
     const [colors, setColors] = useState<Palette | any>(null);
@@ -37,12 +38,14 @@ export default function AlbumPage() {
             // console.log("Fetching album data for id:", id, albumData);
             try {
                 const response = await apiAuth(`/albuns/${id}`);
+                const user = await apiAuth("/me");
+                setUserData(user);
                 // console.log("Album data fetched successfully:", response);
                 setAlbumData(response);
                 if (response.images && response.images.length > 0) {
                     const imageUrl = response.images[0].url;
                     const colors = await getColors(imageUrl, {
-                        fallback: "#1e1e1e",
+                        fallback: "#000",
                         cache: true,
                         key: imageUrl,
                     });
@@ -59,7 +62,7 @@ export default function AlbumPage() {
     return (
         <>
             {albumData && colors ? (
-                <AlbumScreen albumData={albumData} colors={colors} />
+                <AlbumScreen albumData={albumData} colors={colors} userData={userData} />
             ) : (
                 <View style={styles.main}>
                     <Text style={styles.title}>Carregando álbum...</Text>

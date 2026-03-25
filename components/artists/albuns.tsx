@@ -88,7 +88,7 @@ function AlbumCard({ album }: { album: any }) {
                     <LinearGradient
                         colors={[
                             "transparent",
-                            darkenColor(selectRightColor(colors), 0.2),
+                            darkenColor(selectRightColor(colors), 0.4),
                         ]}
                         style={{
                             height: "50%",

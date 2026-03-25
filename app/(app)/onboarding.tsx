@@ -9,6 +9,8 @@ import {
     View,
     Image,
     Pressable,
+    KeyboardAvoidingView,
+    Platform,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Alert } from "react-native";
@@ -270,6 +272,11 @@ export default function Onboarding() {
     };
 
     return (
+        
+                <KeyboardAvoidingView
+                    style={{ flex: 1 }}
+                    behavior={Platform.OS === "ios" ? "padding" : "height"}
+                >
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.stepper}>
                 <View style={styles.step}>
@@ -465,7 +472,7 @@ export default function Onboarding() {
             </Text> */}
             {/* <Button title="Log Off" onPress={handleLogoff} className="mt-4" />
             {profileData && <ProfileTabs profileData={profileData} />} */}
-        </View>
+        </View></KeyboardAvoidingView>
     );
 }
 

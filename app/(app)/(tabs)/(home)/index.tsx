@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "transparent",
         color: "#eeeeee",
-    },statusBarBg: {
+    },
+    statusBarBg: {
         position: "absolute",
         top: 0,
         left: 0,

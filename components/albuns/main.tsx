@@ -11,20 +11,25 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
-import { Album, Palette } from "@/lib/types";
+
+import { Album, Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
 import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import Tracklist from "@/components/albuns/tracklist";
-import { AltArrowLeft } from '@solar-icons/react-native/Outline'
+import { AltArrowLeft, Star } from "@solar-icons/react-native/Outline";
+import { Star as StarBold } from "@solar-icons/react-native/Bold";
+import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
 
 export default function AlbumScreen({
     albumData,
     colors,
+    userData,
 }: {
     albumData: Album;
     colors: Palette;
+    userData: UserProfile;
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
@@ -139,12 +144,33 @@ export default function AlbumScreen({
             </Animated.View>
 
             {/* BOTÃO VOLTAR */}
-            
+
             <Pressable
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft  size={32} color="#eee" />
+                <AltArrowLeft size={32} color="#eee" />
+            </Pressable>
+            {/* BOTÃO FAVORITAR */}
+            {albumData && colors && (
+                <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
+                    <FavoriteAlbumBtn
+                        albumData={albumData}
+                        size={30}
+                    />
+                </View>
+            )}
+
+            <Pressable
+                onPress={() => router.back()}
+                style={({ pressed }) => [styles.fav, 
+                    {
+                        backgroundColor: pressed
+                            ? darkenColor(selectRightColor(colors), 0.2)
+                            : darkenColor(selectRightColor(colors), 0.7),
+                    }]}
+            >
+                <Star size={26} color="#eee" />
             </Pressable>
 
             <Pressable
@@ -224,13 +250,36 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
     },
+    favoriteBtn: {
+        position: "absolute",
+        right: 16,
+        zIndex: 11,
+        width: 40,
+        height: 40,
+        justifyContent: "center",
+    },
     reviewButton: {
         position: "absolute",
         left: 16,
+        right: 70,
+        bottom: 64,
+        zIndex: 11,
+        height: 46,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "#1c494f",
+        borderRadius: 12,
+        paddingHorizontal: 20,
+        paddingVertical: 12,
+    },
+    fav: {
+        position: "absolute",
+        // left: 16,
         right: 16,
         bottom: 64,
         zIndex: 11,
-        // height: 40,
+        height: 46,
+        width: 46,
         justifyContent: "center",
         alignItems: "center",
         backgroundColor: "#1c494f",
@@ -239,7 +288,6 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
     },
 
-    // AQUI ESTÁ O SEGREDO DO ENCAIXE PERFEITO
     lowerContent: {
         backgroundColor: "#161718", // A mesma cor que o gradiente termina
         paddingHorizontal: 20,

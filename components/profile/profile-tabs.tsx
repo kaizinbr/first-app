@@ -29,7 +29,11 @@ export default function ProfileTabs({
     const renderHeader = React.useCallback(() => {
         return (
             <View style={styles.headerWrapper}>
-                <ProfileHeader data={data} dominantColor={dominantColor} itsUser={itsUser} />
+                <ProfileHeader
+                    data={data}
+                    dominantColor={dominantColor}
+                    itsUser={itsUser}
+                />
                 <FixedTopBar
                     title={data.name || "Perfil"}
                     height={FIXED_BAR_HEIGHT}
@@ -59,7 +63,6 @@ export default function ProfileTabs({
             renderTabBar={renderTabBar}
             headerContainerStyle={{ shadowOpacity: 0, elevation: 0 }}
             minHeaderHeight={FIXED_BAR_HEIGHT}
-            
         >
             <Tabs.Tab name="reviews" label="Reviews">
                 <PostsRoute data={data} />

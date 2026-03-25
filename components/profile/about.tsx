@@ -173,6 +173,5 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         gap: 16,
-        // fontSize: 14,
     },
 });
