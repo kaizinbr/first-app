@@ -1,0 +1,41 @@
+:root {
+    --color-chetwode-blue-50: #edefff;
+    --color-chetwode-blue-100: #dee1ff;
+    --color-chetwode-blue-200: #c4c8ff;
+    --color-chetwode-blue-300: #a0a5ff;
+    --color-chetwode-blue-400: #8884ff;
+    --color-chetwode-blue-500: #6b5bf9;
+    --color-chetwode-blue-600: #5d3dee;
+    --color-chetwode-blue-700: #502fd3;
+    --color-chetwode-blue-800: #4129aa;
+    --color-chetwode-blue-900: #382986;
+    --color-chetwode-blue-950: #22184e;
+
+    --color-allports-50: #f2f8fd;
+    --color-allports-100: #e5f0f9;
+    --color-allports-200: #c5e1f2;
+    --color-allports-300: #92c9e7;
+    --color-allports-400: #58acd8;
+    --color-allports-500: #3292c5;
+    --color-allports-600: #2274a5;
+    --color-allports-700: #1d5e87;
+    --color-allports-800: #1c5070;
+    --color-allports-900: #1c445e;
+    --color-allports-950: #132b3e;
+
+    --color-woodsmoke-50: #fafafa;
+    --color-woodsmoke-100: #f4f5f5;
+    --color-woodsmoke-200: #e4e6e7;
+    --color-woodsmoke-300: #d5d6d7;
+    --color-woodsmoke-400: #a2a5a9;
+    --color-woodsmoke-500: #727679;
+    --color-woodsmoke-600: #53575a;
+    --color-woodsmoke-700: #404245;
+    --color-woodsmoke-800: #27292a;
+    --color-woodsmoke-900: #161718;
+    --color-woodsmoke-950: #090a0b;
+
+    --bg-900: #161718;
+    --bg-800: #1b1c1d;
+    --bg-700: #282828;
+}

@@ -15,6 +15,7 @@
     "@expensify/react-native-live-markdown": "^0.1.325",
     "@expo/ui": "~55.0.2",
     "@expo/vector-icons": "^15.0.3",
+    "@gorhom/bottom-sheet": "^5.2.8",
     "@react-native-community/slider": "^5.1.2",
     "@react-navigation/native": "^7.1.8",
     "@solar-icons/react-native": "^1.1.0",

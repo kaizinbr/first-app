@@ -16,8 +16,9 @@ import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 import { renderItem } from "@/components/home/banner/render-item";
 import * as React from "react";
 
-import { getBannerColor } from "@/lib/util/workWithColors";
+import { getBannerColor, getBannerColors } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
+import { getPalette } from "@b.taranenko/expo-color-thief";
 import { Palette } from "@/lib/types";
 
 type review = {
@@ -86,7 +87,7 @@ type SpotifyAlbum = {
 };
 
 interface BannerProps {
-    onColorChange: (color: string) => void;
+    onColorChange: any;
 }
 
 export default function Banner({ onColorChange }: BannerProps) {
@@ -113,6 +114,7 @@ export default function Banner({ onColorChange }: BannerProps) {
         | null
     >(null);
     const [colors, setColors] = useState<Palette | any>(null);
+    const [palette, setPalette] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -129,11 +131,8 @@ export default function Banner({ onColorChange }: BannerProps) {
                 });
                 // setPalette(result);
 
-                const dominantColor =
-                    (result as any)?.dominant ||
-                    (result as any)?.primary ||
-                    "#161718";
-                onColorChange(dominantColor);
+                const [bannerColor1, bannerColor2] = getBannerColors(result);
+                onColorChange([bannerColor1, bannerColor2]);
 
                 setLoading(false);
                 // console.log("Content fetched successfully:", content.html);
@@ -162,6 +161,7 @@ export default function Banner({ onColorChange }: BannerProps) {
                         ref={carouselRef}
                         autoPlayInterval={4000}
                         // autoPlay={true}
+
                         data={bannerData || []}
                         loop={true}
                         pagingEnabled={true}
@@ -194,13 +194,20 @@ export default function Banner({ onColorChange }: BannerProps) {
                                     cache: true,
                                     key: item?.src,
                                 });
-                                // setPalette(result);
+                                setColors(result);
+                                // console.log("Colors for current item:", result);
 
-                                const dominantColor =
-                                    getBannerColor((result as any)?.dominant ||
-                                    (result as any)?.primary ||
-                                    "#161718");
-                                onColorChange(dominantColor);
+                                const palette = await getPalette(item!.src, {
+                                    colorCount: 8,
+                                    quality: 5,
+                                    ignoreWhite: true,
+                                });
+                                setPalette(palette);
+                                // console.log("Palette from color-thief:", palette);
+
+                                const [bannerColor1, bannerColor2] =
+                                    getBannerColors(result);
+                                onColorChange([bannerColor1, bannerColor2]);
                             }
                         }}
                         renderItem={renderItem({
@@ -208,6 +215,162 @@ export default function Banner({ onColorChange }: BannerProps) {
                             colorFill: true,
                         })}
                     />
+                    {/* <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+                        <Text
+                            style={{
+                                color: "#eee",
+                                fontSize: 14,
+                                fontWeight: "700",
+                            }}
+                        >
+                            colors
+                        </Text>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                gap: 8,
+                                marginTop: 8,
+                            }}
+                        >
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.average,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.darkMuted,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.darkVibrant,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.dominant,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.lightMuted,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.lightVibrant,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.muted,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: (colors as any)?.vibrant,
+                                }}
+                            />
+                        </View>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                gap: 8,
+                                marginTop: 8,
+                            }}
+                        >
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[0].hex,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[1].hex,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[2].hex,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[3].hex,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[4].hex,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[5].hex,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[6].hex,
+                                }}
+                            />
+                            <View
+                                style={{
+                                    width: 32,
+                                    height: 32,
+                                    borderRadius: 9999,
+                                    backgroundColor: palette?.[7].hex,
+                                }}
+                            />
+                        </View>
+
+                    </View> */}
                 </View>
             )}
         </>

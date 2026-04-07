@@ -43,7 +43,7 @@ export default function ReviewStep({
     return (
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.header}>
-                <Pressable onPress={goBack} style={[{ top: 8 }]}>
+                <Pressable onPress={goBack} style={[{ top: 5 }]}>
                     <AltArrowLeft size={32} color="#eee" />
                 </Pressable>
                 {/* <Text style={styles.textDefault}>{reviewData.album.name}</Text> */}
@@ -53,14 +53,14 @@ export default function ReviewStep({
                 </Pressable>
             </View>
             {/* Rich text editor */}
-            <View style={styles.editorContainer}>
+            {/* <View style={styles.editorContainer}> */}
                 <PostEditor
                     onChange={setText}
                     reviewData={reviewData}
                     initialValue={reviewData.rating ? reviewData.rating.review : ""}
                     total={total}
                 />
-            </View>
+            {/* </View> */}
         </View>
     );
 }
@@ -71,7 +71,6 @@ const styles = StyleSheet.create({
         width: "100%",
         minHeight: "100%",
         // backgroundColor: "#a23939", // Cor de fundo do editor
-        borderRadius: 12,
         flexDirection: "column",
     },
     header: {
@@ -84,6 +83,7 @@ const styles = StyleSheet.create({
     },
     editorContainer: {
         width: "100%",
+        height: "100%",
         paddingVertical: 16,
         flex: 1,
     },
@@ -125,9 +125,9 @@ const styles = StyleSheet.create({
         color: "#eeeeee",
     },
     btn: {
-        paddingVertical: 4,
+        paddingVertical: 8,
         paddingHorizontal: 16,
-        backgroundColor: "#00a8ff",
+        backgroundColor: "#8065ef",
         borderRadius: 999,
     },
 });

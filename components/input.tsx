@@ -1,10 +1,7 @@
 import {
-    View,
-    Text,
     StyleSheet,
-    TextProps,
     TextInput,
-    TextInputProps,
+    TextInputProps
 } from "react-native";
 
 export default function Input({
@@ -25,7 +22,6 @@ export default function Input({
             placeholder={placeholder}
             value={value}
             onChangeText={onChangeText}
-            
             {...props}
         />
     );
@@ -43,7 +39,7 @@ const styles = StyleSheet.create({
         padding: 12,
         borderWidth: 1,
         borderColor: "#262626",
-        backgroundColor: "#222222",
+        backgroundColor: "#1b1c1d222",
         borderRadius: 12,
         color: "#eeeeee",
     },

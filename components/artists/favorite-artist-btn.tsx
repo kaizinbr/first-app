@@ -3,17 +3,17 @@ import { View, Text, StyleSheet, Image, Pressable } from "react-native";
 import { useState, useEffect } from "react";
 
 import { apiAuth, apiAuthPost, apiAuthDELETE } from "@/lib/api";
-import { Album, Palette, UserProfile } from "@/lib/types";
+import { Artist, Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
 import { AltArrowLeft, Star } from "@solar-icons/react-native/Outline";
 import { Star as StarBold } from "@solar-icons/react-native/Bold";
 
-export default function FavoriteAlbumBtn({
-    albumData,
+export default function FavoriteArtistBtn({
+    artistData,
     size,
 }: {
-    albumData: Album;
+    artistData: Artist;
     size: number;
 }) {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -23,7 +23,7 @@ export default function FavoriteAlbumBtn({
         async function checkIfFavorite() {
             try {
                 const response = await apiAuth(
-                    `/albuns/${albumData.id}/favorite`,
+                    `/artists/${artistData.id}/favorite`,
                 );
                 console.log("Resposta do favorito:", response);
                 setIsFavorite(response.isFavorite);
@@ -33,20 +33,20 @@ export default function FavoriteAlbumBtn({
         }
 
         checkIfFavorite();
-    }, [albumData.id]);
+    }, [artistData.id]);
 
     const toggleFavorite = async () => {
         try {
             if (isFavorite) {
-                await apiAuthDELETE(`/albuns/${albumData.id}/favorite`, {
-                    id: albumData.id,
+                await apiAuthDELETE(`/artists/${artistData.id}/favorite`, {
+                    id: artistData.id,
                 });
             } else {
-                await apiAuthPost(`/albuns/${albumData.id}/favorite`, {
-                    albuns: {
-                        id: albumData.id,
-                        src: albumData.images[0].url,
-                        name: albumData.name,
+                await apiAuthPost(`/artists/${artistData.id}/favorite`, {
+                    artists: {
+                        id: artistData.id,
+                        src: artistData.images[0].url,
+                        name: artistData.name,
                     },
                 });
             }

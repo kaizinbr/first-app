@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 
 import { SearchResponse } from "@/lib/types";
 
-export default function SearchInput({
+export default function SearchAlbunsInput({
     results,
     setResults,
     type,
@@ -15,7 +15,7 @@ export default function SearchInput({
 }: {
     results: SearchResponse | null;
     setResults: (results: SearchResponse | null) => void;
-    type: "tracks" | "artists" | "albums" | "users" | "reviews";
+    type: "albuns" | "artists";
     setLoading: (loading: boolean) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState("");
@@ -36,9 +36,9 @@ export default function SearchInput({
         console.log("Pesquisar por:", debounced);
 
         setLoading(true);
-        api.get(`/search?q=${debounced}`)
+        api.get(`/search/${type}?q=${debounced}`)
             .then((response) => {
-                // console.log("Resultados da pesquisa:", response.data);
+                console.log("Resultados da pesquisa:", response.data);
                 setResults(response.data);
                 setLoading(false);
             })
@@ -48,7 +48,7 @@ export default function SearchInput({
     }, [debounced]);
 
     return (
-        <View style={[styles.main, { paddingTop: insets.top + 16 }]}>
+        <View style={[styles.main]}>
             <Input
                 placeholder="Pesquisar..."
                 style={styles.searchInput}
@@ -63,7 +63,6 @@ export default function SearchInput({
 const styles = StyleSheet.create({
     main: {
         // flex: 1,
-        paddingHorizontal: 16,
         alignItems: "center",
         justifyContent: "flex-start",
         width: "100%",
@@ -73,7 +72,7 @@ const styles = StyleSheet.create({
         padding: 12,
         borderWidth: 1,
         borderColor: "#262626",
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#262626",
         borderRadius: 8,
         color: "#eeeeee",
     },

@@ -94,7 +94,7 @@ export default function PostEditor({
             const selected = value.slice(selection.start, selection.end);
             const after = value.slice(selection.end);
 
-            const wrapped = `${syntax}${selected || "texto"}${syntax}`;
+            const wrapped = `${syntax}${selected || "Texto"}${syntax}`;
             const newValue = `${before}${wrapped}${after}`;
 
             setValue(newValue);
@@ -121,7 +121,7 @@ export default function PostEditor({
     return (
         <KeyboardAvoidingView
             behavior={"padding"}
-            keyboardVerticalOffset={insets.top + 50}
+            // keyboardVerticalOffset={insets.top + 50}
             style={styles.container}
         >
             <View style={[styles.editorContainer]}>
@@ -150,8 +150,6 @@ export default function PostEditor({
                     markdownStyle={markdownStyle}
                 />
             </View>
-
-            {/* Toolbar */}
             <View style={styles.toolbar}>
                 <ToolbarButton
                     label="B"
@@ -171,9 +169,15 @@ export default function PostEditor({
                     onPress={() => wrapSelection("~~")}
                     style={{ textDecorationLine: "line-through" }}
                 />
+                {/* <ToolbarButton
+                    label="U"
+                    active={false}
+                    onPress={() => wrapSelection("_")}
+                    style={{ textDecorationLine: "underline" }}
+                /> */}
 
                 {/* Separador */}
-                <View style={styles.separator} />
+                {/* <View style={styles.separator} />
 
                 <ToolbarButton
                     label="H1"
@@ -189,7 +193,7 @@ export default function PostEditor({
                     label="❝"
                     active={false}
                     onPress={() => insertBlock("> ")}
-                />
+                /> */}
             </View>
         </KeyboardAvoidingView>
     );
@@ -198,7 +202,7 @@ export default function PostEditor({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // height: "100%",
+        height: "100%",
         backgroundColor: "#161718",
     },
     editorContainer: {
@@ -206,7 +210,6 @@ const styles = StyleSheet.create({
         maxHeight: "100%",
         // minHeight: "100%",
         backgroundColor: "transparent",
-        borderRadius: 8,
         padding: 12,
     },
     input: {
@@ -227,6 +230,7 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: "#2a2a2a",
         gap: 4,
+        bottom: 0,
     },
     separator: {
         width: 1,

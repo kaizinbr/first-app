@@ -5,7 +5,6 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function Index() {
     const scrollOffsetY = useRef(new Animated.Value(0)).current;
-    const [activeColor, setActiveColor] = useState("#161718");
 
     const insets = useSafeAreaInsets();
 
@@ -24,8 +23,6 @@ export default function Index() {
         <View style={styles.container}>
             <Feed
                 onScrollAnimado={handleScroll}
-                activeColor={activeColor}
-                onColorChange={setActiveColor}
                 scrollOffsetY={scrollOffsetY}
             />
             <Animated.View

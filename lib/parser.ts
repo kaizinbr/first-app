@@ -5,28 +5,46 @@ export function parseMarkdown(input: string): MarkdownRange[] {
     'worklet';
     const ranges: MarkdownRange[] = [];
 
-    const patterns: { regex: RegExp; type: string }[] = [
-        { regex: /\*\*(.*?)\*\*/gs, type: "bold" },
-        { regex: /_(.*?)_/gs, type: "italic" },
-        { regex: /~~(.*?)~~/gs, type: "strikethrough" },
-        { regex: /^#{1} .+/gm, type: "h1" },
-        { regex: /^#{2} .+/gm, type: "h2" },
-        { regex: /^> .+/gm, type: "blockquote" },
-        // Citação musical: >>texto<< 
-        { regex: /^>> .+/gm, type: "mention-here" }, // tipo customizado via mention-here
-    ];
-
-    for (const { regex, type } of patterns) {
-        let match;
-        regex.lastIndex = 0;
-        while ((match = regex.exec(input)) !== null) {
-            ranges.push({
-                start: match.index,
-                length: match[0].length,
-                type: type as any,
-            });
-        }
+    // Bold **texto**
+    const boldRegex = /\*\*(.*?)\*\*/gs;
+    let match;
+    boldRegex.lastIndex = 0;
+    while ((match = boldRegex.exec(input)) !== null) {
+        // marcador de abertura **
+        ranges.push({ start: match.index, length: 2, type: "syntax" });
+        // conteúdo em negrito
+        ranges.push({ start: match.index + 2, length: match[1].length, type: "bold" });
+        // marcador de fechamento **
+        ranges.push({ start: match.index + 2 + match[1].length, length: 2, type: "syntax" });
     }
 
+
+    // Strikethrough ~~texto~~
+    const strikeRegex = /~~(.*?)~~/gs;
+    strikeRegex.lastIndex = 0;
+    while ((match = strikeRegex.exec(input)) !== null) {
+        ranges.push({ start: match.index, length: 2, type: "syntax" });
+        ranges.push({ start: match.index + 2, length: match[1].length, type: "strikethrough" });
+        ranges.push({ start: match.index + 2 + match[1].length, length: 2, type: "syntax" });
+    }
+
+    // Underline `texto`
+    const underlineRegex = /&(.*?)&/gs;
+    underlineRegex.lastIndex = 0;
+    while ((match = underlineRegex.exec(input)) !== null) {
+        ranges.push({ start: match.index, length: 2, type: "syntax" });
+        // mapeia pra mention-user e estiliza como underline no markdownStyle
+        ranges.push({ start: match.index + 2, length: match[1].length, type: "code" });
+        ranges.push({ start: match.index + 2 + match[1].length, length: 2, type: "syntax" });
+    }
+
+    // Italic _texto_
+    const italicRegex = /_(.*?)_/gs;
+    italicRegex.lastIndex = 0;
+    while ((match = italicRegex.exec(input)) !== null) {
+        ranges.push({ start: match.index, length: 1, type: "syntax" });
+        ranges.push({ start: match.index + 1, length: match[1].length, type: "italic" });
+        ranges.push({ start: match.index + 1 + match[1].length, length: 1, type: "syntax" });
+    }
     return ranges.sort((a, b) => a.start - b.start);
 }

@@ -1,5 +1,4 @@
-import { useRouter, Href } from 'expo-router';
-;
+import { Href, useRouter } from "expo-router";
 import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
 
 type ButtonProps = PressableProps & {
@@ -8,12 +7,24 @@ type ButtonProps = PressableProps & {
     selected?: boolean;
 };
 
-export default function ChipBtn({ label, onPress, selected, ...props }: ButtonProps) {
+export default function ChipBtn({
+    label,
+    onPress,
+    selected,
+    ...props
+}: ButtonProps) {
     const router = useRouter();
 
     return (
         <Pressable
-            style={({ pressed }) => [styles.button, pressed && styles.pressed, selected && { backgroundColor: "#222", borderColor: "#222" }]}
+            style={({ pressed }) => [
+                styles.button,
+                pressed && styles.pressed,
+                selected && {
+                    backgroundColor: "#1b1c1d",
+                    borderColor: "#1b1c1d",
+                },
+            ]}
             onPress={onPress}
             {...props}
         >

@@ -49,6 +49,7 @@ export default function ProfileTabs({
                 {...props}
                 scrollEnabled={true}
                 indicatorStyle={{ backgroundColor: "#8065ef", height: 3 }}
+                
                 style={{ backgroundColor: "#161718", elevation: 0, zIndex: 10 }}
                 activeColor="#eee"
                 inactiveColor="#777"
@@ -67,7 +68,7 @@ export default function ProfileTabs({
             <Tabs.Tab name="reviews" label="Reviews">
                 <PostsRoute data={data} />
             </Tabs.Tab>
-            <Tabs.Tab name="about" label="Sobre">
+            <Tabs.Tab name="about" label="Mural">
                 <AboutRoute data={data} />
             </Tabs.Tab>
             <Tabs.Tab name="following" label="Seguindo">

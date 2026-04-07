@@ -41,10 +41,22 @@ export function getHeaderColor(colors: Palette) {
 }
 
 
-export function getBannerColor(color: string) {
-    let finalColor = color;
-    
-    // console.log(chroma(finalColor).luminance());
+export function getBannerColor(colors: Palette | any) {
+    let finalColor = colors.dominant || colors.vibrant || "#161718";
+
+    // console.log("todas as cores:", colors);
+
+    if (colors.vibrant && colors.vibrant !== "#000000") {
+        finalColor = colors.vibrant;
+    } else if (colors.darkVibrant && colors.darkVibrant !== "#000000") {
+        finalColor = colors.darkVibrant;
+    } else if (colors.muted && colors.muted !== "#000000") {
+        finalColor = colors.muted;
+    } else  if (colors.dominant && colors.dominant !== "#000000") {
+        finalColor = colors.dominant;
+    }
+
+    // console.log("Color before adjustments:", finalColor);
 
     if (chroma(finalColor).luminance() > 0.6) {
         finalColor = chroma(finalColor).darken(1).hex();
@@ -53,7 +65,55 @@ export function getBannerColor(color: string) {
         finalColor = chroma(finalColor).brighten(1).hex();
     }
 
-    // console.log("Darkening color:", finalColor, "by amount: 0.4");
+    // console.log("Final color:", finalColor);
 
     return finalColor;
+}
+
+export function getBannerColors(colors: Palette | any) {
+    let finalColor1 = colors.dominant || colors.vibrant || "#161718";
+    let finalColor2 = colors.darkVibrant || colors.muted || "#161718";
+
+
+    if (colors.vibrant && colors.vibrant !== "#000000") {
+        finalColor1 = colors.vibrant;
+    } else if (colors.darkVibrant && colors.darkVibrant !== "#000000") {
+        finalColor1 = colors.darkVibrant;
+    } else if (colors.muted && colors.muted !== "#000000") {
+        finalColor1 = colors.muted;
+    } else  if (colors.dominant && colors.dominant !== "#000000") {
+        finalColor1 = colors.dominant;
+    } else {
+        finalColor1 = "#161718";
+    }
+
+    if (colors.darkVibrant && colors.darkVibrant !== "#000000") {
+        finalColor2 = colors.darkVibrant;
+    } else if (colors.muted && colors.muted !== "#000000") {
+        finalColor2 = colors.muted;
+    } else if (colors.vibrant && colors.vibrant !== "#000000") {
+        finalColor2 = colors.vibrant;
+    } else  if (colors.dominant && colors.dominant !== "#000000") {
+        finalColor2 = colors.dominant;
+    } else {
+        finalColor2 = "#161718";
+    }
+
+    if (chroma(finalColor1).luminance() > 0.6) {
+        finalColor1 = chroma(finalColor1).darken(1).hex();
+    }
+    if (chroma(finalColor1).luminance() < 0.02) {
+        finalColor1 = chroma(finalColor1).brighten(1).hex();
+    }
+
+    if (chroma(finalColor2).luminance() > 0.6) {
+        finalColor2 = chroma(finalColor2).darken(1).hex();
+    }
+    if (chroma(finalColor2).luminance() < 0.02) {
+        finalColor2 = chroma(finalColor2).brighten(1).hex();
+    }
+
+    finalColor2 = chroma(finalColor2).darken(1).hex();
+
+    return [finalColor1, finalColor2];
 }

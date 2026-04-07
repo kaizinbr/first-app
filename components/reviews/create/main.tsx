@@ -1,26 +1,26 @@
+import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, View, TextInput } from "react-native";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 import Animated, {
     Extrapolation,
     interpolate,
+    runOnJS,
     useAnimatedScrollHandler,
     useAnimatedStyle,
     useSharedValue,
     withTiming,
-    runOnJS,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 
+import ReviewStep from "@/components/reviews/create/review";
+import TrackRater from "@/components/reviews/create/track-rating";
 import AlbumData from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
 import { Album, Palette, Review } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
-import TrackRater from "@/components/reviews/create/track-rating";
-import ReviewStep from "@/components/reviews/create/review";
 
 export default function ReviewCreateMain({
     reviewData,
@@ -401,7 +401,7 @@ const styles = StyleSheet.create({
         padding: 16,
         width: "100%",
         borderRadius: 12,
-        backgroundColor: "#222",
+        backgroundColor: "#1b1c1d",
         marginBottom: 16,
     },
     textDefault: {

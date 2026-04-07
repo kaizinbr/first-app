@@ -79,42 +79,8 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                         <ArrowRightUp size={18} color="#eee" />
                     </Pressable>
                 )}
-                {data.favorites[0].albuns.length > 0 ||
-                    (data.favorites[0].artists.length > 0 && (
-                        <View style={styles.sec}>
-                            {data.favorites[0].albuns.length > 0 && (
-                                <View style={{ width: "100%" }}>
-                                    <Text style={styles.title}>
-                                        Álbuns favoritos
-                                    </Text>
-                                    <View
-                                        style={{
-                                            flexDirection: "row",
-                                            flexWrap: "wrap",
-                                            gap: GAP,
-                                            marginTop: 8,
-                                            width: "100%",
-                                        }}
-                                    >
-                                        {data.favorites[0].albuns.map(
-                                            (album: any) => (
-                                                <Image
-                                                    key={album.id}
-                                                    source={{ uri: album.src }}
-                                                    style={{
-                                                        width: itemSize,
-                                                        height: itemSize,
-                                                        borderRadius: 8,
-                                                    }}
-                                                    contentFit="cover"
-                                                />
-                                            ),
-                                        )}
-                                    </View>
-                                </View>
-                            )}
-                            {data.favorites[0].artists.length > 0 && (
-                                <View style={{ width: "100%" }}>
+                {data.artists.length > 0 && (
+                                <View style={styles.sec}>
                                     <Text style={styles.title}>
                                         Artistas favoritos
                                     </Text>
@@ -127,7 +93,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                                             width: "100%",
                                         }}
                                     >
-                                        {data.favorites[0].artists.map(
+                                        {data.artists.map(
                                             (artist: any) => (
                                                 <Image
                                                     key={artist.id}
@@ -144,8 +110,42 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                                     </View>
                                 </View>
                             )}
+                {data.albuns.length > 0 && (
+                        <View style={styles.sec}>
+                            {data.albuns.length > 0 && (
+                                <View style={{ width: "100%" }}>
+                                    <Text style={styles.title}>
+                                        Álbuns favoritos
+                                    </Text>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            flexWrap: "wrap",
+                                            gap: GAP,
+                                            marginTop: 8,
+                                            width: "100%",
+                                        }}
+                                    >
+                                        {data.albuns.map(
+                                            (album: any) => (
+                                                <Image
+                                                    key={album.id}
+                                                    source={{ uri: album.src }}
+                                                    style={{
+                                                        width: itemSize,
+                                                        height: itemSize,
+                                                        borderRadius: 8,
+                                                    }}
+                                                    contentFit="cover"
+                                                />
+                                            ),
+                                        )}
+                                    </View>
+                                </View>
+                            )}
+                            
                         </View>
-                    ))}
+                    )}
             </View>
         </Tabs.ScrollView>
     );
@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     sec: {
-        backgroundColor: "#222",
+        backgroundColor: "#1b1c1d",
         padding: 16,
         borderRadius: 12,
         gap: 16,

@@ -9,25 +9,26 @@ import {
     Text,
     View,
     Animated,
+    useWindowDimensions,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Banner from "@/components/home/banner";
 
-const HEADER_MAX_HEIGHT = 424;
+// const HEADER_MAX_HEIGHT = 424;
 
 export default function FeedHeader({
-    activeColor,
-    onColorChange,
     scrollOffsetY,
 }: {
-    activeColor: string;
-    onColorChange: (color: string) => void;
     scrollOffsetY: Animated.Value;
 }) {
+    const { height } = useWindowDimensions();
+    const HEADER_MAX_HEIGHT = height * 0.45;
     const insets = useSafeAreaInsets();
     const { data: session } = authClient.useSession();
+
+    const [colors, setColors] = useState(["#161718", "#161718"]);
 
     const Header_Min_Height = insets.top;
     const Scroll_Distance = HEADER_MAX_HEIGHT - Header_Min_Height;
@@ -55,10 +56,17 @@ export default function FeedHeader({
         <View style={{ height: HEADER_MAX_HEIGHT }}>
             {/* GRADIENTE — rola junto pois está dentro da FlatList */}
             <LinearGradient
-                colors={[activeColor, "#161718"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 0, y: 1 }}
+                colors={[colors[0], "transparent"]}
+                start={{ x: 0, y: 1 }}
+                end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
+            />
+
+            <LinearGradient
+                colors={[colors[1], "transparent"]}
+                start={{ x: 1, y: 1 }}
+                end={{ x: 0, y: 1 }}
+                style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
             />
             {/* Camada de profundidade */}
             <LinearGradient
@@ -88,7 +96,7 @@ export default function FeedHeader({
                         alignItems: "center",
                     }}
                 >
-                    <Banner onColorChange={onColorChange} />
+                    <Banner onColorChange={setColors} />
                 </Animated.View>
             </View>
         </View>

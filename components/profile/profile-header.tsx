@@ -8,6 +8,7 @@ import { useState, useEffect, use } from "react";
 import { Palette } from "@/lib/types";
 import { VerifiedCheck } from "@solar-icons/react-native/Bold";
 import { LinearGradient } from "expo-linear-gradient";
+import { getBannerColors } from "@/lib/util/workWithColors";
 
 export default function ProfileHeader({
     data,
@@ -40,8 +41,9 @@ export default function ProfileHeader({
                     quality: "low",
                 });
 
-                console.log("Colors fetched successfully:", result);
-                setColors(result);
+                const bannerColors = getBannerColors(result);
+                console.log("Colors fetched successfully:", bannerColors);
+                setColors(bannerColors);
             } catch (error) {
                 console.error("Error fetching colors:", error);
             }
@@ -114,16 +116,17 @@ export default function ProfileHeader({
     return (
         <View style={styles.scene}>
             <LinearGradient
-                colors={[dominantColor, "#161718"]}
-                start={{ x: 0, y: 0 }}
+                colors={[colors[0], "transparent"]}
+                start={{ x: 0, y: 1 }}
                 end={{ x: 1, y: 1 }}
                 style={StyleSheet.absoluteFill}
             />
+
             <LinearGradient
-                colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
-                start={{ x: 1, y: 0 }}
+                colors={[colors[1], "transparent"]}
+                start={{ x: 1, y: 1 }}
                 end={{ x: 0, y: 1 }}
-                style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
+                style={[StyleSheet.absoluteFill]}
             />
             <LinearGradient
                 colors={["transparent", "rgba(22,23,24,1)"]}
@@ -175,18 +178,18 @@ export default function ProfileHeader({
                 <Text style={styles.username}>@{data.username}</Text>
                 <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
                     <Text style={styles.textDefault}>
-                        {reviewsCount} reviews
+                        {reviewsCount} review{reviewsCount !== 1 && "s"}
                     </Text>
                     <Text style={styles.textDefault}>
                         {followingCount} seguindo
                     </Text>
                     <Text style={styles.textDefault}>
-                        {folowersCount} seguidores
+                        {folowersCount} seguidor{folowersCount !== 1 && "es"}
                     </Text>
                 </View>
                 {itsUser ? (
                     <Pressable style={[styles.followBtn, { backgroundColor: "#8065ef" }]}
-                        onPress={() => router.push("/edit")}
+                        onPress={() => router.push("/edit-profile")}
                     >
                         <Text style={{ color: "#eee", fontWeight: "bold" }}>
                             Editar perfil

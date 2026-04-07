@@ -11,12 +11,13 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import ArtistAlbuns from "@/components/artists/albuns";
 import Header from "@/components/artists/header";
 import { ArtistResponse, Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { AltArrowLeft } from "@solar-icons/react-native/Outline";
-import ArtistAlbuns from "@/components/artists/albuns";
+import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
 
 export default function ArtistScreen({
     data,
@@ -134,6 +135,10 @@ export default function ArtistScreen({
                 <AltArrowLeft size={32} color="#eee" />
             </Pressable>
 
+            <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
+                <FavoriteArtistBtn artistData={data} size={32} />
+            </View>
+
             <Animated.ScrollView
                 onScroll={onScroll}
                 scrollEventThrottle={16}
@@ -149,7 +154,9 @@ export default function ArtistScreen({
                     {data.description && (
                         <View style={styles.sec}>
                             <Text style={styles.title}>Biografia</Text>
-                            <Text style={styles.textDefault}>{data.description}</Text>
+                            <Text style={styles.textDefault}>
+                                {data.description}
+                            </Text>
                         </View>
                     )}
                     <ArtistAlbuns data={data} />
@@ -185,6 +192,14 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "rgba(255,255,255,0.05)",
     },
+    favoriteBtn: {
+        position: "absolute",
+        right: 16,
+        zIndex: 11,
+        width: 40,
+        height: 40,
+        justifyContent: "center",
+    },
     fixedTitle: { color: "#fff", fontSize: 16, fontWeight: "bold" },
     backButton: {
         position: "absolute",
@@ -194,7 +209,7 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
     },
-    
+
     textDefault: {
         color: "#eee", // A cor clara para o seu modo escuro
         fontSize: 14,
@@ -205,7 +220,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     sec: {
-        backgroundColor: "#222",
+        backgroundColor: "#1b1c1d",
         padding: 16,
         borderRadius: 12,
         gap: 4,

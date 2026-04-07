@@ -1,20 +1,19 @@
 // import { Host, Slider } from "@expo/ui/jetpack-compose";
-import { Slider } from "react-native-awesome-slider";
-import { useSharedValue } from "react-native-reanimated";
-import React, { useRef, useState, useEffect, use } from "react";
+import { Album, Palette, Rating, Review, Track } from "@/lib/types";
+import { selectRightColor } from "@/lib/util/selectRightColor";
+import { darkenColor } from "@/lib/util/workWithColors";
+import React, { useEffect, useState } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
-    StyleSheet,
-    View,
-    Button,
     Pressable,
+    StyleSheet,
     Text,
     TextInput,
+    View
 } from "react-native";
-import { Album, Track, Review, Rating, Palette } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
+import { Slider } from "react-native-awesome-slider";
+import { useSharedValue } from "react-native-reanimated";
 
 export function TrackRating({
     trackData,
@@ -145,7 +144,6 @@ export function TrackRating({
                             selectRightColor(colors),
                             0.5,
                         ),
-                        
                     }}
                     containerStyle={{
                         height: 12, // grossura da trilha
@@ -273,7 +271,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "flex-end",
         width: "100%",
-        backgroundColor: "#222", // Cor de fundo do editor
+        backgroundColor: "#1b1c1d", // Cor de fundo do editor
         borderRadius: 12,
         padding: 16,
     },

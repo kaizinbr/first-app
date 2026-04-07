@@ -16,15 +16,11 @@ import FeedHeader from "@/components/home/header";
 
 interface FeedProps {
     onScrollAnimado: any;
-    activeColor: string;
-    onColorChange: (color: string) => void;
     scrollOffsetY: Animated.Value;
 }
 
 export default function Feed({
     onScrollAnimado,
-    activeColor,
-    onColorChange,
     scrollOffsetY,
 }: FeedProps) {
     const { reviews, loadingInitial, loadingMore, hasMore, loadMore, onMomentumScrollBegin } = usePaginatedReviews({ endpoint: "/reviews" });
@@ -45,6 +41,7 @@ export default function Feed({
             contentContainerStyle={styles.feed}
             showsVerticalScrollIndicator={false}
             data={reviews}
+            
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <FeedCard review={item} />}
             onEndReached={loadMore}
@@ -54,8 +51,6 @@ export default function Feed({
             scrollEventThrottle={16}
             ListHeaderComponent={
                 <FeedHeader
-                    activeColor={activeColor}
-                    onColorChange={onColorChange}
                     scrollOffsetY={scrollOffsetY}
                 />
             }

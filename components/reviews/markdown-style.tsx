@@ -14,7 +14,7 @@ const FONT_FAMILY_EMOJI = Platform.select({
 
 export const markdownStyle: MarkdownStyle = {
     syntax: {
-        color: "gray",
+        color: "#2a2a2a",
     },
     link: {
         color: "blue",
@@ -49,7 +49,9 @@ export const markdownStyle: MarkdownStyle = {
         backgroundColor: "lime",
     },
     mentionUser: {
-        color: "blue",
-        backgroundColor: "cyan",
+        color: "#eee",
+        backgroundColor: "transparent", // remove o fundo padrão do mention
+        // : "underline",
     },
+    
 };

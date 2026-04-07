@@ -70,9 +70,7 @@ export const SlideItem: React.FC<Props> = (props) => {
                         flex: 1,
                         alignItems: "flex-start",
                         justifyContent: "flex-start",
-                        backgroundColor: getBannerColor(
-                            palette.dominant || "gray",
-                        ),
+                        backgroundColor: getBannerColor(palette),
                         borderRadius: 24,
                         overflow: "hidden",
                     }}
@@ -94,15 +92,13 @@ export const SlideItem: React.FC<Props> = (props) => {
                             style={[
                                 styles.back,
                                 {
-                                    backgroundColor: getBannerColor(
-                                        palette.dominant || "gray",
-                                    ),
+                                    backgroundColor: getBannerColor(palette),
                                 },
                             ]}
                         ></View>
                         <LinearGradient
                             colors={[
-                                getBannerColor(palette.dominant || "gray"),
+                                getBannerColor(palette),
                                 "transparent",
                             ]}
                             start={{ x: 0, y: 0 }}
@@ -152,7 +148,7 @@ const styles = StyleSheet.create({
     gradient: {
         // width: "20%",
         height: "100%",
-        aspectRatio: 1,
+        aspectRatio: 1.01/1,
         // alignItems: "center",
         // justifyContent: "center",
         // marginRight: 224,

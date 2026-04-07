@@ -1,15 +1,13 @@
-import React, { useRef, useState } from "react";
+import { Rating, Track } from "@/lib/types";
+import React, { useState } from "react";
 import {
     KeyboardAvoidingView,
     Platform,
     StyleSheet,
-    View,
-    Button,
-    Pressable,
     Text,
     TextInput,
+    View
 } from "react-native";
-import { Album, Track, Rating } from "@/lib/types";
 
 export default function TrackRating({
     trackData,
@@ -46,8 +44,8 @@ export default function TrackRating({
                 prevRatings.map((rating) =>
                     rating.id === trackData.id
                         ? { ...rating, value: numericValue }
-                        : rating
-                )
+                        : rating,
+                ),
             );
         }
     };
@@ -100,7 +98,7 @@ const styles = StyleSheet.create({
     },
     editorContainer: {
         width: "100%",
-        backgroundColor: "#222", // Cor de fundo do editor
+        backgroundColor: "#1b1c1d", // Cor de fundo do editor
         borderRadius: 8,
         padding: 12,
     },

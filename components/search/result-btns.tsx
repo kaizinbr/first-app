@@ -1,14 +1,12 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
-import { useRouter, Href, Link } from "expo-router";
+import { AvatarNoPress } from "@/components/core/avatar";
 import {
-    SearchResponse,
-    Track,
     Album,
     Artist,
-    UserProfile,
-    Review,
+    Track,
+    UserProfile
 } from "@/lib/types";
-import {AvatarNoPress} from "@/components/core/avatar";
+import { useRouter } from "expo-router";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Image } from "expo-image";
 
@@ -25,10 +23,7 @@ export function ResultUserBtn({ data }: { data: UserProfile }) {
             ]}
             onPress={handlePress}
         >
-            <AvatarNoPress
-                data={data}
-                size={40}
-            />
+            <AvatarNoPress data={data} size={40} />
             <View style={styles.btnTextWrapper}>
                 <Text style={styles.btnText}>{data.name}</Text>
                 <Text style={styles.btnSubtext}>@{data.username}</Text>
@@ -149,7 +144,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     pressedBtnMain: {
-        backgroundColor: "#222",
+        backgroundColor: "#1b1c1d",
         width: "100%",
         paddingVertical: 12,
         paddingHorizontal: 12,

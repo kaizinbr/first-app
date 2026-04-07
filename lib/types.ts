@@ -220,3 +220,10 @@ export interface Asset {
     uri: string;
     width: number;
 }
+
+
+export interface Favorite {
+    id: string;
+    src: string;
+    name: string;
+}
