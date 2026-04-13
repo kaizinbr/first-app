@@ -18,9 +18,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { Album } from "@/lib/types";
 
-export default function AlbumData({ data,headerContentStyle }: any) {
+export default function AlbumData({ data, headerContentStyle }: any) {
     return (
-        <Animated.View  style={[ headerContentStyle, styles.container]}>
+        <Animated.View style={[headerContentStyle, styles.container]}>
             <Text style={styles.albumType}>
                 {(() => {
                     switch (data.type) {
@@ -46,30 +46,32 @@ export default function AlbumData({ data,headerContentStyle }: any) {
 }
 
 export function AlbumExtraData({ data }: { data: Album }) {
-
     const releaseDate = new Date(data.release_date + "T00:00:00");
     const totalTracks = data.tracks.items.length;
     const totalDurationMs = data.tracks.items.reduce(
         (sum, track) => sum + track.duration_ms,
         0,
     );
-    const totalDurationMin = Math.floor(totalDurationMs / 60000);
-    const totalDurationSec = Math.floor((totalDurationMs % 60000) / 1000)
-        .toFixed(0)
-        .padStart(2, "0");
+    const totalDurationHours = Math.floor(totalDurationMs / 3600000);
+    const totalDurationMin = Math.floor(
+        (totalDurationMs % 3600000) / 60000,
+    ).toString().padStart(2, "0");
+    const totalDurationSec = Math.floor(
+        (totalDurationMs % 60000) / 1000,
+    ).toString().padStart(2, "0");
 
     return (
         <View style={[styles.containerExtra]}>
             <Text style={styles.extraInfo}>
-                {" "}
                 Lançado em{" "}
                 {new Date(data.release_date + "T00:00:00").toLocaleDateString(
                     "pt-BR",
                 )}
             </Text>
             <Text style={styles.extraInfo}>
-                {" "}{totalTracks} faixa{totalTracks > 1 ? "s" : ""} • Duração total:{" "}
-                {totalDurationMin}:{totalDurationSec}
+                {totalTracks} faixa{totalTracks > 1 ? "s" : ""} • Duração total:{" "}
+                {totalDurationHours > 0 ? `${totalDurationHours}h` : ""}
+                {totalDurationMin}m
             </Text>
         </View>
     );

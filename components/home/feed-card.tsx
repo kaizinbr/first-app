@@ -58,7 +58,7 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
     } | null>(null);
     const [loading, setLoading] = useState(true);
 
-        const previewContent = review.review
+    const previewContent = review.review
         ? truncateMarkdown(review.review, MAX_PREVIEW_CHARS)
         : null;
 
@@ -139,13 +139,17 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                             <>
                                 {/* <TiptapRenderer json={content.jsonContent} /> */}
                                 <EnrichedMarkdownText
-                                    markdown={previewContent ? previewContent : ""}
+                                    markdown={
+                                        previewContent ? previewContent : ""
+                                    }
                                     markdownStyle={{
                                         paragraph: {
                                             color: "#eee",
                                             fontSize: 14,
                                             marginTop: 4,
                                             lineHeight: 20,
+
+                                            fontFamily: "Walsheim",
                                         },
                                         h1: {
                                             color: "#eee",
@@ -165,8 +169,10 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                                     //   onLinkPress={({ url }) => Linking.openURL(url)}
                                 />
                                 {isTruncated && (
-                            <Text style={styles.readMore}>ler mais</Text>
-                        )}
+                                    <Text style={styles.readMore}>
+                                        ler mais
+                                    </Text>
+                                )}
                             </>
                         ) : null}
 

@@ -2,11 +2,7 @@ import api, { apiAuth } from "@/lib/api";
 import { Album, Review } from "@/lib/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import {
-    StyleSheet,
-    Text,
-    View
-} from "react-native";
+import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
 
 import { getColors } from "react-native-image-colors";
 
@@ -69,8 +65,8 @@ export default function ReviewPage() {
                     colors={colors}
                 />
             ) : (
-                <View style={styles.container}>
-                    <Text style={styles.title}>Carregando...</Text>
+                <View style={styles.overlay}>
+                    <ActivityIndicator size="large" color="#8065ef" />
                 </View>
             )}
         </>
@@ -118,5 +114,16 @@ const styles = StyleSheet.create({
         height: 300,
         marginTop: 20,
         resizeMode: "contain",
+    },
+    overlay: {
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        backgroundColor: "#161718",
+        zIndex: 10,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
 });

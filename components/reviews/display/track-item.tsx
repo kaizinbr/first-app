@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
         flex: 1, // Empurra a duração lá pro final da tela
         justifyContent: "center",
         paddingRight: 16,
+        // backgroundColor: "rgba(255,255,255,0.05)",
     },
     titleLine: {
         flexDirection: "row",
@@ -92,7 +93,10 @@ const styles = StyleSheet.create({
     },
     actionColumn: {
         flexDirection: "row",
-        alignItems: "center",
+        alignItems: "flex-end",
+        justifyContent: "flex-end",
+        width: 40,
+        // backgroundColor: "rgba(255,255,255,0.05)",
     },
     trackDuration: {
         color: "#777",

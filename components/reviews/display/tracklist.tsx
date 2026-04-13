@@ -74,6 +74,7 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 16,
         backgroundColor: "transparent",
+        marginBottom: 16,
     },
     albumArt: {
         width: 200,

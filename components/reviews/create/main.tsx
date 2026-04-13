@@ -21,6 +21,7 @@ import AlbumHeader from "@/components/reviews/display/header";
 import { Album, Palette, Review } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
+import Lyrics from "@/components/reviews/create/lyrics";
 
 export default function ReviewCreateMain({
     reviewData,
@@ -73,6 +74,9 @@ export default function ReviewCreateMain({
     const onScroll = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
     });
+
+    const [currentTrack, setCurrentTrack] = useState(0);
+    const [showLyrics, setShowLyrics] = useState(false);
 
     const backgroundStyle = useAnimatedStyle(() => {
         const translateY = scrollY.value > 0 ? -scrollY.value : 0;
@@ -135,7 +139,7 @@ export default function ReviewCreateMain({
 
     // React.useEffect(() => {
     //     console.log("Ratings atualizados:", ratings);
-    //     handleInputChange(ratings);
+    //     // handleInputChange(ratings);
     // }, [ratings]);
 
     return (
@@ -202,6 +206,7 @@ export default function ReviewCreateMain({
                         showsVerticalScrollIndicator={false}
                         keyboardShouldPersistTaps="handled"
                         style={{ zIndex: 1 }}
+                        nestedScrollEnabled={true}
                     >
                         <View
                             style={{
@@ -302,40 +307,49 @@ export default function ReviewCreateMain({
 
                                 <TrackRater
                                     reviewData={reviewData}
+                                    ratings={ratings}
                                     setRatings={setRatings}
                                     colors={colors}
+                                    setCurrentTrack={setCurrentTrack}
+                                    currentTrack={currentTrack}
+                                    showLyrics={showLyrics}
+                                    setShowLyrics={setShowLyrics}
                                 />
-
-                                <Pressable
-                                    onPress={goToReview}
-                                    style={({ pressed }) => [
-                                        styles.nextBtn,
-                                        {
-                                            backgroundColor: pressed
-                                                ? darkenColor(
-                                                      selectRightColor(colors),
-                                                      0.2,
-                                                  )
-                                                : darkenColor(
-                                                      selectRightColor(colors),
-                                                      0.7,
-                                                  ),
-                                        },
-                                    ]}
-                                >
-                                    <Text
-                                        style={{
-                                            color: "#eee",
-                                            fontSize: 16,
-                                            fontWeight: "bold",
-                                        }}
-                                    >
-                                        Próximo
-                                    </Text>
-                                </Pressable>
+                                {showLyrics && (
+                                    <Lyrics
+                                        reviewData={reviewData}
+                                        colors={colors}
+                                        currentTrack={currentTrack}
+                                    />
+                                )}
                             </View>
+                            <View style={{ height: 80 }} />
                         </Animated.View>
                     </Animated.ScrollView>
+                    <Pressable
+                        onPress={goToReview}
+                        style={({ pressed }) => [
+                            styles.nextBtn,
+                            {
+                                backgroundColor: pressed
+                                    ? darkenColor(selectRightColor(colors), 0.2)
+                                    : darkenColor(
+                                          selectRightColor(colors),
+                                          0.7,
+                                      ),
+                            },
+                        ]}
+                    >
+                        <Text
+                            style={{
+                                color: "#eee",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Próximo
+                        </Text>
+                    </Pressable>
                 </>
             ) : (
                 <ReviewStep
@@ -437,11 +451,11 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 32,
-        backgroundColor: "#333",
+        backgroundColor: "#282828",
         alignItems: "center",
     },
     toggleBtnActive: {
-        backgroundColor: "#555",
+        backgroundColor: "#404245",
     },
     toggleText: {
         color: "#eee",
@@ -455,5 +469,10 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: "center",
+        position: "absolute",
+        bottom: 16,
+        left: 16,
+        right: 16,
+        zIndex: 10,
     },
 });

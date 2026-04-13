@@ -90,6 +90,8 @@ export function AlbumCard({
                                 color: "#eee",
                                 fontSize: 22,
                                 fontWeight: "900",
+
+                                fontFamily: "Walsheim",
                             }}
                         >
                             {value}

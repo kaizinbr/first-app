@@ -1,6 +1,18 @@
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React from "react";
+import React, {
+    useCallback,
+    useEffect,
+    useMemo,
+    useRef,
+    useState,
+} from "react";
+import BottomSheet, {
+    BottomSheetView,
+    BottomSheetModal,
+    BottomSheetBackdrop,
+    useBottomSheetModal,
+} from "@gorhom/bottom-sheet";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import Animated, {
     Extrapolation,
@@ -10,7 +22,7 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import api, { apiAuth } from "@/lib/api";
 import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
 import ReviewScore from "@/components/reviews/display/score";
@@ -19,7 +31,18 @@ import Tracklist from "@/components/reviews/display/tracklist";
 import { Album, Palette, Review } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft  } from '@solar-icons/react-native/Linear'
+import { AltArrowLeft } from "@solar-icons/react-native/Linear";
+import {
+    MenuDots,
+    Share,
+    Flag,
+    Vinyl,
+    User,
+    ForbiddenCircle,
+    TrashBinTrash,
+    Pen,
+    PenNewSquare,
+} from "@solar-icons/react-native/Bold";
 
 export default function AlbumScreen({
     reviewData,
@@ -35,15 +58,14 @@ export default function AlbumScreen({
 
     const scrollY = useSharedValue(0);
 
-    const HEADER_MAX_HEIGHT = 264; // Tamanho total da área do gradiente
-    const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
+    const HEADER_MAX_HEIGHT = 264;
+    const HEADER_MIN_HEIGHT = insets.top + 50;
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
     const onScroll = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
     });
 
-    // 1. A MÁGICA DO FUNDO: Rola junto com a tela!
     const backgroundStyle = useAnimatedStyle(() => {
         // Se rolar pra baixo (scroll positivo), o fundo sobe na mesma velocidade (-scrollY)
         // Se puxar a tela pra cima (bounce negativo), ele trava no 0 para não desgrudar do topo.
@@ -60,7 +82,6 @@ export default function AlbumScreen({
         };
     });
 
-    // 2. A MÁGICA DA HEADER FIXA: Nasce quando o gradiente vai embora
     const topBarStyle = useAnimatedStyle(() => {
         const opacity = interpolate(
             scrollY.value,
@@ -71,7 +92,6 @@ export default function AlbumScreen({
         return { opacity };
     });
 
-    // 3. Animação da Capa e Título sumindo
     const headerContentStyle = useAnimatedStyle(() => {
         const opacity = interpolate(
             scrollY.value,
@@ -81,6 +101,36 @@ export default function AlbumScreen({
         );
         return { opacity };
     });
+
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ["50%", "85%", "100%"], []);
+
+    const openSheet = useCallback(() => {
+        bottomSheetRef.current?.present();
+    }, []);
+
+    const { dismiss } = useBottomSheetModal();
+
+    const [itsMine, setItsMine] = useState(false);
+
+    useEffect(() => {
+        const checkOwnership = async () => {
+            try {
+                const myProfile = await apiAuth("/me");
+                setItsMine(reviewData.Profile.id === myProfile.id);
+                console.log(
+                    "Review ownership:",
+                    reviewData.Profile.id,
+                    myProfile.id,
+                    reviewData.Profile.id === myProfile.id,
+                );
+            } catch (error) {
+                console.error("Error checking review ownership:", error);
+            }
+        };
+        checkOwnership();
+        // setItsMine(reviewData.user.id === myProfile.id);
+    }, [reviewData]);
 
     return (
         <View style={styles.container}>
@@ -99,12 +149,12 @@ export default function AlbumScreen({
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}
                 />
-                                <LinearGradient
-                                    colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
-                                    start={{ x: 1, y: 0 }}
-                                    end={{ x: 0, y: 1 }}
-                                    style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
-                                />
+                <LinearGradient
+                    colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
+                    start={{ x: 1, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
+                />
                 {/* Camada 2: Uma sombra que vem de baixo pra criar a "profundidade" do mesh */}
                 <LinearGradient
                     colors={["transparent", "rgba(22, 23, 24, 1)"]}
@@ -155,7 +205,19 @@ export default function AlbumScreen({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft  size={32} color="#eee" />
+                <AltArrowLeft size={32} color="#eee" />
+            </Pressable>
+
+            <Pressable
+                style={[styles.dotsBtn, { top: insets.top + 4 }]}
+                onPress={openSheet}
+            >
+                <MenuDots
+                    // albumData={albumData}
+                    size={26}
+                    color="#eee"
+                    style={{ transform: [{ rotate: "90deg" }] }}
+                />
             </Pressable>
 
             {/* O CONTEÚDO DA PÁGINA */}
@@ -189,8 +251,151 @@ export default function AlbumScreen({
                     albumTracks={albumData.tracks.items}
                 />
                 <AlbumExtraData data={albumData} />
-                <View style={{ height: 100 }} /> 
+                <View style={{ height: 100 }} />
             </Animated.ScrollView>
+            <BottomSheetModal
+                ref={bottomSheetRef}
+                index={1}
+                snapPoints={snapPoints}
+                enablePanDownToClose
+                topInset={insets.top}
+                // containerStyle={{ zIndex: 1000 }}
+                backgroundStyle={{ backgroundColor: "#161718" }}
+                handleIndicatorStyle={{ backgroundColor: "#555" }}
+                backdropComponent={(props) => (
+                    <BottomSheetBackdrop
+                        {...props}
+                        disappearsOnIndex={-1}
+                        appearsOnIndex={0}
+                    />
+                )}
+            >
+                <BottomSheetView>
+                    <View style={styles.sheetView}>
+                        {itsMine && (
+                            <>
+                                <Pressable
+                                    style={({ pressed }) => [
+                                        styles.optBtn,
+                                        {
+                                            backgroundColor: pressed
+                                                ? "rgba(255, 255, 255, 0.05)"
+                                                : "transparent",
+                                        },
+                                    ]}
+                                    onPress={() => {}}
+                                >
+                                    <TrashBinTrash size={24} color="#eee" />
+                                    <Text style={styles.optText}>Excluir</Text>
+                                </Pressable>
+                                <Pressable
+                                    style={({ pressed }) => [
+                                        styles.optBtn,
+                                        {
+                                            backgroundColor: pressed
+                                                ? "rgba(255, 255, 255, 0.05)"
+                                                : "transparent",
+                                        },
+                                    ]}
+                                    onPress={() => {
+                                        router.push({
+                                            pathname:
+                                                "/(app)/create/review/[id]",
+                                            params: { id: reviewData.album_id },
+                                        });
+                                        dismiss();
+                                    }}
+                                >
+                                    <Pen size={24} color="#eee" />
+                                    <Text style={styles.optText}>Editar</Text>
+                                </Pressable>
+                            </>
+                        )}
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.optBtn,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {}}
+                        >
+                            <Share size={24} color="#eee" />
+                            <Text style={styles.optText}>Compartilhar</Text>
+                        </Pressable>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.optBtn,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {}}
+                        >
+                            <Flag size={24} color="#eee" />
+                            <Text style={styles.optText}>Denunciar</Text>
+                        </Pressable>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.optBtn,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {
+                                router.push({
+                                    pathname: "/(app)/(tabs)/(home)/album/[id]",
+                                    params: { id: reviewData.album_id },
+                                });
+                                dismiss();
+                            }}
+                        >
+                            <Vinyl size={24} color="#eee" />
+                            <Text style={styles.optText}>Ver álbum</Text>
+                        </Pressable>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.optBtn,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {
+                                router.push({
+                                    pathname: "/(app)/(tabs)/(home)/user/[username]",
+                                    params: { username: reviewData.Profile.username },
+                                });
+                                dismiss();
+                            }}
+                        >
+                            <User size={24} color="#eee" />
+                            <Text style={styles.optText}>Ver usuário</Text>
+                        </Pressable>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.optBtn,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {}}
+                        >
+                            <ForbiddenCircle size={24} color="#eee" />
+                            <Text style={styles.optText}>Bloquear usuário</Text>
+                        </Pressable>
+                    </View>
+                </BottomSheetView>
+            </BottomSheetModal>
         </View>
     );
 }
@@ -228,6 +433,18 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         justifyContent: "center",
+        // backgroundColor: "rgba(255,255,255,0.05)",
+    },
+
+    dotsBtn: {
+        position: "absolute",
+        right: 16,
+        zIndex: 11,
+        width: 40,
+        height: 40,
+        justifyContent: "center",
+        alignItems: "flex-end",
+        // backgroundColor: "rgba(255,255,255,0.05)",
     },
 
     // AQUI ESTÁ O SEGREDO DO ENCAIXE PERFEITO
@@ -245,6 +462,25 @@ const styles = StyleSheet.create({
         marginTop: 24,
         padding: 16,
         backgroundColor: "#1e1e1e",
+    },
+    sheetView: {
+        flex: 1,
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 4,
+    },
+    optBtn: {
+        flexDirection: "row",
+        alignItems: "center",
+        // backgroundColor: "transparent",
+        padding: 12,
+        width: "100%",
+        borderRadius: 8,
+    },
+    optText: {
+        color: "#eee",
+        fontSize: 14,
+        marginLeft: 12,
     },
     extraInfo: {
         color: "#777",

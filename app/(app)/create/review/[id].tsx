@@ -13,6 +13,7 @@ import {
     TextInput,
     View,
     Pressable,
+    ActivityIndicator,
 } from "react-native";
 import { getColors } from "react-native-image-colors";
 import type { EnrichedTextInputInstance } from "react-native-enriched";
@@ -96,7 +97,10 @@ export default function ReviewPage() {
 
         if (!response.saved) {
             console.error("Error saving ratings", response.data);
-            Alert.alert("Erro", "Não foi possível salvar sua avaliação. Tente novamente.");
+            Alert.alert(
+                "Erro",
+                "Não foi possível salvar sua avaliação. Tente novamente.",
+            );
             return;
         } else {
             console.log("Ratings saved/updated", response.data);
@@ -104,7 +108,7 @@ export default function ReviewPage() {
             setShorten(response.data.shorten);
             router.replace({
                 pathname: `/review/[shorten]`,
-                params: { shorten: response.data.shorten }
+                params: { shorten: response.data.shorten },
             });
         }
 
@@ -185,11 +189,10 @@ export default function ReviewPage() {
                     handleSubmit={handleSubmit}
                     text={text}
                     setText={setText}
-                 
                 />
             ) : (
-                <View style={styles.container}>
-                    <Text style={styles.title}>Carregando...</Text>
+                <View style={styles.overlay}>
+                    <ActivityIndicator size="large" color="#8065ef" />
                 </View>
             )}
         </>
@@ -254,5 +257,17 @@ const styles = StyleSheet.create({
         width: "100%",
         gap: 12,
         padding: 16,
+    },
+
+    overlay: {
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        backgroundColor: "#161718",
+        zIndex: 10,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
 });

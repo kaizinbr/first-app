@@ -2,6 +2,7 @@ import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { authClient } from "@/lib/auth-client";
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
     DarkTheme,
@@ -33,16 +34,18 @@ export default function Layout() {
         <ThemeProvider value={MyTheme}>
             <SafeAreaProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
-                    <SafeAreaView edges={["bottom", "left", "right"]} style={{ flex: 1, backgroundColor: MyTheme.colors.background }}>
-                        <StatusBar style="light" translucent={true} />
-                        
-                        {/* DEIXE O STACK LIMPO E ESTÁTICO */}
-                        <Stack screenOptions={{ headerShown: false }}>
+                    <BottomSheetModalProvider>
+                        <SafeAreaView edges={["bottom", "left", "right"]} style={{ flex: 1, backgroundColor: MyTheme.colors.background }}>
+                            <StatusBar style="light" translucent={true} />
+                            
+                            {/* DEIXE O STACK LIMPO E ESTÁTICO */}
+                            <Stack screenOptions={{ headerShown: false }}>
                             <Stack.Screen name="(auth)" />
                             <Stack.Screen name="(app)" />
                         </Stack>
 
-                    </SafeAreaView>
+                        </SafeAreaView>
+                    </BottomSheetModalProvider>
                 </GestureHandlerRootView>
             </SafeAreaProvider>
         </ThemeProvider>

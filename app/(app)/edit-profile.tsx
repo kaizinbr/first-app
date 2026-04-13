@@ -458,7 +458,7 @@ export default function EditProfile() {
         // Se puxar a tela pra cima (bounce negativo), ele trava no 0 para não desgrudar do topo.
         const translateY = scrollY.value > 0 ? -scrollY.value : 0;
 
-        // Dá uma leve esticada no gradiente se o usuário puxar a tela (overscroll)
+
         const scale =
             scrollY.value < 0
                 ? 1 + Math.abs(scrollY.value) / HEADER_MAX_HEIGHT
@@ -469,7 +469,6 @@ export default function EditProfile() {
         };
     });
 
-    // 2. A MÁGICA DA HEADER FIXA: Nasce quando o gradiente vai embora
     const topBarStyle = useAnimatedStyle(() => {
         const opacity = interpolate(
             scrollY.value,

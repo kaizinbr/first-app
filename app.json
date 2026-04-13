@@ -1,52 +1,145 @@
 {
-  "expo": {
-    "name": "first-app",
-    "slug": "first-app",
-    "version": "1.0.0",
-    "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
-    "scheme": "firstapp",
-    "newArchEnabled": true,
-    "splash": {
-      "image": "./assets/images/splash-icon.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#161718"
-    },
-    "ios": {
-      "supportsTablet": true
-    },
-    "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#161718"
-      },
-      "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false,
-      "package": "com.kaizinbr.firstapp"
-    },
-    "web": {
-      "bundler": "metro",
-      "output": "static",
-      "favicon": "./assets/images/favicon.png"
-    },
-    "userInterfaceStyle": "dark",
-    "plugins": [
-      "expo-router",
-      "expo-system-ui",
-      "expo-font",
-      "expo-image",
-      "expo-secure-store",
-      "expo-web-browser"
-    ],
-    "experiments": {
-      "typedRoutes": true
-    },
-    "extra": {
-      "router": {},
-      "eas": {
-        "projectId": "e19b7ddb-7890-4a4a-97d9-bfb51c60f880"
-      }
-    },
-    "owner": "kaizinbr"
-  }
+    "expo": {
+        "name": "first-app",
+        "slug": "first-app",
+        "version": "1.0.0",
+        "orientation": "portrait",
+        "icon": "./assets/images/icon.png",
+        "scheme": "firstapp",
+        "newArchEnabled": true,
+        "splash": {
+            "image": "./assets/images/splash-icon.png",
+            "resizeMode": "contain",
+            "backgroundColor": "#161718"
+        },
+        "ios": {
+            "supportsTablet": true
+        },
+        "android": {
+            "adaptiveIcon": {
+                "foregroundImage": "./assets/images/adaptive-icon.png",
+                "backgroundColor": "#161718"
+            },
+            "edgeToEdgeEnabled": true,
+            "predictiveBackGestureEnabled": false,
+            "package": "com.kaizinbr.firstapp"
+        },
+        "web": {
+            "bundler": "metro",
+            "output": "static",
+            "favicon": "./assets/images/favicon.png"
+        },
+        "userInterfaceStyle": "dark",
+        "plugins": [
+            "expo-router",
+            "expo-system-ui",
+            [
+                "expo-font",
+                {
+                    "android": {
+                        "fonts": [
+                            {
+                                "fontFamily": "Walsheim",
+                                "fontDefinitions": [
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Ultra-Light.otf",
+                                        "weight": 100,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Ultra-Light-Oblique.otf",
+                                        "weight": 100,
+                                        "style": "italic"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Thin.otf",
+                                        "weight": 200,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Thin-Oblique.otf",
+                                        "weight": 200,
+                                        "style": "italic"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Light.otf",
+                                        "weight": 300,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Light-Oblique.otf",
+                                        "weight": 300,
+                                        "style": "italic"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Regular.otf",
+                                        "weight": 400,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Regular-Oblique.otf",
+                                        "weight": 400,
+                                        "style": "italic"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Medium.otf",
+                                        "weight": 500,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Medium-Oblique.otf",
+                                        "weight": 500,
+                                        "style": "italic"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Bold.otf",
+                                        "weight": 700,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Bold-Oblique.otf",
+                                        "weight": 700,
+                                        "style": "italic"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Black.otf",
+                                        "weight": 800,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Black-Oblique.otf",
+                                        "weight": 800,
+                                        "style": "italic"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Ultra-Bold.otf",
+                                        "weight": 900,
+                                        "style": "normal"
+                                    },
+                                    {
+                                        "path": "./assets/fonts/walsheim/GT-Walsheim-LC-Ultra-Bold-Oblique.otf",
+                                        "weight": 900,
+                                        "style": "italic"
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                }
+            ],
+            "expo-image",
+            "expo-secure-store",
+            "expo-web-browser"
+        ],
+        "experiments": {
+            "typedRoutes": true
+        },
+        "extra": {
+            "router": {},
+            "eas": {
+                "projectId": "e19b7ddb-7890-4a4a-97d9-bfb51c60f880"
+            }
+        },
+        "owner": "kaizinbr"
+    }
 }

@@ -9,6 +9,7 @@ import {
     Image,
     Platform,
     Pressable,
+    ActivityIndicator,
 } from "react-native";
 import { useLocalSearchParams } from "expo-router";
 import api, { apiAuth } from "@/lib/api";
@@ -62,10 +63,14 @@ export default function AlbumPage() {
     return (
         <>
             {albumData && colors ? (
-                <AlbumScreen albumData={albumData} colors={colors} userData={userData} />
+                <AlbumScreen
+                    albumData={albumData}
+                    colors={colors}
+                    userData={userData}
+                />
             ) : (
-                <View style={styles.main}>
-                    <Text style={styles.title}>Carregando álbum...</Text>
+                <View style={styles.overlay}>
+                    <ActivityIndicator size="large" color="#8065ef" />
                 </View>
             )}
         </>
@@ -112,5 +117,16 @@ const styles = StyleSheet.create({
         height: 300,
         marginTop: 20,
         resizeMode: "contain",
+    },
+    overlay: {
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        backgroundColor: "#161718",
+        zIndex: 10,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
 });

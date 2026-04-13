@@ -10,10 +10,16 @@ import {
     StyleSheet,
     Text,
     TextInput,
-    View
+    View,
 } from "react-native";
 import { Slider } from "react-native-awesome-slider";
 import { useSharedValue } from "react-native-reanimated";
+
+import {
+    SkipNext,
+    SkipPrevious,
+    MusicNote,
+} from "@solar-icons/react-native/Bold";
 
 export function TrackRating({
     trackData,
@@ -159,7 +165,12 @@ export function TrackRating({
 export default function TrackRater({
     reviewData,
     setRatings,
+    ratings,
     colors,
+    setCurrentTrack,
+    currentTrack,
+    showLyrics,
+    setShowLyrics,
 }: {
     reviewData: {
         reviewed: boolean;
@@ -178,8 +189,13 @@ export default function TrackRater({
         >
     >;
     colors: Palette | any;
+    ratings: any;
+    setCurrentTrack: React.Dispatch<React.SetStateAction<number>>;
+    currentTrack: number;
+    showLyrics: boolean;
+    setShowLyrics: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    const [currentTrack, setCurrentTrack] = useState(0);
+    // const [currentTrack, setCurrentTrack] = useState(0);
     const [trackData, setTrackData] = useState<Track | null>(null);
     const [trackRating, setTrackRating] = useState(
         reviewData.rating
@@ -211,15 +227,46 @@ export default function TrackRater({
                 }
                 reviewData={trackRating}
                 setRatings={setRatings}
-                initialValue={0}
+                initialValue={
+                    ratings.find(
+                        (r: any) =>
+                            r.id ===
+                            reviewData.album.tracks.items[currentTrack].id,
+                    )?.value
+                }
                 colors={colors}
             />
+            <View
+                style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    width: "100%",
+                }}
+            >
+                <Pressable
+                    style={[
+                        styles.toggleBtn,
+                        showLyrics && styles.toggleBtnActive,
+                    ]}
+                    onPress={() => setShowLyrics((prev) => !prev)}
+                >
+                    <Text
+                        style={[
+                            styles.toggleText,
+                            showLyrics && styles.toggleTextActive,
+                        ]}
+                    >
+                        Letras
+                    </Text>
+                </Pressable>
+            </View>
 
             <View
                 style={{
                     flexDirection: "row",
                     justifyContent: "space-between",
                     width: "100%",
+                        marginTop: 16,
                 }}
             >
                 <Pressable
@@ -237,7 +284,10 @@ export default function TrackRater({
                         // marginBottom: 8,
                     }}
                 >
-                    <Text style={{ color: "#eee" }}>Anterior</Text>
+                    <SkipPrevious
+                        size={24}
+                        color={darkenColor(selectRightColor(colors), 0.1)}
+                    />
                 </Pressable>
                 <Text
                     style={{ color: "#777", fontSize: 14, alignSelf: "center" }}
@@ -259,7 +309,10 @@ export default function TrackRater({
                         // marginBottom: 16,
                     }}
                 >
-                    <Text style={{ color: "#eee" }}>Próxima</Text>
+                    <SkipNext
+                        size={24}
+                        color={darkenColor(selectRightColor(colors), 0.1)}
+                    />
                 </Pressable>
             </View>
         </View>
@@ -315,5 +368,23 @@ const styles = StyleSheet.create({
     inputSide: {
         fontSize: 24,
         color: "#eeeeee",
+    },
+    toggleBtn: {
+        // flex: 1,
+        paddingVertical: 8,
+        paddingHorizontal: 16,
+        borderRadius: 32,
+        backgroundColor: "#282828",
+        alignItems: "center",
+    },
+    toggleBtnActive: {
+        backgroundColor: "#404245",
+    },
+    toggleText: {
+        color: "#eee",
+        fontSize: 12,
+    },
+    toggleTextActive: {
+        color: "#fff",
     },
 });

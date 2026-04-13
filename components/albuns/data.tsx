@@ -40,7 +40,9 @@ export default function AlbumData({ data }: any) {
                 {data.total_tracks} faixa{data.total_tracks > 1 ? "s" : ""}
             </Text>
             <Text style={styles.albumTitle}>{data.name}</Text>
-            <Pressable onPress={() => router.push(`/artist/${data.artists[0].id}`)}>
+            <Pressable
+                onPress={() => router.push(`/artist/${data.artists[0].id}`)}
+            >
                 <Text style={styles.albumArtist}>
                     {data.artists.map((artist: any) => artist.name).join(", ")}
                 </Text>
@@ -50,30 +52,29 @@ export default function AlbumData({ data }: any) {
 }
 
 export function AlbumExtraData({ data }: { data: Album }) {
-
     const releaseDate = new Date(data.release_date + "T00:00:00");
     const totalTracks = data.tracks.items.length;
     const totalDurationMs = data.tracks.items.reduce(
         (sum, track) => sum + track.duration_ms,
         0,
     );
-    const totalDurationMin = Math.floor(totalDurationMs / 60000);
-    const totalDurationSec = Math.floor((totalDurationMs % 60000) / 1000)
-        .toFixed(0)
+    const totalDurationHours = Math.floor(totalDurationMs / 3600000);
+    const totalDurationMin = Math.floor((totalDurationMs % 3600000) / 60000)
+        .toString()
         .padStart(2, "0");
 
     return (
         <View style={[styles.container]}>
             <Text style={styles.extraInfo}>
-                {" "}
                 Lançado em{" "}
                 {new Date(data.release_date + "T00:00:00").toLocaleDateString(
                     "pt-BR",
                 )}
             </Text>
             <Text style={styles.extraInfo}>
-                {" "}{totalTracks} faixa{totalTracks > 1 ? "s" : ""} • Duração total:{" "}
-                {totalDurationMin}:{totalDurationSec}
+                {totalTracks} faixa{totalTracks > 1 ? "s" : ""} • Duração total:{" "}
+                {totalDurationHours > 0 ? `${totalDurationHours}h` : ""}
+                {totalDurationMin}m
             </Text>
         </View>
     );

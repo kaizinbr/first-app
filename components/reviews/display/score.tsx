@@ -7,7 +7,7 @@ export default function ReviewScore({ review }: { review: Review }) {
             <Text style={styles.sectionTitle}>
                 Avaliação de {review.Profile.name}
             </Text>
-            <Text style={styles.score}>{review.total}/100</Text>
+            <Text style={styles.score}>{Number(review.total).toFixed(1)}/100</Text>
             <Text style={styles.date}>
                 {new Date(review.created_at).toLocaleDateString("pt-BR")}
             </Text>
