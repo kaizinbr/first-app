@@ -36,7 +36,7 @@ export default function ReviewContent({ review }: { review: Review }) {
 
             try {
                 const response = await api.get(
-                    `/reviews/${review.shorten}/content`,
+                    `/reviews/${review.id}/content`,
                 );
                 setContent(response.data);
             } catch (error) {

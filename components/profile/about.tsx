@@ -12,6 +12,7 @@ import { UserProfile, Review } from "@/lib/types";
 import { Tabs } from "react-native-collapsible-tab-view";
 import { ArrowRightUp } from "@solar-icons/react-native/Linear";
 import { Image } from "expo-image";
+import LyricsCard from "@/components/profile/lyrics-card";
 
 export default function AboutRoute({ data }: { data: UserProfile }) {
     const GAP = 8;
@@ -61,6 +62,11 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                         </Text>
                     </View>
                 </View>
+
+                {data.lyrics !== null && (
+                    <LyricsCard saved={data.lyrics as any} />
+                )}
+
                 {data.site && (
                     <Pressable
                         style={[
@@ -79,6 +85,8 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                         <ArrowRightUp size={18} color="#eee" />
                     </Pressable>
                 )}
+
+
                 {data.artists.length > 0 && (
                                 <View style={styles.sec}>
                                     <Text style={styles.title}>

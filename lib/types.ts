@@ -140,6 +140,16 @@ export interface UserArtist {
     name: string;
 }
 
+interface SavedLyrics {
+    trackId: string;
+    trackName: string;
+    artistNames: string;
+    albumArt: string;
+    lines: { startTimeMs: string; words: string }[]; // todas as linhas
+    selectedIndexes: number[];
+    color: string;
+}
+
 export interface UserProfile {
     id: string;
     username: string;
@@ -157,6 +167,7 @@ export interface UserProfile {
     albuns: UserAlbum[];
     artists: UserArtist[];
     location: string | null;
+    lyrics: SavedLyrics| [];
 }
 
 export interface Review {

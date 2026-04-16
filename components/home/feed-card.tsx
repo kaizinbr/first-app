@@ -101,7 +101,7 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
 
             try {
                 const response = await api.get(
-                    `/reviews/${review.shorten}/content`,
+                    `/reviews/${review.id}/content`,
                 );
                 setContent(response.data);
                 // console.log("Content fetched successfully:", content.html);
@@ -116,7 +116,7 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
 
     return (
         <Pressable
-            onPress={() => router.push(`/review/${review.shorten}`)}
+            onPress={() => router.push(`/review/${review.id}`)}
             style={({ pressed }) => [
                 styles.main,
                 pressed && styles.mainPressed,

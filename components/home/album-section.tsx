@@ -1,5 +1,12 @@
 import { LinearGradient } from "expo-linear-gradient";
-import { ColorValue, Image, Text, TouchableOpacity, View } from "react-native";
+import {
+    ColorValue,
+    Image,
+    Text,
+    TouchableOpacity,
+    View,
+    StyleSheet,
+} from "react-native";
 import api from "@/lib/api";
 import { useState, useEffect } from "react";
 import { getColors } from "react-native-image-colors";
@@ -49,7 +56,7 @@ export function AlbumCard({
 
     return (
         <Wrapper style={{ marginTop: 12 }} activeOpacity={0.8}>
-            {colors && (
+            {colors ? (
                 <LinearGradient
                     colors={[selectRightColor(colors), "#282b30"]}
                     start={{ x: 0, y: 0.5 }}
@@ -109,7 +116,19 @@ export function AlbumCard({
                         )} */}
                     </View>
                 </LinearGradient>
-            )}
+            ): ( <View style={styles.albumSection} /> )}
+            
         </Wrapper>
     );
 }
+
+const styles = StyleSheet.create({
+    albumSection: {
+        flex: 1,
+        height: 144,
+        width: "100%",
+        marginTop: 12,
+        borderRadius: 14,
+        backgroundColor: "#282828",
+    },
+});

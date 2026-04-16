@@ -71,6 +71,9 @@ export default function ProfileTabs({
             <Tabs.Tab name="about" label="Mural">
                 <AboutRoute data={data} />
             </Tabs.Tab>
+            <Tabs.Tab name="list" label="Quero ouvir">
+                <AboutRoute data={data} />
+            </Tabs.Tab>
             <Tabs.Tab name="following" label="Seguindo">
                 <FollowingRoute data={data} />
             </Tabs.Tab>

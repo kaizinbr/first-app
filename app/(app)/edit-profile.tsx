@@ -14,9 +14,12 @@ import {
     Text,
     TextInput,
     View,
+    ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import EditAlbunsModal from "@/components/profile/edit/edit-albuns-modal";
+import EditArtistsModal from "@/components/profile/edit/edit-artists-modal";
+import LyricsModal from "@/components/profile/edit/lyrics-modal";
 import { Palette } from "@/lib/types";
 import { Pen } from "@solar-icons/react-native/Bold";
 import { AltArrowLeft } from "@solar-icons/react-native/Outline";
@@ -41,11 +44,22 @@ import uploadImageToVercel from "@/lib/util/uploadImage";
 
 import EditFavAlbuns from "@/components/profile/edit/edit-fav-albuns";
 import EditFavArtists from "@/components/profile/edit/edit-fav-artists";
+import LyricsCard from "@/components/profile/lyrics-card";
 
 const USERNAME_MAX_LENGTH = 20;
 const USERNAME_ALLOWED_REGEX = /^[a-zA-Z0-9._]+$/;
 const ALBUM_GRID_GAP = 8;
 const ALBUM_GRID_MIN_ITEM_SIZE = 80;
+
+interface SavedLyrics {
+    trackId: string;
+    trackName: string;
+    artistNames: string;
+    albumArt: string;
+    lines: { startTimeMs: string; words: string }[]; // todas as linhas
+    selectedIndexes: number[];
+    color: string;
+}
 
 export default function EditProfile() {
     const insets = useSafeAreaInsets();
@@ -61,10 +75,13 @@ export default function EditProfile() {
         useState<ImagePicker.ImagePickerAsset | null>(null);
     const [albuns, setAlbuns] = useState<any[]>([]);
     const [artists, setArtists] = useState<any[]>([]);
+    const [lyrics, setLyrics] = useState<SavedLyrics | null>(null);
+
     const [albumGridWidth, setAlbumGridWidth] = useState(0);
 
     const [message, setMessage] = useState<string | null>(null);
     const [canUpdate, setCanUpdate] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [colors, setColors] = useState<Palette | any>({
         vibrant: "#8065ef",
         muted: "#8065ef",
@@ -148,6 +165,7 @@ export default function EditProfile() {
 
     useEffect(() => {
         const fetchProfileData = async () => {
+            setIsLoading(true);
             try {
                 const response = await apiAuth("/me");
                 // console.log("Profile data fetched successfully:", response);
@@ -164,6 +182,13 @@ export default function EditProfile() {
                 setAlbuns(response.albuns || []);
                 setArtists(response.artists || []);
 
+                    setLyrics(response.lyrics);
+                console.log(
+                    response.lyrics )
+
+
+
+
                 const colorsResult = await getColors(response.avatar_url, {
                     fallback: "#000",
                     cache: true,
@@ -171,6 +196,8 @@ export default function EditProfile() {
                 });
                 const bannerColors = getBannerColors(colorsResult);
                 setColors(bannerColors);
+                console.log("Colors extracted from avatar:", bannerColors);
+                setIsLoading(false);
 
                 // const tempColors = await getColors(response.avatar_url, {
                 //     fallback: "#000",
@@ -180,6 +207,7 @@ export default function EditProfile() {
                 // setColors(tempColors);
             } catch (error) {
                 console.error("Error fetching profile data:", error);
+                setIsLoading(false);
             }
         };
         fetchProfileData();
@@ -402,7 +430,10 @@ export default function EditProfile() {
                 cache: true,
                 key: asset.uri,
             });
-            setColors(resultColors);
+
+            const prevImgColors = getBannerColors(resultColors);
+            setColors(prevImgColors);
+            // console.log(prevImgColors)
             setAvatarAsset(asset);
 
             setAvatar(result.assets[0].uri);
@@ -411,7 +442,7 @@ export default function EditProfile() {
 
     const saveProfile = async () => {
         try {
-            // setIsLoading(true);
+            setIsLoading(true);
             console.log("Saving profile with data:");
             let uploadedUrl = avatar;
             if (avatarAsset) {
@@ -428,9 +459,11 @@ export default function EditProfile() {
                 site,
                 albuns,
                 artists,
+                lyrics,
             });
 
             // Alert.alert("Perfil atualizado!", "Suas informações foram salvas.");
+            setIsLoading(false);
             router.push("/(app)/(tabs)/(profile)");
             console.log("Profile updated successfully:", response);
         } catch (error) {
@@ -452,12 +485,10 @@ export default function EditProfile() {
         scrollY.value = event.contentOffset.y;
     });
 
-    // 1. A MÁGICA DO FUNDO: Rola junto com a tela!
     const backgroundStyle = useAnimatedStyle(() => {
         // Se rolar pra baixo (scroll positivo), o fundo sobe na mesma velocidade (-scrollY)
         // Se puxar a tela pra cima (bounce negativo), ele trava no 0 para não desgrudar do topo.
         const translateY = scrollY.value > 0 ? -scrollY.value : 0;
-
 
         const scale =
             scrollY.value < 0
@@ -479,28 +510,9 @@ export default function EditProfile() {
         return { opacity };
     });
 
-    const bottomSheetAlbunsRef = useRef<BottomSheet>(null);
-
-    // Define os pontos de snap — 50% da tela ou 90%
-    const snapPoints = useMemo(() => ["50%", "85%", "100%"], []);
-
-    const openAlbunsSheet = useCallback(() => {
-        bottomSheetAlbunsRef.current?.expand();
-    }, []);
-
-    const closeAlbunsSheet = useCallback(() => {
-        bottomSheetAlbunsRef.current?.close();
-    }, []);
-
-    const bottomSheetArtistsRef = useRef<BottomSheet>(null);
-
-    const openArtistsSheet = useCallback(() => {
-        bottomSheetArtistsRef.current?.expand();
-    }, []);
-
-    const closeArtistsSheet = useCallback(() => {
-        bottomSheetArtistsRef.current?.close();
-    }, []);
+    const [showAlbunsModal, setShowAlbunsModal] = useState(false);
+    const [showArtistsModal, setShowArtistsModal] = useState(false);
+    const [showLyricsModal, setShowLyricsModal] = useState(false);
 
     return (
         <KeyboardAvoidingView
@@ -536,7 +548,6 @@ export default function EditProfile() {
                         style={StyleSheet.absoluteFill}
                     />
                 </Animated.View>
-
                 <Animated.View
                     style={[
                         styles.fixedTopBar,
@@ -556,9 +567,7 @@ export default function EditProfile() {
                             : name}
                     </Text>
                 </Animated.View>
-
                 {/* BOTÃO VOLTAR */}
-
                 <Pressable
                     onPress={() => router.back()}
                     style={[styles.backButton, { top: insets.top + 4 }]}
@@ -583,7 +592,6 @@ export default function EditProfile() {
                         Salvar
                     </Text>
                 </Pressable>
-
                 <Animated.ScrollView
                     onScroll={onScroll}
                     scrollEventThrottle={16}
@@ -624,16 +632,13 @@ export default function EditProfile() {
                                     <Pen size={16} color="#eee" />
                                 </View>
                             </Pressable>
-                            <View
-                                style={[
-                                    styles.pronouns,
-                                    // { backgroundColor: dominantColor },
-                                ]}
-                            >
-                                <Text style={styles.pronounstext}>
-                                    {pronouns}
-                                </Text>
-                            </View>
+                            {pronouns ? (
+                                <View style={[styles.pronouns]}>
+                                    <Text style={styles.pronounstext}>
+                                        {pronouns}
+                                    </Text>
+                                </View>
+                            ) : null}
                         </View>
                         <View
                             style={{
@@ -741,122 +746,167 @@ export default function EditProfile() {
                         </View>
                     </View>
                     <View style={styles.lowerContent}>
-                        <Pressable style={styles.sec} onPress={openAlbunsSheet}>
+                        <Pressable
+                            style={styles.sec}
+                            onPress={() => setShowLyricsModal(true)}
+                        >
+                            <Text style={styles.title}>Letras</Text>
+
+                            {lyrics ? (
+                                <LyricsCard
+                                    saved={lyrics}
+                                    setLyrics={setLyrics}
+                                />
+                            ) : (
+                                <Text style={{ color: "#555" }}>
+                                    Adicione suas letras favoritas!
+                                </Text>
+                            )}
+                        </Pressable>
+                    </View>
+                    <View style={styles.lowerContent}>
+                        <Pressable
+                            style={styles.sec}
+                            onPress={() => setShowAlbunsModal(true)}
+                        >
                             <Text style={styles.title}>Álbuns Favoritos</Text>
-                                <View
-                                    onLayout={handleAlbumsGridLayout}
-                                    style={{
-                                        flexDirection: "row",
-                                        flexWrap: "wrap",
-                                        gap: ALBUM_GRID_GAP,
-                                        marginTop: 8,
-                                        width: "100%",
-                                    }}
-                                >
-                                    {albuns.map((album: any) => (
-                                        <Image
-                                            key={album.id}
-                                            source={{ uri: album.src }}
-                                            style={{
-                                                width: albumGrid.itemSize,
-                                                height: albumGrid.itemSize,
-                                                borderRadius: 8,
-                                            }}
-                                        />
-                                    ))}
-                                    <View
+                            <View
+                                onLayout={handleAlbumsGridLayout}
+                                style={{
+                                    flexDirection: "row",
+                                    flexWrap: "wrap",
+                                    gap: ALBUM_GRID_GAP,
+                                    marginTop: 8,
+                                    width: "100%",
+                                }}
+                            >
+                                {albuns.map((album: any) => (
+                                    <Image
+                                        key={album.id}
+                                        source={{ uri: album.src }}
                                         style={{
                                             width: albumGrid.itemSize,
                                             height: albumGrid.itemSize,
                                             borderRadius: 8,
-                                            backgroundColor:
-                                                "rgba(128, 101, 239, 0.1)",
-                                            justifyContent: "center",
-                                            alignItems: "center",
                                         }}
-                                    >
-                                        <AddCircle size={32} color="#8065ef" />
-                                    </View>
+                                    />
+                                ))}
+                                <View
+                                    style={{
+                                        width: albumGrid.itemSize,
+                                        height: albumGrid.itemSize,
+                                        borderRadius: 8,
+                                        backgroundColor:
+                                            "rgba(128, 101, 239, 0.1)",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <AddCircle size={32} color="#8065ef" />
                                 </View>
-                            
+                            </View>
                         </Pressable>
                     </View>
                     <View style={styles.lowerContent}>
-                        <Pressable style={styles.sec} onPress={openArtistsSheet}>
+                        <Pressable
+                            style={styles.sec}
+                            onPress={() => setShowArtistsModal(true)}
+                        >
                             <Text style={styles.title}>Artistas Favoritos</Text>
-                                <View
-                                    onLayout={handleAlbumsGridLayout}
-                                    style={{
-                                        flexDirection: "row",
-                                        flexWrap: "wrap",
-                                        gap: ALBUM_GRID_GAP,
-                                        marginTop: 8,
-                                        width: "100%",
-                                    }}
-                                >
-                                    {artists.map((artist: any) => (
-                                        <Image
-                                            key={artist.id}
-                                            source={{ uri: artist.src }}
-                                            style={{
-                                                width: albumGrid.itemSize,
-                                                height: albumGrid.itemSize,
-                                                borderRadius: 999,
-                                            }}
-                                        />
-                                    ))}
-                                    <View
+                            <View
+                                onLayout={handleAlbumsGridLayout}
+                                style={{
+                                    flexDirection: "row",
+                                    flexWrap: "wrap",
+                                    gap: ALBUM_GRID_GAP,
+                                    marginTop: 8,
+                                    width: "100%",
+                                }}
+                            >
+                                {artists.map((artist: any) => (
+                                    <Image
+                                        key={artist.id}
+                                        source={{ uri: artist.src }}
                                         style={{
                                             width: albumGrid.itemSize,
                                             height: albumGrid.itemSize,
                                             borderRadius: 999,
-                                            backgroundColor:
-                                                "rgba(128, 101, 239, 0.1)",
-                                            justifyContent: "center",
-                                            alignItems: "center",
                                         }}
-                                    >
-                                        <AddCircle size={32} color="#8065ef" />
-                                    </View>
+                                    />
+                                ))}
+                                <View
+                                    style={{
+                                        width: albumGrid.itemSize,
+                                        height: albumGrid.itemSize,
+                                        borderRadius: 999,
+                                        backgroundColor:
+                                            "rgba(128, 101, 239, 0.1)",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                    }}
+                                >
+                                    <AddCircle size={32} color="#8065ef" />
                                 </View>
-                            
+                            </View>
                         </Pressable>
                     </View>
                 </Animated.ScrollView>
 
-                <BottomSheet
-                    ref={bottomSheetAlbunsRef}
-                    index={-1} // começa fechado
-                    snapPoints={snapPoints}
-                    enablePanDownToClose
-                    topInset={insets.top}
-                    containerStyle={{ zIndex: 1000 }}
-                    backgroundStyle={{ backgroundColor: "#222" }}
-                    handleIndicatorStyle={{ backgroundColor: "#555" }}
-                >
-                    <BottomSheetView style={{ flex: 1, padding: 16 }}>
-                        <EditFavAlbuns albuns={albuns} setAlbuns={setAlbuns} />
-                    </BottomSheetView>
-                </BottomSheet>
-
-                <BottomSheet
-                    ref={bottomSheetArtistsRef}
-                    index={-1} // começa fechado
-                    snapPoints={snapPoints}
-                    enablePanDownToClose
-                    topInset={insets.top}
-                    containerStyle={{ zIndex: 1000 }}
-                    backgroundStyle={{ backgroundColor: "#222" }}
-                    handleIndicatorStyle={{ backgroundColor: "#555" }}
-                >
-                    <BottomSheetView style={{ flex: 1, padding: 16 }}>
-                        <EditFavArtists
-                            artists={artists}
-                            setArtists={setArtists}
-                        />
-                    </BottomSheetView>
-                </BottomSheet>
+                <EditAlbunsModal
+                    albuns={albuns}
+                    setAlbuns={setAlbuns}
+                    visible={showAlbunsModal}
+                    title="Apagar avaliação"
+                    message="Essa ação não pode ser desfeita."
+                    confirmLabel="Apagar"
+                    cancelLabel="Cancelar"
+                    confirmDestructive
+                    onConfirm={() => {
+                        // handleDelete();
+                        setShowAlbunsModal(false);
+                    }}
+                    onCancel={() => setShowAlbunsModal(false)}
+                />
+                <EditArtistsModal
+                    artists={artists}
+                    setArtists={setArtists}
+                    visible={showArtistsModal}
+                    title="Apagar avaliação"
+                    message="Essa ação não pode ser desfeita."
+                    confirmLabel="Apagar"
+                    cancelLabel="Cancelar"
+                    confirmDestructive
+                    onConfirm={() => {
+                        // handleDelete();
+                        setShowArtistsModal(false);
+                    }}
+                    onCancel={() => setShowArtistsModal(false)}
+                />
+                <LyricsModal
+                    visible={showLyricsModal}
+                    savedLyrics={lyrics}
+                    onConfirm={(saved) => {
+                        setLyrics(saved);
+                        setShowLyricsModal(false);
+                    }}
+                    onCancel={() => setShowLyricsModal(false)}
+                />
             </View>
+            {isLoading && (
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        {
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            zIndex: 999,
+                        },
+                    ]}
+                >
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
+            )}
         </KeyboardAvoidingView>
     );
 }

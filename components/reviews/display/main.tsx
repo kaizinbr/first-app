@@ -1,3 +1,30 @@
+import ConfirmModal from "@/components/core/confirm-modal";
+import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
+import AlbumHeader from "@/components/reviews/display/header";
+import ReviewContent from "@/components/reviews/display/review-content";
+import ReviewScore from "@/components/reviews/display/score";
+import Tracklist from "@/components/reviews/display/tracklist";
+import { apiAuth, apiAuthDELETE } from "@/lib/api";
+import { Album, Palette, Review } from "@/lib/types";
+import { selectRightColor } from "@/lib/util/selectRightColor";
+import { darkenColor } from "@/lib/util/workWithColors";
+import {
+    BottomSheetBackdrop,
+    BottomSheetModal,
+    BottomSheetView,
+    useBottomSheetModal,
+} from "@gorhom/bottom-sheet";
+import {
+    Flag,
+    ForbiddenCircle,
+    MenuDots,
+    Pen,
+    Share,
+    TrashBinTrash,
+    User,
+    Vinyl
+} from "@solar-icons/react-native/Bold";
+import { AltArrowLeft } from "@solar-icons/react-native/Linear";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, {
@@ -7,13 +34,13 @@ import React, {
     useRef,
     useState,
 } from "react";
-import BottomSheet, {
-    BottomSheetView,
-    BottomSheetModal,
-    BottomSheetBackdrop,
-    useBottomSheetModal,
-} from "@gorhom/bottom-sheet";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import {
+    ActivityIndicator,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -22,29 +49,8 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import api, { apiAuth } from "@/lib/api";
-import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
-import AlbumHeader from "@/components/reviews/display/header";
-import ReviewScore from "@/components/reviews/display/score";
-import ReviewContent from "@/components/reviews/display/review-content";
-import Tracklist from "@/components/reviews/display/tracklist";
-import { Album, Palette, Review } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft } from "@solar-icons/react-native/Linear";
-import {
-    MenuDots,
-    Share,
-    Flag,
-    Vinyl,
-    User,
-    ForbiddenCircle,
-    TrashBinTrash,
-    Pen,
-    PenNewSquare,
-} from "@solar-icons/react-native/Bold";
 
-export default function AlbumScreen({
+export default function ReviewAlbumScreen({
     reviewData,
     albumData,
     colors,
@@ -112,6 +118,8 @@ export default function AlbumScreen({
     const { dismiss } = useBottomSheetModal();
 
     const [itsMine, setItsMine] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
 
     useEffect(() => {
         const checkOwnership = async () => {
@@ -131,6 +139,19 @@ export default function AlbumScreen({
         checkOwnership();
         // setItsMine(reviewData.user.id === myProfile.id);
     }, [reviewData]);
+
+    const handleDelete = async () => {
+        try {
+            setIsLoading(true);
+            await apiAuthDELETE(`/reviews/${reviewData.id}`, {
+                method: "DELETE",
+            });
+            router.back();
+            setIsLoading(false);
+        } catch (error) {
+            console.error("Error deleting review:", error);
+        }
+    };
 
     return (
         <View style={styles.container}>
@@ -283,7 +304,10 @@ export default function AlbumScreen({
                                                 : "transparent",
                                         },
                                     ]}
-                                    onPress={() => {}}
+                                    onPress={() => {
+                                        dismiss();
+                                        setShowDeleteModal(true);
+                                    }}
                                 >
                                     <TrashBinTrash size={24} color="#eee" />
                                     <Text style={styles.optText}>Excluir</Text>
@@ -370,8 +394,11 @@ export default function AlbumScreen({
                             ]}
                             onPress={() => {
                                 router.push({
-                                    pathname: "/(app)/(tabs)/(home)/user/[username]",
-                                    params: { username: reviewData.Profile.username },
+                                    pathname:
+                                        "/(app)/(tabs)/(home)/user/[username]",
+                                    params: {
+                                        username: reviewData.Profile.username,
+                                    },
                                 });
                                 dismiss();
                             }}
@@ -396,6 +423,34 @@ export default function AlbumScreen({
                     </View>
                 </BottomSheetView>
             </BottomSheetModal>
+            <ConfirmModal
+                visible={showDeleteModal}
+                title="Apagar avaliação"
+                message="Essa ação não pode ser desfeita."
+                confirmLabel="Apagar"
+                cancelLabel="Cancelar"
+                confirmDestructive
+                onConfirm={() => {
+                    handleDelete();
+                    setShowDeleteModal(false);
+                }}
+                onCancel={() => setShowDeleteModal(false)}
+            />
+            {isLoading && (
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        {
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            zIndex: 999,
+                        },
+                    ]}
+                >
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
+            )}
         </View>
     );
 }

@@ -36,41 +36,8 @@ export default function EditFavAlbuns({
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
-
-    const [name, setName] = useState("");
-    const [username, setUsername] = useState("");
-    const [pronouns, setPronouns] = useState("");
-    const [bio, setBio] = useState("");
-    const [site, setSite] = useState("");
-    const [avatar, setAvatar] = useState<string | null>(null);
-    const [avatarAsset, setAvatarAsset] =
-        useState<ImagePicker.ImagePickerAsset | null>(null);
-    const [artists, setArtists] = useState<any[]>([]);
     const [results, setResults] = useState<any>(null);
     const [albumGridWidth, setAlbumGridWidth] = useState(0);
-
-    const [message, setMessage] = useState<string | null>(null);
-    const [canUpdate, setCanUpdate] = useState(false);
-    const [colors, setColors] = useState<Palette | any>({
-        vibrant: "#8065ef",
-        muted: "#8065ef",
-        darkVibrant: "#8065ef",
-        dominant: "#8065ef",
-    });
-
-    const [profileData, setProfileData] = useState<UserProfile | null>(null);
-
-    const [usedUsernames, setUsedUsernames] = useState<Set<string>>(new Set());
-    const [isLoadingUsernames, setIsLoadingUsernames] = useState(false);
-    const [usernameLookupError, setUsernameLookupError] = useState<
-        string | null
-    >(null);
-
-    const [folowersCount, setFollowersCount] = useState(0);
-    const [followingCount, setFollowingCount] = useState(0);
-    const [reviewsCount, setReviewsCount] = useState(0);
-
-    const [shouldPickImage, setShouldPickImage] = useState(false);
 
     const handleAlbumsGridLayout = useCallback((event: LayoutChangeEvent) => {
         const { width } = event.nativeEvent.layout;
@@ -121,14 +88,14 @@ export default function EditFavAlbuns({
         <View style={styles.container}>
             <View style={styles.sec}>
                 <Text style={styles.title}>Álbuns favoritos</Text>
-                <View
-                    onLayout={handleAlbumsGridLayout}
+                <BottomSheetScrollView
+                    // onLayout={handleAlbumsGridLayout}
+                    horizontal={true}
                     style={{
                         flexDirection: "row",
-                        flexWrap: "wrap",
-                        gap: ALBUM_GRID_GAP,
                         marginTop: 8,
-                        width: "100%",
+                        gap: 8,
+                        flex: 1,
                     }}
                 >
                     {albuns.map((album: any) => (
@@ -161,7 +128,7 @@ export default function EditFavAlbuns({
                         </View>
                     ))}
 
-                    <View
+                    {/* <View
                         style={{
                             width: albumGrid.itemSize,
                             height: albumGrid.itemSize,
@@ -172,8 +139,8 @@ export default function EditFavAlbuns({
                         }}
                     >
                         <AddCircle size={32} color="#8065ef" />
-                    </View>
-                </View>
+                    </View> */}
+                </BottomSheetScrollView>
                 <View
                     style={{
                         marginTop: 16,

@@ -107,8 +107,8 @@ export default function ReviewPage() {
 
             setShorten(response.data.shorten);
             router.replace({
-                pathname: `/review/[shorten]`,
-                params: { shorten: response.data.shorten },
+                pathname: `/review/[id]`,
+                params: { id: response.data.id },
             });
         }
 

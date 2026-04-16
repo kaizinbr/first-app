@@ -15,7 +15,7 @@ export default function SearchAlbunsInput({
 }: {
     results: SearchResponse | null;
     setResults: (results: SearchResponse | null) => void;
-    type: "albuns" | "artists";
+    type: "albuns" | "artists" | "tracks";
     setLoading: (loading: boolean) => void;
 }) {
     const [searchQuery, setSearchQuery] = useState("");

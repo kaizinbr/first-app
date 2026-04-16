@@ -19,7 +19,7 @@ import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import Tracklist from "@/components/albuns/tracklist";
 import { AltArrowLeft, Star } from "@solar-icons/react-native/Outline";
-import { Star as StarBold } from "@solar-icons/react-native/Bold";
+import { Playlist2  } from "@solar-icons/react-native/Bold";
 import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
 
 export default function AlbumScreen({
@@ -170,7 +170,7 @@ export default function AlbumScreen({
                             : darkenColor(selectRightColor(colors), 0.7),
                     }]}
             >
-                <Star size={26} color="#eee" />
+                <Playlist2 size={32} color="#eee" />
             </Pressable>
 
             <Pressable

@@ -2,20 +2,21 @@ import api, { apiAuth } from "@/lib/api";
 import { Album, Review } from "@/lib/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, View, ActivityIndicator } from "react-native";
+import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
 
 import { getColors } from "react-native-image-colors";
 
 import { Palette } from "@/lib/types";
 
-import AlbumScreen from "@/components/reviews/display/main";
+import ReviewAlbumScreen from "@/components/reviews/display/main";
 
 export default function ReviewPage() {
-    const { shorten } = useLocalSearchParams();
-    console.log("shorten from params:", shorten);
+    const { id } = useLocalSearchParams();
+    console.log("id from params:", id);
 
     const [reviewData, setReviewData] = useState<Review | null>(null);
     const [albumData, setAlbumData] = useState<Album | null>(null);
+    const [notfound, setNotFound] = useState(false);
 
     const [colors, setColors] = useState<Palette | any>(null);
 
@@ -23,8 +24,15 @@ export default function ReviewPage() {
         const fetchReviewData = async () => {
             setReviewData(null);
             // console.log("Fetching album data for id:", id, albumData);
+                const reviewDataRes = await apiAuth(`/reviews/${id}`);
             try {
-                const reviewDataRes = await apiAuth(`/reviews/${shorten}`);
+
+                if (!reviewDataRes || reviewDataRes.length === 0) {
+                    console.error("No review data found for id:", id);
+                    setNotFound(true);
+                    return;
+                }
+
                 console.log(
                     "Album data fetched successfully:",
                     reviewDataRes[0].album_id,
@@ -51,20 +59,36 @@ export default function ReviewPage() {
                 }
             } catch (error) {
                 console.error("Error fetching review data:", error);
+                setNotFound(true);
+                console.log("Error details:", {
+                    reviewDataRes,
+                });
+
             }
         };
         fetchReviewData();
-    }, [shorten]);
+    }, [id]);
 
     return (
         <>
             {reviewData && albumData ? (
-                <AlbumScreen
+                <ReviewAlbumScreen
                     reviewData={reviewData}
                     albumData={albumData}
                     colors={colors}
                 />
-            ) : (
+            ) : notfound ? (
+                <View style={styles.container}>
+                    
+                    <View style={{ alignItems: "center", gap: 16 }}>
+                        <Text style={styles.title}>Review não encontrada</Text>
+                        <Text style={styles.textDefault}>
+                            Parece que essa review não está mais disponível...
+                            Que tal explorar outras reviews ou voltar para a página inicial?
+                        </Text>
+                    </View>
+                </View>
+            ) :  (
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#8065ef" />
                 </View>
@@ -80,9 +104,10 @@ const styles = StyleSheet.create({
         backgroundColor: "#161718",
         color: "#eeeeee",
         alignItems: "center",
+        justifyContent: "center",
+        padding: 24,
         width: "100%",
-        marginBottom: 200,
-        marginTop: 300,
+        height: "100%",
     },
     main: {
         flex: 1,
@@ -102,12 +127,16 @@ const styles = StyleSheet.create({
     textDefault: {
         color: "#eee", // A cor clara para o seu modo escuro
         fontSize: 16,
+        textAlign: "center",
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginTop: 20,
         color: "#eee",
+        justifyContent: "center",
+        alignItems: "center",
+        textAlign: "center",
     },
     image: {
         width: 300,
