@@ -96,8 +96,7 @@ export function AlbumCard({
                             style={{
                                 color: "#eee",
                                 fontSize: 22,
-                                fontWeight: "900",
-
+                                fontWeight: 700,
                                 fontFamily: "Walsheim",
                             }}
                         >

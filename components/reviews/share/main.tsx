@@ -121,20 +121,21 @@ export default function ShareReview({
                     alignItems: "center",
                 }}
             >
-                <View 
-                        style={{
-                            aspectRatio: "9/16",
-                            width: "50%",
-                            backgroundColor: colorOne,
-                            borderRadius: 16,
-                            overflow: "hidden",
-                            shadowColor: "rgba(0,0,0,0.8)",
-                            shadowOffset: { width: 0, height: 4 },
-                            shadowRadius: 8,
-                            shadowOpacity: 0.8,
-                            justifyContent: "flex-start",
-                            alignItems: "center",
-                        }}>
+                <View
+                    style={{
+                        aspectRatio: "9/16",
+                        width: "50%",
+                        backgroundColor: colorOne,
+                        borderRadius: 16,
+                        overflow: "hidden",
+                        shadowColor: "rgba(0,0,0,0.8)",
+                        shadowOffset: { width: 0, height: 4 },
+                        shadowRadius: 8,
+                        shadowOpacity: 0.8,
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                    }}
+                >
                     <ViewShot
                         ref={cardRef}
                         options={{ format: "png", quality: 1 }}
@@ -162,7 +163,9 @@ export default function ShareReview({
                                 }}
                             >
                                 <Image
-                                    source={{ uri: reviewData.Profile.avatar_url }}
+                                    source={{
+                                        uri: reviewData.Profile.avatar_url,
+                                    }}
                                     style={{
                                         width: 18,
                                         aspectRatio: 1,
@@ -189,8 +192,9 @@ export default function ShareReview({
                                 style={{
                                     color: "#eee",
                                     fontSize: 16,
-                                    fontWeight: "bold",
+                                    fontWeight: 800,
                                     marginTop: 12,
+                                    fontFamily: "Walsheim",
                                 }}
                             >
                                 {Number(reviewData.total).toFixed(1)}/100
@@ -201,6 +205,7 @@ export default function ShareReview({
                                     fontSize: 7,
                                     fontWeight: 400,
                                     marginTop: 12,
+                                    fontFamily: "Walsheim",
                                 }}
                             >
                                 {reviewData.Profile.name} avaliou
@@ -210,6 +215,7 @@ export default function ShareReview({
                                     color: "#eee",
                                     fontSize: 7,
                                     fontWeight: 700,
+                                    fontFamily: "Walsheim",
                                 }}
                             >
                                 {albumData.name}
@@ -219,6 +225,7 @@ export default function ShareReview({
                                     color: "#989898",
                                     fontSize: 7,
                                     fontWeight: 400,
+                                    fontFamily: "Walsheim",
                                 }}
                             >
                                 {albumData.artists[0].name}
@@ -229,6 +236,7 @@ export default function ShareReview({
                                     fontSize: 7,
                                     fontWeight: 400,
                                     marginTop: 24,
+                                    fontFamily: "Walsheim",
                                 }}
                             >
                                 Veja mais em whistle.kaizin.work
