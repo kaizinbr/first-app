@@ -14,6 +14,8 @@ import { ArrowRightUp } from "@solar-icons/react-native/Linear";
 import { Image } from "expo-image";
 import LyricsCard from "@/components/profile/lyrics-card";
 
+import { SimpleGrid } from "react-native-super-grid";
+
 export default function AboutRoute({ data }: { data: UserProfile }) {
     const GAP = 8;
     const COLUMNS = 4; // quantas colunas quer
@@ -86,74 +88,79 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                     </Pressable>
                 )}
 
+                {data.albuns.length > 0 && (
+                    <View
+                        style={[
+                            styles.sec,
+                            {
+                                paddingTop: 16,
+                                paddingBottom: 4,
+                                paddingHorizontal: 8,
+                                borderRadius: 12,
+                                gap: 8,
+                            },
+                        ]}
+                    >
+                        <Text style={[styles.title, { marginLeft: 8 }]}>
+                            Álbuns Favoritos
+                        </Text>
+                        <SimpleGrid
+                            itemDimension={70}
+                            data={data.albuns}
+                            renderItem={({ item }) => (
+                                <Image
+                                    source={{ uri: item.src }}
+                                    style={{
+                                        width: "100%",
+                                        // height: 80,
+                                        aspectRatio: 1,
+                                        flex: 1,
+                                        borderRadius: 8,
+                                    }}
+                                />
+                            )}
+                            style={{ padding: 0 }}
+                            listKey="albuns"
+                        />
+                    </View>
+                )}
 
                 {data.artists.length > 0 && (
-                                <View style={styles.sec}>
-                                    <Text style={styles.title}>
-                                        Artistas favoritos
-                                    </Text>
-                                    <View
-                                        style={{
-                                            flexDirection: "row",
-                                            flexWrap: "wrap",
-                                            gap: GAP,
-                                            marginTop: 8,
-                                            width: "100%",
-                                        }}
-                                    >
-                                        {data.artists.map(
-                                            (artist: any) => (
-                                                <Image
-                                                    key={artist.id}
-                                                    source={{ uri: artist.src }}
-                                                    style={{
-                                                        width: itemSize,
-                                                        height: itemSize,
-                                                        borderRadius: 9999,
-                                                    }}
-                                                    contentFit="cover"
-                                                />
-                                            ),
-                                        )}
-                                    </View>
-                                </View>
+                    <View
+                        style={[
+                            styles.sec,
+                            {
+                                paddingTop: 16,
+                                paddingBottom: 4,
+                                paddingHorizontal: 8,
+                                borderRadius: 12,
+                                gap: 8,
+                            },
+                        ]}
+                    >
+                        <Text style={[styles.title, { marginLeft: 8 }]}>
+                            Artistas favoritos
+                        </Text>
+                        <SimpleGrid
+                            itemDimension={70}
+                            data={data.artists}
+                            renderItem={({ item }) => (
+                                <Image
+                                    source={{ uri: item.src }}
+                                    style={{
+                                        width: "100%",
+                                        // height: 80,
+                                        aspectRatio: 1,
+                                        flex: 1,
+                                        borderRadius: 999,
+                                    }}
+                                />
                             )}
-                {data.albuns.length > 0 && (
-                        <View style={styles.sec}>
-                            {data.albuns.length > 0 && (
-                                <View style={{ width: "100%" }}>
-                                    <Text style={styles.title}>
-                                        Álbuns favoritos
-                                    </Text>
-                                    <View
-                                        style={{
-                                            flexDirection: "row",
-                                            flexWrap: "wrap",
-                                            gap: GAP,
-                                            marginTop: 8,
-                                            width: "100%",
-                                        }}
-                                    >
-                                        {data.albuns.map(
-                                            (album: any) => (
-                                                <Image
-                                                    key={album.id}
-                                                    source={{ uri: album.src }}
-                                                    style={{
-                                                        width: itemSize,
-                                                        height: itemSize,
-                                                        borderRadius: 8,
-                                                    }}
-                                                    contentFit="cover"
-                                                />
-                                            ),
-                                        )}
-                                    </View>
-                                </View>
-                            )}
-                            
-                        </View>
-                    )}
+                            style={{ padding: 0 }}
+                            listKey="artists"
+                        />
+                    </View>
+                )}
             </View>
         </Tabs.ScrollView>
     );
@@ -180,6 +187,6 @@ const styles = StyleSheet.create({
         backgroundColor: "#1b1c1d",
         padding: 16,
         borderRadius: 12,
-        gap: 16,
+        gap: 8,
     },
 });

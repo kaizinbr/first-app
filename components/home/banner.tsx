@@ -90,7 +90,7 @@ interface BannerProps {
     onColorChange: any;
 }
 
-export default function Banner({ onColorChange }: BannerProps) {
+export default function Banner({ onColorChange, HEADER_MAX_HEIGHT }: BannerProps & { HEADER_MAX_HEIGHT: number }) {
     const { width } = useWindowDimensions();
     const progress = useSharedValue<number>(0);
 
@@ -168,7 +168,7 @@ export default function Banner({ onColorChange }: BannerProps) {
                         snapEnabled={true}
                         style={{
                             width: width,
-                            height: 224,
+                            height: HEADER_MAX_HEIGHT * 0.5,
                         }}
                         width={width}
                         mode="parallax"

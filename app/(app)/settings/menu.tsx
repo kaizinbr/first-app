@@ -11,42 +11,42 @@ import { darkenColor } from "@/lib/util/workWithColors";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { Palette } from "@/lib/types";
 import { SkeletonProfile } from "@/components/core/skeletons";
-export default function Index() {
+import Menu from "@/components/settings/menu-main";
+
+export default function IndexSettings() {
     const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [colors, setColors] = useState<Palette | any>(null);
     const [dominantColor, setDominantColor] = useState<string | null>(null);
 
-    const [reload, setReload] = useState(false);
-    const fetchProfileData = async () => {
-        try {
-            const response = await apiAuth("/me");
-            console.log("Profile data fetched successfully:", response);
-            setProfileData(response);
-
-            getColors(response.avatar_url, {
-                fallback: "#000",
-                cache: true,
-                key: response.avatar_url,
-            })
-                .then((colors) => {
-                    const newColor = darkenColor(
-                        selectRightColor(colors as any),
-                        0.5,
-                    );
-                    setDominantColor(newColor);
-                    setColors(colors);
-
-                    setLoading(false);
-                    // setReload((prev) => !prev);
-                })
-                .catch(console.error);
-        } catch (error) {
-            console.error("Error fetching profile data:", error);
-        }
-    };
-
     useEffect(() => {
+        const fetchProfileData = async () => {
+            try {
+                const response = await apiAuth("/me");
+                console.log("Profile data fetched successfully:", response);
+                setProfileData(response);
+
+                getColors(response.avatar_url, {
+                    fallback: "#000",
+                    cache: true,
+                    key: response.avatar_url,
+                })
+                    .then((colors) => {
+                        const newColor = darkenColor(
+                            selectRightColor(colors as any),
+                            0.5,
+                        );
+                        setDominantColor(newColor);
+                        setColors(colors);
+                        setTimeout(() => {
+                            setLoading(false);
+                        }, 2000);
+                    })
+                    .catch(console.error);
+            } catch (error) {
+                console.error("Error fetching profile data:", error);
+            }
+        };
         fetchProfileData();
     }, []);
 
@@ -58,13 +58,7 @@ export default function Index() {
                 </View>
             ) : null}
             {profileData && dominantColor && colors && (
-                <ProfileTabs
-                    data={profileData}
-                    dominantColor={dominantColor}
-                    colors={colors}
-                    itsUser={true}
-                    fetchProfileData={fetchProfileData}
-                />
+                <Menu data={profileData} />
             )}
         </View>
     );

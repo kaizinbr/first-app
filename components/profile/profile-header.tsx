@@ -49,7 +49,7 @@ export default function ProfileHeader({
             }
         };
         fetchColors();
-    }, []);
+    }, [data.avatar_url]);
 
     useEffect(() => {
         const fetchFollowersCount = async () => {
@@ -94,7 +94,7 @@ export default function ProfileHeader({
         fetchFollowersCount();
         fetchFollowingCount();
         fetchReviewsCount();
-    }, [data.username]);
+    }, [data.username, data]);
 
     function handleFollowToggle() {
         // Lógica para seguir ou deixar de seguir o usuário

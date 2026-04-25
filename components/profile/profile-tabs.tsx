@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, RefreshControl, ScrollView } from "react-native";
 import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
 import { UserProfile, Palette } from "@/lib/types";
 
@@ -8,6 +8,7 @@ import ProfileHeader from "@/components/profile/header";
 import AboutRoute from "@/components/profile/about";
 import FollowingRoute from "@/components/profile/following";
 import FollowersRoute from "@/components/profile/followers";
+import WishlistRoute from "@/components/profile/wishlist";
 import FixedTopBar from "@/components/profile/fixed-top-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -16,19 +17,37 @@ export default function ProfileTabs({
     dominantColor = "#161718",
     colors,
     itsUser = false,
+    fetchProfileData,
 }: {
     data: UserProfile;
     dominantColor: string;
     colors: Palette;
     itsUser?: boolean;
+    fetchProfileData: () => Promise<void>;
 }) {
     const insets = useSafeAreaInsets();
 
     const FIXED_BAR_HEIGHT = insets.top + 50;
 
+    const [refreshing, setRefreshing] = React.useState(false);
+
+    const onRefresh = React.useCallback(async () => {
+        setRefreshing(true);
+        await fetchProfileData();
+        setRefreshing(false);
+    }, [fetchProfileData]);
+
     const renderHeader = React.useCallback(() => {
         return (
-            <View style={styles.headerWrapper}>
+            <ScrollView
+                style={styles.headerWrapper}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
+                    />
+                }
+            >
                 <ProfileHeader
                     data={data}
                     dominantColor={dominantColor}
@@ -38,10 +57,12 @@ export default function ProfileTabs({
                     title={data.name || "Perfil"}
                     height={FIXED_BAR_HEIGHT}
                     dominantColor={dominantColor}
+                    itsUser={itsUser}
+                    username={data.username}
                 />
-            </View>
+            </ScrollView>
         );
-    }, [data.name, FIXED_BAR_HEIGHT]);
+    }, [data.name, FIXED_BAR_HEIGHT, refreshing, onRefresh]);
 
     const renderTabBar = React.useCallback(
         (props: any) => (
@@ -49,7 +70,6 @@ export default function ProfileTabs({
                 {...props}
                 scrollEnabled={true}
                 indicatorStyle={{ backgroundColor: "#8065ef", height: 3 }}
-                
                 style={{ backgroundColor: "#161718", elevation: 0, zIndex: 10 }}
                 activeColor="#eee"
                 inactiveColor="#777"
@@ -72,7 +92,7 @@ export default function ProfileTabs({
                 <AboutRoute data={data} />
             </Tabs.Tab>
             <Tabs.Tab name="list" label="Quero ouvir">
-                <AboutRoute data={data} />
+                <WishlistRoute data={data} />
             </Tabs.Tab>
             <Tabs.Tab name="following" label="Seguindo">
                 <FollowingRoute data={data} />

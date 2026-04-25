@@ -2,6 +2,7 @@ import Button from "@/components/button";
 import { apiAuth, apiAuthPUT } from "@/lib/api";
 import { UserProfile } from "@/lib/types";
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "expo-router";
 import {
     StyleSheet,
     Text,
@@ -41,6 +42,7 @@ interface UsernamesResponse {
 
 export default function Onboarding() {
     const insets = useSafeAreaInsets();
+    const router = useRouter();
     const [step, setStep] = useState(0);
 
     const [name, setName] = useState("");
@@ -260,8 +262,14 @@ export default function Onboarding() {
                 avatar: uploadedUrl,
             });
 
-            Alert.alert("Perfil atualizado!", "Suas informações foram salvas.");
-            console.log("Profile updated successfully:", response);
+            if (response) {
+                // console.log("Profile updated successfully:", response);
+                Alert.alert("Perfil atualizado", "Suas informações foram salvas.");
+                router.push("/(app)/(tabs)/(home)");
+            } else {
+                throw new Error("Unexpected response from server");
+            }
+            
         } catch (error) {
             console.error("Error updating profile:", error);
             Alert.alert(
@@ -272,194 +280,269 @@ export default function Onboarding() {
     };
 
     return (
-        
-                <KeyboardAvoidingView
-                    style={{ flex: 1 }}
-                    behavior={Platform.OS === "ios" ? "padding" : "height"}
-                >
-        <View style={[styles.container, { paddingTop: insets.top }]}>
-            <View style={styles.stepper}>
-                <View style={styles.step}>
-                    <Text style={{ color: "#bfbfbf" }}>{step + 1}/5</Text>
-                    <Text style={styles.stepText}>
-                        Vamos começar definindo seu perfil
-                    </Text>
-                </View>
-
-                {step === 0 && (
-                    <>
-                        <Text style={styles.stepperText}>
-                            Qual é o seu nome?
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <View style={[styles.container, { paddingTop: insets.top }]}>
+                <View style={styles.stepper}>
+                    <View style={styles.step}>
+                        <Text style={{ color: "#bfbfbf" }}>{step + 1}/5</Text>
+                        <Text style={styles.stepText}>
+                            Vamos começar definindo seu perfil
                         </Text>
+                    </View>
 
-                        <TextInput
-                            value={name}
-                            onChangeText={setName}
-                            placeholder="Digite seu nome"
-                            placeholderTextColor="#9f9f9f"
-                            style={styles.input}
-                        />
-                        <Button
-                            onPress={() => setStep((prev) => prev + 1)}
-                            disabled={!name.trim()}
-                            className="mt-4"
-                        >
-                            Próximo
-                        </Button>
-                    </>
-                )}
-                {step === 1 && (
-                    <>
-                        <Text style={styles.stepperText}>
-                            Escolha um nome de usuário
-                        </Text>
+                    {step === 0 && (
+                        <>
+                            <Text style={styles.stepperText}>
+                                Qual é o seu nome?
+                            </Text>
 
-                        <View style={styles.usernameInputContainer}>
-                            <Text
+                            <TextInput
+                                value={name}
+                                onChangeText={setName}
+                                placeholder="Digite seu nome"
+                                placeholderTextColor="#9f9f9f"
+                                style={styles.input}
+                            />
+                            <Button
+                                onPress={() => setStep((prev) => prev + 1)}
+                                disabled={!name.trim()}
+                                className="mt-4"
+                            >
+                                Próximo
+                            </Button>
+                        </>
+                    )}
+                    {step === 1 && (
+                        <>
+                            <Text style={styles.stepperText}>
+                                Escolha um nome de usuário
+                            </Text>
+
+                            <View style={styles.usernameInputContainer}>
+                                <Text
+                                    style={{
+                                        color: "#7b7b7b",
+                                        fontSize: 16,
+                                        marginLeft: 12,
+                                    }}
+                                >
+                                    @
+                                </Text>
+                                <TextInput
+                                    value={username}
+                                    onChangeText={handleUsernameChange}
+                                    placeholder="Digite seu nome de usuário"
+                                    placeholderTextColor="#9f9f9f"
+                                    maxLength={USERNAME_MAX_LENGTH}
+                                    autoCapitalize="none"
+                                    autoCorrect={false}
+                                    style={styles.usernameInput}
+                                />
+                                <Text style={styles.helperText}>
+                                    {username.length}/{USERNAME_MAX_LENGTH}
+                                </Text>
+                            </View>
+                            {usernameValidation.message && (
+                                <Text
+                                    style={[
+                                        styles.validationText,
+                                        usernameValidation.status === "error" &&
+                                            styles.validationError,
+                                        usernameValidation.status ===
+                                            "success" &&
+                                            styles.validationSuccess,
+                                    ]}
+                                >
+                                    {usernameValidation.message}
+                                </Text>
+                            )}
+                            <View
                                 style={{
-                                    color: "#7b7b7b",
-                                    fontSize: 16,
-                                    marginLeft: 12,
+                                    flexDirection: "row",
+                                    gap: 12,
+                                    width: "100%",
                                 }}
                             >
-                                @
+                                <Button
+                                    onPress={() => setStep((prev) => prev - 1)}
+                                    // disabled={!name.trim()}
+                                    className="mt-4"
+                                    style={{
+                                        width: "50%",
+                                        backgroundColor: "transparent",
+                                        borderWidth: 1,
+                                        borderColor: "#8065ef",
+                                    }}
+                                >
+                                    Voltar
+                                </Button>
+                                <Button
+                                    onPress={() => setStep((prev) => prev + 1)}
+                                    disabled={!isUsernameValid}
+                                    className="mt-4"
+                                    style={{ width: "50%" }}
+                                >
+                                    Próximo
+                                </Button>
+                            </View>
+                        </>
+                    )}
+                    {step === 2 && (
+                        <>
+                            <Text style={styles.stepperText}>
+                                Como você gostaria de ser referido? (opcional)
                             </Text>
-                            <TextInput
-                                value={username}
-                                onChangeText={handleUsernameChange}
-                                placeholder="Digite seu nome de usuário"
-                                placeholderTextColor="#9f9f9f"
-                                maxLength={USERNAME_MAX_LENGTH}
-                                autoCapitalize="none"
-                                autoCorrect={false}
-                                style={styles.usernameInput}
-                            />
-                            <Text style={styles.helperText}>
-                                {username.length}/{USERNAME_MAX_LENGTH}
-                            </Text>
-                        </View>
-                        {usernameValidation.message && (
-                            <Text
-                                style={[
-                                    styles.validationText,
-                                    usernameValidation.status === "error" &&
-                                        styles.validationError,
-                                    usernameValidation.status === "success" &&
-                                        styles.validationSuccess,
-                                ]}
-                            >
-                                {usernameValidation.message}
-                            </Text>
-                        )}
-                        <Button
-                            onPress={() => setStep((prev) => prev + 1)}
-                            disabled={!isUsernameValid}
-                            className="mt-4"
-                        >
-                            Próximo
-                        </Button>
-                    </>
-                )}
-                {step === 2 && (
-                    <>
-                        <Text style={styles.stepperText}>
-                            Como você gostaria de ser referido? (opcional)
-                        </Text>
 
-                        <TextInput
-                            value={pronouns}
-                            onChangeText={setPronouns}
-                            placeholder="Digite seus pronomes"
-                            placeholderTextColor="#9f9f9f"
-                            style={styles.input}
-                        />
-                        <Button
-                            onPress={() => setStep((prev) => prev + 1)}
-                            // disabled={!name.trim()}
-                            className="mt-4"
-                        >
-                            Próximo
-                        </Button>
-                    </>
-                )}
-                {step === 3 && (
-                    <>
-                        <Text style={styles.stepperText}>
-                            Adicione uma foto de perfil
-                        </Text>
-                        {/* <Button
+                            <TextInput
+                                value={pronouns}
+                                onChangeText={setPronouns}
+                                placeholder="Digite seus pronomes"
+                                placeholderTextColor="#9f9f9f"
+                                style={styles.input}
+                            />
+                            
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    gap: 12,
+                                    width: "100%",
+                                }}
+                            >
+                                <Button
+                                    onPress={() => setStep((prev) => prev - 1)}
+                                    // disabled={!name.trim()}
+                                    className="mt-4"
+                                    style={{
+                                        width: "50%",
+                                        backgroundColor: "transparent",
+                                        borderWidth: 1,
+                                        borderColor: "#8065ef",
+                                    }}
+                                >
+                                    Voltar
+                                </Button>
+                                <Button
+                                    onPress={() => setStep((prev) => prev + 1)}
+                                    disabled={!isUsernameValid}
+                                    className="mt-4"
+                                    style={{ width: "50%" }}
+                                >
+                                    Próximo
+                                </Button>
+                            </View>
+                        </>
+                    )}
+                    {step === 3 && (
+                        <>
+                            <Text style={styles.stepperText}>
+                                Adicione uma foto de perfil
+                            </Text>
+                            {/* <Button
                             // title="Pick an image from camera roll"
                             onPress={pickImage}
                         >
                             selecione imagem
                         </Button> */}
-                        {avatar && (
-                            <Pressable onPress={pickImage}>
+                            {avatar && (
+                                <Pressable onPress={pickImage}>
+                                    <Image
+                                        source={{ uri: avatar }}
+                                        style={styles.profilePicture}
+                                    />
+                                </Pressable>
+                            )}
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    gap: 12,
+                                    width: "100%",
+                                }}
+                            >
+                                <Button
+                                    onPress={() => setStep((prev) => prev - 1)}
+                                    // disabled={!name.trim()}
+                                    className="mt-4"
+                                    style={{
+                                        width: "50%",
+                                        backgroundColor: "transparent",
+                                        borderWidth: 1,
+                                        borderColor: "#8065ef",
+                                    }}
+                                >
+                                    Voltar
+                                </Button>
+                                <Button
+                                    onPress={() => setStep((prev) => prev + 1)}
+                                    disabled={!isUsernameValid}
+                                    className="mt-4"
+                                    style={{ width: "50%" }}
+                                >
+                                    Próximo
+                                </Button>
+                            </View>
+                        </>
+                    )}
+
+                    {step === 4 && (
+                        <View
+                            style={{
+                                alignItems: "center",
+                                gap: 16,
+                                width: "100%",
+                                backgroundColor: "#fff",
+                                borderRadius: 24,
+                                paddingHorizontal: 12,
+                                paddingVertical: 64,
+                                overflow: "hidden",
+                            }}
+                        >
+                            <LinearGradient
+                                colors={[selectRightColor(colors), "#161718"]} // Troque pela cor dinâmica do álbum depois
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                                style={StyleSheet.absoluteFill}
+                            />
+                            <LinearGradient
+                                colors={["transparent", "rgb(29, 29, 29)"]}
+                                start={{ x: 0.5, y: 0.2 }}
+                                end={{ x: 0.5, y: 1 }}
+                                style={StyleSheet.absoluteFill}
+                            />
+                            <View style={{ alignItems: "center", gap: 8 }}>
                                 <Image
-                                    source={{ uri: avatar }}
+                                    source={{ uri: avatar || undefined }}
+                                    // placeholder={blurhash}
                                     style={styles.profilePicture}
                                 />
-                            </Pressable>
-                        )}
-                        <Button
-                            onPress={() => setStep((prev) => prev + 1)}
-                            disabled={!avatar}
-                            className="mt-4"
-                        >
-                            Próximo
-                        </Button>
-                    </>
-                )}
-
-                {step === 4 && (
-                    <View
-                        style={{
-                            alignItems: "center",
-                            gap: 16,
-                            width: "100%",
-                            backgroundColor: "#fff",
-                            borderRadius: 24,
-                            paddingHorizontal: 12,
-                            paddingVertical: 64,
-                            overflow: "hidden",
-                        }}
-                    >
-                        <LinearGradient
-                            colors={[selectRightColor(colors), "#161718"]} // Troque pela cor dinâmica do álbum depois
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={StyleSheet.absoluteFill}
-                        />
-                        <LinearGradient
-                            colors={["transparent", "rgb(29, 29, 29)"]}
-                            start={{ x: 0.5, y: 0.2 }}
-                            end={{ x: 0.5, y: 1 }}
-                            style={StyleSheet.absoluteFill}
-                        />
-                        <View style={{ alignItems: "center", gap: 8 }}>
-                            <Image
-                                source={{ uri: avatar || undefined }}
-                                // placeholder={blurhash}
-                                style={styles.profilePicture}
-                            />
-                            <Text style={styles.userName}>{name}</Text>
-                            <Text style={styles.userEmail}>@{username}</Text>
+                                <Text style={styles.userName}>{name}</Text>
+                                <Text style={styles.userEmail}>
+                                    @{username}
+                                </Text>
+                            </View>
+                            <Button onPress={saveProfile} className="mt-4">
+                                Confirmar
+                            </Button>
+                            <Button
+                                onPress={() => setStep((prev) => prev - 1)}
+                                disabled={!avatar}
+                                className="mt-4"
+                                style={{
+                                    width: "50%",
+                                    backgroundColor: "transparent",
+                                    borderWidth: 1,
+                                    borderColor: "#8065ef",
+                                }}
+                            >
+                                Voltar
+                            </Button>
                         </View>
-                        <Button onPress={saveProfile} className="mt-4">
-                            Confirmar
-                        </Button>
-                        <Button
-                            onPress={() => setStep((prev) => prev - 1)}
-                            disabled={!avatar}
-                            className="mt-4"
-                        >
-                            Voltar
-                        </Button>
-                    </View>
-                )}
-            </View>
+                    )}
+                </View>
 
-            {/* <Image
+                {/* <Image
                 source={{ uri: profileData?.avatar_url || "https://via.placeholder.com/128" }}
                 placeholder={blurhash}
                 style={styles.profilePicture}
@@ -470,9 +553,10 @@ export default function Onboarding() {
             <Text style={styles.userEmail}>
                 @{profileData?.username || session?.user?.email}
             </Text> */}
-            {/* <Button title="Log Off" onPress={handleLogoff} className="mt-4" />
+                {/* <Button title="Log Off" onPress={handleLogoff} className="mt-4" />
             {profileData && <ProfileTabs profileData={profileData} />} */}
-        </View></KeyboardAvoidingView>
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 

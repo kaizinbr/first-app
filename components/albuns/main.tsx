@@ -11,7 +11,6 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
-
 import { Album, Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
@@ -19,9 +18,15 @@ import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import Tracklist from "@/components/albuns/tracklist";
 import { AltArrowLeft, Star } from "@solar-icons/react-native/Outline";
-import { Playlist2  } from "@solar-icons/react-native/Bold";
+import { Playlist2 } from "@solar-icons/react-native/Bold";
 import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
-
+import WishlistAlbumBtn from "@/components/albuns/wishlist-album-btn";
+function hexToRgb(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
+}
 export default function AlbumScreen({
     albumData,
     colors,
@@ -141,6 +146,21 @@ export default function AlbumScreen({
                         ? albumData.name.substring(0, 36) + "..."
                         : albumData.name}
                 </Text>
+
+                <LinearGradient
+                    colors={[
+                        `rgba(${hexToRgb(selectRightColor(colors))}, 0)`,
+                        darkenColor(selectRightColor(colors), 1.2),
+                    ]}
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: HEADER_MIN_HEIGHT,
+                        zIndex: -1,
+                    }}
+                />
             </Animated.View>
 
             {/* BOTÃO VOLTAR */}
@@ -154,24 +174,11 @@ export default function AlbumScreen({
             {/* BOTÃO FAVORITAR */}
             {albumData && colors && (
                 <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
-                    <FavoriteAlbumBtn
-                        albumData={albumData}
-                        size={30}
-                    />
+                    <FavoriteAlbumBtn albumData={albumData} size={30} />
                 </View>
             )}
 
-            <Pressable
-                onPress={() => router.back()}
-                style={({ pressed }) => [styles.fav, 
-                    {
-                        backgroundColor: pressed
-                            ? darkenColor(selectRightColor(colors), 0.2)
-                            : darkenColor(selectRightColor(colors), 0.7),
-                    }]}
-            >
-                <Playlist2 size={32} color="#eee" />
-            </Pressable>
+            <WishlistAlbumBtn albumData={albumData} size={30} colors={colors} />
 
             <Pressable
                 onPress={() =>

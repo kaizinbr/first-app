@@ -12,6 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
+import { AddCircle } from "@solar-icons/react-native/Bold";
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -76,12 +77,9 @@ export default function EditAlbunsModal({
             onRequestClose={onCancel}
         >
             {/* Overlay escuro — toque fora fecha */}
-            <Pressable style={styles.overlay} onPress={onCancel}>
+            <View style={styles.overlay}>
                 {/* Para o toque no card não fechar */}
-                <Pressable
-                    style={styles.card}
-                    onPress={(e) => e.stopPropagation()}
-                >
+                <View style={styles.card}>
                     <Text style={styles.title}>Álbuns favoritos</Text>
 
                     <FlatList
@@ -120,6 +118,20 @@ export default function EditAlbunsModal({
                                 </Pressable>
                             </View>
                         )}
+                        ListFooterComponent={
+                            <View
+                                style={{
+                                    width: 64,
+                                    height: 64,
+                                    borderRadius: 4,
+                                    backgroundColor: "rgba(128, 101, 239, 0.1)",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <AddCircle size={32} color="#8065ef" />
+                            </View>
+                        }
                     />
                     <View
                         style={{
@@ -194,8 +206,8 @@ export default function EditAlbunsModal({
                     <Pressable style={[styles.btn]} onPress={onCancel}>
                         <Text style={styles.btnText}>Pronto</Text>
                     </Pressable>
-                </Pressable>
-            </Pressable>
+                </View>
+            </View>
         </Modal>
     );
 }
@@ -214,7 +226,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#222",
         borderRadius: 16,
         paddingVertical: 16,
-        paddingHorizontal: 24,
+        paddingHorizontal: 16,
         gap: 12,
         zIndex: 5,
     },

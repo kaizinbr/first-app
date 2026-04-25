@@ -1,7 +1,7 @@
 import FeedCard from "@/components/home/feed-card";
 import api from "@/lib/api";
 import { ReviewWithAlbum } from "@/lib/types";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import {
     ActivityIndicator,
     FlatList,
@@ -9,8 +9,9 @@ import {
     Text,
     View,
     Animated,
+    RefreshControl
 } from "react-native";
-import {usePaginatedReviews} from "@/lib/util/usePaginatedReviews";
+import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
 
 import FeedHeader from "@/components/home/header";
 
@@ -19,21 +20,41 @@ interface FeedProps {
     scrollOffsetY: Animated.Value;
 }
 
-export default function Feed({
-    onScrollAnimado,
-    scrollOffsetY,
-}: FeedProps) {
-    const { reviews, loadingInitial, loadingMore, hasMore, loadMore, onMomentumScrollBegin } = usePaginatedReviews({ endpoint: "/reviews" });
+export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
+    const {
+        reviews,
+        loadingInitial,
+        loadingMore,
+        hasMore,
+        reload,
+        loadMore,
+        onMomentumScrollBegin,
+    } = usePaginatedReviews({ endpoint: "/reviews" });
 
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await reload();
+        setRefreshing(false);
+    }, []);
 
     if (loadingInitial) {
         return (
-            <View style={[styles.container, { justifyContent: "center", alignItems: "center" }]}>
+            <View
+                style={[
+                    styles.container,
+                    { justifyContent: "center", alignItems: "center" },
+                ]}
+            >
                 <ActivityIndicator size="large" color="#00a8ff" />
-                <Text style={{ color: "#eee", marginTop: 10 }}>Carregando feed...</Text>
+                <Text style={{ color: "#eee", marginTop: 10 }}>
+                    Carregando feed...
+                </Text>
             </View>
         );
     }
+
 
     return (
         <Animated.FlatList
@@ -41,7 +62,6 @@ export default function Feed({
             contentContainerStyle={styles.feed}
             showsVerticalScrollIndicator={false}
             data={reviews}
-            
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => <FeedCard review={item} />}
             onEndReached={loadMore}
@@ -49,16 +69,37 @@ export default function Feed({
             onMomentumScrollBegin={onMomentumScrollBegin}
             onScroll={onScrollAnimado}
             scrollEventThrottle={16}
-            ListHeaderComponent={
-                <FeedHeader
-                    scrollOffsetY={scrollOffsetY}
+            ListHeaderComponent={<FeedHeader scrollOffsetY={scrollOffsetY} />}
+            ItemSeparatorComponent={() => (
+                <View
+                    style={{
+                        height: 0.5,
+                        backgroundColor: "#3d3d3d",
+                        // marginVertical: 10,
+                    }}
+                />
+            )}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
                 />
             }
             ListFooterComponent={
                 loadingMore ? (
-                    <ActivityIndicator size="small" color="#00a8ff" style={{ marginTop: 20 }} />
+                    <ActivityIndicator
+                        size="small"
+                        color="#00a8ff"
+                        style={{ marginTop: 20 }}
+                    />
                 ) : !hasMore && reviews.length > 0 ? (
-                    <Text style={{ color: "#777", textAlign: "center", marginTop: 20 }}>
+                    <Text
+                        style={{
+                            color: "#777",
+                            textAlign: "center",
+                            marginTop: 20,
+                        }}
+                    >
                         Você chegou ao fim!
                     </Text>
                 ) : null
@@ -100,10 +141,8 @@ const styles = StyleSheet.create({
     },
 });
 
-
 // o spotify tem umas conversa vea torta de remover a função de puxar varios albuns ao mesmo tempo
 // entao essa é a versão que cada album é carregado individualmente da api, pode dar erro de sobrecarga entao é limitado a 5 por vez
-
 
 // feed.tsx
 // import FeedCard from "@/components/home/feed-card";
@@ -345,7 +384,7 @@ const styles = StyleSheet.create({
 // };
 
 // export default function FeedCard({ review }: { review: Review }) {
-    
+
 //         const router = useRouter();
 //     const { data: session } = authClient.useSession();
 

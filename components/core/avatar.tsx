@@ -53,7 +53,7 @@ export function AvatarNoPress({
     style,
     size,
 }: {
-    data: UserProfile;
+    data: UserProfile | any;
     style?: any;
     size?: number;
 }) {

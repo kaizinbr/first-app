@@ -121,7 +121,10 @@ export const SlideItem: React.FC<Props> = (props) => {
                         <View style={styles.overlay}>
                             <View style={styles.overlayTextContainer}>
                                 {/* Exibimos os dados dinâmicos do álbum */}
-                                <Text style={styles.titleText}>
+                                <Text style={styles.titleText}
+                                    numberOfLines={3}
+                                    ellipsizeMode="tail"
+                                >
                                     {item.title}
                                 </Text>
                                 <Text style={styles.artistText}>
@@ -175,6 +178,7 @@ const styles = StyleSheet.create({
     titleText: {
         color: "white",
         fontSize: 24,
+    
         fontWeight: "bold",
         shadowColor: "rgba(0, 0, 0, 0.8)",
         shadowOffset: { width: 0, height: 2 },

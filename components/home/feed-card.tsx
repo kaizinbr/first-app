@@ -11,6 +11,7 @@ import { displayPastRelativeTime } from "@/lib/util/time";
 import TiptapRenderer from "@/components/home/card-content copy";
 import { AlbumCard } from "@/components/home/album-section";
 import { ReviewWithAlbum } from "@/lib/types";
+import LikeBtn from "@/components/core/like-btn";
 
 type SpotifyAlbum = {
     album_type: string;
@@ -67,20 +68,6 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
         : false;
 
     useEffect(() => {
-        // const fetchFeedData = async () => {
-        //     try {
-        //         const response = await api.get(`/albuns/${review.album_id}`);
-        //         setReviewAlbum(response.data);
-        //         // console.log("Feed data fetched successfully:", response.data);
-        //         // console.log("total reviews:", feedData!.totalReviews);
-        //     } catch (error) {
-        //         console.error("Error fetching feed data:", error);
-        //     } finally {
-        //         setLoading(false);
-        //     }
-        // };
-
-        // console.log("Review data received in FeedCard:", review);
 
         const fetchContent = async () => {
             if (!review.shorten) {
@@ -181,7 +168,7 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                             value={
                                 review.total
                                     ? `${Number(review.total).toFixed(1)}/100`
-                                    : "0.0/100"
+                                    : "0/100"
                             }
                             subtitle={review.ratings.length}
                         />
@@ -190,6 +177,7 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                                 new Date(review.created_at),
                             )}
                         </Text>
+                        
                     </View>
                 ) : null}
             </View>

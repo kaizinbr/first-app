@@ -1,9 +1,7 @@
 import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
 
-import { getColors } from "react-native-image-colors";
-import { useState, useEffect } from "react";
-import { Palette } from "@/lib/types";
+import { useRouter } from "expo-router";
 
 import * as React from "react";
 import {
@@ -25,8 +23,14 @@ import Animated, {
     interpolate,
     Extrapolation,
 } from "react-native-reanimated";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import {
+    AltArrowLeft,
+    Settings,
+    Share,
+} from "@solar-icons/react-native/Outline";
+import { SettingsMinimalistic } from "@solar-icons/react-native/Bold";
 import ProfileHeader from "@/components/profile/profile-header";
+import ShareBtn from "@/components/core/share-btn";
 
 export default function Header({
     data,
@@ -40,6 +44,8 @@ export default function Header({
     const insets = useSafeAreaInsets();
 
     const { top } = useHeaderMeasurements();
+
+    const router = useRouter();
 
     const fixedBarStyle = useAnimatedStyle(() => {
         return {
@@ -71,7 +77,11 @@ export default function Header({
 
     return (
         <View style={styles.headerWrapper}>
-            <ProfileHeader data={data} dominantColor={dominantColor} itsUser={itsUser} />
+            <ProfileHeader
+                data={data}
+                dominantColor={dominantColor}
+                itsUser={itsUser}
+            />
 
             <Animated.View
                 style={[
@@ -95,7 +105,10 @@ export default function Header({
                         { marginTop: insets.top },
                     ]}
                 >
-                    <Pressable style={styles.backButton}>
+                    <Pressable
+                        style={styles.backButton}
+                        onPress={() => router.back()}
+                    >
                         <AltArrowLeft size={32} color="#eee" />
                     </Pressable>
 
@@ -105,7 +118,25 @@ export default function Header({
                         {data.name || "Perfil"}
                     </Animated.Text>
 
-                    <View style={{ width: 40 }} />
+                    {itsUser ? (
+                        <View style={{ flexDirection: "row", gap: 8, zIndex: 1000 }}>
+                            <ShareBtn
+                                type="profile"
+                                url={`https://whistle.kaizin.work/${data.username}`}
+                            />
+                            <Pressable
+                                style={[styles.confBtn, { width: 30 }]}
+                                onPress={() => router.push("/settings/menu")}
+                            >
+                                <Settings size={28} color="#eee" />
+                            </Pressable>
+                        </View>
+                    ) : (
+                        <ShareBtn
+                            type="profile"
+                            url={`https://whistle.kaizin.work/${data.username}`}
+                        />
+                    )}
                 </View>
             </Animated.View>
         </View>
@@ -157,6 +188,12 @@ const styles = StyleSheet.create({
         height: 40,
         justifyContent: "center",
         alignItems: "flex-start",
+    },
+    confBtn: {
+        width: 40,
+        height: 30,
+        justifyContent: "center",
+        alignItems: "flex-end",
     },
     smallTitle: {
         color: "#eee",

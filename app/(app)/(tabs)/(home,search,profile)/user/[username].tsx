@@ -21,48 +21,52 @@ export default function UserProfilePage() {
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [colors, setColors] = useState<Palette | any>(null);
     const [dominantColor, setDominantColor] = useState<string | null>(null);
+    const [itsMe, setItsMe] = useState(false);
 
-    useEffect(() => {
-        const fetchProfileData = async () => {
-            setProfileData(null);
-            console.log(
-                "Fetching profile data for username:",
-                username,
-                profileData,
-            );
-            try {
-                const response = await apiAuth(`/users/${username}`);
-                console.log("Profile data fetched successfully:", response);
-                setProfileData(response);
-                console.log("Updated profileData state:", profileData);
+    const { data: session } = authClient.useSession();
+    console.log("Current session username:", session);
+    const fetchProfileData = async () => {
+        // setProfileData(null);
+        // console.log(
+        //     "Fetching profile data for username:",
+        //     username,
+        //     profileData,
+        // );
+        try {
+            const response = await apiAuth(`/users/${username}`);
+            console.log("Profile data fetched successfully:", response);
+            setProfileData(response);
+            console.log("Updated profileData state:", profileData);
 
-                getColors(response.avatar_url, {
-                    fallback: "#000",
-                    cache: true,
-                    key: response.avatar_url,
-                })
-                    .then((colors) => {
-                        const newColor = darkenColor(
-                            selectRightColor(colors as any),
-                            0.5,
-                        );
-                        console.log(
-                            "Colors fetched for profile avatar:",
-                            colors,
-                        );
-                        console.log("Darkened color:", newColor);
-                        setDominantColor(newColor);
-                        setColors(colors);
-                        setTimeout(() => {
-                            setLoading(false);
-                        }, 2000);
-                    })
-                    .catch(console.error);
-            } catch (error) {
-                console.error("Error fetching profile data:", error);
-                setLoading(false);
+            if (response.id === session?.user?.id) {
+                setItsMe(true);
             }
-        };
+
+            getColors(response.avatar_url, {
+                fallback: "#000",
+                cache: true,
+                key: response.avatar_url,
+            })
+                .then((colors) => {
+                    const newColor = darkenColor(
+                        selectRightColor(colors as any),
+                        0.5,
+                    );
+                    console.log("Colors fetched for profile avatar:", colors);
+                    console.log("Darkened color:", newColor);
+                    setDominantColor(newColor);
+                    setColors(colors);
+                    setTimeout(() => {
+                        setLoading(false);
+                    }, 2000);
+                })
+                .catch(console.error);
+        } catch (error) {
+            console.error("Error fetching profile data:", error);
+            setLoading(false);
+        }
+    };
+    useEffect(() => {
         fetchProfileData();
     }, [username]);
 
@@ -79,6 +83,8 @@ export default function UserProfilePage() {
                         data={profileData}
                         dominantColor={dominantColor}
                         colors={colors}
+                        itsUser={itsMe}
+                        fetchProfileData={fetchProfileData}
                     />
                 </View>
             )}
@@ -139,5 +145,4 @@ const styles = StyleSheet.create({
         right: 0,
         bottom: 0,
     },
-
 });

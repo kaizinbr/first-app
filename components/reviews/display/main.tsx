@@ -1,4 +1,5 @@
 import ConfirmModal from "@/components/core/confirm-modal";
+import { ShareLargeBtn } from "@/components/core/share-btn";
 import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
 import ReviewContent from "@/components/reviews/display/review-content";
@@ -22,7 +23,7 @@ import {
     Share,
     TrashBinTrash,
     User,
-    Vinyl
+    Vinyl,
 } from "@solar-icons/react-native/Bold";
 import { AltArrowLeft } from "@solar-icons/react-native/Linear";
 import { LinearGradient } from "expo-linear-gradient";
@@ -49,6 +50,12 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+function hexToRgb(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
+}
 
 export default function ReviewAlbumScreen({
     reviewData,
@@ -183,21 +190,6 @@ export default function ReviewAlbumScreen({
                     end={{ x: 0.5, y: 1 }}
                     style={StyleSheet.absoluteFill}
                 />
-                {/* <View
-                    style={{
-                        height: 250,
-                        width: 250,
-                        backgroundColor: lightenColor(
-                            selectRightColor(colors),
-                            0.2,
-                        ),
-                        right: -75,
-                        top: -75,
-                        position: "absolute",
-                        borderRadius: 9999,
-                        filter: "blur(50px)",
-                    }}
-                ></View> */}
             </Animated.View>
 
             {/* A BARRINHA FIXA QUE APARECE */}
@@ -219,6 +211,21 @@ export default function ReviewAlbumScreen({
                 <Text style={styles.fixedTitle} numberOfLines={1}>
                     {albumData.name}
                 </Text>
+                
+                            <LinearGradient
+                                colors={[
+                                    `rgba(${hexToRgb(selectRightColor(colors))}, 0)`,
+                                    darkenColor(selectRightColor(colors), 1.2),
+                                ]}
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    right: 0,
+                                    height: HEADER_MIN_HEIGHT,
+                                    zIndex: -1,
+                                }}
+                            />
             </Animated.View>
 
             {/* BOTÃO VOLTAR */}
@@ -266,7 +273,9 @@ export default function ReviewAlbumScreen({
                     />
                 </View>
                 <ReviewScore review={reviewData} />
-                <ReviewContent review={reviewData} />
+                {reviewData.review.length > 0 && (
+                    <ReviewContent review={reviewData} />
+                )}
                 <Tracklist
                     review={reviewData}
                     albumTracks={albumData.tracks.items}
@@ -335,20 +344,7 @@ export default function ReviewAlbumScreen({
                                 </Pressable>
                             </>
                         )}
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.optBtn,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {}}
-                        >
-                            <Share size={24} color="#eee" />
-                            <Text style={styles.optText}>Compartilhar</Text>
-                        </Pressable>
+                        <ShareLargeBtn type="review" url={`https://whistle.kaizin.work/r/${reviewData.shorten}`} dismiss={dismiss} />
                         <Pressable
                             style={({ pressed }) => [
                                 styles.optBtn,
@@ -480,7 +476,13 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         borderBottomColor: "rgba(255,255,255,0.05)",
     },
-    fixedTitle: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+    fixedTitle: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+        width: "65%",
+        textAlign: "center",
+    },
     backButton: {
         position: "absolute",
         left: 16,

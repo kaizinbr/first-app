@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginTop: 88,
         marginBottom: 32,
+        paddingRight: 16,
     },
     containerExtra: {
         flex: 1,

@@ -2,7 +2,13 @@ import { apiAuth, apiAuthPUT } from "@/lib/api";
 import { UserProfile } from "@/lib/types";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import BottomSheet, { BottomSheetView } from "@gorhom/bottom-sheet";
+import {
+    BottomSheetBackdrop,
+    BottomSheetModal,
+    BottomSheetView,
+    useBottomSheetModal,
+} from "@gorhom/bottom-sheet";
+import { FlatGrid } from "react-native-super-grid";
 import {
     AppState,
     Image,
@@ -15,6 +21,7 @@ import {
     TextInput,
     View,
     ActivityIndicator,
+    FlatList,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import EditAlbunsModal from "@/components/profile/edit/edit-albuns-modal";
@@ -34,6 +41,7 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 
+import hexToRgb from "@/lib/util/hexToRgb";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 
@@ -182,12 +190,8 @@ export default function EditProfile() {
                 setAlbuns(response.albuns || []);
                 setArtists(response.artists || []);
 
-                    setLyrics(response.lyrics);
-                console.log(
-                    response.lyrics )
-
-
-
+                setLyrics(response.lyrics);
+                console.log(response.lyrics);
 
                 const colorsResult = await getColors(response.avatar_url, {
                     fallback: "#000",
@@ -514,6 +518,14 @@ export default function EditProfile() {
     const [showArtistsModal, setShowArtistsModal] = useState(false);
     const [showLyricsModal, setShowLyricsModal] = useState(false);
 
+    const bottomSheetRef = useRef<BottomSheetModal>(null);
+    const snapPoints = useMemo(() => ["50%", "85%", "100%"], []);
+    const openSheet = useCallback(() => {
+        bottomSheetRef.current?.present();
+    }, []);
+
+    const { dismiss } = useBottomSheetModal();
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -566,6 +578,22 @@ export default function EditProfile() {
                             ? name.substring(0, 36) + "..."
                             : name}
                     </Text>
+                    {colors.length > 0 && (
+                        <LinearGradient
+                            colors={[
+                                `rgba(0,0,0, 0)`,
+                                darkenColor(colors[0], 1.2),
+                            ]}
+                            style={{
+                                position: "absolute",
+                                top: 0,
+                                left: 0,
+                                right: 0,
+                                height: HEADER_MIN_HEIGHT,
+                                zIndex: -1,
+                            }}
+                        />
+                    )}
                 </Animated.View>
                 {/* BOTÃO VOLTAR */}
                 <Pressable
@@ -770,41 +798,33 @@ export default function EditProfile() {
                             onPress={() => setShowAlbunsModal(true)}
                         >
                             <Text style={styles.title}>Álbuns Favoritos</Text>
-                            <View
-                                onLayout={handleAlbumsGridLayout}
-                                style={{
-                                    flexDirection: "row",
-                                    flexWrap: "wrap",
-                                    gap: ALBUM_GRID_GAP,
-                                    marginTop: 8,
-                                    width: "100%",
-                                }}
-                            >
-                                {albuns.map((album: any) => (
+                            {albuns.length === 0 && (
+                                <Text style={{ color: "#555" }}>
+                                    Adicione seus álbuns favoritos!
+                                </Text>
+                            )}
+
+                            <FlatGrid
+                                itemDimension={70}
+                                data={albuns}
+                                renderItem={({ item }) => (
                                     <Image
-                                        key={album.id}
-                                        source={{ uri: album.src }}
+                                        source={{ uri: item.src }}
                                         style={{
-                                            width: albumGrid.itemSize,
-                                            height: albumGrid.itemSize,
+                                            width: "100%",
+                                            // height: 80,
+                                            aspectRatio: 1,
+                                            flex: 1,
                                             borderRadius: 8,
                                         }}
                                     />
-                                ))}
-                                <View
-                                    style={{
-                                        width: albumGrid.itemSize,
-                                        height: albumGrid.itemSize,
-                                        borderRadius: 8,
-                                        backgroundColor:
-                                            "rgba(128, 101, 239, 0.1)",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <AddCircle size={32} color="#8065ef" />
-                                </View>
-                            </View>
+                                )}
+                                style={{ padding: 0 }}
+                                contentContainerStyle={{
+                                    padding: 0,
+                                    margin: 0,
+                                }}
+                            />
                         </Pressable>
                     </View>
                     <View style={styles.lowerContent}>
@@ -813,41 +833,33 @@ export default function EditProfile() {
                             onPress={() => setShowArtistsModal(true)}
                         >
                             <Text style={styles.title}>Artistas Favoritos</Text>
-                            <View
-                                onLayout={handleAlbumsGridLayout}
-                                style={{
-                                    flexDirection: "row",
-                                    flexWrap: "wrap",
-                                    gap: ALBUM_GRID_GAP,
-                                    marginTop: 8,
-                                    width: "100%",
-                                }}
-                            >
-                                {artists.map((artist: any) => (
+                            {artists.length === 0 && (
+                                <Text style={{ color: "#555" }}>
+                                    Adicione seus artistas favoritos!
+                                </Text>
+                            )}
+
+                            <FlatGrid
+                                itemDimension={70}
+                                data={artists}
+                                renderItem={({ item }) => (
                                     <Image
-                                        key={artist.id}
-                                        source={{ uri: artist.src }}
+                                        source={{ uri: item.src }}
                                         style={{
-                                            width: albumGrid.itemSize,
-                                            height: albumGrid.itemSize,
+                                            width: "100%",
+                                            // height: 80,
+                                            aspectRatio: 1,
+                                            flex: 1,
                                             borderRadius: 999,
                                         }}
                                     />
-                                ))}
-                                <View
-                                    style={{
-                                        width: albumGrid.itemSize,
-                                        height: albumGrid.itemSize,
-                                        borderRadius: 999,
-                                        backgroundColor:
-                                            "rgba(128, 101, 239, 0.1)",
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <AddCircle size={32} color="#8065ef" />
-                                </View>
-                            </View>
+                                )}
+                                style={{ padding: 0 }}
+                                contentContainerStyle={{
+                                    padding: 0,
+                                    margin: 0,
+                                }}
+                            />
                         </Pressable>
                     </View>
                 </Animated.ScrollView>
@@ -891,6 +903,27 @@ export default function EditProfile() {
                     }}
                     onCancel={() => setShowLyricsModal(false)}
                 />
+                {/* <BottomSheetModal
+                    ref={bottomSheetRef}
+                    index={1}
+                    snapPoints={snapPoints}
+                    enablePanDownToClose
+                    topInset={insets.top}
+                    // containerStyle={{ zIndex: 1000 }}
+                    backgroundStyle={{ backgroundColor: "#161718" }}
+                    handleIndicatorStyle={{ backgroundColor: "#555" }}
+                    backdropComponent={(props) => (
+                        <BottomSheetBackdrop
+                            {...props}
+                            disappearsOnIndex={-1}
+                            appearsOnIndex={0}
+                        />
+                    )}
+                >
+                    <BottomSheetView>
+                        <EditFavAlbuns albuns={albuns} setAlbuns={setAlbuns} />
+                    </BottomSheetView>
+                </BottomSheetModal> */}
             </View>
             {isLoading && (
                 <View

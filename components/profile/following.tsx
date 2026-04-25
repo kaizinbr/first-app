@@ -43,7 +43,7 @@ export default function FollowingRoute({ data }: { data: UserProfile }) {
         };
 
         fetchUserFollowings();
-    }, []);
+    }, [data]);
 
     return (
         <Tabs.FlatList

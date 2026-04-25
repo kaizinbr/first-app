@@ -27,6 +27,7 @@ export default function FeedHeader({
     const HEADER_MAX_HEIGHT = height * 0.45;
     const insets = useSafeAreaInsets();
     const { data: session } = authClient.useSession();
+    console.log("Session:", HEADER_MAX_HEIGHT);
 
     const [colors, setColors] = useState(["#161718", "#161718"]);
 
@@ -96,7 +97,7 @@ export default function FeedHeader({
                         alignItems: "center",
                     }}
                 >
-                    <Banner onColorChange={setColors} />
+                    <Banner onColorChange={setColors} HEADER_MAX_HEIGHT={HEADER_MAX_HEIGHT} />
                 </Animated.View>
             </View>
         </View>

@@ -14,6 +14,8 @@ import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
 
+import { AddCircle } from "@solar-icons/react-native/Bold";
+
 import Ionicons from "@expo/vector-icons/Ionicons";
 
 interface ConfirmModalProps {
@@ -76,11 +78,10 @@ export default function EditArtistsModal({
             onRequestClose={onCancel}
         >
             {/* Overlay escuro — toque fora fecha */}
-            <Pressable style={styles.overlay} onPress={onCancel}>
+            <View style={styles.overlay}>
                 {/* Para o toque no card não fechar */}
-                <Pressable
+                <View
                     style={styles.card}
-                    onPress={(e) => e.stopPropagation()}
                 >
                     <Text style={styles.title}>Artistas favoritos</Text>
 
@@ -119,6 +120,21 @@ export default function EditArtistsModal({
                                 </Pressable>
                             </View>
                         )}
+                        
+                        ListFooterComponent={
+                            <View
+                                style={{
+                                    width: 64,
+                                    height: 64,
+                                    borderRadius: 999,
+                                    backgroundColor: "rgba(128, 101, 239, 0.1)",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                }}
+                            >
+                                <AddCircle size={32} color="#8065ef" />
+                            </View>
+                        }
                     />
                     <View
                         style={{
@@ -179,8 +195,8 @@ export default function EditArtistsModal({
                     <Pressable style={[styles.btn]} onPress={onCancel}>
                         <Text style={styles.btnText}>Pronto</Text>
                     </Pressable>
-                </Pressable>
-            </Pressable>
+                </View>
+            </View>
         </Modal>
     );
 }
@@ -199,7 +215,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#222",
         borderRadius: 16,
         paddingVertical: 16,
-        paddingHorizontal: 24,
+        paddingHorizontal: 16,
         gap: 12,
         zIndex: 5,
     },

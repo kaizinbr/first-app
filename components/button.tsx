@@ -7,7 +7,7 @@ type ButtonProps = PressableProps & {
     route?: Href;
 };
 
-export default function Button({ children, route, ...props }: ButtonProps) {
+export default function Button({ children, route, style, ...props }: ButtonProps) {
     const router = useRouter();
 
     
@@ -20,7 +20,7 @@ export default function Button({ children, route, ...props }: ButtonProps) {
 
     return (
         <Pressable
-            style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+            style={({ pressed }) => [styles.button, pressed && styles.pressed, style]}
             onPress={handlePress}
             {...props}
         >

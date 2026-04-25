@@ -5,6 +5,8 @@ import {
     Button,
     StyleSheet,
     ScrollView,
+    
+    RefreshControl
 } from "react-native";
 import { UserProfile, ReviewWithAlbum } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
@@ -15,12 +17,20 @@ import FeedCard from "@/components/home/feed-card";
 import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
 
 export default function PostsRoute({ data }: { data: UserProfile }) {
-    const { reviews, loadingInitial, loadingMore, hasMore, loadMoreForTabs } =
-        usePaginatedReviews({ endpoint: `/users/${data.username}/reviews` });
+    const { reviews, loadingInitial, loadingMore, hasMore, loadMoreForTabs, reload } =
+        usePaginatedReviews({ endpoint: `/users/${data.username}/reviews`, data });
 
     const ItemSeparator = () => {
         return <View style={styles.separator} />;
     };
+
+    const [refreshing, setRefreshing] = useState(false);
+
+    const onRefresh = useCallback(async () => {
+        setRefreshing(true);
+        await reload();
+        setRefreshing(false);
+    }, []);
 
     const handleScroll = useCallback(
         (event: any) => {
@@ -52,6 +62,13 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                 width: "100%",
                 // backgroundColor: "red",
             }}
+            
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                />
+            }
             showsVerticalScrollIndicator={false}
             ListFooterComponent={
                 loadingMore ? (

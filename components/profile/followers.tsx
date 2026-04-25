@@ -43,7 +43,7 @@ export default function FollowingRoute({ data }: { data: UserProfile }) {
         };
 
         fetchUserFollowers();
-    }, []);
+    }, [data]);
 
     return (
         <Tabs.FlatList
@@ -52,24 +52,25 @@ export default function FollowingRoute({ data }: { data: UserProfile }) {
             renderItem={({ item }) => <UserCards data={item} />} // A função que desenha o card
             ItemSeparatorComponent={ItemSeparator}
             ListEmptyComponent={
-                                        loading ? (
-                                            <ActivityIndicator
-                                                size="large"
-                                                color="#8065ef"
-                                                style={{ marginTop: 40 }}
-                                            />
-                                        ) : (
-                                            <Text
-                                                style={{
-                                                    color: "#eee",
-                                                    textAlign: "center",
-                                                    marginTop: 40,
-                                                }}
-                                            >
-                                                Parece que {data.name || data.username} não tem seguidores ainda...
-                                            </Text>
-                                        )
-                                    }
+                loading ? (
+                    <ActivityIndicator
+                        size="large"
+                        color="#8065ef"
+                        style={{ marginTop: 40 }}
+                    />
+                ) : (
+                    <Text
+                        style={{
+                            color: "#eee",
+                            textAlign: "center",
+                            marginTop: 40,
+                        }}
+                    >
+                        Parece que {data.name || data.username} não tem
+                        seguidores ainda...
+                    </Text>
+                )
+            }
             contentContainerStyle={{
                 flexGrow: 1,
                 width: "100%",

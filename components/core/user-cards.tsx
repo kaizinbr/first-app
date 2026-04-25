@@ -1,6 +1,6 @@
 import { Pressable, Text, View, StyleSheet, Image } from "react-native";
 import { useRouter } from "expo-router";
-// import {Image} from "expo-image";
+import { AvatarNoPress } from "@/components/core/avatar";
 
 export default function UserCards({
     data,
@@ -27,7 +27,7 @@ export default function UserCards({
             ]}
             onPress={handlePress}
         >
-            <Image source={{ uri: data.avatar_url }} style={styles.avatar} />
+            <AvatarNoPress data={data} size={40} />
             <View style={styles.btnTextWrapper}>
                 <Text style={styles.btnText}>{data.name}</Text>
                 <Text style={styles.btnSubtext}>@{data.username}</Text>

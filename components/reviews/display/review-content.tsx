@@ -1,4 +1,6 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
+import { truncateMarkdown } from "@/lib/util/truncate";
 import { Review } from "@/lib/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
@@ -7,6 +9,8 @@ import api from "@/lib/api";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import TiptapRenderer from "@/components/home/card-content copy";
+import { AlbumCard } from "@/components/home/album-section";
+import { ReviewWithAlbum } from "@/lib/types";
 
 export default function ReviewContent({ review }: { review: Review }) {
     const [content, setContent] = useState<{
@@ -35,9 +39,7 @@ export default function ReviewContent({ review }: { review: Review }) {
             }
 
             try {
-                const response = await api.get(
-                    `/reviews/${review.id}/content`,
-                );
+                const response = await api.get(`/reviews/${review.id}/content`);
                 setContent(response.data);
             } catch (error) {
                 console.error("Error fetching content:", error);
@@ -58,16 +60,37 @@ export default function ReviewContent({ review }: { review: Review }) {
                     <Text style={styles.sectionTitle}>
                         {review.Profile.name}
                     </Text>
-                    <Text style={styles.date}>
-                        @{review.Profile.username}
-                    </Text>
+                    <Text style={styles.date}>@{review.Profile.username}</Text>
                 </View>
             </View>
-            {content ? (
-                <>
-                    <TiptapRenderer json={content.jsonContent} />
-                </>
-            ) : null}
+                    <EnrichedMarkdownText
+                        markdown={review.review}
+                        markdownStyle={{
+                            paragraph: {
+                                color: "#eee",
+                                fontSize: 14,
+                                marginTop: 4,
+                                lineHeight: 20,
+
+                                fontFamily: "Walsheim",
+                            },
+                            h1: {
+                                color: "#eee",
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                lineHeight: 24,
+                                marginTop: 8,
+                            },
+                            h2: {
+                                color: "#eee",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                                marginTop: 4,
+                                lineHeight: 20,
+                            },
+                        }}
+                        //   onLinkPress={({ url }) => Linking.openURL(url)}
+                    />
         </View>
     );
 }
@@ -83,9 +106,8 @@ const styles = StyleSheet.create({
     },
     top: {
         flex: 1,
-        flexDirection: "row"
+        flexDirection: "row",
     },
-
 
     cardImage: {
         width: 38,
@@ -94,6 +116,11 @@ const styles = StyleSheet.create({
         borderRadius: 38 * 0.306,
         marginBottom: 8,
     },
-    sectionTitle: { color: "#fff", fontSize: 14, fontWeight: "bold", marginTop: 2 },
-    date: { color: "#777", fontSize: 12, },
+    sectionTitle: {
+        color: "#fff",
+        fontSize: 14,
+        fontWeight: "bold",
+        marginTop: 2,
+    },
+    date: { color: "#777", fontSize: 12 },
 });

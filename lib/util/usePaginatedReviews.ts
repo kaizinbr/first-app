@@ -5,9 +5,10 @@ import { ReviewWithAlbum } from "@/lib/types";
 
 interface UsePaginatedReviewsOptions {
     endpoint: string;
+    data?: any;
 }
 
-export function usePaginatedReviews({ endpoint }: UsePaginatedReviewsOptions) {
+export function usePaginatedReviews({ endpoint, data }: UsePaginatedReviewsOptions) {
     const [reviews, setReviews] = useState<ReviewWithAlbum[]>([]);
     const [loadingInitial, setLoadingInitial] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -46,7 +47,7 @@ export function usePaginatedReviews({ endpoint }: UsePaginatedReviewsOptions) {
         return () => {
             mountedRef.current = false;
         };
-    }, [endpoint]);
+    }, [endpoint, data]);
 
     const fetchPage = async (pageNumber: number, replace = false) => {
         if (isFetching.current) return;
@@ -141,6 +142,20 @@ export function usePaginatedReviews({ endpoint }: UsePaginatedReviewsOptions) {
         void fetchPage(nextPageRef.current);
     };
 
+    const reload = async  () => {
+        // reseta tudo
+        isFetching.current = false;
+        initialLoadDone.current = false;
+        loadingInitialRef.current = true;
+        loadingMoreRef.current = false;
+        onEndReachedCalledDuringMomentum.current = true;
+        hasMoreRef.current = true;
+        nextPageRef.current = 1;
+        requestedPagesRef.current = new Set();
+        loadedIdsRef.current = new Set();
+        await fetchPage(1, true);
+    }
+
     // Para Tabs.FlatList — sem trava de momentum
     const loadMoreForTabs = () => {
         console.log(nextPageRef.current);
@@ -165,6 +180,7 @@ export function usePaginatedReviews({ endpoint }: UsePaginatedReviewsOptions) {
         loadingInitial,
         loadingMore,
         hasMore,
+        reload,
         loadMore,
         loadMoreForTabs,
         onMomentumScrollBegin,

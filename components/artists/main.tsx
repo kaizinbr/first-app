@@ -18,7 +18,12 @@ import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
-
+function hexToRgb(hex: string) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return `${r}, ${g}, ${b}`;
+}
 export default function ArtistScreen({
     data,
     colors,
@@ -126,6 +131,21 @@ export default function ArtistScreen({
                         ? data.name.substring(0, 36) + "..."
                         : data.name}
                 </Text>
+
+                <LinearGradient
+                    colors={[
+                        `rgba(${hexToRgb(selectRightColor(colors))}, 0)`,
+                        darkenColor(selectRightColor(colors), 1.2),
+                    ]}
+                    style={{
+                        position: "absolute",
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        height: HEADER_MIN_HEIGHT,
+                        zIndex: -1,
+                    }}
+                />
             </Animated.View>
 
             <Pressable
