@@ -37,12 +37,14 @@ export default function Index() {
                     setDominantColor(newColor);
                     setColors(colors);
 
-                    setLoading(false);
-                    // setReload((prev) => !prev);
+                    setTimeout(() => {
+                        setLoading(false);
+                    }, 2000);
                 })
                 .catch(console.error);
         } catch (error) {
             console.error("Error fetching profile data:", error);
+            setLoading(false);
         }
     };
 

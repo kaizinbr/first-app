@@ -42,6 +42,7 @@ import {
     Text,
     View,
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -50,6 +51,7 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -208,9 +210,9 @@ export default function ReviewAlbumScreen({
                 ]}
                 pointerEvents="none" // Para não bloquear o clique de voltar
             >
-                <Text style={styles.fixedTitle} numberOfLines={1}>
+                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
                     {albumData.name}
-                </Text>
+                </TextDefault>
                 
                             <LinearGradient
                                 colors={[
@@ -319,7 +321,7 @@ export default function ReviewAlbumScreen({
                                     }}
                                 >
                                     <TrashBinTrash size={24} color="#eee" />
-                                    <Text style={styles.optText}>Excluir</Text>
+                                    <TextDefault style={styles.optText}>Excluir</TextDefault>
                                 </Pressable>
                                 <Pressable
                                     style={({ pressed }) => [
@@ -340,7 +342,7 @@ export default function ReviewAlbumScreen({
                                     }}
                                 >
                                     <Pen size={24} color="#eee" />
-                                    <Text style={styles.optText}>Editar</Text>
+                                    <TextDefault style={styles.optText}>Editar</TextDefault>
                                 </Pressable>
                             </>
                         )}
@@ -357,7 +359,7 @@ export default function ReviewAlbumScreen({
                             onPress={() => {}}
                         >
                             <Flag size={24} color="#eee" />
-                            <Text style={styles.optText}>Denunciar</Text>
+                            <TextDefault style={styles.optText}>Denunciar</TextDefault>
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
@@ -377,7 +379,7 @@ export default function ReviewAlbumScreen({
                             }}
                         >
                             <Vinyl size={24} color="#eee" />
-                            <Text style={styles.optText}>Ver álbum</Text>
+                            <TextDefault style={styles.optText}>Ver álbum</TextDefault>
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
@@ -400,7 +402,7 @@ export default function ReviewAlbumScreen({
                             }}
                         >
                             <User size={24} color="#eee" />
-                            <Text style={styles.optText}>Ver usuário</Text>
+                            <TextDefault style={styles.optText}>Ver usuário</TextDefault>
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
@@ -414,7 +416,7 @@ export default function ReviewAlbumScreen({
                             onPress={() => {}}
                         >
                             <ForbiddenCircle size={24} color="#eee" />
-                            <Text style={styles.optText}>Bloquear usuário</Text>
+                            <TextDefault style={styles.optText}>Bloquear usuário</TextDefault>
                         </Pressable>
                     </View>
                 </BottomSheetView>

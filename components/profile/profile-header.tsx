@@ -1,4 +1,5 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
 import api, { apiAuth, apiAuthPost } from "@/lib/api";
@@ -155,9 +156,9 @@ export default function ProfileHeader({
                                 // { backgroundColor: dominantColor },
                             ]}
                         >
-                            <Text style={styles.pronounstext}>
+                            <TextDefault style={styles.pronounstext}>
                                 {data.pronouns}
-                            </Text>
+                            </TextDefault>
                         </View>
                     )}
                 </View>
@@ -168,32 +169,34 @@ export default function ProfileHeader({
                         gap: 4,
                     }}
                 >
-                    <Text style={styles.name}>{data.name}</Text>{" "}
+                    <TextDefault style={styles.name}>
+                        {data.name}
+                    </TextDefault>{" "}
                     {data.verified && (
-                        <Text>
+                        <TextDefault>
                             <VerifiedCheck size={18} color="#8065ef" />
-                        </Text>
+                        </TextDefault>
                     )}
                 </View>
                 <Text style={styles.username}>@{data.username}</Text>
                 <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
-                    <Text style={styles.textDefault}>
+                    <TextDefault style={styles.textDefault}>
                         {reviewsCount} review{reviewsCount !== 1 && "s"}
-                    </Text>
-                    <Text style={styles.textDefault}>
+                    </TextDefault>
+                    <TextDefault style={styles.textDefault}>
                         {followingCount} seguindo
-                    </Text>
-                    <Text style={styles.textDefault}>
+                    </TextDefault>
+                    <TextDefault style={styles.textDefault}>
                         {folowersCount} seguidor{folowersCount !== 1 && "es"}
-                    </Text>
+                    </TextDefault>
                 </View>
                 {itsUser ? (
                     <Pressable style={[styles.followBtn, { backgroundColor: "#8065ef" }]}
                         onPress={() => router.push("/edit-profile")}
                     >
-                        <Text style={{ color: "#eee", fontWeight: "bold" }}>
+                        <TextDefault style={{ color: "#eee", fontWeight: "bold" }}>
                             Editar perfil
-                        </Text>
+                        </TextDefault>
                     </Pressable>
                 ) : (
                     <Pressable
@@ -207,9 +210,9 @@ export default function ProfileHeader({
                         ]}
                         onPress={handleFollowToggle}
                     >
-                        <Text style={{ color: "#eee", fontWeight: "bold" }}>
+                        <TextDefault style={{ color: "#eee", fontWeight: "bold" }}>
                             {isFollowing ? "Seguindo" : "Seguir"}
-                        </Text>
+                        </TextDefault>
                     </Pressable>
                 )}
             </View>

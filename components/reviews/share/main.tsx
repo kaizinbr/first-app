@@ -1,40 +1,8 @@
-import ConfirmModal from "@/components/core/confirm-modal";
-import { ShareLargeBtn } from "@/components/core/share-btn";
-import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
-import AlbumHeader from "@/components/reviews/display/header";
-import ReviewContent from "@/components/reviews/display/review-content";
-import ReviewScore from "@/components/reviews/display/score";
-import Tracklist from "@/components/reviews/display/tracklist";
-import { apiAuth, apiAuthDELETE } from "@/lib/api";
 import { Album, Palette, Review } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
-import {
-    BottomSheetBackdrop,
-    BottomSheetModal,
-    BottomSheetView,
-    useBottomSheetModal,
-} from "@gorhom/bottom-sheet";
-import {
-    Flag,
-    ForbiddenCircle,
-    MenuDots,
-    Pen,
-    Share,
-    TrashBinTrash,
-    User,
-    Vinyl,
-} from "@solar-icons/react-native/Bold";
 import { AltArrowLeft } from "@solar-icons/react-native/Linear";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
+import React, { useRef, useState } from "react";
 import ViewShot, { captureRef } from "react-native-view-shot";
 import * as Sharing from "expo-sharing";
 import * as MediaLibrary from "expo-media-library";
@@ -42,18 +10,17 @@ import {
     ActivityIndicator,
     Pressable,
     StyleSheet,
-    Text,
+    ScrollView,
     View,
     Image,
 } from "react-native";
-import Animated, {
-    Extrapolation,
-    interpolate,
-    useAnimatedScrollHandler,
-    useAnimatedStyle,
-    useSharedValue,
-} from "react-native-reanimated";
+import TextDefault from "@/components/core/text-core";
+import Animated, { useSharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+    GalleryDownload,
+    SquareShareLine,
+} from "@solar-icons/react-native/Outline";
 
 export default function ShareReview({
     reviewData,
@@ -104,384 +71,457 @@ export default function ShareReview({
     };
 
     return (
-        <View style={styles.container}>
+        <>
             <Pressable
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
                 <AltArrowLeft size={32} color="#eee" />
             </Pressable>
-
-            <View
-                style={{
-                    flex: 1,
-                    width: "100%",
-                    marginTop: 96,
-                    justifyContent: "flex-start",
-                    alignItems: "center",
-                }}
+            <ScrollView
+                style={[styles.container, { marginTop: insets.top }]}
+                showsVerticalScrollIndicator={false}
             >
                 <View
                     style={{
-                        aspectRatio: "9/16",
-                        width: "50%",
-                        backgroundColor: colorOne,
-                        borderRadius: 16,
-                        overflow: "hidden",
-                        shadowColor: "rgba(0,0,0,0.8)",
-                        shadowOffset: { width: 0, height: 4 },
-                        shadowRadius: 8,
-                        shadowOpacity: 0.8,
+                        flex: 1,
+                        width: "100%",
+                        marginTop: 44,
                         justifyContent: "flex-start",
                         alignItems: "center",
+                        gap: 16,
+                        marginBottom: 100,
+                        paddingHorizontal: 16,
                     }}
                 >
-                    <ViewShot
-                        ref={cardRef}
-                        options={{ format: "png", quality: 1 }}
+                    <View
                         style={{
                             aspectRatio: "9/16",
-                            width: "100%",
+                            width: "50%",
                             backgroundColor: colorOne,
+                            borderRadius: 16,
+                            overflow: "hidden",
+                            shadowColor: "rgba(0,0,0,0.8)",
+                            shadowOffset: { width: 0, height: 4 },
+                            shadowRadius: 8,
+                            shadowOpacity: 0.8,
+                            justifyContent: "flex-start",
+                            alignItems: "center",
                         }}
                     >
-                        <View
+                        <ViewShot
+                            ref={cardRef}
+                            options={{ format: "png", quality: 1 }}
                             style={{
+                                aspectRatio: "9/16",
                                 width: "100%",
-                                height: "100%",
-                                zIndex: 1,
-                                justifyContent: "center",
-                                alignItems: "center",
+                                backgroundColor: colorOne,
                             }}
                         >
                             <View
                                 style={{
                                     width: "100%",
+                                    height: "100%",
+                                    zIndex: 1,
                                     justifyContent: "center",
                                     alignItems: "center",
-                                    position: "relative",
                                 }}
                             >
-                                <Image
-                                    source={{
-                                        uri: reviewData.Profile.avatar_url,
-                                    }}
+                                <View
                                     style={{
-                                        width: 18,
-                                        aspectRatio: 1,
-                                        marginTop: 16,
-                                        borderRadius: 18 * 0.306,
-                                        position: "absolute",
-                                        top: -12,
-                                        zIndex: 2,
+                                        width: "100%",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        position: "relative",
                                     }}
-                                    resizeMode="cover"
-                                />
-                                <Image
-                                    source={{ uri: albumData.images[0].url }}
+                                >
+                                    <Image
+                                        source={{
+                                            uri: reviewData.Profile.avatar_url,
+                                        }}
+                                        style={{
+                                            width: 18,
+                                            aspectRatio: 1,
+                                            marginTop: 16,
+                                            borderRadius: 18 * 0.306,
+                                            position: "absolute",
+                                            top: -12,
+                                            zIndex: 2,
+                                            shadowColor: "rgba(0,0,0,0.5)",
+                                            shadowOffset: { width: 0, height: 4 },
+                                            shadowRadius: 8,
+                                            shadowOpacity: 0.5,
+                                        }}
+                                        resizeMode="cover"
+                                    />
+                                    <Image
+                                        source={{
+                                            uri: albumData.images[0].url,
+                                        }}
+                                        style={{
+                                            width: "50%",
+                                            aspectRatio: 1,
+                                            marginTop: 16,
+                                            borderRadius: 6,
+                                            shadowColor: "rgba(0,0,0,0.5)",
+                                            shadowOffset: { width: 0, height: 4 },
+                                            shadowRadius: 8,
+                                            shadowOpacity: 0.5,
+                                        }}
+                                        resizeMode="cover"
+                                    />
+                                </View>
+                                <TextDefault
                                     style={{
-                                        width: "50%",
-                                        aspectRatio: 1,
-                                        marginTop: 16,
-                                        borderRadius: 6,
+                                        color: "#eee",
+                                        fontSize: 16,
+                                        fontWeight: 800,
+                                        marginTop: 12,
+                                        fontFamily: "Walsheim",
                                     }}
-                                    resizeMode="cover"
-                                />
+                                >
+                                    {Number(reviewData.total).toFixed(1)}/100
+                                </TextDefault>
+                                <TextDefault
+                                    style={{
+                                        color: "#eee",
+                                        fontSize: 7,
+                                        fontWeight: 400,
+                                        marginTop: 12,
+                                        fontFamily: "Walsheim",
+                                    }}
+                                >
+                                    {reviewData.Profile.name} avaliou
+                                </TextDefault>
+                                <TextDefault
+                                    style={{
+                                        color: "#eee",
+                                        fontSize: 7,
+                                        fontWeight: 700,
+                                        fontFamily: "Walsheim",
+                                    }}
+                                >
+                                    {albumData.name}
+                                </TextDefault>
+                                <TextDefault
+                                    style={{
+                                        color: "#989898",
+                                        fontSize: 7,
+                                        fontWeight: 400,
+                                        fontFamily: "Walsheim",
+                                    }}
+                                >
+                                    {albumData.artists[0].name}
+                                </TextDefault>
+                                <TextDefault
+                                    style={{
+                                        color: "#989898",
+                                        fontSize: 7,
+                                        fontWeight: 400,
+                                        marginTop: 24,
+                                        fontFamily: "Walsheim",
+                                    }}
+                                >
+                                    Veja mais em whistle.kaizin.work
+                                </TextDefault>
                             </View>
-                            <Text
+                            <LinearGradient
+                                colors={[colorOne, "#000"]} // Troque pela cor dinâmica do álbum depois
+                                start={{ x: 0, y: 0 }}
+                                end={{ x: 1, y: 1 }}
+                                style={StyleSheet.absoluteFill}
+                            />
+                            <LinearGradient
+                                colors={[colorTwo, "#000"]} // Troque pela cor dinâmica do álbum depois
+                                start={{ x: 1, y: 0 }}
+                                end={{ x: 0, y: 1 }}
+                                style={[
+                                    StyleSheet.absoluteFill,
+                                    { opacity: 0.5 },
+                                ]}
+                            />
+                            {/* Camada 2: Uma sombra que vem de baixo pra criar a "profundidade" do mesh */}
+                            <LinearGradient
+                                colors={["transparent", "rgba(0, 0, 0, 0.5)"]}
+                                start={{ x: 0.5, y: 0.2 }}
+                                end={{ x: 0.5, y: 1 }}
+                                style={StyleSheet.absoluteFill}
+                            />
+                        </ViewShot>
+                    </View>
+
+                    <View style={styles.section}>
+                        <TextDefault>Cor 1</TextDefault>
+                        <View
+                            style={{
+                                marginTop: 8,
+                                width: "100%",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                gap: 12,
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            <Pressable
                                 style={{
-                                    color: "#eee",
-                                    fontSize: 16,
-                                    fontWeight: 800,
-                                    marginTop: 12,
-                                    fontFamily: "Walsheim",
+                                    backgroundColor: colors.dominant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
                                 }}
-                            >
-                                {Number(reviewData.total).toFixed(1)}/100
-                            </Text>
-                            <Text
+                                onPress={() => {
+                                    setColorOne(colors.dominant);
+                                }}
+                            />
+                            <Pressable
                                 style={{
-                                    color: "#eee",
-                                    fontSize: 7,
-                                    fontWeight: 400,
-                                    marginTop: 12,
-                                    fontFamily: "Walsheim",
+                                    backgroundColor: colors.vibrant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
                                 }}
-                            >
-                                {reviewData.Profile.name} avaliou
-                            </Text>
-                            <Text
+                                onPress={() => {
+                                    setColorOne(colors.vibrant);
+                                }}
+                            />
+                            <Pressable
                                 style={{
-                                    color: "#eee",
-                                    fontSize: 7,
-                                    fontWeight: 700,
-                                    fontFamily: "Walsheim",
+                                    backgroundColor: colors.darkVibrant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
                                 }}
-                            >
-                                {albumData.name}
-                            </Text>
-                            <Text
+                                onPress={() => {
+                                    setColorOne(colors.darkVibrant);
+                                }}
+                            />
+                            <Pressable
                                 style={{
-                                    color: "#989898",
-                                    fontSize: 7,
-                                    fontWeight: 400,
-                                    fontFamily: "Walsheim",
+                                    backgroundColor: colors.lightVibrant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
                                 }}
-                            >
-                                {albumData.artists[0].name}
-                            </Text>
-                            <Text
+                                onPress={() => {
+                                    setColorOne(colors.lightVibrant);
+                                }}
+                            />
+                            <Pressable
                                 style={{
-                                    color: "#989898",
-                                    fontSize: 7,
-                                    fontWeight: 400,
-                                    marginTop: 24,
-                                    fontFamily: "Walsheim",
+                                    backgroundColor: colors.muted,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
                                 }}
-                            >
-                                Veja mais em whistle.kaizin.work
-                            </Text>
+                                onPress={() => {
+                                    setColorOne(colors.muted);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.darkMuted,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorOne(colors.darkMuted);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.lightMuted,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorOne(colors.lightMuted);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: "#000",
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorOne("#000");
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: "#fff",
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorOne("#fff");
+                                }}
+                            />
                         </View>
-                        <LinearGradient
-                            colors={[colorOne, "#000"]} // Troque pela cor dinâmica do álbum depois
-                            start={{ x: 0, y: 0 }}
-                            end={{ x: 1, y: 1 }}
-                            style={StyleSheet.absoluteFill}
-                        />
-                        <LinearGradient
-                            colors={[colorTwo, "#000"]} // Troque pela cor dinâmica do álbum depois
-                            start={{ x: 1, y: 0 }}
-                            end={{ x: 0, y: 1 }}
-                            style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
-                        />
-                        {/* Camada 2: Uma sombra que vem de baixo pra criar a "profundidade" do mesh */}
-                        <LinearGradient
-                            colors={["transparent", "rgba(0, 0, 0, 0.5)"]}
-                            start={{ x: 0.5, y: 0.2 }}
-                            end={{ x: 0.5, y: 1 }}
-                            style={StyleSheet.absoluteFill}
-                        />
-                    </ViewShot>
+                    </View>
+
+                    <View style={styles.section}>
+                        <TextDefault>Cor 2</TextDefault>
+                        <View
+                            style={{
+                                marginTop: 8,
+                                width: "100%",
+                                flexDirection: "row",
+                                justifyContent: "center",
+                                gap: 12,
+                                flexWrap: "wrap",
+                            }}
+                        >
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.dominant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo(colors.dominant);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.vibrant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo(colors.vibrant);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.darkVibrant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo(colors.darkVibrant);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.lightVibrant,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo(colors.lightVibrant);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.muted,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo(colors.muted);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.darkMuted,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo(colors.darkMuted);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: colors.lightMuted,
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo(colors.lightMuted);
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: "#000",
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo("#000");
+                                }}
+                            />
+                            <Pressable
+                                style={{
+                                    backgroundColor: "#fff",
+                                    height: 44,
+                                    width: 44,
+                                    borderRadius: 8,
+                                }}
+                                onPress={() => {
+                                    setColorTwo("#fff");
+                                }}
+                            />
+                        </View>
+                    </View>
+
+                    <Pressable onPress={handleShare} style={styles.btn}>
+                        <SquareShareLine size={24} color="#eee" />
+                        <TextDefault
+                            style={{
+                                color: "#eee",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Compartilhar
+                        </TextDefault>
+                    </Pressable>
+
+                    <Pressable onPress={handleSaveToGallery} style={styles.btn}>
+                        <GalleryDownload size={24} color="#eee" />
+                        <TextDefault
+                            style={{
+                                color: "#eee",
+                                fontSize: 16,
+                                fontWeight: "bold",
+                            }}
+                        >
+                            Salvar na Galeria
+                        </TextDefault>
+                    </Pressable>
                 </View>
 
-                <View
-                    style={{
-                        marginTop: 24,
-                        width: "100%",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        gap: 12,
-                    }}
-                >
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.dominant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorOne(colors.dominant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.vibrant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorOne(colors.vibrant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.darkVibrant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorOne(colors.darkVibrant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.lightVibrant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorOne(colors.lightVibrant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.muted,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorOne(colors.muted);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.darkMuted,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorOne(colors.darkMuted);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.lightMuted,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorOne(colors.lightMuted);
-                        }}
-                    />
-                </View>
-                <View
-                    style={{
-                        marginTop: 24,
-                        width: "100%",
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        gap: 12,
-                    }}
-                >
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.dominant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorTwo(colors.dominant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.vibrant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorTwo(colors.vibrant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.darkVibrant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorTwo(colors.darkVibrant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.lightVibrant,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorTwo(colors.lightVibrant);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.muted,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorTwo(colors.muted);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.darkMuted,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorTwo(colors.darkMuted);
-                        }}
-                    />
-                    <Pressable
-                        style={{
-                            backgroundColor: colors.lightMuted,
-                            height: 44,
-                            width: 44,
-                            borderRadius: 8,
-                        }}
-                        onPress={() => {
-                            setColorTwo(colors.lightMuted);
-                        }}
-                    />
-                </View>
-                <Pressable onPress={handleShare} style={{ marginTop: 24 }}>
-                    <Text
-                        style={{
-                            color: "#eee",
-                            fontSize: 16,
-                            fontWeight: "bold",
-                        }}
+                {isLoading && (
+                    <View
+                        style={[
+                            StyleSheet.absoluteFill,
+                            {
+                                justifyContent: "center",
+                                alignItems: "center",
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                zIndex: 999,
+                            },
+                        ]}
                     >
-                        Compartilhar
-                    </Text>
-                </Pressable>
-
-                <Pressable
-                    onPress={handleSaveToGallery}
-                    style={{ marginTop: 24 }}
-                >
-                    <Text
-                        style={{
-                            color: "#eee",
-                            fontSize: 16,
-                            fontWeight: "bold",
-                        }}
-                    >
-                        Salvar na Galeria
-                    </Text>
-                </Pressable>
-            </View>
-
-            {isLoading && (
-                <View
-                    style={[
-                        StyleSheet.absoluteFill,
-                        {
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "rgba(0,0,0,0.5)",
-                            zIndex: 999,
-                        },
-                    ]}
-                >
-                    <ActivityIndicator size="large" color="#8065ef" />
-                </View>
-            )}
-        </View>
+                        <ActivityIndicator size="large" color="#8065ef" />
+                    </View>
+                )}
+            </ScrollView>
+        </>
     );
 }
 
@@ -489,7 +529,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#161718",
-        // paddingBottom: 100,
     },
     gradientContainer: {
         position: "absolute",
@@ -526,55 +565,28 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         // backgroundColor: "rgba(255,255,255,0.05)",
     },
-
-    dotsBtn: {
-        position: "absolute",
-        right: 16,
-        zIndex: 11,
-        width: 40,
-        height: 40,
-        justifyContent: "center",
-        alignItems: "flex-end",
-        // backgroundColor: "rgba(255,255,255,0.05)",
-    },
-
-    // AQUI ESTÁ O SEGREDO DO ENCAIXE PERFEITO
-    lowerContent: {
-        backgroundColor: "#161718", // A mesma cor que o gradiente termina
-        paddingHorizontal: 16,
-    },
-    fakeReviewCard: {
-        height: 80,
-        backgroundColor: "#1e1e1e",
-        borderRadius: 8,
-        marginTop: 12,
-    },
-    moreData: {
-        marginTop: 24,
-        padding: 16,
-        backgroundColor: "#1e1e1e",
-    },
-    sheetView: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        padding: 4,
-    },
-    optBtn: {
-        flexDirection: "row",
-        alignItems: "center",
-        // backgroundColor: "transparent",
-        padding: 12,
-        width: "100%",
-        borderRadius: 8,
-    },
     optText: {
         color: "#eee",
         fontSize: 14,
         marginLeft: 12,
     },
-    extraInfo: {
-        color: "#777",
-        fontSize: 14,
+    btn: {
+        backgroundColor: "#8065ef",
+        width: "100%",
+        padding: 16,
+        borderRadius: 12,
+        color: "#eee",
+        fontSize: 16,
+        fontWeight: "bold",
+        gap: 8,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    section: {
+        backgroundColor: "#1b1c1d",
+        padding: 16,
+        borderRadius: 12,
+        overflow: "hidden",
     },
 });

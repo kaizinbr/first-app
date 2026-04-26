@@ -7,7 +7,7 @@ import {
 } from "@/lib/types";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-
+import TextDefault from "@/components/core/text-core";
 import { Image } from "expo-image";
 
 export function ResultUserBtn({ data }: { data: UserProfile }) {
@@ -25,8 +25,8 @@ export function ResultUserBtn({ data }: { data: UserProfile }) {
         >
             <AvatarNoPress data={data} size={40} />
             <View style={styles.btnTextWrapper}>
-                <Text style={styles.btnText}>{data.name}</Text>
-                <Text style={styles.btnSubtext}>@{data.username}</Text>
+                <TextDefault style={styles.btnText} numberOfLines={1}>{data.name}</TextDefault>
+                <TextDefault style={styles.btnSubtext}>@{data.username}</TextDefault>
             </View>
         </Pressable>
     );
@@ -56,7 +56,7 @@ export function ResultArtistBtn({ data }: { data: Artist }) {
                 style={styles.avatar}
             />
             <View style={styles.btnTextWrapper}>
-                <Text style={styles.btnText}>{data.name}</Text>
+                <TextDefault style={styles.btnText} numberOfLines={2}>{data.name}</TextDefault>
             </View>
         </Pressable>
     );
@@ -89,10 +89,12 @@ export function ResultAlbumBtn({ data }: { data: Album }) {
                 style={styles.image}
             />
             <View style={styles.btnTextWrapper}>
-                <Text style={styles.btnText}>{data.name}</Text>
-                <Text style={styles.btnSubtext}>
+                <TextDefault style={styles.btnText} numberOfLines={1}>
+                    {data.name}
+                </TextDefault>
+                <TextDefault style={styles.btnSubtext} numberOfLines={1}>
                     {data.artists.map((a) => a.name).join(", ")}
-                </Text>
+                </TextDefault>
             </View>
         </Pressable>
     );
@@ -122,10 +124,12 @@ export function ResultTrackBtn({ data }: { data: Track }) {
                 style={styles.image}
             />
             <View style={styles.btnTextWrapper}>
-                <Text style={styles.btnText}>{data.name}</Text>
-                <Text style={styles.btnSubtext}>
+                <TextDefault style={styles.btnText} numberOfLines={1}>
+                    {data.name}
+                </TextDefault>
+                <TextDefault style={styles.btnSubtext} numberOfLines={1}>
                     {data.artists.map((a) => a.name).join(", ")}
-                </Text>
+                </TextDefault>
             </View>
         </Pressable>
     );

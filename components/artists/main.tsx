@@ -2,6 +2,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React from "react";
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -126,11 +127,11 @@ export default function ArtistScreen({
                 ]}
                 pointerEvents="none"
             >
-                <Text style={styles.fixedTitle} numberOfLines={1}>
+                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
                     {data.name.length > 36
                         ? data.name.substring(0, 36) + "..."
                         : data.name}
-                </Text>
+                </TextDefault>
 
                 <LinearGradient
                     colors={[
@@ -173,10 +174,10 @@ export default function ArtistScreen({
                 <View style={{ padding: 16, gap: 16 }}>
                     {data.description && (
                         <View style={styles.sec}>
-                            <Text style={styles.title}>Biografia</Text>
-                            <Text style={styles.textDefault}>
+                            <TextDefault style={styles.title}>Biografia</TextDefault>
+                            <TextDefault style={styles.textDefault}>
                                 {data.description}
-                            </Text>
+                            </TextDefault>
                         </View>
                     )}
                     <ArtistAlbuns data={data} />

@@ -3,7 +3,7 @@ import { Album, Review } from "@/lib/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
-
+import TextDefault from "@/components/core/text-core";
 import { getColors } from "react-native-image-colors";
 
 import { Palette } from "@/lib/types";
@@ -81,11 +81,11 @@ export default function ReviewPage() {
                 <View style={styles.container}>
                     
                     <View style={{ alignItems: "center", gap: 16 }}>
-                        <Text style={styles.title}>Review não encontrada</Text>
-                        <Text style={styles.textDefault}>
+                        <TextDefault style={styles.title}>Review não encontrada</TextDefault>
+                        <TextDefault style={styles.textDefault}>
                             Parece que essa review não está mais disponível...
                             Que tal explorar outras reviews ou voltar para a página inicial?
-                        </Text>
+                        </TextDefault>
                     </View>
                 </View>
             ) :  (

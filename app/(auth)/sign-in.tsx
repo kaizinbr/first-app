@@ -11,7 +11,9 @@ import {
     KeyboardAvoidingView,
     TextInput,
     Platform,
+    ActivityIndicator,
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 
 import { Link, useRouter } from "expo-router";
 
@@ -19,7 +21,7 @@ export default function Index() {
     const [email, setEmail] = useState("");
 
     const [errorMessage, setErrorMessage] = useState("");
-
+    const [isLoading, setIsLoading] = useState(false);
 
     const emailRegex =
         /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -28,8 +30,10 @@ export default function Index() {
 
     const handleSignUp = async () => {
         setErrorMessage("");
+        setIsLoading(true);
         if (!emailRegex.test(email)) {
-            setErrorMessage("Por favor, insira um e-mail válido."); 
+            setErrorMessage("Por favor, insira um e-mail válido.");
+            setIsLoading(false);
             return;
         }
 
@@ -45,7 +49,12 @@ export default function Index() {
                 pathname: "/(auth)/verify-token/[email]",
                 params: { email },
             });
+        } else {
+            setErrorMessage(
+                "Ocorreu um erro ao enviar o código. Tente novamente.",
+            );
         }
+        setIsLoading(false);
     };
 
     return (
@@ -59,7 +68,9 @@ export default function Index() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.main}>
-                    <Text style={styles.title}>Olá, insira seu e-mail</Text>
+                    <TextDefault style={styles.title}>
+                        Olá, insira seu e-mail
+                    </TextDefault>
                     <View style={styles.container}>
                         <Input
                             placeholder="Email"
@@ -72,15 +83,34 @@ export default function Index() {
                             error={errorMessage ? true : false}
                         />
                         {errorMessage ? (
-                            <Text style={styles.error}>{errorMessage}</Text>
+                            <TextDefault style={styles.error}>
+                                {errorMessage}
+                            </TextDefault>
                         ) : null}
-                        <Button onPress={handleSignUp}>Continuar</Button>
+                        <Button onPress={handleSignUp} disabled={isLoading}>
+                            Continuar
+                        </Button>
                     </View>
                     {/* <Link href="/sign-up" style={{ marginTop: 16 }}>
                         Não tem uma conta? Entre aqui
                     </Link> */}
                 </View>
             </ScrollView>
+            {isLoading && (
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        {
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            zIndex: 999,
+                        },
+                    ]}
+                >
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
+            )}
         </KeyboardAvoidingView>
     );
 }

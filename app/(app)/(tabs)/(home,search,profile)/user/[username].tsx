@@ -26,12 +26,6 @@ export default function UserProfilePage() {
     const { data: session } = authClient.useSession();
     console.log("Current session username:", session);
     const fetchProfileData = async () => {
-        // setProfileData(null);
-        // console.log(
-        //     "Fetching profile data for username:",
-        //     username,
-        //     profileData,
-        // );
         try {
             const response = await apiAuth(`/users/${username}`);
             console.log("Profile data fetched successfully:", response);

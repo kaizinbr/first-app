@@ -42,6 +42,8 @@ const styles = StyleSheet.create({
         backgroundColor: "#1b1c1d222",
         borderRadius: 12,
         color: "#eeeeee",
+        fontFamily: "Walsheim",
+        fontWeight: 400,
     },
     error: {
         borderColor: "#ff4d4f",

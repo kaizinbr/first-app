@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
-
+import TextDefault from "@/components/core/text-core";
 import { Track, Rating } from "@/lib/types";
 
 export default function TrackItem({
@@ -19,7 +19,7 @@ export default function TrackItem({
             onPress={onPress}
         >
             <View style={styles.numberColumn}>
-                <Text style={styles.trackNumber}>{track.track_number}</Text>
+                <TextDefault style={styles.trackNumber}>{track.track_number}</TextDefault>
             </View>
 
             <View style={styles.infoColumn}>
@@ -32,23 +32,20 @@ export default function TrackItem({
                                 style={{ marginRight: 4 }}
                             />
                         )}
-                    <Text style={styles.trackTitle} numberOfLines={1}>
+                    <TextDefault style={styles.trackTitle} numberOfLines={1}>
                     
                         {track.name}
-                    </Text>
+                    </TextDefault>
                 </View>
-                <Text style={styles.trackArtist} numberOfLines={1}>
+                <TextDefault style={styles.trackArtist} numberOfLines={1}>
                     {track.artists.map((artist) => artist.name).join(", ")}
-                </Text>
+                </TextDefault>
             </View>
 
             <View style={styles.actionColumn}>
-                <Text style={styles.trackDuration}>
+                <TextDefault style={styles.trackDuration}>
                     {track.userRating !== null && track.userRating !== undefined ? track.userRating : "N/A"}
-                </Text>
-                {/* <Pressable style={{ marginLeft: 16 }}>
-                    <Icon type="more-vertical" color="#777" size={20} />
-                </Pressable> */}
+                </TextDefault>
             </View>
         </Pressable>
     );

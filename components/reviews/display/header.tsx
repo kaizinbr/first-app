@@ -16,6 +16,7 @@ import Animated, {
     interpolate,
     Extrapolation,
 } from "react-native-reanimated";
+import TextDefault from "@/components/core/text-core";
 
 export default function AlbumHeader({
     maxHeight,

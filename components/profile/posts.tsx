@@ -8,6 +8,7 @@ import {
     
     RefreshControl
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import { UserProfile, ReviewWithAlbum } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
 import api, { apiAuth } from "@/lib/api";
@@ -78,7 +79,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                         style={{ marginTop: 20 }}
                     />
                 ) : !hasMore && reviews.length > 0 ? (
-                    <Text
+                    <TextDefault
                         style={{
                             color: "#777",
                             textAlign: "center",
@@ -86,7 +87,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                         }}
                     >
                         Fim!
-                    </Text>
+                    </TextDefault>
                 ) : null
             }
             ListEmptyComponent={
@@ -97,7 +98,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                         style={{ marginTop: 40 }}
                     />
                 ) : (
-                    <Text
+                    <TextDefault
                         style={{
                             color: "#eee",
                             textAlign: "center",
@@ -105,7 +106,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                         }}
                     >
                         Nenhuma avaliação ainda.
-                    </Text>
+                    </TextDefault>
                 )
             }
         />

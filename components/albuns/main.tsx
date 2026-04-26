@@ -1,5 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import Animated, {
     useAnimatedStyle,
     useAnimatedScrollHandler,
@@ -141,11 +142,11 @@ export default function AlbumScreen({
                 ]}
                 pointerEvents="none" // Para não bloquear o clique de voltar
             >
-                <Text style={styles.fixedTitle} numberOfLines={1}>
+                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
                     {albumData.name.length > 36
                         ? albumData.name.substring(0, 36) + "..."
                         : albumData.name}
-                </Text>
+                </TextDefault>
 
                 <LinearGradient
                     colors={[
@@ -196,11 +197,11 @@ export default function AlbumScreen({
                     },
                 ]}
             >
-                <Text
+                <TextDefault
                     style={{ color: "#eee", fontSize: 16, fontWeight: "bold" }}
                 >
                     Avaliar álbum
-                </Text>
+                </TextDefault>
             </Pressable>
 
             <Animated.ScrollView

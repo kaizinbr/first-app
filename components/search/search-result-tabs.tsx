@@ -23,6 +23,7 @@ import {
     View,
     ActivityIndicator,
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 
 type Props = {
     results: SearchResponse | null;
@@ -53,10 +54,10 @@ function ItemRenderer({ type, item }: { type: string; item: any }) {
             const review = item as Review; //
             return (
                 <View style={{ padding: 10 }}>
-                    <Text style={{ fontWeight: "bold" }}>
+                    <TextDefault style={{ fontWeight: "bold" }}>
                         {review.Profile.username} - {review.total}
-                    </Text>
-                    <Text>{review.shorten}</Text>
+                    </TextDefault>
+                    <TextDefault>{review.shorten}</TextDefault>
                 </View>
             );
         default:

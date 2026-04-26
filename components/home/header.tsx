@@ -16,6 +16,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Banner from "@/components/home/banner";
 
+import TextDefault from "@/components/core/text-core";
 // const HEADER_MAX_HEIGHT = 424;
 
 export default function FeedHeader({

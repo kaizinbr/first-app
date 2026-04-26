@@ -187,5 +187,6 @@ const styles = StyleSheet.create({
         color: "#eee",
         fontSize: 14,
         fontWeight: "bold",
+        fontFamily: "Walsheim"
     },
 });

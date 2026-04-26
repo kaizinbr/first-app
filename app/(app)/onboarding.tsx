@@ -13,6 +13,7 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { Alert } from "react-native";
 
@@ -287,17 +288,17 @@ export default function Onboarding() {
             <View style={[styles.container, { paddingTop: insets.top }]}>
                 <View style={styles.stepper}>
                     <View style={styles.step}>
-                        <Text style={{ color: "#bfbfbf" }}>{step + 1}/5</Text>
-                        <Text style={styles.stepText}>
+                        <TextDefault style={{ color: "#bfbfbf" }}>{step + 1}/5</TextDefault>
+                        <TextDefault style={styles.stepText}>
                             Vamos começar definindo seu perfil
-                        </Text>
+                        </TextDefault>
                     </View>
 
                     {step === 0 && (
                         <>
-                            <Text style={styles.stepperText}>
+                            <TextDefault style={styles.stepperText}>
                                 Qual é o seu nome?
-                            </Text>
+                            </TextDefault>
 
                             <TextInput
                                 value={name}
@@ -317,9 +318,9 @@ export default function Onboarding() {
                     )}
                     {step === 1 && (
                         <>
-                            <Text style={styles.stepperText}>
+                            <TextDefault style={styles.stepperText}>
                                 Escolha um nome de usuário
-                            </Text>
+                            </TextDefault>
 
                             <View style={styles.usernameInputContainer}>
                                 <Text
@@ -341,9 +342,9 @@ export default function Onboarding() {
                                     autoCorrect={false}
                                     style={styles.usernameInput}
                                 />
-                                <Text style={styles.helperText}>
+                                <TextDefault style={styles.helperText}>
                                     {username.length}/{USERNAME_MAX_LENGTH}
-                                </Text>
+                                </TextDefault>
                             </View>
                             {usernameValidation.message && (
                                 <Text
@@ -392,9 +393,9 @@ export default function Onboarding() {
                     )}
                     {step === 2 && (
                         <>
-                            <Text style={styles.stepperText}>
+                            <TextDefault style={styles.stepperText}>
                                 Como você gostaria de ser referido? (opcional)
-                            </Text>
+                            </TextDefault>
 
                             <TextInput
                                 value={pronouns}
@@ -437,9 +438,9 @@ export default function Onboarding() {
                     )}
                     {step === 3 && (
                         <>
-                            <Text style={styles.stepperText}>
+                            <TextDefault style={styles.stepperText}>
                                 Adicione uma foto de perfil
-                            </Text>
+                            </TextDefault>
                             {/* <Button
                             // title="Pick an image from camera roll"
                             onPress={pickImage}
@@ -517,10 +518,10 @@ export default function Onboarding() {
                                     // placeholder={blurhash}
                                     style={styles.profilePicture}
                                 />
-                                <Text style={styles.userName}>{name}</Text>
-                                <Text style={styles.userEmail}>
+                                <TextDefault style={styles.userName}>{name}</TextDefault>
+                                <TextDefault style={styles.userEmail}>
                                     @{username}
-                                </Text>
+                                </TextDefault>
                             </View>
                             <Button onPress={saveProfile} className="mt-4">
                                 Confirmar
@@ -547,12 +548,12 @@ export default function Onboarding() {
                 placeholder={blurhash}
                 style={styles.profilePicture}
             />
-            <Text style={styles.userName}>
+            <TextDefault style={styles.userName}>
                 {profileData?.name || "User Name"}
-            </Text>
-            <Text style={styles.userEmail}>
+            </TextDefault>
+            <TextDefault style={styles.userEmail}>
                 @{profileData?.username || session?.user?.email}
-            </Text> */}
+            </TextDefault> */}
                 {/* <Button title="Log Off" onPress={handleLogoff} className="mt-4" />
             {profileData && <ProfileTabs profileData={profileData} />} */}
             </View>
@@ -631,6 +632,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         fontSize: 16,
+        fontFamily: "Walsheim",
+        fontWeight: "400",
         padding: 12,
         borderRadius: 8,
         color: "#eee",

@@ -11,6 +11,7 @@ import {
     FlatList,
     ActivityIndicator,
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import Animated, {
     useAnimatedStyle,
     useAnimatedScrollHandler,
@@ -79,11 +80,11 @@ function AlbumCard({ album }: { album: any }) {
 
                         }}
                     >
-                        {/* <Text style={styles.albumType}>{album.album_type}</Text> */}
-                        <Text style={styles.albumTitle}>{album.name}</Text>
-                        <Text style={styles.albumArtist}>
+                        {/* <TextDefault style={styles.albumType}>{album.album_type}</TextDefault> */}
+                        <TextDefault style={styles.albumTitle}>{album.name}</TextDefault>
+                        <TextDefault style={styles.albumArtist}>
                             {album.artists[0]?.name}
-                        </Text>
+                        </TextDefault>
                     </View>
                     <LinearGradient
                         colors={[
@@ -190,7 +191,7 @@ const styles = StyleSheet.create({
     albumTitle: {
         color: "#fff",
         fontSize: 22,
-        fontWeight: "900",
+        fontWeight: "700",
         marginTop: 4,
     },
     albumArtist: {

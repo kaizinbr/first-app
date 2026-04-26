@@ -8,6 +8,7 @@ import {
     FlatList,
     useWindowDimensions,
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import { UserProfile, Review } from "@/lib/types";
 import { Tabs } from "react-native-collapsible-tab-view";
 import { ArrowRightUp } from "@solar-icons/react-native/Linear";
@@ -37,22 +38,24 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                 <View style={styles.sec}>
                     {data.bio && (
                         <View>
-                            <Text style={styles.title}>Bio</Text>
-                            <Text style={styles.textDefault}>{data.bio}</Text>
+                            <TextDefault style={styles.title}>Bio</TextDefault>
+                            <TextDefault style={styles.textDefault}>
+                                {data.bio}
+                            </TextDefault>
                         </View>
                     )}
                     {data.location && (
                         <View>
-                            <Text style={styles.title}>Location</Text>
-                            <Text style={styles.textDefault}>
+                            <TextDefault style={styles.title}>Location</TextDefault>
+                            <TextDefault style={styles.textDefault}>
                                 {data.location}
-                            </Text>
+                            </TextDefault>
                         </View>
                     )}
 
                     <View>
-                        <Text style={styles.title}>Membro desde</Text>
-                        <Text style={styles.textDefault}>
+                        <TextDefault style={styles.title}>Membro desde</TextDefault>
+                        <TextDefault style={styles.textDefault}>
                             {new Date(data.created_at).toLocaleDateString(
                                 process.env.LOCALE || "pt-BR",
                                 {
@@ -61,7 +64,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                                     day: "numeric",
                                 },
                             )}
-                        </Text>
+                        </TextDefault>
                     </View>
                 </View>
 
@@ -83,7 +86,9 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                             // Lógica para abrir o site, por exemplo, usando Linking
                         }}
                     >
-                        <Text style={styles.textDefault}>{data.site}</Text>
+                        <TextDefault style={styles.textDefault}>
+                            {data.site}
+                        </TextDefault>
                         <ArrowRightUp size={18} color="#eee" />
                     </Pressable>
                 )}
@@ -101,9 +106,9 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                             },
                         ]}
                     >
-                        <Text style={[styles.title, { marginLeft: 8 }]}>
+                        <TextDefault style={[styles.title, { marginLeft: 8 }]}>
                             Álbuns Favoritos
-                        </Text>
+                        </TextDefault>
                         <SimpleGrid
                             itemDimension={70}
                             data={data.albuns}
@@ -138,9 +143,9 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                             },
                         ]}
                     >
-                        <Text style={[styles.title, { marginLeft: 8 }]}>
+                        <TextDefault style={[styles.title, { marginLeft: 8 }]}>
                             Artistas favoritos
-                        </Text>
+                        </TextDefault>
                         <SimpleGrid
                             itemDimension={70}
                             data={data.artists}
@@ -177,6 +182,7 @@ const styles = StyleSheet.create({
     textDefault: {
         color: "#eee", // A cor clara para o seu modo escuro
         fontSize: 16,
+        marginTop: 4,
     },
     title: {
         color: "#989898",

@@ -69,8 +69,13 @@ export default function ProfileTabs({
             <MaterialTabBar
                 {...props}
                 scrollEnabled={true}
-                indicatorStyle={{ backgroundColor: "#8065ef", height: 3 }}
+                indicatorStyle={{ backgroundColor: "#8065ef", height: 2 }}
                 style={{ backgroundColor: "#161718", elevation: 0, zIndex: 10 }}
+                labelStyle={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    fontFamily: "Walsheim"
+                }}
                 activeColor="#eee"
                 inactiveColor="#777"
             />

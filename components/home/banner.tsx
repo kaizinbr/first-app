@@ -21,37 +21,7 @@ import { getColors } from "react-native-image-colors";
 import { getPalette } from "@b.taranenko/expo-color-thief";
 import { Palette } from "@/lib/types";
 
-type review = {
-    id: string;
-    created_at: Date;
-    ratings: any;
-    review: string | null;
-    total: any;
-    shorten: string | null;
-    content: any;
-    published: boolean;
-    updated_at: Date;
-    album_id: string | null;
-    user_id: string | null;
-    Profile: {
-        id: string;
-        username: string;
-        name: string;
-        lowername: string;
-        bio: string | null;
-        pronouns: string | null;
-        site: string | null;
-        color: string | null;
-        created_at: Date;
-        public: boolean;
-        favorites: {}[];
-        verified: boolean;
-        avatar_url: string | null;
-        albuns: any[];
-        artists: any[];
-        location: string | null;
-    };
-};
+import TextDefault from "@/components/core/text-core";
 
 type SpotifyAlbum = {
     album_type: string;
@@ -90,7 +60,10 @@ interface BannerProps {
     onColorChange: any;
 }
 
-export default function Banner({ onColorChange, HEADER_MAX_HEIGHT }: BannerProps & { HEADER_MAX_HEIGHT: number }) {
+export default function Banner({
+    onColorChange,
+    HEADER_MAX_HEIGHT,
+}: BannerProps & { HEADER_MAX_HEIGHT: number }) {
     const { width } = useWindowDimensions();
     const progress = useSharedValue<number>(0);
 
@@ -153,7 +126,9 @@ export default function Banner({ onColorChange, HEADER_MAX_HEIGHT }: BannerProps
         <>
             {loading ? (
                 <View style={[styles.banner, { width }]}>
-                    <Text style={{ color: "#eee" }}>Carregando...</Text>
+                    <TextDefault style={{ color: "#eee" }}>
+                        Carregando...
+                    </TextDefault>
                 </View>
             ) : (
                 <View id="carousel-component">
@@ -210,9 +185,10 @@ export default function Banner({ onColorChange, HEADER_MAX_HEIGHT }: BannerProps
                                 onColorChange([bannerColor1, bannerColor2]);
                             }
                         }}
-                        renderItem={renderItem({
-                            rounded: true,
-                            colorFill: true,
+                        renderItem={
+                            renderItem({
+                                rounded: true,
+                                colorFill: true,
                         })}
                     />
                     {/* <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>

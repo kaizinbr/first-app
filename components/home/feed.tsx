@@ -13,6 +13,8 @@ import {
 } from "react-native";
 import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
 
+import TextDefault from "@/components/core/text-core";
+
 import FeedHeader from "@/components/home/header";
 
 interface FeedProps {
@@ -47,10 +49,10 @@ export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
                     { justifyContent: "center", alignItems: "center" },
                 ]}
             >
-                <ActivityIndicator size="large" color="#00a8ff" />
-                <Text style={{ color: "#eee", marginTop: 10 }}>
+                <ActivityIndicator size="large" color="#8065ef" />
+                <TextDefault style={{ color: "#eee", marginTop: 10 }}>
                     Carregando feed...
-                </Text>
+                </TextDefault>
             </View>
         );
     }
@@ -89,11 +91,11 @@ export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
                 loadingMore ? (
                     <ActivityIndicator
                         size="small"
-                        color="#00a8ff"
+                        color="#8065ef"
                         style={{ marginTop: 20 }}
                     />
                 ) : !hasMore && reviews.length > 0 ? (
-                    <Text
+                    <TextDefault
                         style={{
                             color: "#777",
                             textAlign: "center",
@@ -101,13 +103,13 @@ export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
                         }}
                     >
                         Você chegou ao fim!
-                    </Text>
+                    </TextDefault>
                 ) : null
             }
             ListEmptyComponent={
-                <Text style={{ color: "#eee", textAlign: "center" }}>
+                <TextDefault style={{ color: "#eee", textAlign: "center" }}>
                     Nenhuma avaliação encontrada.
-                </Text>
+                </TextDefault>
             }
         />
     );

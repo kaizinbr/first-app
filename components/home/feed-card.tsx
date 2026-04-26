@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
 
+import TextDefault from "@/components/core/text-core";
 import { authClient } from "@/lib/auth-client";
 import { useRouter, Href, Link } from "expo-router";
 import api from "@/lib/api";
@@ -116,49 +117,47 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                 />
                 {review.album ? (
                     <View style={styles.cardContent}>
-                        <Text style={styles.cardTitle}>
+                        <TextDefault style={styles.cardTitle}>
                             {review.Profile.name} avaliou {review.album.name} de{" "}
                             {review.album.artists
                                 .map((artist) => artist.name)
                                 .join(", ")}
-                        </Text>
+                        </TextDefault>
                         {content ? (
                             <>
-                                {/* <TiptapRenderer json={content.jsonContent} /> */}
                                 <EnrichedMarkdownText
                                     markdown={
                                         previewContent ? previewContent : ""
                                     }
                                     markdownStyle={{
                                         paragraph: {
-                                            color: "#eee",
+                                            color: "#fff",
                                             fontSize: 14,
                                             marginTop: 4,
                                             lineHeight: 20,
-
                                             fontFamily: "Walsheim",
+                                            fontWeight: "400",
                                         },
                                         h1: {
-                                            color: "#eee",
+                                            color: "#fff",
                                             fontSize: 18,
                                             fontWeight: "bold",
                                             lineHeight: 24,
                                             marginTop: 8,
                                         },
                                         h2: {
-                                            color: "#eee",
+                                            color: "#fff",
                                             fontSize: 16,
                                             fontWeight: "bold",
                                             marginTop: 4,
                                             lineHeight: 20,
                                         },
                                     }}
-                                    //   onLinkPress={({ url }) => Linking.openURL(url)}
                                 />
                                 {isTruncated && (
-                                    <Text style={styles.readMore}>
+                                    <TextDefault style={styles.readMore}>
                                         ler mais
-                                    </Text>
+                                    </TextDefault>
                                 )}
                             </>
                         ) : null}
@@ -172,11 +171,11 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                             }
                             subtitle={review.ratings.length}
                         />
-                        <Text style={styles.cardDate}>
+                        <TextDefault style={styles.cardDate}>
                             {displayPastRelativeTime(
                                 new Date(review.created_at),
                             )}
-                        </Text>
+                        </TextDefault>
                         
                     </View>
                 ) : null}
@@ -214,7 +213,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     cardTitle: {
-        fontWeight: "bold",
+        fontWeight: 500,
         color: "#eee",
     },
     albumSection: {

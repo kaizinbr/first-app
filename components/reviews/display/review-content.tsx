@@ -8,9 +8,7 @@ import { useRouter, Href, Link } from "expo-router";
 import api from "@/lib/api";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
-import TiptapRenderer from "@/components/home/card-content copy";
-import { AlbumCard } from "@/components/home/album-section";
-import { ReviewWithAlbum } from "@/lib/types";
+import TextDefault from "@/components/core/text-core";
 
 export default function ReviewContent({ review }: { review: Review }) {
     const [content, setContent] = useState<{
@@ -57,10 +55,10 @@ export default function ReviewContent({ review }: { review: Review }) {
                     style={styles.cardImage}
                 />
                 <View style={{ marginLeft: 8 }}>
-                    <Text style={styles.sectionTitle}>
+                    <TextDefault style={styles.sectionTitle}>
                         {review.Profile.name}
-                    </Text>
-                    <Text style={styles.date}>@{review.Profile.username}</Text>
+                    </TextDefault>
+                    <TextDefault style={styles.date}>@{review.Profile.username}</TextDefault>
                 </View>
             </View>
                     <EnrichedMarkdownText
@@ -71,8 +69,8 @@ export default function ReviewContent({ review }: { review: Review }) {
                                 fontSize: 14,
                                 marginTop: 4,
                                 lineHeight: 20,
-
                                 fontFamily: "Walsheim",
+                                fontWeight: "400",
                             },
                             h1: {
                                 color: "#eee",

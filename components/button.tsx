@@ -1,5 +1,5 @@
 import { useRouter, Href } from 'expo-router';
-;
+import TextDefault from '@/components/core/text-core';
 import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
 
 type ButtonProps = PressableProps & {
@@ -24,7 +24,7 @@ export default function Button({ children, route, style, ...props }: ButtonProps
             onPress={handlePress}
             {...props}
         >
-            <Text style={styles.text}>{children}</Text>
+            <TextDefault style={styles.text}>{children}</TextDefault>
         </Pressable>
     );
 }

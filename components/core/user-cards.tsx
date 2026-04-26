@@ -1,4 +1,5 @@
 import { Pressable, Text, View, StyleSheet, Image } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import { useRouter } from "expo-router";
 import { AvatarNoPress } from "@/components/core/avatar";
 
@@ -29,8 +30,8 @@ export default function UserCards({
         >
             <AvatarNoPress data={data} size={40} />
             <View style={styles.btnTextWrapper}>
-                <Text style={styles.btnText}>{data.name}</Text>
-                <Text style={styles.btnSubtext}>@{data.username}</Text>
+                <TextDefault style={styles.btnText}>{data.name}</TextDefault>
+                <TextDefault style={styles.btnSubtext}>@{data.username}</TextDefault>
             </View>
         </Pressable>
     );

@@ -13,11 +13,13 @@ import { Palette } from "@/lib/types";
 import { SkeletonProfile } from "@/components/core/skeletons";
 import Menu from "@/components/settings/menu-main";
 import { useRouter } from "expo-router";
+import Account from "@/components/settings/account";
 
 export default function IndexSettings() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
+    const [userData, setUserData] = useState<any>(null);    
     const [colors, setColors] = useState<Palette | any>(null);
     const [dominantColor, setDominantColor] = useState<string | null>(null);
 
@@ -25,28 +27,16 @@ export default function IndexSettings() {
         const fetchProfileData = async () => {
             try {
                 const response = await apiAuth("/me");
-                console.log("Profile data fetched successfully:", response);
                 setProfileData(response);
 
-                getColors(response.avatar_url, {
-                    fallback: "#000",
-                    cache: true,
-                    key: response.avatar_url,
-                })
-                    .then((colors) => {
-                        const newColor = darkenColor(
-                            selectRightColor(colors as any),
-                            0.5,
-                        );
-                        setDominantColor(newColor);
-                        setColors(colors);
-                        setTimeout(() => {
-                            setLoading(false);
-                        }, 2000);
-                    })
-                    .catch(console.error);
+                const userResponse = await apiAuth("/me/account");
+                setUserData(userResponse);
+
+                setLoading(false);
+
             } catch (error) {
                 console.error("Error fetching profile data:", error);
+                setLoading(false);
             }
         };
         fetchProfileData();
@@ -59,8 +49,8 @@ export default function IndexSettings() {
                     <ActivityIndicator size="large" color="#8065ef" />
                 </View>
             ) : null}
-            {profileData && dominantColor && colors && (
-                <Menu data={profileData} />
+            {profileData && userData && (
+                <Account data={profileData} userData={userData} />
             )}
         </View>
     );

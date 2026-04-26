@@ -19,6 +19,7 @@ import { getBannerColor } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
 import { Palette } from "@/lib/types";
 import { LinearGradient } from "expo-linear-gradient";
+import TextDefault from "@/components/core/text-core";
 
 interface Props extends AnimatedProps<ViewProps> {
     item: any; // O objeto do álbum que acabamos de passar
@@ -121,15 +122,15 @@ export const SlideItem: React.FC<Props> = (props) => {
                         <View style={styles.overlay}>
                             <View style={styles.overlayTextContainer}>
                                 {/* Exibimos os dados dinâmicos do álbum */}
-                                <Text style={styles.titleText}
+                                <TextDefault style={styles.titleText}
                                     numberOfLines={3}
                                     ellipsizeMode="tail"
                                 >
                                     {item.title}
-                                </Text>
-                                <Text style={styles.artistText}>
+                                </TextDefault>
+                                <TextDefault style={styles.artistText}>
                                     {item.artist}
-                                </Text>
+                                </TextDefault>
                             </View>
                         </View>
                     </Pressable>

@@ -16,6 +16,7 @@ import Animated, {
     interpolate,
     Extrapolation,
 } from "react-native-reanimated";
+import TextDefault from "@/components/core/text-core";
 
 export default function AlbumHeader({
     maxHeight,
@@ -38,11 +39,11 @@ export default function AlbumHeader({
                     source={{ uri: data.images[0].url }}
                     style={styles.artist}
                 />
-                <Text style={styles.albumType}>Artista</Text>
-                <Text style={styles.albumTitle}>{data.name}</Text>
-                <Text style={styles.albumArtist}>
+                <TextDefault style={styles.albumType}>Artista</TextDefault>
+                <TextDefault style={styles.albumTitle}>{data.name}</TextDefault>
+                <TextDefault style={styles.albumArtist}>
                     {data.followers?.total.toLocaleString("pt-br")} seguidores
-                </Text>
+                </TextDefault>
             </Animated.View>
         </Animated.View>
     );
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
     albumTitle: {
         color: "#fff",
         fontSize: 22,
-        fontWeight: "900",
+        fontWeight: "800",
         marginTop: 4,
     },
     albumArtist: {

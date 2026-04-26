@@ -1,5 +1,6 @@
 import { Href, useRouter } from "expo-router";
 import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
+import TextDefault from "@/components/core/text-core";
 
 type ButtonProps = PressableProps & {
     label: string;
@@ -28,7 +29,7 @@ export default function ChipBtn({
             onPress={onPress}
             {...props}
         >
-            <Text style={styles.text}>{label}</Text>
+            <TextDefault style={styles.text}>{label}</TextDefault>
         </Pressable>
     );
 }

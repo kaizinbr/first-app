@@ -17,11 +17,12 @@ import Animated, {
     Extrapolation,
 } from "react-native-reanimated";
 import { Album } from "@/lib/types";
+import TextDefault from "@/components/core/text-core";
 
 export default function AlbumData({ data, headerContentStyle }: any) {
     return (
         <Animated.View style={[headerContentStyle, styles.container]}>
-            <Text style={styles.albumType}>
+            <TextDefault style={styles.albumType}>
                 {(() => {
                     switch (data.type) {
                         case "album":
@@ -36,11 +37,11 @@ export default function AlbumData({ data, headerContentStyle }: any) {
                 })()}{" "}
                 • {new Date(data.release_date).getFullYear()} •{" "}
                 {data.total_tracks} faixa{data.total_tracks > 1 ? "s" : ""}
-            </Text>
-            <Text style={styles.albumTitle}>{data.name}</Text>
-            <Text style={styles.albumArtist}>
+            </TextDefault>
+            <TextDefault style={styles.albumTitle}>{data.name}</TextDefault>
+            <TextDefault style={styles.albumArtist}>
                 {data.artists.map((artist: any) => artist.name).join(", ")}
-            </Text>
+            </TextDefault>
         </Animated.View>
     );
 }
@@ -62,17 +63,17 @@ export function AlbumExtraData({ data }: { data: Album }) {
 
     return (
         <View style={[styles.containerExtra]}>
-            <Text style={styles.extraInfo}>
+            <TextDefault style={styles.extraInfo}>
                 Lançado em{" "}
                 {new Date(data.release_date + "T00:00:00").toLocaleDateString(
                     "pt-BR",
                 )}
-            </Text>
-            <Text style={styles.extraInfo}>
+            </TextDefault>
+            <TextDefault style={styles.extraInfo}>
                 {totalTracks} faixa{totalTracks > 1 ? "s" : ""} • Duração total:{" "}
                 {totalDurationHours > 0 ? `${totalDurationHours}h` : ""}
                 {totalDurationMin}m
-            </Text>
+            </TextDefault>
         </View>
     );
 }
@@ -109,7 +110,7 @@ const styles = StyleSheet.create({
     albumTitle: {
         color: "#fff",
         fontSize: 22,
-        fontWeight: "900",
+        fontWeight: "800",
         marginTop: 4,
     },
     albumArtist: {

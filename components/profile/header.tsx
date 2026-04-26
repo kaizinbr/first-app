@@ -119,7 +119,13 @@ export default function Header({
                     </Animated.Text>
 
                     {itsUser ? (
-                        <View style={{ flexDirection: "row", gap: 8, zIndex: 1000 }}>
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                gap: 8,
+                                zIndex: 1000,
+                            }}
+                        >
                             <ShareBtn
                                 type="profile"
                                 url={`https://whistle.kaizin.work/${data.username}`}
@@ -198,6 +204,7 @@ const styles = StyleSheet.create({
     smallTitle: {
         color: "#eee",
         fontSize: 14,
-        fontWeight: "bold",
+        fontWeight: 600,
+        fontFamily: "Walsheim",
     },
 });

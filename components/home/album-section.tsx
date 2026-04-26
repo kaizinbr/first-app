@@ -7,6 +7,7 @@ import {
     View,
     StyleSheet,
 } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
 import { useState, useEffect } from "react";
 import { getColors } from "react-native-image-colors";
@@ -79,10 +80,9 @@ export function AlbumCard({
                             objectFit: "cover",
                         }}
                     />
-
                     <View style={{ marginLeft: 12, flexShrink: 1 }}>
                         {editor && (
-                            <Text
+                            <TextDefault
                                 style={{
                                     color: "#e9eaeb",
                                     fontSize: 12,
@@ -90,20 +90,21 @@ export function AlbumCard({
                                 }}
                             >
                                 Avaliação
-                            </Text>
+                            </TextDefault>
                         )}
-                        <Text
+                        <TextDefault
                             style={{
                                 color: "#eee",
-                                fontSize: 22,
-                                fontWeight: 700,
+                                fontSize: 24,
+                                fontWeight: 800,
                                 fontFamily: "Walsheim",
+                                marginTop: 8,
                             }}
                         >
                             {value}
-                        </Text>
-                        {/* {subtitle && (
-                            <Text
+                        </TextDefault>
+                        {subtitle && (
+                            <TextDefault
                                 style={{
                                     marginTop: 4,
                                     color: "#d1d5db",
@@ -111,12 +112,13 @@ export function AlbumCard({
                                 }}
                             >
                                 {subtitle} músicas avaliadas
-                            </Text>
-                        )} */}
+                            </TextDefault>
+                        )}
                     </View>
                 </LinearGradient>
-            ): ( <View style={styles.albumSection} /> )}
-            
+            ) : (
+                <View style={styles.albumSection} />
+            )}
         </Wrapper>
     );
 }

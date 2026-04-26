@@ -18,6 +18,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { Track, Review, Rating } from "@/lib/types";
 import TrackItem from "@/components/reviews/display/track-item";
+import TextDefault from "@/components/core/text-core";
 
 export default function Tracklist({
     albumTracks,
@@ -42,17 +43,17 @@ export default function Tracklist({
             <View style={{ marginTop: 24 }}>
                 <View style={styles.trackRow}>
                     <View style={styles.numberColumn}>
-                        <Text style={styles.listHeaderText}>#</Text>
+                        <TextDefault style={styles.listHeaderText}>#</TextDefault>
                     </View>
 
                     <View style={styles.infoColumn}>
-                        <Text style={styles.listHeaderText} numberOfLines={1}>
+                        <TextDefault style={styles.listHeaderText} numberOfLines={1}>
                             Título
-                        </Text>
+                        </TextDefault>
                     </View>
 
                     <View style={styles.actionColumn}>
-                        <Text style={styles.listHeaderText}>Total</Text>
+                        <TextDefault style={styles.listHeaderText}>Total</TextDefault>
                     </View>
                 </View>
                 {newData.map((track) => (
