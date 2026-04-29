@@ -72,9 +72,7 @@ export default function FollowingRoute({ data }: { data: UserProfile }) {
                 )
             }
             contentContainerStyle={{
-                flexGrow: 1,
                 width: "100%",
-                paddingTop: 432,
                 paddingBottom: 80,
             }}
             showsVerticalScrollIndicator={false}

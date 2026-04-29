@@ -27,7 +27,7 @@ export default async function uploadImageToVercel(asset: ImagePickerAsset) {
     };
 
     const response = await fetch(
-        `http://192.168.18.152:3000/api/avatar/upload?filename=${filename}`,
+        `https://api.kaizin.work/api/avatar/upload?filename=${filename}`,
         {
             method: "PUT",
             body: formData,

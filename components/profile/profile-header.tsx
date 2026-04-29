@@ -9,7 +9,12 @@ import { useState, useEffect, use } from "react";
 import { Palette } from "@/lib/types";
 import { VerifiedCheck } from "@solar-icons/react-native/Bold";
 import { LinearGradient } from "expo-linear-gradient";
-import { getBannerColors } from "@/lib/util/workWithColors";
+import {
+    getBannerColors,
+    darkenColor,
+    lightenColor,
+} from "@/lib/util/workWithColors";
+import { selectRightColorDominant } from "@/lib/util/selectRightColor";
 
 export default function ProfileHeader({
     data,
@@ -27,6 +32,8 @@ export default function ProfileHeader({
         darkVibrant: "#8065ef",
         muted: "#8065ef",
     });
+    const [pureColors, setPureColors] = useState<Palette | any>(null);
+    const [mainColor, setMainColor] = useState("#8065ef");
     const [folowersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [reviewsCount, setReviewsCount] = useState(0);
@@ -41,6 +48,8 @@ export default function ProfileHeader({
                     key: data.avatar_url,
                     quality: "low",
                 });
+                setPureColors(result);
+                setMainColor(selectRightColorDominant(result as any));
 
                 const bannerColors = getBannerColors(result);
                 console.log("Colors fetched successfully:", bannerColors);
@@ -117,23 +126,70 @@ export default function ProfileHeader({
     return (
         <View style={styles.scene}>
             <LinearGradient
-                colors={[colors[0], "transparent"]}
-                start={{ x: 0, y: 1 }}
-                end={{ x: 1, y: 1 }}
+                colors={[darkenColor(mainColor, 1.5), "#161718"]}
                 style={StyleSheet.absoluteFill}
             />
 
-            <LinearGradient
-                colors={[colors[1], "transparent"]}
-                start={{ x: 1, y: 1 }}
-                end={{ x: 0, y: 1 }}
-                style={[StyleSheet.absoluteFill]}
+            {/* blob principal - vem da cor dominante do álbum */}
+            <View
+                style={[
+                    styles.blob,
+                    {
+                        backgroundColor: selectRightColorDominant(colors),
+                        width: 320,
+                        height: 320,
+                        top: -80,
+                        left: -60,
+                        filter: [{ blur: 90 }],
+                    },
+                ]}
             />
+
+            {/* blob secundário - complementar mais frio */}
+            <View
+                style={[
+                    styles.blob,
+                    {
+                        backgroundColor: lightenColor(mainColor, 1),
+                        width: 260,
+                        height: 260,
+                        bottom: 170,
+                        right: -80,
+                        filter: [{ blur: 70 }],
+                    },
+                ]}
+            />
+            <View
+                style={[
+                    styles.blob,
+                    {
+                        backgroundColor: lightenColor(mainColor, 0.7),
+                        width: 160,
+                        height: 160,
+                        top: 110,
+                        right: 80,
+                        filter: [{ blur: 70 }],
+                    },
+                ]}
+            />
+            <View
+                style={[
+                    styles.blob,
+                    {
+                        backgroundColor: lightenColor(mainColor, 0.8),
+                        width: 160,
+                        height: 160,
+                        top: 80,
+                        left: 80,
+                        filter: [{ blur: 70 }],
+                    },
+                ]}
+            />
+
+            {/* vinheta no topo pra escurecer onde fica o header */}
             <LinearGradient
-                colors={["transparent", "rgba(22,23,24,1)"]}
-                start={{ x: 0.5, y: 0.1 }}
-                end={{ x: 0.5, y: 1 }}
-                style={StyleSheet.absoluteFill}
+                colors={["rgba(0,0,0,0.6)", "transparent"]}
+                style={[StyleSheet.absoluteFill, { height: 180 }]}
             />
 
             <View style={styles.header}>
@@ -169,9 +225,7 @@ export default function ProfileHeader({
                         gap: 4,
                     }}
                 >
-                    <TextDefault style={styles.name}>
-                        {data.name}
-                    </TextDefault>{" "}
+                    <TextDefault style={styles.name}>{data.name}</TextDefault>
                     {data.verified && (
                         <TextDefault>
                             <VerifiedCheck size={18} color="#8065ef" />
@@ -179,7 +233,7 @@ export default function ProfileHeader({
                     )}
                 </View>
                 <Text style={styles.username}>@{data.username}</Text>
-                <View style={{ flexDirection: "row", gap: 16, marginTop: 8 }}>
+                <View style={{ flexDirection: "row", gap: 16, marginTop: 12 }}>
                     <TextDefault style={styles.textDefault}>
                         {reviewsCount} review{reviewsCount !== 1 && "s"}
                     </TextDefault>
@@ -191,10 +245,16 @@ export default function ProfileHeader({
                     </TextDefault>
                 </View>
                 {itsUser ? (
-                    <Pressable style={[styles.followBtn, { backgroundColor: "#8065ef" }]}
+                    <Pressable
+                        style={[
+                            styles.followBtn,
+                            { backgroundColor: "#8065ef" },
+                        ]}
                         onPress={() => router.push("/edit-profile")}
                     >
-                        <TextDefault style={{ color: "#eee", fontWeight: "bold" }}>
+                        <TextDefault
+                            style={{ color: "#eee", fontWeight: "bold" }}
+                        >
                             Editar perfil
                         </TextDefault>
                     </Pressable>
@@ -210,7 +270,9 @@ export default function ProfileHeader({
                         ]}
                         onPress={handleFollowToggle}
                     >
-                        <TextDefault style={{ color: "#eee", fontWeight: "bold" }}>
+                        <TextDefault
+                            style={{ color: "#eee", fontWeight: "bold" }}
+                        >
                             {isFollowing ? "Seguindo" : "Seguir"}
                         </TextDefault>
                     </Pressable>
@@ -227,10 +289,24 @@ const styles = StyleSheet.create({
     },
     header: {
         padding: 16,
-        paddingTop: 84,
+        paddingTop: 112,
         paddingBottom: 32,
         width: "100%",
         alignItems: "center",
+    },
+    gradientContainer: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 0, // Fica atrás do ScrollView
+    },
+    blob: {
+        position: "absolute",
+        borderRadius: 999,
+        opacity: 0.6,
+        // blur no RN é via style diretamente no iOS
+        // no Android precisa de uma alternativa
     },
     wrapper: {
         alignItems: "center",
@@ -254,6 +330,7 @@ const styles = StyleSheet.create({
     username: {
         color: "#b9b9b9",
         fontSize: 14,
+        marginTop: 4,
     },
     pronouns: {
         color: "#929292",
@@ -278,7 +355,7 @@ const styles = StyleSheet.create({
     followBtn: {
         marginTop: 16,
         paddingHorizontal: 24,
-        paddingVertical: 8,
+        paddingVertical: 12,
         borderRadius: 9999,
         borderWidth: 1,
         borderColor: "#8065ef",

@@ -65,24 +65,15 @@ export default function WishlistAlbumBtn({
                 styles.fav,
                 {
                     backgroundColor: pressed
-                        ? darkenColor(selectRightColor(colors), 0.2)
-                        : darkenColor(selectRightColor(colors), 0.7),
+                        ? "#7051ED"
+                            : "#8065ef",
                 },
                 isWishlisted
-                    ? {
-                          backgroundColor: lightenColor(
-                              selectRightColor(colors),
-                              0.3,
-                          ),
-                      }
+                    ? {backgroundColor: "#5E3BEA"}
                     : {},
             ]}
         >
-            {isWishlisted ? (
-                <Playlist2 color="#8065ef" size={size} />
-            ) : (
-                <Playlist2 size={size} color="#eee" />
-            )}
+            <Playlist2 size={size} color="#eee" />
         </Pressable>
     );
 }

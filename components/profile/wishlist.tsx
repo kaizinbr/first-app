@@ -47,11 +47,9 @@ export default function WishlistRoute({ data }: { data: UserProfile }) {
     return (
         <Tabs.ScrollView
             contentContainerStyle={{
-                flexGrow: 1,
                 width: "100%",
                 padding: 8,
                 paddingBottom: 80,
-                paddingTop: 448,
             }}
             showsVerticalScrollIndicator={false}
         >
@@ -98,6 +96,7 @@ const styles = StyleSheet.create({
     scene: {
         flex: 1,
 
+        paddingTop: 8,
         gap: 16,
         width: "100%",
     },

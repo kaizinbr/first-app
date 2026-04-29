@@ -45,8 +45,12 @@ import hexToRgb from "@/lib/util/hexToRgb";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor, getBannerColors } from "@/lib/util/workWithColors";
+import { selectRightColorDominant } from "@/lib/util/selectRightColor";
+import {
+    darkenColor,
+    getBannerColors,
+    lightenColor,
+} from "@/lib/util/workWithColors";
 
 import uploadImageToVercel from "@/lib/util/uploadImage";
 
@@ -96,6 +100,7 @@ export default function EditProfile() {
         darkVibrant: "#8065ef",
         dominant: "#8065ef",
     });
+    const [mainColor, setMainColor] = useState("#8065ef");
 
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
 
@@ -200,6 +205,8 @@ export default function EditProfile() {
                 });
                 const bannerColors = getBannerColors(colorsResult);
                 setColors(bannerColors);
+
+                setMainColor(selectRightColorDominant(colorsResult as any));
                 console.log("Colors extracted from avatar:", bannerColors);
                 setIsLoading(false);
 
@@ -541,23 +548,70 @@ export default function EditProfile() {
                     ]}
                 >
                     <LinearGradient
-                        colors={[colors[0], "transparent"]}
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 1 }}
+                        colors={[darkenColor(mainColor, 1.5), "#161718"]}
                         style={StyleSheet.absoluteFill}
                     />
 
-                    <LinearGradient
-                        colors={[colors[1], "transparent"]}
-                        start={{ x: 1, y: 1 }}
-                        end={{ x: 0, y: 1 }}
-                        style={[StyleSheet.absoluteFill]}
+                    {/* blob principal - vem da cor dominante do álbum */}
+                    <View
+                        style={[
+                            styles.blob,
+                            {
+                                backgroundColor: selectRightColorDominant(colors),
+                                width: 320,
+                                height: 320,
+                                top: -80,
+                                left: -60,
+                                filter: [{ blur: 90 }],
+                            },
+                        ]}
                     />
+
+                    {/* blob secundário - complementar mais frio */}
+                    <View
+                        style={[
+                            styles.blob,
+                            {
+                                backgroundColor: lightenColor(mainColor, 1),
+                                width: 260,
+                                height: 260,
+                                bottom: 170,
+                                right: -80,
+                                filter: [{ blur: 70 }],
+                            },
+                        ]}
+                    />
+                    <View
+                        style={[
+                            styles.blob,
+                            {
+                                backgroundColor: lightenColor(mainColor, 0.7),
+                                width: 160,
+                                height: 160,
+                                top: 110,
+                                right: 80,
+                                filter: [{ blur: 70 }],
+                            },
+                        ]}
+                    />
+                    <View
+                        style={[
+                            styles.blob,
+                            {
+                                backgroundColor: lightenColor(mainColor, 0.8),
+                                width: 160,
+                                height: 160,
+                                top: 80,
+                                left: 80,
+                                filter: [{ blur: 70 }],
+                            },
+                        ]}
+                    />
+
+                    {/* vinheta no topo pra escurecer onde fica o header */}
                     <LinearGradient
-                        colors={["transparent", "rgba(22, 23, 24, 1)"]}
-                        start={{ x: 0.5, y: 0.2 }}
-                        end={{ x: 0.5, y: 1 }}
-                        style={StyleSheet.absoluteFill}
+                        colors={["rgba(0,0,0,0.6)", "transparent"]}
+                        style={[StyleSheet.absoluteFill, { height: 180 }]}
                     />
                 </Animated.View>
                 <Animated.View
@@ -1070,5 +1124,11 @@ const styles = StyleSheet.create({
         backgroundColor: "#282828",
         marginBottom: 12,
     },
-    editFavoritesButton: {},
+    blob: {
+        position: "absolute",
+        borderRadius: 999,
+        opacity: 0.6,
+        // blur no RN é via style diretamente no iOS
+        // no Android precisa de uma alternativa
+    },
 });

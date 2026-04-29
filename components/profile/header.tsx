@@ -152,14 +152,14 @@ export default function Header({
 const styles = StyleSheet.create({
     scene: {
         padding: 20,
-        backgroundColor: "#161718",
+        // backgroundColor: "#161718",
     },
 
     header: {
         padding: 16,
         width: "100%",
-        color: "#eee",
         borderRadius: 8,
+        backgroundColor: "transparent"
     },
     textDefault: {
         color: "#eee", // A cor clara para o seu modo escuro

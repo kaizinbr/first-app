@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 
 import { Album, Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
+import { lightenColor, darkenColor, getBannerColors } from "@/lib/util/workWithColors";
 import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import Tracklist from "@/components/albuns/tracklist";
@@ -45,6 +45,8 @@ export default function AlbumScreen({
     const HEADER_MAX_HEIGHT = 420; // Tamanho total da área do gradiente
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
+
+    const [testColor1, testColor2] = getBannerColors(colors);
 
     const onScroll = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
@@ -97,7 +99,7 @@ export default function AlbumScreen({
 
     return (
         <View style={styles.container}>
-            {/* O FUNDO GRADIENTE ANIMADO */}
+            {/* FUNDO */}
             <Animated.View
                 style={[
                     styles.gradientContainer,
@@ -106,7 +108,7 @@ export default function AlbumScreen({
                 ]}
             >
                 {/* Camada 1: A cor principal (Ex: Verde escuro) descendo na diagonal */}
-                <LinearGradient
+                {/* <LinearGradient
                     colors={[selectRightColor(colors), "#161718"]} // Troque pela cor dinâmica do álbum depois
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
@@ -123,6 +125,82 @@ export default function AlbumScreen({
                     start={{ x: 0.5, y: 0.2 }}
                     end={{ x: 0.5, y: 1 }}
                     style={StyleSheet.absoluteFill}
+                /> */}
+
+                <LinearGradient
+                    colors={[darkenColor(testColor1, 1.5), "#161718"]}
+                    style={StyleSheet.absoluteFill}
+                />
+
+                {/* blob principal - vem da cor dominante do álbum */}
+                <View
+                    style={[
+                        styles.blob,
+                        {
+                            backgroundColor: selectRightColor(colors),
+                            width: 320,
+                            height: 320,
+                            top: -80,
+                            left: -60,
+                            filter: [{ blur: 90 }],
+                        },
+                    ]}
+                />
+
+                {/* blob secundário - complementar mais frio */}
+                <View
+                    style={[
+                        styles.blob,
+                        {
+                            backgroundColor: lightenColor(
+                                testColor1,
+                                1,
+                            ),
+                            width: 260,
+                            height: 260,
+                            bottom: 170,
+                            right: -80,
+                            filter: [{ blur: 70 }],
+                        },
+                    ]}
+                />
+                <View
+                    style={[
+                        styles.blob,
+                        {
+                            backgroundColor: lightenColor(
+                                testColor1,
+                                0.7,
+                            ),
+                            width: 160,
+                            height: 160,
+                            bottom: 80,
+                            right: 80,
+                            filter: [{ blur: 70 }],
+                        },
+                    ]}
+                />
+                <View
+                    style={[
+                        styles.blob,
+                        {
+                            backgroundColor: lightenColor(
+                                testColor1,
+                                0.8,
+                            ),
+                            width: 160,
+                            height: 160,
+                            top: 130,
+                            left: 80,
+                            filter: [{ blur: 70 }],
+                        },
+                    ]}
+                />
+
+                {/* vinheta no topo pra escurecer onde fica o header */}
+                <LinearGradient
+                    colors={["rgba(0,0,0,0.6)", "transparent"]}
+                    style={[StyleSheet.absoluteFill, { height: 180 }]}
                 />
             </Animated.View>
 
@@ -135,7 +213,7 @@ export default function AlbumScreen({
                         paddingTop: insets.top,
                         backgroundColor: darkenColor(
                             selectRightColor(colors),
-                            0.7,
+                            0.3,
                         ),
                     },
                     topBarStyle,
@@ -179,7 +257,6 @@ export default function AlbumScreen({
                 </View>
             )}
 
-            <WishlistAlbumBtn albumData={albumData} size={30} colors={colors} />
 
             <Pressable
                 onPress={() =>
@@ -192,8 +269,8 @@ export default function AlbumScreen({
                     styles.reviewButton,
                     {
                         backgroundColor: pressed
-                            ? darkenColor(selectRightColor(colors), 0.2)
-                            : darkenColor(selectRightColor(colors), 0.7),
+                            ? "#7051ED"
+                            : "#8065ef",
                     },
                 ]}
             >
@@ -203,6 +280,7 @@ export default function AlbumScreen({
                     Avaliar álbum
                 </TextDefault>
             </Pressable>
+            <WishlistAlbumBtn albumData={albumData} size={30} colors={colors} />
 
             <Animated.ScrollView
                 onScroll={onScroll}
@@ -319,5 +397,12 @@ const styles = StyleSheet.create({
     extraInfo: {
         color: "#777",
         fontSize: 14,
+    },
+    blob: {
+        position: "absolute",
+        borderRadius: 999,
+        opacity: 0.6,
+        // blur no RN é via style diretamente no iOS
+        // no Android precisa de uma alternativa
     },
 });

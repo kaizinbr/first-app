@@ -144,7 +144,7 @@ export default function FixedTopBar({
             <LinearGradient
                 colors={[
                     `rgba(${hexToRgb(dominantColor)}, 0)`,
-                    darkenColor(dominantColor, 1.2),
+                    darkenColor(dominantColor, .5),
                 ]}
                 style={{
                     position: "absolute",

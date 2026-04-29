@@ -26,11 +26,10 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
     return (
         <Tabs.ScrollView
             contentContainerStyle={{
-                flexGrow: 1,
                 width: "100%",
                 padding: 16,
                 paddingBottom: 80,
-                paddingTop: 448,
+                // paddingTop: 448,
             }}
             showsVerticalScrollIndicator={false}
         >
@@ -174,7 +173,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
 const styles = StyleSheet.create({
     scene: {
         flex: 1,
-
+        paddingTop: 16,
         gap: 16,
         width: "100%",
     },

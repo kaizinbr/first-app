@@ -54,6 +54,7 @@ export default function Index() {
 
     return (
         <View style={styles.container}>
+            
             {loading ? (
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#8065ef" />

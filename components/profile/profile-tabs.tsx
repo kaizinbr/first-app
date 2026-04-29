@@ -1,6 +1,10 @@
 import * as React from "react";
 import { View, StyleSheet, RefreshControl, ScrollView } from "react-native";
-import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
+import {
+    Tabs,
+    MaterialTabBar,
+    MaterialTabItem,
+} from "react-native-collapsible-tab-view";
 import { UserProfile, Palette } from "@/lib/types";
 
 import PostsRoute from "@/components/profile/posts";
@@ -87,7 +91,11 @@ export default function ProfileTabs({
         <Tabs.Container
             renderHeader={renderHeader}
             renderTabBar={renderTabBar}
-            headerContainerStyle={{ shadowOpacity: 0, elevation: 0 }}
+            headerContainerStyle={{
+                shadowOpacity: 0,
+                elevation: 0,
+                backgroundColor: "transparent",
+            }}
             minHeaderHeight={FIXED_BAR_HEIGHT}
         >
             <Tabs.Tab name="reviews" label="Reviews">
