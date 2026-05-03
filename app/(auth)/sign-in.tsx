@@ -57,6 +57,32 @@ export default function Index() {
         setIsLoading(false);
     };
 
+    const handleGoogleSignIn = async () => {
+        setErrorMessage("");
+        setIsLoading(true);
+        try {
+            const { error } = await authClient.signIn.social({
+                provider: "google",
+                callbackURL: "/",
+            });
+
+            if (error) {
+                setErrorMessage(
+                    "Ocorreu um erro ao iniciar sessão com Google.",
+                );
+                console.error(error);
+                setIsLoading(false);
+                return;
+            }
+            // Não precisa de router.replace aqui — o expoClient redireciona automaticamente
+            // via deep link após o login
+        } catch (error) {
+            console.error("Erro ao iniciar sessão com Google:", error);
+            setErrorMessage("Ocorreu um erro ao iniciar sessão com Google.");
+        }
+        setIsLoading(false);
+    };
+
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
@@ -94,8 +120,23 @@ export default function Index() {
                     {/* <Link href="/sign-up" style={{ marginTop: 16 }}>
                         Não tem uma conta? Entre aqui
                     </Link> */}
+
+                    <View style={styles.container}>
+                        <Button
+                            onPress={handleGoogleSignIn}
+                            disabled={isLoading}
+                            style={{
+                                backgroundColor: "transparent",
+                                borderWidth: 1,
+                                borderColor: "#8065ef",
+                            }}
+                        >
+                            Login com Google
+                        </Button>
+                    </View>
                 </View>
             </ScrollView>
+
             {isLoading && (
                 <View
                     style={[
@@ -125,7 +166,7 @@ const styles = StyleSheet.create({
         color: "#eeeeee",
     },
     container: {
-        flex: 1,
+        // flex: 1,
         gap: 16,
         // backgroundColor: "#161718",
         alignItems: "center",

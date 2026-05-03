@@ -10,7 +10,9 @@ import {
     ThemeProvider,
 } from "@react-navigation/native";
 import { useColorScheme, View, StyleSheet } from "react-native";
+import * as WebBrowser from "expo-web-browser";
 
+WebBrowser.maybeCompleteAuthSession();
 export default function Layout() {
     const { data: session } = authClient.useSession();
     console.log("Session data in layout:", session);

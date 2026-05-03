@@ -25,7 +25,13 @@ import { authClient } from "@/lib/auth-client";
 
 import TextDefault from "@/components/core/text-core";
 
-export default function Menu({ data }: { data: UserProfile }) {
+export default function Menu({
+    data,
+    accountData,
+}: {
+    data: UserProfile;
+    accountData: any;
+}) {
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
@@ -99,22 +105,56 @@ export default function Menu({ data }: { data: UserProfile }) {
                     </TextDefault>
                 </Pressable>
                 <View style={styles.divider} />
-                <Pressable
-                    style={({ pressed }) => [
-                        styles.button,
-                        {
-                            backgroundColor: pressed
-                                ? "rgba(255, 255, 255, 0.05)"
-                                : "transparent",
-                        },
-                    ]}
-                >
-                    <LockPassword size={24} color="#eee" />
-                    <TextDefault style={styles.textDefault}>
-                        Alterar senha
-                    </TextDefault>
-                </Pressable>
+
+                {Array.isArray(accountData) && (
+                    accountData.some(
+                        (account: any) =>
+                            account.providerId === "credential" &&
+                            !!account.password,
+                    ) ? (
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.button,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {
+                                router.push("/(app)/settings/change-password");
+                            }}
+                        >
+                            <LockPassword size={24} color="#eee" />
+                            <TextDefault style={styles.textDefault}>
+                                Alterar senha
+                            </TextDefault>
+                        </Pressable>
+                    ) : (
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.button,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {
+                                router.push("/(app)/settings/set-password");
+                            }}
+                        >
+                            <LockPassword size={24} color="#eee" />
+                            <TextDefault style={styles.textDefault}>
+                                Definir senha
+                            </TextDefault>
+                        </Pressable>
+                    )
+                
+                )}
+
                 <View style={styles.divider} />
+
                 <Pressable
                     style={({ pressed }) => [
                         styles.button,

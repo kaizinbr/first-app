@@ -25,9 +25,11 @@ import TextDefault from "@/components/core/text-core";
 export default function Account({
     data,
     userData,
+    accountData,
 }: {
     data: UserProfile;
     userData: any;
+    accountData: any;
 }) {
     const router = useRouter();
     const insets = useSafeAreaInsets();
@@ -101,7 +103,7 @@ export default function Account({
                     Senha definida
                 </TextDefault>
                 <TextDefault style={[styles.textDefault]}>
-                    {userData.encrypted_password ? "Sim" : "Não"}
+                    {accountData.password ? "Sim" : "Não"}
                 </TextDefault>
                 <TextDefault
                     style={[

@@ -20,6 +20,7 @@ export default function IndexSettings() {
     const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
     const [userData, setUserData] = useState<any>(null);    
+    const [accountData, setAccountData] = useState<any>(null);
     const [colors, setColors] = useState<Palette | any>(null);
     const [dominantColor, setDominantColor] = useState<string | null>(null);
 
@@ -29,8 +30,10 @@ export default function IndexSettings() {
                 const response = await apiAuth("/me");
                 setProfileData(response);
 
-                const userResponse = await apiAuth("/me/account");
+                const userResponse = await apiAuth("/me/user");
                 setUserData(userResponse);
+                const accountResponse = await apiAuth("/me/account");
+                setAccountData(accountResponse);
 
                 setLoading(false);
 
@@ -49,8 +52,8 @@ export default function IndexSettings() {
                     <ActivityIndicator size="large" color="#8065ef" />
                 </View>
             ) : null}
-            {profileData && userData && (
-                <Account data={profileData} userData={userData} />
+            {profileData && userData && accountData && (
+                <Account data={profileData} userData={userData} accountData={accountData} />
             )}
         </View>
     );

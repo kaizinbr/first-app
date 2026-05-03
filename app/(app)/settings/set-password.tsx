@@ -1,4 +1,11 @@
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import {
+    View,
+    Text,
+    ActivityIndicator,
+    StyleSheet,
+    KeyboardAvoidingView,
+    Platform,
+} from "react-native";
 import { Image } from "expo-image";
 import Button from "@/components/button";
 import { authClient } from "@/lib/auth-client";
@@ -13,8 +20,9 @@ import { Palette } from "@/lib/types";
 import { SkeletonProfile } from "@/components/core/skeletons";
 import Menu from "@/components/settings/menu-main";
 import { useRouter } from "expo-router";
+import Password from "@/components/settings/set-password";
 
-export default function IndexSettings() {
+export default function PasswordSettings() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
@@ -27,29 +35,48 @@ export default function IndexSettings() {
         const fetchProfileData = async () => {
             try {
                 const response = await apiAuth("/me");
-                console.log("Profile data fetched successfully:", response);
                 setProfileData(response);
+
+                const userResponse = await apiAuth("/me/user");
+                // console.log("User data fetched successfully:", userResponse);
+                setUserData(userResponse);
+
                 const accountResponse = await apiAuth("/me/account");
+                console.log(
+                    "Account data fetched successfully:",
+                    accountResponse,
+                );
                 setAccountData(accountResponse);
+
                 setLoading(false);
             } catch (error) {
                 console.error("Error fetching profile data:", error);
+                setLoading(false);
             }
         };
         fetchProfileData();
     }, []);
 
     return (
-        <View style={styles.container}>
-            {loading ? (
-                <View style={styles.overlay}>
-                    <ActivityIndicator size="large" color="#8065ef" />
-                </View>
-            ) : null}
-            {profileData && accountData && (
-                <Menu data={profileData} accountData={accountData} />
-            )}
-        </View>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+            <View style={styles.container}>
+                {loading ? (
+                    <View style={styles.overlay}>
+                        <ActivityIndicator size="large" color="#8065ef" />
+                    </View>
+                ) : null}
+                {profileData && userData && accountData && (
+                    <Password
+                        data={profileData}
+                        userData={userData}
+                        accountData={accountData}
+                    />
+                )}
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 
