@@ -10,11 +10,14 @@ import {
     View,
     Animated,
     useWindowDimensions,
+    Pressable,
 } from "react-native";
+import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Banner from "@/components/home/banner";
+import { Settings } from "@solar-icons/react-native/Outline";
 
 import TextDefault from "@/components/core/text-core";
 // const HEADER_MAX_HEIGHT = 424;
@@ -28,7 +31,7 @@ export default function FeedHeader({
     const HEADER_MAX_HEIGHT = height * 0.45;
     const insets = useSafeAreaInsets();
     const { data: session } = authClient.useSession();
-    console.log("Session:", HEADER_MAX_HEIGHT);
+    const router = useRouter();
 
     const [colors, setColors] = useState(["#161718", "#161718"]);
 
@@ -56,7 +59,6 @@ export default function FeedHeader({
     return (
         // Este View tem a altura exata do header — o gradiente fica atrás de tudo
         <View style={{ height: HEADER_MAX_HEIGHT }}>
-            {/* GRADIENTE — rola junto pois está dentro da FlatList */}
             <LinearGradient
                 colors={[colors[0], "transparent"]}
                 start={{ x: 0, y: 1 }}
@@ -70,7 +72,6 @@ export default function FeedHeader({
                 end={{ x: 0, y: 1 }}
                 style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
             />
-            {/* Camada de profundidade */}
             <LinearGradient
                 colors={["transparent", "rgba(22,23,24,1)"]}
                 start={{ x: 0.5, y: 0.1 }}
@@ -80,14 +81,30 @@ export default function FeedHeader({
 
             {/* Conteúdo do header */}
             <View style={[styles.headerContent, { paddingTop: insets.top }]}>
-                <Animated.Text
-                    style={[
-                        styles.title,
-                        { transform: [{ translateY: titleTranslate }] },
-                    ]}
+                <Animated.View
+                    style={{
+                        transform: [{ translateY: titleTranslate }],
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                        width: "100%",
+                        paddingHorizontal: 24,
+                        marginVertical: 12,
+                    }}
                 >
-                    Olá, {session?.user?.name || "usuário"}!
-                </Animated.Text>
+                    <Animated.Text
+                        style={[
+                            styles.title,
+                            { transform: [{ translateY: titleTranslate }] },
+                        ]}
+                    >
+                        {/* Olá, {session?.user?.name || "usuário"}! */}
+                        Whistle
+                    </Animated.Text>
+                    <Pressable onPress={() => router.push("/settings/menu")}>
+                        <Settings size={28} color="#eeeeee" />
+                    </Pressable>
+                </Animated.View>
 
                 <Animated.View
                     style={{
@@ -98,7 +115,10 @@ export default function FeedHeader({
                         alignItems: "center",
                     }}
                 >
-                    <Banner onColorChange={setColors} HEADER_MAX_HEIGHT={HEADER_MAX_HEIGHT} />
+                    <Banner
+                        onColorChange={setColors}
+                        HEADER_MAX_HEIGHT={HEADER_MAX_HEIGHT}
+                    />
                 </Animated.View>
             </View>
         </View>
@@ -118,8 +138,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "800",
         color: "#eeeeee",
-        paddingHorizontal: 16,
-        marginTop: 24,
+        fontFamily: "Walsheim",
     },
     feed: { paddingBottom: 56 },
     h2: {

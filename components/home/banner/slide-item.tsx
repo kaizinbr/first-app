@@ -96,7 +96,7 @@ export const SlideItem: React.FC<Props> = (props) => {
                                     backgroundColor: getBannerColor(palette),
                                 },
                             ]}
-                        ></View>
+                        />
                         <LinearGradient
                             colors={[
                                 getBannerColor(palette),
@@ -121,7 +121,6 @@ export const SlideItem: React.FC<Props> = (props) => {
                         />
                         <View style={styles.overlay}>
                             <View style={styles.overlayTextContainer}>
-                                {/* Exibimos os dados dinâmicos do álbum */}
                                 <TextDefault style={styles.titleText}
                                     numberOfLines={3}
                                     ellipsizeMode="tail"

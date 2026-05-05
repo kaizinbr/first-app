@@ -8,7 +8,7 @@ import {
 import {
     Album,
     Artist,
-    Review,
+    ReviewWithAlbum,
     SearchResponse,
     Track,
     UserProfile,
@@ -24,6 +24,7 @@ import {
     ActivityIndicator,
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
+import FeedCard from "@/components/home/feed-card";
 
 type Props = {
     results: SearchResponse | null;
@@ -51,14 +52,11 @@ function ItemRenderer({ type, item }: { type: string; item: any }) {
             const user = item as UserProfile;
             return <ResultUserBtn data={user} />;
         case "reviews":
-            const review = item as Review; //
+            const review = item as ReviewWithAlbum;
             return (
-                <View style={{ padding: 10 }}>
-                    <TextDefault style={{ fontWeight: "bold" }}>
-                        {review.Profile.username} - {review.total}
-                    </TextDefault>
-                    <TextDefault>{review.shorten}</TextDefault>
-                </View>
+                <FeedCard
+                        review={review}
+                    />
             );
         default:
             return null;
@@ -100,7 +98,7 @@ export default function SearchTabs({ results, setType, type, loading }: Props) {
                 data={tab.data as any}
                 keyExtractor={(item: any) => item.id}
                 showsVerticalScrollIndicator={false}
-                style={{ width: "100%", paddingHorizontal: 16, height: "100%" }}
+                style={{ width: "100%", paddingHorizontal: 0, height: "100%",  }}
                 ItemSeparatorComponent={() => (
                     <View
                         style={{
@@ -184,7 +182,7 @@ export default function SearchTabs({ results, setType, type, loading }: Props) {
 const styles = StyleSheet.create({
     main: {
         flex: 1,
-        // backgroundColor: "red",
+        
         paddingVertical: 16,
         alignItems: "center",
         justifyContent: "flex-start",

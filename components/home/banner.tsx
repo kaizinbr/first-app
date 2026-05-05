@@ -20,6 +20,7 @@ import { getBannerColor, getBannerColors } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
 import { getPalette } from "@b.taranenko/expo-color-thief";
 import { Palette } from "@/lib/types";
+import { useIsFocused } from "@react-navigation/native";
 
 import TextDefault from "@/components/core/text-core";
 
@@ -66,6 +67,8 @@ export default function Banner({
 }: BannerProps & { HEADER_MAX_HEIGHT: number }) {
     const { width } = useWindowDimensions();
     const progress = useSharedValue<number>(0);
+
+  const isFocused = useIsFocused();
 
     const carouselRef = useRef<ICarouselInstance>(null);
 
@@ -126,16 +129,14 @@ export default function Banner({
         <>
             {loading ? (
                 <View style={[styles.banner, { width }]}>
-                    <TextDefault style={{ color: "#eee" }}>
-                        Carregando...
-                    </TextDefault>
+                    <View style={styles.bannerCard}/>
                 </View>
             ) : (
                 <View id="carousel-component">
                     <Carousel
                         ref={carouselRef}
-                        autoPlayInterval={4000}
-                        // autoPlay={true}
+                        autoPlayInterval={8000}
+                        autoPlay={isFocused}
 
                         data={bannerData || []}
                         loop={true}
@@ -191,162 +192,7 @@ export default function Banner({
                                 colorFill: true,
                         })}
                     />
-                    {/* <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
-                        <Text
-                            style={{
-                                color: "#eee",
-                                fontSize: 14,
-                                fontWeight: "700",
-                            }}
-                        >
-                            colors
-                        </Text>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                gap: 8,
-                                marginTop: 8,
-                            }}
-                        >
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.average,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.darkMuted,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.darkVibrant,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.dominant,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.lightMuted,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.lightVibrant,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.muted,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: (colors as any)?.vibrant,
-                                }}
-                            />
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                gap: 8,
-                                marginTop: 8,
-                            }}
-                        >
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[0].hex,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[1].hex,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[2].hex,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[3].hex,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[4].hex,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[5].hex,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[6].hex,
-                                }}
-                            />
-                            <View
-                                style={{
-                                    width: 32,
-                                    height: 32,
-                                    borderRadius: 9999,
-                                    backgroundColor: palette?.[7].hex,
-                                }}
-                            />
-                        </View>
-
-                    </View> */}
+                    
                 </View>
             )}
         </>
@@ -368,10 +214,10 @@ const styles = StyleSheet.create({
         padding: 16,
     },
     bannerCard: {
-        height: 210,
-        // width: width,
+        height: 180,
+        width: "100%",
         backgroundColor: "#1e1e1e",
-        borderRadius: 12,
+        borderRadius: 24,
         padding: 16,
         justifyContent: "flex-end",
     },

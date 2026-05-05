@@ -22,8 +22,8 @@ export default function ChipBtn({
                 styles.button,
                 pressed && styles.pressed,
                 selected && {
-                    backgroundColor: "#1b1c1d",
-                    borderColor: "#1b1c1d",
+                    backgroundColor: "#8065ef",
+                    borderColor: "#8065ef",
                 },
             ]}
             onPress={onPress}
