@@ -14,6 +14,9 @@ import { Tabs } from "react-native-collapsible-tab-view";
 import { ArrowRightUp } from "@solar-icons/react-native/Linear";
 import { Image } from "expo-image";
 import LyricsCard from "@/components/profile/lyrics-card";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
+import * as Linking from 'expo-linking';
+
 
 import { SimpleGrid } from "react-native-super-grid";
 
@@ -71,6 +74,27 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                     <LyricsCard saved={data.lyrics as any} />
                 )}
 
+                {data.lastfm_username && (
+                    <Pressable
+                        style={[
+                            styles.sec,
+                            {
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            },
+                        ]}
+                        onPress={() => {
+                            Linking.openURL(`https://last.fm/user/${data.lastfm_username}`);
+                        }}
+                    >
+                        <FontAwesome5 name="lastfm" size={24} color="#eee" />
+                        <TextDefault style={styles.textDefault}>
+                            {data.lastfm_username}
+                        </TextDefault>
+                        <ArrowRightUp size={18} color="#eee" />
+                    </Pressable>
+                )}
                 {data.site && (
                     <Pressable
                         style={[

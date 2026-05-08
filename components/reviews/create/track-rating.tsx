@@ -8,13 +8,13 @@ import {
     Platform,
     Pressable,
     StyleSheet,
-    Text,
+
     TextInput,
     View,
 } from "react-native";
 import { Slider } from "react-native-awesome-slider";
 import { useSharedValue } from "react-native-reanimated";
-
+import TextDefault from "@/components/core/text-core";
 import {
     SkipNext,
     SkipPrevious,
@@ -108,17 +108,17 @@ export function TrackRating({
             // style={styles.container}
         >
             <View style={styles.editorContainer}>
-                <Text
+                <TextDefault
                     style={{ color: "#eee", fontSize: 18, fontWeight: "bold" }}
                 >
                     {trackData.name}
-                </Text>
-                <Text style={{ color: "#777", fontSize: 14, marginBottom: 0 }}>
+                </TextDefault>
+                <TextDefault style={{ color: "#777", fontSize: 14, marginBottom: 0 }}>
                     {trackData.artists.map((artist) => artist.name).join(", ")}
-                </Text>
+                </TextDefault>
 
                 <View style={styles.textSec}>
-                    <Text style={styles.textDefault}>Nota:</Text>
+                    <TextDefault style={styles.textDefault}>Nota:</TextDefault>
                     <View style={styles.inputWrapper}>
                         <TextInput
                             style={styles.input}
@@ -127,7 +127,7 @@ export function TrackRating({
                             placeholder="0"
                             keyboardType="numeric"
                         />
-                        <Text style={styles.inputSide}>/100</Text>
+                        <TextDefault style={styles.inputSide}>/100</TextDefault>
                     </View>
                 </View>
                 <Slider
@@ -219,7 +219,7 @@ export default function TrackRater({
 
     return (
         <View style={styles.container}>
-            <Text style={styles.textDefault}>Avalie as músicas</Text>
+            <TextDefault style={styles.textDefault}>Avalie as músicas</TextDefault>
 
             <TrackRating
                 trackData={
@@ -250,14 +250,14 @@ export default function TrackRater({
                     ]}
                     onPress={() => setShowLyrics((prev) => !prev)}
                 >
-                    <Text
+                    <TextDefault
                         style={[
                             styles.toggleText,
                             showLyrics && styles.toggleTextActive,
                         ]}
                     >
                         Letras
-                    </Text>
+                    </TextDefault>
                 </Pressable>
             </View>
 
@@ -289,11 +289,11 @@ export default function TrackRater({
                         color={darkenColor(selectRightColor(colors), 0.1)}
                     />
                 </Pressable>
-                <Text
+                <TextDefault
                     style={{ color: "#777", fontSize: 14, alignSelf: "center" }}
                 >
                     {currentTrack + 1}/{reviewData.album.tracks.items.length}
-                </Text>
+                </TextDefault>
                 <Pressable
                     onPress={() => {
                         setCurrentTrack((prev) =>
@@ -343,6 +343,7 @@ const styles = StyleSheet.create({
         color: "#eee",
         fontSize: 16,
         fontWeight: "800",
+        fontFamily: "Walsheim"
     },
     title: {
         fontSize: 24,
@@ -364,6 +365,7 @@ const styles = StyleSheet.create({
     input: {
         fontSize: 24,
         color: "#eeeeee",
+        fontFamily: "Walsheim"
     },
     inputSide: {
         fontSize: 24,

@@ -168,6 +168,7 @@ export interface UserProfile {
     artists: UserArtist[];
     location: string | null;
     lyrics: SavedLyrics| [];
+    lastfm_username: string | null;
 }
 
 export interface Review {

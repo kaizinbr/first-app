@@ -2,7 +2,8 @@ import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import TextDefault from "@/components/core/text-core";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -188,9 +189,9 @@ export default function ReviewCreateMain({
                         ]}
                         pointerEvents="none"
                     >
-                        <Text style={styles.fixedTitle} numberOfLines={1}>
+                        <TextDefault style={styles.fixedTitle} numberOfLines={1}>
                             {reviewData.album.name}
-                        </Text>
+                        </TextDefault>
                     </Animated.View>
 
                     <Pressable
@@ -235,9 +236,9 @@ export default function ReviewCreateMain({
                                 }}
                             >
                                 <View style={styles.textSec}>
-                                    <Text style={styles.textDefault}>
+                                    <TextDefault style={styles.textDefault}>
                                         Nota do álbum
-                                    </Text>
+                                    </TextDefault>
                                     <View style={styles.inputWrapper}>
                                         <TextInput
                                             style={styles.input}
@@ -274,7 +275,7 @@ export default function ReviewCreateMain({
                                             ]}
                                             onPress={() => setUseMedia(true)}
                                         >
-                                            <Text
+                                            <TextDefault
                                                 style={[
                                                     styles.toggleText,
                                                     useMedia &&
@@ -282,7 +283,7 @@ export default function ReviewCreateMain({
                                                 ]}
                                             >
                                                 Automático
-                                            </Text>
+                                            </TextDefault>
                                         </Pressable>
                                         <Pressable
                                             style={[
@@ -292,7 +293,7 @@ export default function ReviewCreateMain({
                                             ]}
                                             onPress={() => setUseMedia(false)}
                                         >
-                                            <Text
+                                            <TextDefault
                                                 style={[
                                                     styles.toggleText,
                                                     !useMedia &&
@@ -300,7 +301,7 @@ export default function ReviewCreateMain({
                                                 ]}
                                             >
                                                 Manual
-                                            </Text>
+                                            </TextDefault>
                                         </Pressable>
                                     </View>
                                 </View>
@@ -340,7 +341,7 @@ export default function ReviewCreateMain({
                             },
                         ]}
                     >
-                        <Text
+                        <TextDefault
                             style={{
                                 color: "#eee",
                                 fontSize: 16,
@@ -348,7 +349,7 @@ export default function ReviewCreateMain({
                             }}
                         >
                             Próximo
-                        </Text>
+                        </TextDefault>
                     </Pressable>
                 </>
             ) : (
@@ -431,10 +432,12 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: "#eeeeee",
         fontWeight: "bold",
+        fontFamily: "Walsheim"
     },
     inputSide: {
         fontSize: 24,
         color: "#eeeeee",
+        fontFamily: "Walsheim"
     },
     tracks: {
         width: "100%",

@@ -82,6 +82,7 @@ export default function EditProfile() {
     const [pronouns, setPronouns] = useState("");
     const [bio, setBio] = useState("");
     const [site, setSite] = useState("");
+    const [lastfm, setLastFM] = useState("");
     const [avatar, setAvatar] = useState<string | null>(null);
     const [avatarAsset, setAvatarAsset] =
         useState<ImagePicker.ImagePickerAsset | null>(null);
@@ -158,6 +159,7 @@ export default function EditProfile() {
                     cache: true,
                     key: asset.uri,
                 });
+                console.log(resultColors)
                 const bannerColors = getBannerColors(resultColors);
                 setColors(bannerColors);
                 setAvatarAsset(asset);
@@ -189,6 +191,7 @@ export default function EditProfile() {
                 setBio(response.bio || "");
                 setAvatar(response.avatar_url);
                 setSite(response.site || "");
+                setLastFM(response.lastfm_username || "");
                 setFollowersCount(response.followers_count || 0);
                 setFollowingCount(response.following_count || 0);
                 setReviewsCount(response.reviews_count || 0);
@@ -442,9 +445,9 @@ export default function EditProfile() {
                 key: asset.uri,
             });
 
-            const prevImgColors = getBannerColors(resultColors);
-            setColors(prevImgColors);
-            // console.log(prevImgColors)
+                setMainColor(selectRightColorDominant(resultColors as any));
+            setColors(resultColors);
+            console.log(resultColors)
             setAvatarAsset(asset);
 
             setAvatar(result.assets[0].uri);
@@ -468,6 +471,7 @@ export default function EditProfile() {
                 bio,
                 avatar: uploadedUrl,
                 site,
+                lastfm,
                 albuns,
                 artists,
                 lyrics,
@@ -620,7 +624,7 @@ export default function EditProfile() {
                         {
                             height: HEADER_MIN_HEIGHT,
                             paddingTop: insets.top,
-                            backgroundColor: colors[0],
+                            backgroundColor: darkenColor(mainColor, 1),
                         },
                         topBarStyle,
                     ]}
@@ -636,7 +640,7 @@ export default function EditProfile() {
                         <LinearGradient
                             colors={[
                                 `rgba(0,0,0, 0)`,
-                                darkenColor(colors[0], 1.2),
+                                darkenColor(mainColor, 1.8),
                             ]}
                             style={{
                                 position: "absolute",
@@ -816,6 +820,14 @@ export default function EditProfile() {
                                 onChangeText={setBio}
                                 maxLength={200}
                                 multiline
+                            />
+                            <Text style={styles.title}>Last.Fm</Text>
+                            <TextInput
+                                style={styles.input}
+                                placeholder="Last.Fm"
+                                placeholderTextColor="#555"
+                                value={lastfm}
+                                onChangeText={setLastFM}
                             />
                             <Text style={styles.title}>Site</Text>
                             <TextInput
@@ -1057,7 +1069,7 @@ const styles = StyleSheet.create({
     },
     header: {
         padding: 16,
-        paddingTop: 84,
+        paddingTop: 112,
         paddingBottom: 32,
         width: "100%",
         alignItems: "center",

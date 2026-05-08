@@ -15,6 +15,7 @@ import {
     lightenColor,
 } from "@/lib/util/workWithColors";
 import { selectRightColorDominant } from "@/lib/util/selectRightColor";
+import PlayingOnLastFM from "@/components/profile/last-fm-card";
 
 export default function ProfileHeader({
     data,
@@ -277,6 +278,23 @@ export default function ProfileHeader({
                         </TextDefault>
                     </Pressable>
                 )}
+
+                {data.lastfm_username && (
+                    <>
+                        {/* <View style={styles.lastWrapper}>
+                            <FontAwesome5
+                                name="lastfm"
+                                size={16}
+                                color="#eee"
+                            />
+                            <Text style={styles.lastUsername}>
+                                {data.lastfm_username}
+                            </Text>
+                        </View> */}
+
+                        <PlayingOnLastFM data={data} />
+                    </>
+                )}
             </View>
         </View>
     );
@@ -359,5 +377,20 @@ const styles = StyleSheet.create({
         borderRadius: 9999,
         borderWidth: 1,
         borderColor: "#8065ef",
+    },
+
+    lastWrapper: {
+        marginTop: 12,
+        backgroundColor: "rgba(128, 101, 239, 0.2)",
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 999,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+    },
+    lastUsername: {
+        color: "#eee",
+        fontSize: 12,
     },
 });

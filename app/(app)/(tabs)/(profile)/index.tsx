@@ -21,7 +21,7 @@ export default function Index() {
     const fetchProfileData = async () => {
         try {
             const response = await apiAuth("/me");
-            console.log("Profile data fetched successfully:", response);
+            // console.log("Profile data fetched successfully:", response);
             setProfileData(response);
 
             getColors(response.avatar_url, {
