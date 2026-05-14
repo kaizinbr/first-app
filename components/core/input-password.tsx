@@ -5,23 +5,25 @@ import { Ionicons } from "@expo/vector-icons";
 interface PasswordInputProps extends React.ComponentProps<typeof TextInput> {
     value: string;
     onChangeText: (text: string) => void;
+    login: Boolean
 }
 
 export function PasswordInput({
     value,
     onChangeText,
+    login,
     style,
     ...props
 }: PasswordInputProps) {
     const [visible, setVisible] = useState(false);
 
     return (
-        <View style={styles.container}>
+        <View style={[login ? styles.inputLogin : styles.container]}>
             <TextInput
                 value={value}
                 onChangeText={onChangeText}
                 secureTextEntry={!visible}
-                style={[styles.input, style]}
+                style={[styles.input]}
                 {...props}
             />
             <TouchableOpacity
@@ -52,9 +54,24 @@ const styles = StyleSheet.create({
         flex: 1,
         fontFamily: "Walsheim",
         color: "#eee",
+        // backgroundColor: "red"
     },
     icon: {
         position: "absolute",
         right: 12,
+    },
+    
+    inputLogin: {
+        width: "100%",
+        paddingHorizontal: 6,
+        borderWidth: 1,
+        borderColor: "#262626",
+        backgroundColor: "#1b1c1d222",
+        borderRadius: 12,
+        color: "#eeeeee",
+        fontFamily: "Walsheim",
+        fontWeight: 400,
+        flexDirection: "row",
+        alignItems: "center",
     },
 });

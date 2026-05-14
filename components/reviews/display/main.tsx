@@ -51,6 +51,7 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import FixedHeader from "@/components/core/fixed-header";
 
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -194,41 +195,7 @@ export default function ReviewAlbumScreen({
                 />
             </Animated.View>
 
-            {/* A BARRINHA FIXA QUE APARECE */}
-            <Animated.View
-                style={[
-                    styles.fixedTopBar,
-                    {
-                        height: HEADER_MIN_HEIGHT,
-                        paddingTop: insets.top,
-                        backgroundColor: darkenColor(
-                            selectRightColor(colors),
-                            0.7,
-                        ),
-                    },
-                    topBarStyle,
-                ]}
-                pointerEvents="none" // Para não bloquear o clique de voltar
-            >
-                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
-                    {albumData.name}
-                </TextDefault>
-                
-                            <LinearGradient
-                                colors={[
-                                    `rgba(${hexToRgb(selectRightColor(colors))}, 0)`,
-                                    darkenColor(selectRightColor(colors), 1.2),
-                                ]}
-                                style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    left: 0,
-                                    right: 0,
-                                    height: HEADER_MIN_HEIGHT,
-                                    zIndex: -1,
-                                }}
-                            />
-            </Animated.View>
+            <FixedHeader data={albumData} colors={colors} scrollY={scrollY} />
 
             {/* BOTÃO VOLTAR */}
             <Pressable

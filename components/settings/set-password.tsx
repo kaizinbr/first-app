@@ -107,6 +107,8 @@ export default function Password({
             return;
         }
 
+        console.log(newPassword)
+
         try {
             const setPasswordResponse = await apiAuthPost(
                 "/me/account/set-password",

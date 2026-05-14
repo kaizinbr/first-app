@@ -1,10 +1,11 @@
 import { useState, useRef } from "react";
-import { Pressable } from "react-native";
 import { authClient } from "@/lib/auth-client";
 import { useLocalSearchParams } from "expo-router";
 import TextDefault from "@/components/core/text-core";
 import Button from "@/components/button";
 import Input from "@/components/input";
+
+import { PasswordInput } from "@/components/core/input-password";
 import {
     Text,
     View,
@@ -24,10 +25,10 @@ interface OTPInputProps {
     onComplete: (code: string) => void;
 }
 
-export default function VerifyToken() {
+export default function Password() {
     const { email } = useLocalSearchParams();
-    console.log("Email recebido nos params:", email);
-    const [name, setName] = useState("");
+    // console.log("Email recebido nos params:", email);
+    const [emailValue, setEmail] = useState(email || "");
     const [password, setPassword] = useState("");
     const [otp, setOtp] = useState("");
 
@@ -36,18 +37,23 @@ export default function VerifyToken() {
 
     const router = useRouter();
 
-    const handleSignUp = async () => {
+    const emailRegex =
+        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+    const handleSignIn = async () => {
         setIsLoading(true);
         setErrorMessage("");
-        const { data, error } = await authClient.signIn.emailOtp({
+
+        const { data, error } = await authClient.signIn.email({
             email: email as string,
-            otp: otp,
+            password,
+            
         });
 
-        console.log("Resposta da verificação do OTP:", { data, error });
-        if (error?.status === 403) {
+        console.log("Resposta", { data, error });
+        if (error?.status === 401) {
             setErrorMessage(
-                "Limite de tentativas excedido. Por favor, solicite um novo código.",
+                "E-mail ou senha incorretos, verifique as informações e tente novamente.",
             );
             setIsLoading(false);
             return;
@@ -59,11 +65,13 @@ export default function VerifyToken() {
             return;
         } else if (error) {
             setErrorMessage(
-                "Código de verificação inválido. Por favor, tente novamente.",
+                "Ocorreu um erro. Por favor, tente novamente.",
             );
             setIsLoading(false);
             return;
         }
+
+        router.push("/(app)/(tabs)/(home)")
     };
 
     return (
@@ -79,31 +87,42 @@ export default function VerifyToken() {
                 <View style={styles.main}>
                     <View style={styles.container}>
                         <TextDefault style={styles.title}>
-                            Confirme o código de verificação
+                            Usar senha
                         </TextDefault>
                         <View style={{ marginBottom: 16 }}>
                             <TextDefault>
                                 Enviamos um código de 6 dígitos para o seu
-                                e-mail: {email as string}
+                                e-mail: {emailValue as string}
                             </TextDefault>
                         </View>
-                        <OTPInput length={6} onComplete={setOtp} />
+
+                        <Input
+                            placeholder="Email"
+                            value={emailValue as string}
+                            onChangeText={setEmail}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            autoComplete="email"
+                            inputMode="email"
+                            // error={errorMessage ? true : false}
+                        />
+
+                        <PasswordInput
+                            placeholder="Senha"
+                            value={password}
+                            onChangeText={setPassword}
+                            login={true}
+                        />
                         {errorMessage ? (
                             <TextDefault style={styles.error}>
                                 {errorMessage}
                             </TextDefault>
                         ) : null}
-                        <Button onPress={handleSignUp}>Entrar</Button>
-                        <Link
-                            href={{
-                                pathname: "/(auth)/password/[email]",
-                                params: { email: email as string },
-                            }}
-                            style={{ marginTop: 16 }}
-                        >
-                            <TextDefault>Prefiro usar minha senha</TextDefault>
-                        </Link>
+                        <Button onPress={handleSignIn}>Entrar</Button>
                     </View>
+                    <Link href="/sign-up" style={{ marginTop: 16 }}>
+                        <TextDefault>Não tem uma conta? Entre aqui</TextDefault>
+                    </Link>
                 </View>
             </ScrollView>
             {isLoading && (
@@ -159,5 +178,17 @@ const styles = StyleSheet.create({
         color: "#ff4d4d",
         fontSize: 14,
         marginTop: 8,
+    },
+    
+    input: {
+        width: "100%",
+        padding: 12,
+        borderWidth: 1,
+        borderColor: "#262626",
+        backgroundColor: "#1b1c1d222",
+        borderRadius: 12,
+        color: "#eeeeee",
+        fontFamily: "Walsheim",
+        fontWeight: 400,
     },
 });

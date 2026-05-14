@@ -22,6 +22,7 @@ import { AltArrowLeft, Star } from "@solar-icons/react-native/Outline";
 import { Playlist2 } from "@solar-icons/react-native/Bold";
 import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
 import WishlistAlbumBtn from "@/components/albuns/wishlist-album-btn";
+import FixedHeader from "@/components/core/fixed-header";
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -107,25 +108,6 @@ export default function AlbumScreen({
                     backgroundStyle,
                 ]}
             >
-                {/* Camada 1: A cor principal (Ex: Verde escuro) descendo na diagonal */}
-                {/* <LinearGradient
-                    colors={[selectRightColor(colors), "#161718"]} // Troque pela cor dinâmica do álbum depois
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                />
-                <LinearGradient
-                    colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
-                />
-                <LinearGradient
-                    colors={["transparent", "rgba(22, 23, 24, 1)"]}
-                    start={{ x: 0.5, y: 0.2 }}
-                    end={{ x: 0.5, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                /> */}
 
                 <LinearGradient
                     colors={[darkenColor(testColor1, 1.5), "#161718"]}
@@ -205,7 +187,7 @@ export default function AlbumScreen({
             </Animated.View>
 
             {/* A BARRINHA FIXA QUE APARECE */}
-            <Animated.View
+            {/* <Animated.View
                 style={[
                     styles.fixedTopBar,
                     {
@@ -240,7 +222,9 @@ export default function AlbumScreen({
                         zIndex: -1,
                     }}
                 />
-            </Animated.View>
+            </Animated.View> */}
+
+            <FixedHeader data={albumData} colors={colors} scrollY={scrollY} />
 
             {/* BOTÃO VOLTAR */}
 
@@ -261,7 +245,7 @@ export default function AlbumScreen({
             <Pressable
                 onPress={() =>
                     router.push({
-                        pathname: `/(app)/create/review/[id]`,
+                        pathname: `/(app)/create/review/tracks/[id]`,
                         params: { id: albumData.id },
                     })
                 }

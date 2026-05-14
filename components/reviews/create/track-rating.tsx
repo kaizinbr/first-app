@@ -1,5 +1,5 @@
-// import { Host, Slider } from "@expo/ui/jetpack-compose";
-import { Album, Palette, Rating, Review, Track } from "@/lib/types";
+// components/reviews/create/track-rating.tsx
+import { Album, Palette, Track } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import React, { useEffect, useState } from "react";
@@ -8,241 +8,123 @@ import {
     Platform,
     Pressable,
     StyleSheet,
-
     TextInput,
     View,
 } from "react-native";
-import { Slider } from "react-native-awesome-slider";
-import { useSharedValue } from "react-native-reanimated";
 import TextDefault from "@/components/core/text-core";
-import {
-    SkipNext,
-    SkipPrevious,
-    MusicNote,
-} from "@solar-icons/react-native/Bold";
+import { SkipNext, SkipPrevious } from "@solar-icons/react-native/Bold";
+import { useReviewSession } from "@/store/reviewSessionStore";
 
-export function TrackRating({
-    trackData,
-    reviewData,
-    setRatings,
-    initialValue,
-    colors,
-}: {
-    trackData: Track;
-    reviewData:
-        | {
-              id: number;
-              value: number;
-              favorite: boolean;
-          }
-        | Rating
-        | null;
-    setRatings: React.Dispatch<
-        React.SetStateAction<
-            {
-                id: string;
-                value: number;
-                favorite: boolean;
-                comment: string;
-                skip: boolean;
-            }[]
-        >
-    >;
-    initialValue?: number;
-    colors: Palette | any;
-}) {
-    const [value, setValue] = useState(
-        reviewData ? reviewData.value : initialValue || 0,
-    );
+function TrackRating({ track, colors }: { track: Track; colors: Palette }) {
+    const entry = useReviewSession((s) => s.ratings[track.id]);
+    const setTrackRating = useReviewSession((s) => s.setTrackRating);
+    const setTrackSkip = useReviewSession((s) => s.setTrackSkip);
+    const setTrackComment = useReviewSession((s) => s.setTrackComment);
 
-    // progress sincronizado com o estado
-    const progress = useSharedValue(
-        reviewData ? reviewData.value : initialValue || 0,
-    );
-    const min = useSharedValue(0);
-    const max = useSharedValue(100);
+    const value = entry?.value ?? 0;
+    const skip = entry?.skip ?? false;
+    const comment = entry?.comment ?? "";
 
-    const handleSliderChange = (num: number) => {
-        const numericValue = Math.round(num); // slider pode dar decimais mesmo com step=1
-        progress.value = numericValue;
-        setValue(numericValue);
-        setRatings((prevRatings) =>
-            prevRatings.map((rating) =>
-                rating.id === trackData.id
-                    ? { ...rating, value: numericValue }
-                    : rating,
-            ),
-        );
-    };
-
-    // Handler específico do input — recebe string
     const handleInputChange = (text: string) => {
         if (text === "" || text === ".") {
-            setValue(0);
-            progress.value = 0;
+            setTrackRating(track.id, 0);
             return;
         }
-        const numericValue = parseFloat(text);
-        if (isNaN(numericValue)) return;
-        const clamped = Math.min(100, Math.max(0, numericValue));
-        setValue(clamped);
-        progress.value = clamped;
-        setRatings((prevRatings) =>
-            prevRatings.map((rating) =>
-                rating.id === trackData.id
-                    ? { ...rating, value: clamped }
-                    : rating,
-            ),
-        );
+        const num = parseFloat(text);
+        if (isNaN(num)) return;
+        setTrackRating(track.id, Math.min(100, Math.max(0, num)));
     };
-
-    useEffect(() => {
-        const newValue = reviewData ? reviewData.value : initialValue || 0;
-        setValue(newValue);
-        progress.value = newValue; // atualiza o slider ao trocar de música
-    }, [trackData, reviewData, initialValue]);
 
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
-            // style={styles.container}
         >
             <View style={styles.editorContainer}>
-                <TextDefault
-                    style={{ color: "#eee", fontSize: 18, fontWeight: "bold" }}
-                >
-                    {trackData.name}
-                </TextDefault>
-                <TextDefault style={{ color: "#777", fontSize: 14, marginBottom: 0 }}>
-                    {trackData.artists.map((artist) => artist.name).join(", ")}
+                <TextDefault style={styles.trackName}>{track.name}</TextDefault>
+                <TextDefault style={styles.trackArtist}>
+                    {track.artists.map((a) => a.name).join(", ")}
                 </TextDefault>
 
-                <View style={styles.textSec}>
-                    <TextDefault style={styles.textDefault}>Nota:</TextDefault>
-                    <View style={styles.inputWrapper}>
-                        <TextInput
-                            style={styles.input}
-                            value={value === 0 ? "" : value.toString()}
-                            onChangeText={handleInputChange}
-                            placeholder="0"
-                            keyboardType="numeric"
-                        />
-                        <TextDefault style={styles.inputSide}>/100</TextDefault>
+                {!skip && (
+                    <View style={styles.textSec}>
+                        <TextDefault style={styles.label}>Nota:</TextDefault>
+                        <View style={styles.inputWrapper}>
+                            <TextInput
+                                style={styles.input}
+                                value={value === 0 ? "" : value.toString()}
+                                onChangeText={handleInputChange}
+                                placeholder="0"
+                                placeholderTextColor="#555"
+                                keyboardType="numeric"
+                            />
+                            <TextDefault style={styles.inputSide}>
+                                /100
+                            </TextDefault>
+                        </View>
                     </View>
-                </View>
-                <Slider
-                    progress={progress}
-                    minimumValue={min}
-                    maximumValue={max}
-                    // step={1}
-                    // minimumTrackTintColor="#1DB954"
-                    // maximumTrackTintColor="#777"
-                    // thumbTintColor="#1DB954"
-                    onValueChange={handleSliderChange}
-                    style={{ width: "100%", marginBottom: 16 }}
-                    theme={{
-                        minimumTrackTintColor: darkenColor(
-                            selectRightColor(colors),
-                            0.1,
-                        ),
-                        maximumTrackTintColor: "#333",
-                        bubbleBackgroundColor: darkenColor(
-                            selectRightColor(colors),
-                            0.5,
-                        ),
-                    }}
-                    containerStyle={{
-                        height: 12, // grossura da trilha
-                        borderRadius: 6,
-                    }}
-                    thumbWidth={18}
+                )}
+
+                <TextInput
+                    style={styles.commentInput}
+                    value={comment}
+                    onChangeText={(text) => setTrackComment(track.id, text)}
+                    placeholder="Comentário sobre a faixa..."
+                    placeholderTextColor="#555"
+                    maxLength={300}
+                    multiline
                 />
+                <TextDefault style={styles.charCount}>
+                    {comment.length}/300
+                </TextDefault>
             </View>
         </KeyboardAvoidingView>
     );
 }
 
 export default function TrackRater({
-    reviewData,
-    setRatings,
-    ratings,
+    album,
     colors,
-    setCurrentTrack,
     currentTrack,
+    setCurrentTrack,
     showLyrics,
     setShowLyrics,
 }: {
-    reviewData: {
-        reviewed: boolean;
-        rating: Review | null;
-        album: Album;
-    };
-    setRatings: React.Dispatch<
-        React.SetStateAction<
-            {
-                id: string;
-                value: number;
-                favorite: boolean;
-                comment: string;
-                skip: boolean;
-            }[]
-        >
-    >;
-    colors: Palette | any;
-    ratings: any;
-    setCurrentTrack: React.Dispatch<React.SetStateAction<number>>;
+    album: Album;
+    colors: Palette;
     currentTrack: number;
+    setCurrentTrack: React.Dispatch<React.SetStateAction<number>>;
     showLyrics: boolean;
     setShowLyrics: React.Dispatch<React.SetStateAction<boolean>>;
 }) {
-    // const [currentTrack, setCurrentTrack] = useState(0);
-    const [trackData, setTrackData] = useState<Track | null>(null);
-    const [trackRating, setTrackRating] = useState(
-        reviewData.rating
-            ? reviewData.rating.ratings.find(
-                  (r) => r.id === reviewData.album.tracks.items[0].id,
-              ) || null
-            : null,
-    );
+    const track = album.tracks.items[currentTrack];
+    const total = album.tracks.items.length;
 
-    function handleChangeTrack(index: number) {
-        setCurrentTrack(index);
-        setTrackData(reviewData.album.tracks.items[index]);
-        setTrackRating(
-            reviewData.rating
-                ? reviewData.rating.ratings.find(
-                      (r) => r.id === reviewData.album.tracks.items[index].id,
-                  ) || null
-                : null,
-        );
-    }
+    const skip = useReviewSession((s) => s.ratings[track.id]?.skip ?? false);
+    const setTrackSkip = useReviewSession((s) => s.setTrackSkip);
 
     return (
         <View style={styles.container}>
-            <TextDefault style={styles.textDefault}>Avalie as músicas</TextDefault>
+            <TextDefault style={styles.sectionLabel}>
+                Avalie as músicas
+            </TextDefault>
 
-            <TrackRating
-                trackData={
-                    trackData || reviewData.album.tracks.items[currentTrack]
-                }
-                reviewData={trackRating}
-                setRatings={setRatings}
-                initialValue={
-                    ratings.find(
-                        (r: any) =>
-                            r.id ===
-                            reviewData.album.tracks.items[currentTrack].id,
-                    )?.value
-                }
-                colors={colors}
-            />
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "100%",
-                }}
-            >
+            <TrackRating track={track} colors={colors} />
+
+            <View style={styles.actionsRow}>
+                <Pressable
+                    style={[styles.toggleBtn, skip && styles.toggleBtnActive]}
+                    onPress={() => setTrackSkip(track.id, !skip)}
+                >
+                    <TextDefault
+                        style={[
+                            styles.toggleText,
+                            skip && styles.toggleTextActive,
+                        ]}
+                    >
+                        Pular música
+                    </TextDefault>
+                </Pressable>
+
                 <Pressable
                     style={[
                         styles.toggleBtn,
@@ -261,57 +143,36 @@ export default function TrackRater({
                 </Pressable>
             </View>
 
-            <View
-                style={{
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    width: "100%",
-                        marginTop: 16,
-                }}
-            >
+            <View style={styles.navRow}>
                 <Pressable
-                    onPress={() => {
+                    onPress={() =>
                         setCurrentTrack((prev) =>
-                            prev > 0
-                                ? prev - 1
-                                : reviewData.album.tracks.items.length - 1,
-                        );
-                    }}
-                    style={{
-                        padding: 8,
-                        backgroundColor: "#333",
-                        borderRadius: 8,
-                        // marginBottom: 8,
-                    }}
+                            prev > 0 ? prev - 1 : total - 1,
+                        )
+                    }
+                    style={styles.navBtn}
                 >
                     <SkipPrevious
                         size={24}
-                        color={darkenColor(selectRightColor(colors), 0.1)}
+                        color={"#8065ef"}
                     />
                 </Pressable>
-                <TextDefault
-                    style={{ color: "#777", fontSize: 14, alignSelf: "center" }}
-                >
-                    {currentTrack + 1}/{reviewData.album.tracks.items.length}
+
+                <TextDefault style={styles.trackCount}>
+                    {currentTrack + 1}/{total}
                 </TextDefault>
+
                 <Pressable
-                    onPress={() => {
+                    onPress={() =>
                         setCurrentTrack((prev) =>
-                            prev < reviewData.album.tracks.items.length - 1
-                                ? prev + 1
-                                : 0,
-                        );
-                    }}
-                    style={{
-                        padding: 8,
-                        backgroundColor: "#333",
-                        borderRadius: 8,
-                        // marginBottom: 16,
-                    }}
+                            prev < total - 1 ? prev + 1 : 0,
+                        )
+                    }
+                    style={styles.navBtn}
                 >
                     <SkipNext
                         size={24}
-                        color={darkenColor(selectRightColor(colors), 0.1)}
+                        color={"#8065ef"}
                     />
                 </Pressable>
             </View>
@@ -322,71 +183,64 @@ export default function TrackRater({
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: "flex-end",
         width: "100%",
-        backgroundColor: "#1b1c1d", // Cor de fundo do editor
+        backgroundColor: "#1b1c1d",
         borderRadius: 12,
         padding: 16,
     },
-    editorContainer: {
-        width: "100%",
-        paddingVertical: 16,
-    },
-    textSec: {
-        paddingVertical: 16,
-        width: "100%",
-        color: "#eee",
-        borderRadius: 8,
-    },
-
-    textDefault: {
+    editorContainer: { width: "100%", paddingVertical: 8 },
+    sectionLabel: {
         color: "#eee",
         fontSize: 16,
         fontWeight: "800",
-        fontFamily: "Walsheim"
+        fontFamily: "Walsheim",
+        marginBottom: 4,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginTop: 20,
+    trackName: { color: "#eee", fontSize: 18, fontWeight: "bold" },
+    trackArtist: { color: "#777", fontSize: 14, marginBottom: 0 },
+    textSec: { paddingTop: 16, width: "100%" },
+    label: {
         color: "#eee",
+        fontSize: 16,
+        fontWeight: "800",
+        fontFamily: "Walsheim",
     },
-    image: {
-        width: 150,
-        height: 150,
-        marginTop: 20,
-        resizeMode: "contain",
+    inputWrapper: { flexDirection: "row", alignItems: "center" },
+    input: { fontSize: 24, color: "#eeeeee", fontFamily: "Walsheim" },
+    inputSide: { fontSize: 24, color: "#eeeeee" },
+    commentInput: {
+        marginTop: 12,
+        color: "#eee",
+        fontSize: 14,
+        backgroundColor: "#252627",
+        borderRadius: 8,
+        padding: 12,
+        minHeight: 72,
+        textAlignVertical: "top",
     },
-    inputWrapper: {
-        flexDirection: "row",
-        alignItems: "center",
-        // gap: 8,
+    charCount: {
+        color: "#555",
+        fontSize: 12,
+        marginTop: 4,
+        textAlign: "right",
     },
-    input: {
-        fontSize: 24,
-        color: "#eeeeee",
-        fontFamily: "Walsheim"
-    },
-    inputSide: {
-        fontSize: 24,
-        color: "#eeeeee",
-    },
+    actionsRow: { flexDirection: "row", gap: 8, marginTop: 4 },
     toggleBtn: {
-        // flex: 1,
         paddingVertical: 8,
         paddingHorizontal: 16,
         borderRadius: 32,
         backgroundColor: "#282828",
         alignItems: "center",
     },
-    toggleBtnActive: {
-        backgroundColor: "#404245",
+    toggleBtnActive: { backgroundColor: "#404245" },
+    toggleText: { color: "#eee", fontSize: 12 },
+    toggleTextActive: { color: "#fff" },
+    navRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        width: "100%",
+        marginTop: 16,
     },
-    toggleText: {
-        color: "#eee",
-        fontSize: 12,
-    },
-    toggleTextActive: {
-        color: "#fff",
-    },
+    navBtn: { padding: 8, backgroundColor: "#333", borderRadius: 8 },
+    trackCount: { color: "#777", fontSize: 14, alignSelf: "center" },
 });

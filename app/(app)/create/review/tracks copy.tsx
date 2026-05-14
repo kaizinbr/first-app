@@ -1,28 +1,14 @@
-import PostEditor from "@/components/reviews/rich-text";
-import TrackRating from "@/components/reviews/tracks";
-import { Alert } from "react-native";
+import ReviewCreateMain from "@/components/reviews/create/main-tracks";
 import { apiAuth, apiAuthPost } from "@/lib/api";
-import { Album, Review, Palette } from "@/lib/types";
-import { useLocalSearchParams } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import {
-    Image,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
-    Pressable,
-    ActivityIndicator,
-} from "react-native";
+import { Album, Palette, Review } from "@/lib/types";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 import { getColors } from "react-native-image-colors";
-import type { EnrichedTextInputInstance } from "react-native-enriched";
-import ReviewCreateMain from "@/components/reviews/create/main";
-import { useRouter } from "expo-router";
 
-export default function ReviewPage() {
+export function Page() {
     const { id } = useLocalSearchParams();
-    console.log("id from params:", id);
+    console.log("Avaliando o album", id);
 
     // const editorRef = useRef<EnrichedTextInputInstance>(null);
     const router = useRouter();
@@ -123,12 +109,12 @@ export default function ReviewPage() {
             // console.log("Fetching review data for id:", id, reviewData);
             try {
                 const response = await apiAuth(`/me/reviewed/${id}`);
-                // console.log("Album data fetched successfully:", response);
+                console.log("Album data fetched successfully:", response);
 
                 if (response.reviewed && response.rating) {
                     setRatings(response.rating.ratings);
                     setTotal(Number(response.rating.total));
-                    // console.log("avaliou")
+                    console.log("avaliou", ratings);
                 } else {
                     setRatings(
                         response.album.tracks.items.map((track: any) => ({

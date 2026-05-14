@@ -19,6 +19,7 @@ import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
+import FixedHeader from "@/components/core/fixed-header";
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -112,42 +113,7 @@ export default function ArtistScreen({
                 />
             </Animated.View>
 
-            <Animated.View
-                style={[
-                    styles.fixedTopBar,
-                    {
-                        height: HEADER_MIN_HEIGHT,
-                        paddingTop: insets.top,
-                        backgroundColor: darkenColor(
-                            selectRightColor(colors),
-                            0.7,
-                        ),
-                    },
-                    topBarStyle,
-                ]}
-                pointerEvents="none"
-            >
-                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
-                    {data.name.length > 36
-                        ? data.name.substring(0, 36) + "..."
-                        : data.name}
-                </TextDefault>
-
-                <LinearGradient
-                    colors={[
-                        `rgba(${hexToRgb(selectRightColor(colors))}, 0)`,
-                        darkenColor(selectRightColor(colors), 1.2),
-                    ]}
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: HEADER_MIN_HEIGHT,
-                        zIndex: -1,
-                    }}
-                />
-            </Animated.View>
+            <FixedHeader data={data} colors={colors} scrollY={scrollY} />
 
             <Pressable
                 onPress={() => router.back()}

@@ -30,12 +30,7 @@ interface PostEditorProps {
     initialValue?: string;
     placeholder?: string;
     minHeight?: number;
-
-    reviewData: {
-        reviewed: boolean;
-        rating: Review | null;
-        album: Album;
-    };
+    album: Album;
     total: number;
 }
 
@@ -71,7 +66,7 @@ export default function PostEditor({
     initialValue = "",
     placeholder = "O que você está pensando?",
     minHeight = 300,
-    reviewData,
+    album,
     total,
 }: PostEditorProps) {
 
@@ -126,11 +121,11 @@ export default function PostEditor({
         >
             <View style={[styles.editorContainer]}>
                 <AlbumCard
-                    image={reviewData.album.images[0].url}
+                    image={album.images[0].url}
                     value={
                         total ? `${Number(total).toFixed(1)}/100` : "0.0/100"
                     }
-                    subtitle={reviewData.rating?.ratings.length || 0}
+                    subtitle={album.tracks.items.length}
                     editor
                 />
                 <MarkdownTextInput
