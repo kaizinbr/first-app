@@ -386,7 +386,5 @@ const styles = StyleSheet.create({
         position: "absolute",
         borderRadius: 999,
         opacity: 0.6,
-        // blur no RN é via style diretamente no iOS
-        // no Android precisa de uma alternativa
     },
 });

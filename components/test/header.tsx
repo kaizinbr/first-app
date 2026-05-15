@@ -12,7 +12,7 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
-import Banner from "@/components/home/banner";
+import Banner from "@/components/test/banner";
 import { Settings } from "@solar-icons/react-native/Outline";
 import { Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";

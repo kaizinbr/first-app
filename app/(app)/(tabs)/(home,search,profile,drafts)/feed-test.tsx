@@ -1,7 +1,7 @@
 import { useRef, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import HomePage from "@/components/home/main";
+import HomePage from "@/components/test/main";
 import Animated, {
     useSharedValue,
     useAnimatedScrollHandler,

@@ -4,9 +4,23 @@ import { useState, useEffect } from "react";
 import { Tabs, Redirect, Stack } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
-import { HomeSmileAngle , MinimalisticMagnifier, User } from '@solar-icons/react-native/Bold'
+import {
+    HomeSmileAngle,
+    MinimalisticMagnifier,
+    User,
+    Library,
+    PenNewSquare,
+} from "@solar-icons/react-native/Bold";
+import {
+    HomeSmileAngleBold,
+    MinimalisticMagnifierBold,
+    UserBold,
+    HomeSmileAngleOutline,
+    MinimalisticMagnifierOutline,
+    UserOutline,
+} from "@solar-icons/react-native";
 import { apiAuth } from "@/lib/api";
-import {AvatarNoPress} from "@/components/core/avatar";
+import { AvatarNoPress } from "@/components/core/avatar";
 
 export default function TabsDynamicLayout() {
     const { data: session, isPending } = authClient.useSession();
@@ -70,6 +84,7 @@ export default function TabsDynamicLayout() {
                 <Text>+</Text>
             </View> */}
             <Tabs
+                initialRouteName="(home)"
                 screenOptions={{
                     headerShown: false,
                     tabBarStyle: styles.tabBar,
@@ -99,17 +114,26 @@ export default function TabsDynamicLayout() {
                     }}
                 />
                 <Tabs.Screen
-                    name="(profile)"
+                    name="(drafts)"
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
+                            <Library size={28} color={color} />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="(profile)"
+                    options={{
+                        headerShown: false,
+                        tabBarLabel: () => null,
+                        tabBarIcon: ({ color }) =>
                             profile ? (
                                 <AvatarNoPress data={profile} size={28} />
                             ) : (
                                 <User size={28} color={color} />
-                            )
-                        ),
+                            ),
                     }}
                 />
             </Tabs>

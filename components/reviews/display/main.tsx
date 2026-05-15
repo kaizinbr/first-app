@@ -302,7 +302,7 @@ export default function ReviewAlbumScreen({
                                     onPress={() => {
                                         router.push({
                                             pathname:
-                                                "/(app)/create/review/[id]",
+                                                "/(app)/create/review/tracks/[id]",
                                             params: { id: reviewData.album_id },
                                         });
                                         dismiss();

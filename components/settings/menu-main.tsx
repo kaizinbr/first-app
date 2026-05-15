@@ -196,6 +196,26 @@ export default function Menu({
                                 : "transparent",
                         },
                     ]}
+
+                    
+                            onPress={() => {
+                                router.push("/(app)/(tabs)/(search)/feed-test");
+                            }}
+                >
+                    <QuestionSquare size={24} color="#eee" />
+                    <TextDefault style={styles.textDefault}>Feed Alt</TextDefault>
+                </Pressable>
+            </View>
+            <View style={styles.section}>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.button,
+                        {
+                            backgroundColor: pressed
+                                ? "rgba(255, 255, 255, 0.05)"
+                                : "transparent",
+                        },
+                    ]}
                     onPress={() => setShowDeleteModal(true)}
                 >
                     <Logout2 size={24} color="#fa5252" />
