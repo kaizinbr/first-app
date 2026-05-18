@@ -5,8 +5,8 @@ import {
     Button,
     StyleSheet,
     ScrollView,
-    
-    RefreshControl
+    RefreshControl,
+    Pressable,
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
 import { UserProfile, ReviewWithAlbum } from "@/lib/types";
@@ -16,10 +16,22 @@ import { Tabs } from "react-native-collapsible-tab-view";
 import { ActivityIndicator } from "react-native";
 import FeedCard from "@/components/home/feed-card";
 import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
+import { SortFromTopToBottom, SortFromBottomToTop  } from '@solar-icons/react-native/Bold'
 
 export default function PostsRoute({ data }: { data: UserProfile }) {
-    const { reviews, loadingInitial, loadingMore, hasMore, loadMoreForTabs, reload } =
-        usePaginatedReviews({ endpoint: `/users/${data.username}/reviews`, data });
+    const [sort, setSort] = useState<"asc" | "desc">("desc");
+    const {
+        reviews,
+        loadingInitial,
+        loadingMore,
+        hasMore,
+        loadMoreForTabs,
+        reload,
+    } = usePaginatedReviews({
+        endpoint: `/users/${data.username}/reviews`,
+        data,
+        sort,
+    });
 
     const ItemSeparator = () => {
         return <View style={styles.separator} />;
@@ -27,7 +39,6 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
 
     const [refreshing, setRefreshing] = useState(false);
 
-    
     const [localReviews, setLocalReviews] = useState(reviews);
 
     const onRefresh = useCallback(async () => {
@@ -61,7 +72,9 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
         <Tabs.FlatList
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <FeedCard review={item} onRefresh={onRefresh} />}
+            renderItem={({ item }) => (
+                <FeedCard review={item} onRefresh={onRefresh} />
+            )}
             ItemSeparatorComponent={ItemSeparator}
             onEndReached={() => {
                 console.log("onEndReached fired");
@@ -74,14 +87,38 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                 width: "100%",
                 // backgroundColor: "red",
             }}
-            
             refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                />
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             showsVerticalScrollIndicator={false}
+            ListHeaderComponent={() => (
+                <View style={{ flexDirection: "row", padding: 12, gap: 8 }}>
+                    <Pressable
+                        style={[
+                            styles.sortBtn,
+                            sort === "desc" && styles.sortBtnActive,
+                        ]}
+                        onPress={() => setSort("desc")}
+                    >
+                        <SortFromBottomToTop size={16} color={sort === "desc" ? "#8065ef" : "#777"} />
+                        <TextDefault style={styles.sortText}>
+                            Mais recentes
+                        </TextDefault>
+                    </Pressable>
+                    <Pressable
+                        style={[
+                            styles.sortBtn,
+                            sort === "asc" && styles.sortBtnActive,
+                        ]}
+                        onPress={() => setSort("asc")}
+                    >
+                        <SortFromTopToBottom size={16} color={sort === "asc" ? "#8065ef" : "#777"} />
+                        <TextDefault style={styles.sortText}>
+                            Mais antigas
+                        </TextDefault>
+                    </Pressable>
+                </View>
+            )}
             ListFooterComponent={
                 loadingMore ? (
                     <ActivityIndicator
@@ -139,5 +176,23 @@ const styles = StyleSheet.create({
     textDefault: {
         color: "#eee", // A cor clara para o seu modo escuro
         fontSize: 16,
+    },
+    sortBtn: {
+        paddingVertical: 6,
+        paddingHorizontal: 14,
+        borderRadius: 32,
+        // backgroundColor: "#282828",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        borderColor: "#282828",
+        borderWidth: 1,
+    },
+    sortBtnActive: {
+        backgroundColor: "#282828",
+    },
+    sortText: {
+        color: "#eee",
+        fontSize: 12,
     },
 });

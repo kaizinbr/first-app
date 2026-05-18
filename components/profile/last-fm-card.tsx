@@ -13,7 +13,7 @@ import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
 import { UserProfile, Palette } from "@/lib/types";
 import { getColors } from "react-native-image-colors";
-import { selectRightColor } from "@/lib/util/selectRightColor";
+import { selectRightColorLastFm } from "@/lib/util/selectRightColor";
 
 const POLL_INTERVAL = 10_000;
 const FADE_MS = 400;
@@ -84,7 +84,7 @@ export default function PlayingOnLastFM({ data }: { data: UserProfile }) {
             });
 
             const newColor =
-                (resultColors as any)?.darkMuted ?? "rgba(22, 23, 24, 0.8)";
+                selectRightColorLastFm(resultColors as any) ?? "rgba(22, 23, 24, 0.8)";
 
             if (currentTrackName.current !== newTrack?.name) {
                 currentTrackName.current = newTrack?.name ?? null;

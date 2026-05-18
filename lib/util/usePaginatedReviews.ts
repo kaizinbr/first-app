@@ -6,9 +6,15 @@ import { ReviewWithAlbum } from "@/lib/types";
 interface UsePaginatedReviewsOptions {
     endpoint: string;
     data?: any;
+
+    sort?: "asc" | "desc"; // novo, opciona
 }
 
-export function usePaginatedReviews({ endpoint, data }: UsePaginatedReviewsOptions) {
+export function usePaginatedReviews({
+    endpoint,
+    data,
+    sort,
+}: UsePaginatedReviewsOptions) {
     const [reviews, setReviews] = useState<ReviewWithAlbum[]>([]);
     const [loadingInitial, setLoadingInitial] = useState(true);
     const [loadingMore, setLoadingMore] = useState(false);
@@ -47,7 +53,7 @@ export function usePaginatedReviews({ endpoint, data }: UsePaginatedReviewsOptio
         return () => {
             mountedRef.current = false;
         };
-    }, [endpoint, data]);
+    }, [endpoint, data, sort]);
 
     const fetchPage = async (pageNumber: number, replace = false) => {
         if (isFetching.current) return;
@@ -66,7 +72,10 @@ export function usePaginatedReviews({ endpoint, data }: UsePaginatedReviewsOptio
         }
 
         try {
-            const response = await api.get(`${endpoint}?p=${pageNumber}`);
+            const sortParam = sort ? `&sort=${sort}` : "";
+            const response = await api.get(
+                `${endpoint}?p=${pageNumber}${sortParam}`,
+            );
             const payload = response.data;
             const incomingReviews: ReviewWithAlbum[] = Array.isArray(
                 payload?.reviews,
@@ -142,7 +151,7 @@ export function usePaginatedReviews({ endpoint, data }: UsePaginatedReviewsOptio
         void fetchPage(nextPageRef.current);
     };
 
-    const reload = async  () => {
+    const reload = async () => {
         // reseta tudo
         isFetching.current = false;
         initialLoadDone.current = false;
@@ -154,7 +163,7 @@ export function usePaginatedReviews({ endpoint, data }: UsePaginatedReviewsOptio
         requestedPagesRef.current = new Set();
         loadedIdsRef.current = new Set();
         await fetchPage(1, true);
-    }
+    };
 
     // Para Tabs.FlatList — sem trava de momentum
     const loadMoreForTabs = () => {

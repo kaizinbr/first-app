@@ -279,22 +279,7 @@ export default function ProfileHeader({
                     </Pressable>
                 )}
 
-                {data.lastfm_username && (
-                    <>
-                        {/* <View style={styles.lastWrapper}>
-                            <FontAwesome5
-                                name="lastfm"
-                                size={16}
-                                color="#eee"
-                            />
-                            <Text style={styles.lastUsername}>
-                                {data.lastfm_username}
-                            </Text>
-                        </View> */}
-
-                        <PlayingOnLastFM data={data} />
-                    </>
-                )}
+                <PlayingOnLastFM data={data} />
             </View>
         </View>
     );

@@ -136,12 +136,12 @@ export default function ReviewAlbumScreen({
             try {
                 const myProfile = await apiAuth("/me");
                 setItsMine(reviewData.Profile.id === myProfile.id);
-                console.log(
-                    "Review ownership:",
-                    reviewData.Profile.id,
-                    myProfile.id,
-                    reviewData.Profile.id === myProfile.id,
-                );
+                // console.log(
+                //     "Review ownership:",
+                //     reviewData.Profile.id,
+                //     myProfile.id,
+                //     reviewData.Profile.id === myProfile.id,
+                // );
             } catch (error) {
                 console.error("Error checking review ownership:", error);
             }

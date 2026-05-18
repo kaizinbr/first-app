@@ -69,7 +69,7 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
     useEffect(() => {
         const fetchContent = async () => {
             if (!review.shorten) {
-                console.error("Review shorten is undefined");
+                // console.error("Review shorten is undefined");
                 return;
             }
 
@@ -80,7 +80,7 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
                 review.content.content[0].content.length === 0 ||
                 review.content.content[0].content[0].text === ""
             ) {
-                console.warn("Review content is empty");
+                // console.warn("Review content is empty");
                 return;
             }
 
@@ -96,12 +96,12 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
             try {
                 const myProfile = await apiAuth("/me");
                 setItsMine(review.Profile.id === myProfile.id);
-                console.log(
-                    "Review ownership:",
-                    review.Profile.id,
-                    myProfile.id,
-                    review.Profile.id === myProfile.id,
-                );
+                // console.log(
+                //     "Review ownership:",
+                //     review.Profile.id,
+                //     myProfile.id,
+                //     review.Profile.id === myProfile.id,
+                // );
             } catch (error) {
                 console.error("Error checking review ownership:", error);
             }
@@ -154,7 +154,6 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
                                 style={{
                                     flexDirection: "row",
                                     justifyContent: "space-between",
-                                    alignItems: "center",
                                 }}
                             >
                                 <TextDefault
