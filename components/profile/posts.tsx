@@ -27,6 +27,9 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
 
     const [refreshing, setRefreshing] = useState(false);
 
+    
+    const [localReviews, setLocalReviews] = useState(reviews);
+
     const onRefresh = useCallback(async () => {
         setRefreshing(true);
         await reload();
@@ -46,11 +49,19 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
         [loadMoreForTabs],
     );
 
+    useEffect(() => {
+        setLocalReviews(reviews);
+    }, [reviews]);
+
+    const onDelete = useCallback((id: string) => {
+        setLocalReviews((prev) => prev.filter((r) => r.id !== id));
+    }, []);
+
     return (
         <Tabs.FlatList
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <FeedCard review={item} />}
+            renderItem={({ item }) => <FeedCard review={item} onRefresh={onRefresh} />}
             ItemSeparatorComponent={ItemSeparator}
             onEndReached={() => {
                 console.log("onEndReached fired");

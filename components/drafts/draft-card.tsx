@@ -1,56 +1,30 @@
-import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import {
+    Text,
+    View,
+    StyleSheet,
+    ScrollView,
+    Pressable,
+    ActivityIndicator,
+} from "react-native";
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
-
+import { SpotifyAlbum } from "@/lib/types";
 import TextDefault from "@/components/core/text-core";
 import { authClient } from "@/lib/auth-client";
 import { useRouter, Href, Link } from "expo-router";
 import api from "@/lib/api";
 import { Image } from "expo-image";
-import { useEffect, useState } from "react";
-import { displayPastRelativeTime } from "@/lib/util/time";
-import TiptapRenderer from "@/components/home/card-content copy";
-import { AlbumCard } from "@/components/home/album-section";
-import { ReviewWithAlbum } from "@/lib/types";
-import LikeBtn from "@/components/core/like-btn";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-type SpotifyAlbum = {
-    album_type: string;
-    total_tracks: number;
-    available_markets: string[];
-    external_urls: {
-        spotify: string;
-    };
-    href: string;
-    id: string;
-    images: Array<{
-        url: string;
-        height: number;
-        width: number;
-    }>;
-    name: string;
-    release_date: string;
-    release_date_precision: string;
-    type: string;
-    uri: string;
-    artists: {
-        id: string;
-        name: string;
-    }[];
-    tracks: Record<string, unknown>;
-    copyrights: unknown[];
-    external_ids: {
-        upc: string;
-    };
-    genres: string[];
-    label: string;
-    popularity: number;
-};
+import { TrashBinTrash } from "@solar-icons/react-native/Outline";
+
+import ConfirmModal from "@/components/core/confirm-modal";
+
 import { DraftStorage, ReviewDraft } from "@/store/reviewSessionStore";
 
 const MAX_PREVIEW_CHARS = 500;
 
-export default function DraftCard({ draft }: { draft: ReviewDraft }) {
+export default function DraftCard({ draft, onRefresh }: { draft: ReviewDraft; onRefresh: () => void }) {
     const router = useRouter();
     const { data: session } = authClient.useSession();
     // console.log("DraftCard renderizado com draft:", draft);
@@ -81,94 +55,163 @@ export default function DraftCard({ draft }: { draft: ReviewDraft }) {
             }
         };
 
-        // fetchFeedData();
         fecthAlbumData();
     }, []);
 
-    return (
-        <Pressable
-            onPress={() =>
-                router.push({
-                    pathname: "/(app)/create/review/tracks/[id]",
-                    params: { id: draft.albumId },
-                })
-            }
-            style={({ pressed }) => [
-                styles.main,
-                pressed && styles.mainPressed,
-            ]}
-        >
-            <View style={styles.card}>
-                {albumData ? (
-                    <>
-                        <View style={styles.cardContent}>
-                            <TextDefault style={styles.cardTitle}>
-                                {albumData.name} de{" "}
-                                {albumData.artists
-                                    .map((artist) => artist.name)
-                                    .join(", ")}
-                            </TextDefault>
-                            <TextDefault style={styles.cardText}>
-                                    {Object.keys(draft.ratings).length} músicas · nota {draft.overallRating}
-                                </TextDefault>
-                            {content ? (
-                                <>
-                                    <EnrichedMarkdownText
-                                        markdown={
-                                            previewContent ? previewContent : ""
-                                        }
-                                        markdownStyle={{
-                                            paragraph: {
-                                                color: "#fff",
-                                                fontSize: 14,
-                                                marginTop: 4,
-                                                lineHeight: 20,
-                                                fontFamily: "Walsheim",
-                                                fontWeight: "400",
-                                            },
-                                            h1: {
-                                                color: "#fff",
-                                                fontSize: 18,
-                                                fontWeight: "bold",
-                                                lineHeight: 24,
-                                                marginTop: 8,
-                                            },
-                                            h2: {
-                                                color: "#fff",
-                                                fontSize: 16,
-                                                fontWeight: "bold",
-                                                marginTop: 4,
-                                                lineHeight: 20,
-                                            },
-                                        }}
-                                    />
-                                    {isTruncated && (
-                                        <TextDefault style={styles.readMore}>
-                                            ler mais
-                                        </TextDefault>
-                                    )}
-                                </>
-                            ) : null}
+    // menu
 
-                            <TextDefault style={styles.cardMeta}>
-                                Salvo em{" "}
-                                    {new Date(draft.savedAt).toLocaleString("pt-BR", {
-                                        year: "numeric",
-                                        month: "2-digit",
-                                        day: "2-digit",
-                                        hour: "2-digit",
-                                        minute: "2-digit",
-                                    })}
-                            </TextDefault>
-                        </View>
-                        <Image
-                            source={{ uri: albumData?.images[0].url }}
-                            style={styles.cardImage}
-                        />
-                    </>
-                ) : null}
-            </View>
-        </Pressable>
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    const handleDelete = async () => {
+        try {
+            setIsLoading(true);
+            DraftStorage.remove(draft.albumId);
+            setIsLoading(false);
+            onRefresh();
+        } catch (error) {
+            console.error("Error deleting review:", error);
+        }
+    };
+
+    return (
+        <>
+            <Pressable
+                onPress={() =>
+                    router.push({
+                        pathname: "/(app)/create/review/tracks/[id]",
+                        params: { id: draft.albumId },
+                    })
+                }
+                style={({ pressed }) => [
+                    styles.main,
+                    pressed && styles.mainPressed,
+                ]}
+            >
+                <View style={styles.card}>
+                    {albumData ? (
+                        <>
+                            <Image
+                                source={{ uri: albumData?.images[0].url }}
+                                style={styles.cardImage}
+                            />
+                            <View style={styles.cardContent}>
+                                <TextDefault style={styles.cardTitle}>
+                                    {albumData.name} de{" "}
+                                    {albumData.artists
+                                        .map((artist) => artist.name)
+                                        .join(", ")}
+                                </TextDefault>
+                                <TextDefault style={styles.cardText}>
+                                    {Object.keys(draft.ratings).length} músicas
+                                    · nota {draft.overallRating}
+                                </TextDefault>
+                                {content ? (
+                                    <>
+                                        <EnrichedMarkdownText
+                                            markdown={
+                                                previewContent
+                                                    ? previewContent
+                                                    : ""
+                                            }
+                                            markdownStyle={{
+                                                paragraph: {
+                                                    color: "#fff",
+                                                    fontSize: 14,
+                                                    marginTop: 4,
+                                                    lineHeight: 20,
+                                                    fontFamily: "Walsheim",
+                                                    fontWeight: "400",
+                                                },
+                                                h1: {
+                                                    color: "#fff",
+                                                    fontSize: 18,
+                                                    fontWeight: "bold",
+                                                    lineHeight: 24,
+                                                    marginTop: 8,
+                                                },
+                                                h2: {
+                                                    color: "#fff",
+                                                    fontSize: 16,
+                                                    fontWeight: "bold",
+                                                    marginTop: 4,
+                                                    lineHeight: 20,
+                                                },
+                                            }}
+                                        />
+                                        {isTruncated && (
+                                            <TextDefault
+                                                style={styles.readMore}
+                                            >
+                                                ler mais
+                                            </TextDefault>
+                                        )}
+                                    </>
+                                ) : null}
+
+                                <TextDefault style={styles.cardMeta}>
+                                    Salvo em{" "}
+                                    {new Date(draft.savedAt).toLocaleString(
+                                        "pt-BR",
+                                        {
+                                            year: "numeric",
+                                            month: "2-digit",
+                                            day: "2-digit",
+                                            hour: "2-digit",
+                                            minute: "2-digit",
+                                        },
+                                    )}
+                                </TextDefault>
+                            </View>
+                        </>
+                    ) : null}
+
+                    <Pressable
+                        style={{
+                            // backgroundColor: "red",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            borderLeftWidth: 0.5,
+                            borderColor: "#333",
+                            paddingLeft: 12,
+                        }}
+                        onPress={() => setShowDeleteModal(true)}
+                    >
+                        <TrashBinTrash color="#eee" />
+                    </Pressable>
+                </View>
+            </Pressable>
+
+            <ConfirmModal
+                visible={showDeleteModal}
+                title="Apagar rascunho?"
+                message="Essa ação não pode ser desfeita."
+                confirmLabel="Apagar"
+                cancelLabel="Cancelar"
+                confirmDestructive
+                onConfirm={() => {
+                    handleDelete();
+                    setShowDeleteModal(false);
+                }}
+                onCancel={() => setShowDeleteModal(false)}
+            />
+            {isLoading && (
+                <View
+                    style={[
+                        StyleSheet.absoluteFill,
+                        {
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(0,0,0,0.5)",
+                            zIndex: 999,
+                        },
+                    ]}
+                >
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
+            )}
+        </>
     );
 }
 
@@ -195,7 +238,6 @@ const styles = StyleSheet.create({
         height: 100,
         backgroundColor: "#bbb",
         borderRadius: 32 * 0.306,
-        marginBottom: 8,
     },
     cardContent: {
         flex: 1,
@@ -245,4 +287,5 @@ const styles = StyleSheet.create({
         color: "#777",
         fontSize: 13,
     },
+    
 });

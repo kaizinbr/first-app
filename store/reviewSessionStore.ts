@@ -49,7 +49,7 @@ export const DraftStorage = {
         );
     },
 
-    clear: (albumId: string) => {
+    remove: (albumId: string) => {
         mmkv.remove(DraftStorage.key(albumId));
     },
 
@@ -179,7 +179,7 @@ export const useReviewSession = create<ReviewSessionState>()((set, get) => ({
     },
 
     clearSession: (albumId) => {
-        DraftStorage.clear(albumId);
+        DraftStorage.remove(albumId);
         set({
             albumId: null,
             ratings: {},

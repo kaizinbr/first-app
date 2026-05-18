@@ -80,9 +80,6 @@ export default function TabsDynamicLayout() {
 
     return (
         <>
-            {/* <View style={{ position: "absolute", top: 40, left: 20, zIndex: 100 }}>
-                <Text>+</Text>
-            </View> */}
             <Tabs
                 initialRouteName="(home)"
                 screenOptions={{

@@ -101,9 +101,13 @@ export default function WriteReviewPage({
         }
 
         clearSession(album.id);
-        router.replace({
-            pathname: `/review/[id]`,
-            params: { id: response.data.id },
+        router.dismissAll();
+        router.replace("/(app)/(tabs)/(home)");
+        requestAnimationFrame(() => {
+            router.push({
+                pathname: `/(app)/(tabs)/(home)/review/[id]`,
+                params: { id: response.data.id },
+            });
         });
     };
 

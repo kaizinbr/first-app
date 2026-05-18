@@ -49,9 +49,6 @@ export default function HomePage({
                 ]}
             >
                 <ActivityIndicator size="large" color="#8065ef" />
-                <TextDefault style={{ color: "#eee", marginTop: 10 }}>
-                    Carregando feed...
-                </TextDefault>
             </View>
         );
     }
@@ -63,7 +60,7 @@ export default function HomePage({
             showsVerticalScrollIndicator={false}
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <FeedCard review={item} />}
+            renderItem={({ item }) => <FeedCard review={item} onRefresh={onRefresh} />}
             onEndReached={loadMore}
             onEndReachedThreshold={0.2}
             onMomentumScrollBegin={onMomentumScrollBegin}

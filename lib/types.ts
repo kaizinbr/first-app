@@ -239,3 +239,36 @@ export interface Favorite {
     src: string;
     name: string;
 }
+
+export interface SpotifyAlbum {
+    album_type: string;
+    total_tracks: number;
+    available_markets: string[];
+    external_urls: {
+        spotify: string;
+    };
+    href: string;
+    id: string;
+    images: Array<{
+        url: string;
+        height: number;
+        width: number;
+    }>;
+    name: string;
+    release_date: string;
+    release_date_precision: string;
+    type: string;
+    uri: string;
+    artists: {
+        id: string;
+        name: string;
+    }[];
+    tracks: Record<string, unknown>;
+    copyrights: unknown[];
+    external_ids: {
+        upc: string;
+    };
+    genres: string[];
+    label: string;
+    popularity: number;
+};
