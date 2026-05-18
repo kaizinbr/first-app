@@ -24,7 +24,7 @@ export async function apiAuth(path: string) {
     return data;
 }
 
-export async function apiAuthPost(path: string, body: any) {
+export async function apiAuthPost(path: string, body?: any) {
     const cookies = authClient.getCookie();
     const headers = {
         Cookie: cookies,

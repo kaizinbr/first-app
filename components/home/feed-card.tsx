@@ -19,7 +19,6 @@ import { displayPastRelativeTime } from "@/lib/util/time";
 import TiptapRenderer from "@/components/home/card-content copy";
 import { AlbumCard } from "@/components/home/album-section";
 import { ReviewWithAlbum, SpotifyAlbum } from "@/lib/types";
-import LikeBtn from "@/components/core/like-btn";
 
 import {
     Flag,
@@ -42,9 +41,17 @@ import ConfirmModal from "@/components/core/confirm-modal";
 import { ShareLargeBtn } from "@/components/core/share-btn";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+import { LikeButton } from "@/components/reviews/like-btn";
+
 const MAX_PREVIEW_CHARS = 500;
 
-export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAlbum; onRefresh: () => void }) {
+export default function FeedCard({
+    review,
+    onRefresh,
+}: {
+    review: ReviewWithAlbum;
+    onRefresh: () => void;
+}) {
     const router = useRouter();
 
     const insets = useSafeAreaInsets();
@@ -96,12 +103,6 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
             try {
                 const myProfile = await apiAuth("/me");
                 setItsMine(review.Profile.id === myProfile.id);
-                // console.log(
-                //     "Review ownership:",
-                //     review.Profile.id,
-                //     myProfile.id,
-                //     review.Profile.id === myProfile.id,
-                // );
             } catch (error) {
                 console.error("Error checking review ownership:", error);
             }
@@ -162,11 +163,9 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
                                         { maxWidth: "90%" },
                                     ]}
                                 >
-                                    {review.Profile.name} avaliou{" "}
-                                    {review.album.name} de{" "}
-                                    {review.album.artists
-                                        .map((artist) => artist.name)
-                                        .join(", ")}
+                                    {review.Profile.name} | {displayPastRelativeTime(
+                                    new Date(review.created_at),
+                                )}
                                 </TextDefault>
                                 <Pressable
                                     onPress={(e) => {
@@ -177,6 +176,18 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
                                     <MenuDots color="#aaa" size={20} />
                                 </Pressable>
                             </View>
+                                {/* <TextDefault
+                                    style={[
+                                        styles.cardTitle,
+                                        { maxWidth: "90%" },
+                                    ]}
+                                >
+                                    Avaliou{" "}
+                                    {review.album.name} de{" "}
+                                    {review.album.artists
+                                        .map((artist) => artist.name)
+                                        .join(", ")}
+                                </TextDefault> */}
                             {content ? (
                                 <>
                                     <EnrichedMarkdownText
@@ -230,6 +241,11 @@ export default function FeedCard({ review, onRefresh,  }: { review: ReviewWithAl
                                     new Date(review.created_at),
                                 )}
                             </TextDefault>
+                            <LikeButton
+                                ratingId={review.id}
+                                initialCount={review.likesCount} // vem da query pública
+                                size="md"
+                            />
                         </View>
                     ) : null}
                 </View>
@@ -451,6 +467,7 @@ const styles = StyleSheet.create({
         fontWeight: 500,
         color: "#eee",
         marginBottom: 4,
+        marginTop: 4,
         // wordWrap: "break-word",
     },
     albumSection: {
@@ -510,4 +527,3 @@ const styles = StyleSheet.create({
         fontSize: 14,
     },
 });
-

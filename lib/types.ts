@@ -185,6 +185,7 @@ export interface Review {
     album_id: string;
     user_id: string;
     Profile: UserProfile;
+    likesCount: number; // campo adicional para contagem de likes
 }
 
 export interface ReviewWithAlbum extends Review {
