@@ -22,7 +22,8 @@
             },
             "edgeToEdgeEnabled": true,
             "predictiveBackGestureEnabled": false,
-            "package": "com.kaizinbr.firstapp"
+            "package": "com.kaizinbr.firstapp",
+            "softwareKeyboardLayoutMode": "pan"
         },
         "web": {
             "bundler": "metro",
@@ -129,7 +130,8 @@
             ],
             "expo-image",
             "expo-secure-store",
-            "expo-web-browser"
+            "expo-web-browser",
+            "react-native-enriched-markdown"
         ],
         "experiments": {
             "typedRoutes": true

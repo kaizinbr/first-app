@@ -60,7 +60,7 @@ function useColorTransition(color: string, duration = 500) {
 export default function FeedHeader({
     scrollOffsetY,
 }: {
-    scrollOffsetY: SharedValue<number>;
+    scrollOffsetY: SharedValue<number> | any;
 }) {
     const { height } = useWindowDimensions();
     const HEADER_MAX_HEIGHT = height * 0.45;

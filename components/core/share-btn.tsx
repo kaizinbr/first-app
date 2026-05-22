@@ -34,6 +34,39 @@ export default function ShareBtn({ type, url }: { type: string; url: string }) {
     );
 }
 
+export function ShareSmBtn({ url }: { url: string }) {
+    const onShare = async () => {
+        console.log("Shared successfully");
+        try {
+            const result = await Share.share({
+                message: url,
+            });
+            if (result.action === Share.sharedAction) {
+                if (result.activityType) {
+                    // shared with activity type of result.activityType
+                } else {
+                    // shared
+                }
+            } else if (result.action === Share.dismissedAction) {
+                // dismissed
+            }
+        } catch (error: any) {
+            Alert.alert(error.message);
+        }
+    };
+
+    return (
+        <Pressable style={{
+        justifyContent: "center",
+        alignItems: "flex-end",
+        zIndex: 9999,
+        position: "relative",
+    }} onPress={onShare}>
+            <ShareIcon size={20} color="#888" />
+        </Pressable>
+    );
+}
+
 export function ShareLargeBtn({
     type,
     url,

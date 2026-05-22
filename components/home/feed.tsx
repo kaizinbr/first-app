@@ -65,7 +65,7 @@ export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
             showsVerticalScrollIndicator={false}
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <FeedCard review={item} />}
+            renderItem={({ item }) => <FeedCard review={item} onRefresh={onRefresh} />}
             onEndReached={loadMore}
             onEndReachedThreshold={0.2}
             onMomentumScrollBegin={onMomentumScrollBegin}

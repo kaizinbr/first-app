@@ -11,29 +11,29 @@ import { useLike } from "@/lib/util/useLike";
 
 // Solar Icons
 import { HeartBold, HeartOutline } from "@solar-icons/react-native";
+import TextDefault from "@/components/core/text-core";
 
 interface LikeButtonProps {
     ratingId: string;
     initialLiked?: boolean;
     initialCount: number;
     size?: "sm" | "md"; // sm = feed card, md = tela de detalhe
+    style?: any;
 }
 
 export function LikeButton({
     ratingId,
     initialLiked,
     initialCount,
-    size = "sm" ,
+    size = "sm",
+    style
 }: LikeButtonProps) {
-    console.log(initialCount)
     const { liked, count, toggle, loading } = useLike({
         ratingId,
         initialCount,
     });
 
-    useEffect(() => {
-        // console.log("LikeButton state updated for ratingId:", ratingId, "liked:", liked, "count:", count);
-    }, [liked, count, ratingId]);
+    useEffect(() => {}, [liked, count, ratingId]);
 
     const scale = useSharedValue(1);
 
@@ -55,14 +55,14 @@ export function LikeButton({
         );
         toggle();
     };
-    const iconSize = size === "sm" ? 18 : 24;
+    const iconSize = size === "sm" ? 18 : 22;
     const textStyle = size === "sm" ? styles.countSm : styles.countMd;
 
     return (
         <Pressable
             onPress={handlePress}
             disabled={loading}
-            style={styles.container}
+            style={[styles.container, style]}
             hitSlop={8}
         >
             <Animated.View style={animatedStyle}>
@@ -72,11 +72,9 @@ export function LikeButton({
                     <HeartOutline size={iconSize} color="#888" />
                 )}
             </Animated.View>
-            {count > 0 && (
-                <Text style={[textStyle, liked && styles.countActive]}>
-                    {count}
-                </Text>
-            )}
+            <TextDefault style={[textStyle, liked && styles.countActive]}>
+                {count > 999 ? "1K+" : count < 0 ? 0 : count}
+            </TextDefault>
         </Pressable>
     );
 }
@@ -86,6 +84,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 4,
+        padding: 4,
     },
     countSm: {
         fontSize: 13,
@@ -93,7 +92,7 @@ const styles = StyleSheet.create({
         fontVariant: ["tabular-nums"],
     },
     countMd: {
-        fontSize: 16,
+        fontSize: 14,
         color: "#888",
         fontVariant: ["tabular-nums"],
     },

@@ -13,7 +13,7 @@ import {
 } from "@expensify/react-native-live-markdown";
 import { markdownStyle } from "@/components/reviews/markdown-style";
 import { AlbumCard } from "@/components/home/album-section";
-import { Album, Review, Palette } from "@/lib/types";
+import { Album, ReviewWithAlbum, Palette } from "@/lib/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { parseMarkdown } from "@/lib/parser";
 
@@ -127,6 +127,7 @@ export default function PostEditor({
                     }
                     subtitle={album.tracks.items.length}
                     editor
+                    review={{} as ReviewWithAlbum}
                 />
                 <MarkdownTextInput
                     value={value}

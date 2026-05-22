@@ -273,3 +273,30 @@ export interface SpotifyAlbum {
     label: string;
     popularity: number;
 };
+
+
+
+interface CommentProfile {
+  id: string;
+  username: string;
+  name: string;
+  avatar_url: string;
+  verified: boolean;
+}
+
+interface CommentCount {
+  other_Comment: number;
+  CommentLike: number;
+}
+
+export interface Comment {
+  id: string;
+  body: string;
+  authorId: string;
+  ratingId: string;
+  parentId: null | string;
+  created_at: string;
+  updated_at: string;
+  Profile: CommentProfile;
+  _count: CommentCount;
+}

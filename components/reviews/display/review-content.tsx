@@ -65,7 +65,7 @@ export default function ReviewContent({ review }: { review: Review }) {
                         markdown={review.review}
                         markdownStyle={{
                             paragraph: {
-                                color: "#eee",
+                                color: "#fff",
                                 fontSize: 14,
                                 marginTop: 4,
                                 lineHeight: 20,
@@ -73,14 +73,14 @@ export default function ReviewContent({ review }: { review: Review }) {
                                 fontWeight: "400",
                             },
                             h1: {
-                                color: "#eee",
+                                color: "#fff",
                                 fontSize: 18,
                                 fontWeight: "bold",
                                 lineHeight: 24,
                                 marginTop: 8,
                             },
                             h2: {
-                                color: "#eee",
+                                color: "#fff",
                                 fontSize: 16,
                                 fontWeight: "bold",
                                 marginTop: 4,

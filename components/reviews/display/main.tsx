@@ -1,3 +1,4 @@
+import { KeyboardAvoidingView, Platform } from "react-native"
 import ConfirmModal from "@/components/core/confirm-modal";
 import { ShareLargeBtn } from "@/components/core/share-btn";
 import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
@@ -52,6 +53,9 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import FixedHeader from "@/components/core/fixed-header";
+import { LikeButton } from "@/components/reviews/like-btn";
+import { CommentInput } from "@/components/reviews/display/comments/comment-input";
+import CommentsSection from "@/components/reviews/display/comments/comments-section";
 
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -216,13 +220,14 @@ export default function ReviewAlbumScreen({
                     style={{ transform: [{ rotate: "90deg" }] }}
                 />
             </Pressable>
+                <CommentInput reviewId={reviewData.id} />
 
             {/* O CONTEÚDO DA PÁGINA */}
             <Animated.ScrollView
                 onScroll={onScroll}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
-                style={{ zIndex: 1, marginBottom: 56 }}
+                style={{ zIndex: 1, marginBottom: 56, position: "relative" }} // zIndex para ficar acima do gradiente
             >
                 <View
                     style={{
@@ -245,11 +250,18 @@ export default function ReviewAlbumScreen({
                 {reviewData.review.length > 0 && (
                     <ReviewContent review={reviewData} />
                 )}
+                <LikeButton
+                    ratingId={reviewData.id}
+                    initialCount={reviewData.likesCount} // vem da query pública
+                    size="md"
+                    style={{ marginLeft: 12 }}
+                />
                 <Tracklist
                     review={reviewData}
                     albumTracks={albumData.tracks.items}
                 />
                 <AlbumExtraData data={albumData} />
+                <CommentsSection reviewData={reviewData} refreshComments={() => {}} />
                 <View style={{ height: 100 }} />
             </Animated.ScrollView>
             <BottomSheetModal
@@ -288,7 +300,9 @@ export default function ReviewAlbumScreen({
                                     }}
                                 >
                                     <TrashBinTrash size={24} color="#eee" />
-                                    <TextDefault style={styles.optText}>Excluir</TextDefault>
+                                    <TextDefault style={styles.optText}>
+                                        Excluir
+                                    </TextDefault>
                                 </Pressable>
                                 <Pressable
                                     style={({ pressed }) => [
@@ -309,11 +323,17 @@ export default function ReviewAlbumScreen({
                                     }}
                                 >
                                     <Pen size={24} color="#eee" />
-                                    <TextDefault style={styles.optText}>Editar</TextDefault>
+                                    <TextDefault style={styles.optText}>
+                                        Editar
+                                    </TextDefault>
                                 </Pressable>
                             </>
                         )}
-                        <ShareLargeBtn type="review" url={`https://whistle.kaizin.work/r/${reviewData.shorten}`} dismiss={dismiss} />
+                        <ShareLargeBtn
+                            type="review"
+                            url={`https://whistle.kaizin.work/r/${reviewData.shorten}`}
+                            dismiss={dismiss}
+                        />
                         <Pressable
                             style={({ pressed }) => [
                                 styles.optBtn,
@@ -326,7 +346,9 @@ export default function ReviewAlbumScreen({
                             onPress={() => {}}
                         >
                             <Flag size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>Denunciar</TextDefault>
+                            <TextDefault style={styles.optText}>
+                                Denunciar
+                            </TextDefault>
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
@@ -346,7 +368,9 @@ export default function ReviewAlbumScreen({
                             }}
                         >
                             <Vinyl size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>Ver álbum</TextDefault>
+                            <TextDefault style={styles.optText}>
+                                Ver álbum
+                            </TextDefault>
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
@@ -369,7 +393,9 @@ export default function ReviewAlbumScreen({
                             }}
                         >
                             <User size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>Ver usuário</TextDefault>
+                            <TextDefault style={styles.optText}>
+                                Ver usuário
+                            </TextDefault>
                         </Pressable>
                         <Pressable
                             style={({ pressed }) => [
@@ -383,7 +409,9 @@ export default function ReviewAlbumScreen({
                             onPress={() => {}}
                         >
                             <ForbiddenCircle size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>Bloquear usuário</TextDefault>
+                            <TextDefault style={styles.optText}>
+                                Bloquear usuário
+                            </TextDefault>
                         </Pressable>
                     </View>
                 </BottomSheetView>

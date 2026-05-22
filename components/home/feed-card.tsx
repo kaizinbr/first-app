@@ -10,13 +10,11 @@ import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
 
 import TextDefault from "@/components/core/text-core";
-import { authClient } from "@/lib/auth-client";
 import { useRouter, Href, Link } from "expo-router";
 import api, { apiAuth, apiAuthDELETE } from "@/lib/api";
 import { Image } from "expo-image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { displayPastRelativeTime } from "@/lib/util/time";
-import TiptapRenderer from "@/components/home/card-content copy";
+import { displayPastRelativeTime, getPastRelativeTime } from "@/lib/util/time";
 import { AlbumCard } from "@/components/home/album-section";
 import { ReviewWithAlbum, SpotifyAlbum } from "@/lib/types";
 
@@ -29,6 +27,11 @@ import {
     User,
     Vinyl,
 } from "@solar-icons/react-native/Bold";
+import {
+    ChatRound,
+    ChatSquare,
+    Share,
+} from "@solar-icons/react-native/Outline";
 
 import {
     BottomSheetBackdrop,
@@ -38,7 +41,7 @@ import {
 } from "@gorhom/bottom-sheet";
 
 import ConfirmModal from "@/components/core/confirm-modal";
-import { ShareLargeBtn } from "@/components/core/share-btn";
+import { ShareLargeBtn, ShareSmBtn } from "@/components/core/share-btn";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { LikeButton } from "@/components/reviews/like-btn";
@@ -155,18 +158,38 @@ export default function FeedCard({
                                 style={{
                                     flexDirection: "row",
                                     justifyContent: "space-between",
+                                    alignItems: "center",
+                                    // backgroundColor: "blue",
                                 }}
                             >
-                                <TextDefault
-                                    style={[
-                                        styles.cardTitle,
-                                        { maxWidth: "90%" },
-                                    ]}
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        maxWidth: "90%",
+                                        alignItems: "flex-end",
+                                        gap: 6,
+                                        // backgroundColor: "red",
+                                    }}
                                 >
-                                    {review.Profile.name} | {displayPastRelativeTime(
-                                    new Date(review.created_at),
-                                )}
-                                </TextDefault>
+                                    <TextDefault
+                                        numberOfLines={1}
+                                        style={[
+                                            styles.cardTitle,
+                                            { maxWidth: "80%", flexShrink: 1 },
+                                        ]}
+                                    >
+                                        {review.Profile.name}
+                                    </TextDefault>
+                                    <TextDefault
+                                        style={{ color: "#777", fontSize: 12 }}
+                                    >
+                                        ·{" "}
+                                        {getPastRelativeTime(
+                                            new Date(review.created_at),
+                                            new Date(),
+                                        )}
+                                    </TextDefault>
+                                </View>
                                 <Pressable
                                     onPress={(e) => {
                                         // e.stopPropagation();
@@ -176,18 +199,6 @@ export default function FeedCard({
                                     <MenuDots color="#aaa" size={20} />
                                 </Pressable>
                             </View>
-                                {/* <TextDefault
-                                    style={[
-                                        styles.cardTitle,
-                                        { maxWidth: "90%" },
-                                    ]}
-                                >
-                                    Avaliou{" "}
-                                    {review.album.name} de{" "}
-                                    {review.album.artists
-                                        .map((artist) => artist.name)
-                                        .join(", ")}
-                                </TextDefault> */}
                             {content ? (
                                 <>
                                     <EnrichedMarkdownText
@@ -235,17 +246,36 @@ export default function FeedCard({
                                         : "0/100"
                                 }
                                 subtitle={review.ratings.length}
+                                review={review}
                             />
-                            <TextDefault style={styles.cardDate}>
-                                {displayPastRelativeTime(
-                                    new Date(review.created_at),
-                                )}
-                            </TextDefault>
-                            <LikeButton
-                                ratingId={review.id}
-                                initialCount={review.likesCount} // vem da query pública
-                                size="md"
-                            />
+                            <View style={styles.buttonSection}>
+                                <LikeButton
+                                    ratingId={review.id}
+                                    initialCount={review.likesCount} // vem da query pública
+                                    size="md"
+                                />
+                                <Pressable
+                                    onPress={() =>
+                                        router.push(
+                                            `/review/${review.id}#comments`,
+                                        )
+                                    }
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "center",
+                                        gap: 4,
+                                    }}
+                                >
+                                    <ChatSquare size={20} color="#888" />
+                                    <TextDefault style={styles.extraInfo}>
+                                        0
+                                    </TextDefault>
+                                </Pressable>
+
+                                <ShareSmBtn
+                                    url={`https://whistle.kaizin.work/r/${review.shorten}`}
+                                />
+                            </View>
                         </View>
                     ) : null}
                 </View>
@@ -448,7 +478,9 @@ const styles = StyleSheet.create({
         width: "100%",
         backgroundColor: "transparent",
         color: "#eee",
-        padding: 16,
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 8,
         borderRadius: 8,
         flexDirection: "row",
         gap: 8,
@@ -466,8 +498,8 @@ const styles = StyleSheet.create({
     cardTitle: {
         fontWeight: 500,
         color: "#eee",
-        marginBottom: 4,
         marginTop: 4,
+        fontSize: 14,
         // wordWrap: "break-word",
     },
     albumSection: {
@@ -525,5 +557,11 @@ const styles = StyleSheet.create({
     extraInfo: {
         color: "#777",
         fontSize: 14,
+    },
+    buttonSection: {
+        marginTop: 4,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 16,
     },
 });

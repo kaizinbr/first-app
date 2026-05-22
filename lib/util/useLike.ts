@@ -17,7 +17,7 @@ export function useLike({ ratingId, initialCount }: UseLikeProps) {
         async function fetchLikeStatus() {
             try {
                 const response = await apiAuth(`/reviews/${ratingId}/like`);
-                console.log("Like status response:", response);
+                // console.log("Like status response:", response);
                 setLiked(response.liked);
                 setAuthenticated(response.authenticated);
             } catch (error) {
@@ -48,6 +48,10 @@ export function useLike({ ratingId, initialCount }: UseLikeProps) {
             setLoading(false);
         }
     }, [liked, loading, authenticated, ratingId]);
+
+    if (count < 0) {
+        setCount(0);
+    }
 
     return { liked, count, toggle, loading, authenticated };
 }

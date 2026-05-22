@@ -170,6 +170,7 @@ export default function FeedCard({ review }: { review: ReviewWithAlbum }) {
                                     : "0/100"
                             }
                             subtitle={review.ratings.length}
+                            review={review}
                         />
                         <TextDefault style={styles.cardDate}>
                             {displayPastRelativeTime(

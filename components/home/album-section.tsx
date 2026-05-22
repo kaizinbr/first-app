@@ -12,7 +12,7 @@ import api from "@/lib/api";
 import { useState, useEffect } from "react";
 import { getColors } from "react-native-image-colors";
 
-import { Palette } from "@/lib/types";
+import { Palette, ReviewWithAlbum } from "@/lib/types";
 
 import { selectRightColor } from "@/lib/util/selectRightColor";
 
@@ -22,6 +22,7 @@ interface GradientCardProps {
     subtitle?: number;
     onPress?: () => void;
     editor?: boolean;
+    review: ReviewWithAlbum;
 }
 
 export function AlbumCard({
@@ -30,6 +31,7 @@ export function AlbumCard({
     subtitle,
     onPress,
     editor,
+    review,
 }: GradientCardProps) {
     const Wrapper = onPress ? TouchableOpacity : View;
 
@@ -103,6 +105,21 @@ export function AlbumCard({
                         >
                             {value}
                         </TextDefault>
+                        {!editor && (
+                            <>
+                                <TextDefault numberOfLines={2} style={[styles.cardTitle]}>
+                                    {review.album.name}
+                                </TextDefault>
+                                <TextDefault  numberOfLines={1} style={{
+                                    marginTop: 4,
+                                    color: "#d1d5db",
+                                    fontSize: 12,}}>
+                                    {review.album.artists
+                                        .map((artist) => artist.name)
+                                        .join(", ")}
+                                </TextDefault>
+                            </>
+                        )}
                         {subtitle && (
                             <TextDefault
                                 style={{
@@ -111,7 +128,7 @@ export function AlbumCard({
                                     fontSize: 12,
                                 }}
                             >
-                                {subtitle} músicas avaliadas
+                                {subtitle} músicas
                             </TextDefault>
                         )}
                     </View>
@@ -131,5 +148,12 @@ const styles = StyleSheet.create({
         marginTop: 12,
         borderRadius: 14,
         backgroundColor: "#282828",
+    },
+
+    cardTitle: {
+        fontWeight: 500,
+        color: "#eee",
+        marginTop: 4,
+        
     },
 });

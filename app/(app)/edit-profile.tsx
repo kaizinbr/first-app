@@ -233,7 +233,7 @@ export default function EditProfile() {
                 setIsLoadingUsernames(true);
                 setUsernameLookupError(null);
 
-                const response = await apiAuth("/users");
+                const response = await apiAuth("/users/usernames");
                 // console.log("Usernames fetched successfully:", response);
                 const usernames = response?.usernames ?? [];
                 const normalizedUsernames = usernames
