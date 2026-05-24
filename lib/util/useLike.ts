@@ -3,11 +3,12 @@ import { useState, useCallback, useEffect } from "react";
 import { apiAuth, apiAuthPost } from "@/lib/api";
 
 interface UseLikeProps {
-    ratingId: string;
+    id: string;
     initialCount: number;
+    type: "review" | "comment";
 }
 
-export function useLike({ ratingId, initialCount }: UseLikeProps) {
+export function useLike({ id, initialCount, type }: UseLikeProps) {
     const [liked, setLiked] = useState(false);
     const [count, setCount] = useState(initialCount);
     const [loading, setLoading] = useState(false);
@@ -16,7 +17,7 @@ export function useLike({ ratingId, initialCount }: UseLikeProps) {
     useEffect(() => {
         async function fetchLikeStatus() {
             try {
-                const response = await apiAuth(`/reviews/${ratingId}/like`);
+                const response = await apiAuth(`/${type}s/${id}/like`);
                 // console.log("Like status response:", response);
                 setLiked(response.liked);
                 setAuthenticated(response.authenticated);
@@ -25,10 +26,10 @@ export function useLike({ ratingId, initialCount }: UseLikeProps) {
             }
         }
         fetchLikeStatus();
-    }, [ratingId]);
+    }, [id]);
 
     const toggle = useCallback(async () => {
-        console.log("Toggling like for ratingId:", authenticated);
+        console.log("Toggling like for id:", authenticated);
         if (loading || !authenticated) return;
 
         const wasLiked = liked;
@@ -37,7 +38,7 @@ export function useLike({ ratingId, initialCount }: UseLikeProps) {
 
         try {
             setLoading(true);
-            const response = await apiAuthPost(`/reviews/${ratingId}/like`);
+            const response = await apiAuthPost(`/${type}s/${id}/like`);
             if (response.liked !== !wasLiked) {
                 setLiked(response.liked);
             }
@@ -47,7 +48,7 @@ export function useLike({ ratingId, initialCount }: UseLikeProps) {
         } finally {
             setLoading(false);
         }
-    }, [liked, loading, authenticated, ratingId]);
+    }, [liked, loading, authenticated, id, type]);
 
     if (count < 0) {
         setCount(0);

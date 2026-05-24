@@ -58,7 +58,7 @@ export async function apiAuthPUT(path: string, body: any) {
     return data;
 }
 
-export async function apiAuthDELETE(path: string, body: any) {
+export async function apiAuthDELETE(path: string, body?: any) {
     const cookies = authClient.getCookie();
     const headers = {
         Cookie: cookies,
@@ -69,7 +69,7 @@ export async function apiAuthDELETE(path: string, body: any) {
         method: "DELETE",
         headers,
         credentials: "omit",
-        body: JSON.stringify(body),
+        body: body ? JSON.stringify(body) : undefined,
     });
     const data = await response.json();
     return data;

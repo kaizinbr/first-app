@@ -63,7 +63,7 @@ export default function FeedHeader({
     scrollOffsetY: SharedValue<number> | any;
 }) {
     const { height } = useWindowDimensions();
-    const HEADER_MAX_HEIGHT = height * 0.45;
+    const HEADER_MAX_HEIGHT = height * 0.4;
     const insets = useSafeAreaInsets();
     const { data: session } = authClient.useSession();
     const router = useRouter();
@@ -105,7 +105,7 @@ export default function FeedHeader({
     const blob4Style = useColorTransition(lightenColor(colors[0], 0.8));
 
     useEffect(() => {
-        console.log("Cores do banner:", currentBannerUrl);
+        // console.log("Cores do banner:", currentBannerUrl);
 
         const fetchColors = async () => {
             const result = await getColors(currentBannerUrl, {
@@ -113,10 +113,10 @@ export default function FeedHeader({
                 cache: true,
                 key: currentBannerUrl, // Use a URL como chave de cache
             });
-            console.log("Resultado do getColors:", result);
+            // console.log("Resultado do getColors:", result);
             const newColors = getBannerColors(result);
             setColors(newColors);
-            console.log("Nova cor:", newColors[0]);
+            // console.log("Nova cor:", newColors[0]);
         };
 
         fetchColors();
@@ -132,10 +132,10 @@ export default function FeedHeader({
                         { height: HEADER_MAX_HEIGHT },
                     ]}
                 >
-                    {/* <LinearGradient
+                    <LinearGradient
                         colors={[darkenColor(colors[0], 1.5), "#161718"]}
                         style={[StyleSheet.absoluteFill, { transitionProperty: "background-color", transitionDuration: "500ms" }]}
-                    /> */}
+                    />
 
                     <Animated.View
                         style={[

@@ -167,7 +167,7 @@ export interface UserProfile {
     albuns: UserAlbum[];
     artists: UserArtist[];
     location: string | null;
-    lyrics: SavedLyrics| [];
+    lyrics: SavedLyrics | [];
     lastfm_username: string | null;
 }
 
@@ -186,6 +186,7 @@ export interface Review {
     user_id: string;
     Profile: UserProfile;
     likesCount: number; // campo adicional para contagem de likes
+        commentsCount: number; // campo adicional para contagem de comentários
 }
 
 export interface ReviewWithAlbum extends Review {
@@ -234,7 +235,6 @@ export interface Asset {
     width: number;
 }
 
-
 export interface Favorite {
     id: string;
     src: string;
@@ -272,31 +272,43 @@ export interface SpotifyAlbum {
     genres: string[];
     label: string;
     popularity: number;
-};
-
-
+}
 
 interface CommentProfile {
-  id: string;
-  username: string;
-  name: string;
-  avatar_url: string;
-  verified: boolean;
+    id: string;
+    username: string;
+    name: string;
+    avatar_url: string;
+    verified: boolean;
 }
 
 interface CommentCount {
-  other_Comment: number;
-  CommentLike: number;
+    other_Comment: number;
+    CommentLike: number;
 }
 
 export interface Comment {
-  id: string;
-  body: string;
-  authorId: string;
-  ratingId: string;
-  parentId: null | string;
-  created_at: string;
-  updated_at: string;
-  Profile: CommentProfile;
-  _count: CommentCount;
+    id: string;
+    body: string;
+    authorId: string;
+    ratingId: string;
+    parentId: null | string;
+    created_at: string;
+    updated_at: string;
+    Profile: CommentProfile;
+    _count: CommentCount;
 }
+
+export type HeaderConfig = {
+    heightExpanded: number;
+    heightCollapsed: number;
+};
+
+import { RefObject } from "react";
+import { FlatList } from "react-native";
+import { SharedValue } from "react-native-reanimated";
+
+export type ScrollPair = {
+    list: RefObject<FlatList | null>;
+    position: SharedValue<number>;
+};

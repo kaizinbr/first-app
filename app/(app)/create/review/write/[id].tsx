@@ -59,47 +59,6 @@ export default function TracksPage() {
 
     return (
         <View style={{ flex: 1 }}>
-            {/* <ScrollView contentContainerStyle={{ padding: 16, gap: 12 }}>
-            <TextDefault style={{ color: "#eee", fontSize: 16, fontWeight: "800", marginBottom: 8 }}>
-                albumId no store: {albumId ?? "null"}
-            </TextDefault>
-            <TextDefault style={{ color: "#eee", fontSize: 16, fontWeight: "800", marginBottom: 8 }}>
-                overallRating: {overallRating}
-            </TextDefault>
-            <TextDefault style={{ color: "#aaa", fontSize: 14, marginBottom: 16 }}>
-                reviewText: {reviewText || "(vazio)"}
-            </TextDefault>
-
-            {album.tracks.items.map((track) => {
-                const entry = getRatingsArray().find((r) => r.id === track.id);
-                return (
-                    <View
-                        key={track.id}
-                        style={{
-                            backgroundColor: "#1b1c1d",
-                            borderRadius: 10,
-                            padding: 12,
-                            gap: 4,
-                        }}
-                    >
-                        <TextDefault style={{ color: "#eee", fontWeight: "bold", fontSize: 15 }}>
-                            {track.name}
-                        </TextDefault>
-                        <TextDefault style={{ color: "#777", fontSize: 12 }}>
-                            {track.artists.map((a: any) => a.name).join(", ")}
-                        </TextDefault>
-                        <TextDefault style={{ color: entry?.skip ? "#f87171" : "#a3e635", fontSize: 13, marginTop: 4 }}>
-                            {entry?.skip ? "⏭ pulada" : `nota: ${entry?.value ?? 0}`}
-                        </TextDefault>
-                        {entry?.comment ? (
-                            <TextDefault style={{ color: "#aaa", fontSize: 13 }}>
-                                "{entry.comment}"
-                            </TextDefault>
-                        ) : null}
-                    </View>
-                );
-            })}
-        </ScrollView> */}
             <WriteReviewPage
                 album={album}
                 colors={colors}

@@ -1,22 +1,23 @@
-// app/create/review/[id]/write.tsx
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
+
+import PostEditor from "@/components/reviews/create/rich-text";
+import { apiAuth, apiAuthPost } from "@/lib/api";
+import { DraftStorage, useReviewSession } from "@/store/reviewSessionStore";
+import { CheckCircle  } from "@solar-icons/react-native/Bold";
+import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
 import {
+    ActivityIndicator,
     Alert,
     Pressable,
     StyleSheet,
     Text,
     View,
-    ActivityIndicator,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
-import { apiAuthPost } from "@/lib/api";
-import { useReviewSession, DraftStorage } from "@/store/reviewSessionStore";
-import PostEditor from "@/components/reviews/rich-text";
-import { apiAuth } from "@/lib/api";
 
-import { Album, Track, Review, Palette } from "@/lib/types";
+import { Album, Palette } from "@/lib/types";
+import TextDefault from "@/components/core/text-core";
 
 export default function WriteReviewPage({
     album,
@@ -36,6 +37,8 @@ export default function WriteReviewPage({
     const albumId = useReviewSession((s) => s.albumId);
 
     const [ready, setReady] = useState(false);
+    const [saveState, setSaveState] = useState<"saved" | "saving">("saved");
+    const latestTextRef = useRef("");
 
     useEffect(() => {
         const init = async () => {
@@ -55,7 +58,7 @@ export default function WriteReviewPage({
             // nenhum dos dois — busca do servidor
             try {
                 const response = await apiAuth(`/me/reviewed/${album.id}`);
-                console.log("Review fetch response:", response);
+                // console.log("Review fetch response:", response);
                 if (response.reviewed && response.rating?.review) {
                     setReviewText(response.rating.review);
                 }
@@ -82,12 +85,32 @@ export default function WriteReviewPage({
             ? getRatingsArray()
             : Object.values(DraftStorage.load(album.id)?.ratings ?? {});
 
+    useEffect(() => {
+        latestTextRef.current = text;
+    }, [text]);
+
+    const handleDraftChange = useCallback((value: string) => {
+        latestTextRef.current = value;
+        setSaveState("saving");
+    }, []);
+
+    const handleAutoSave = useCallback(
+        (value: string) => {
+            latestTextRef.current = value;
+            setReviewText(value);
+            setSaveState("saved");
+        },
+        [setReviewText],
+    );
+
     const handleSubmit = async () => {
+        const currentText = latestTextRef.current;
+
         const response = await apiAuthPost(`/reviews/upsert`, {
             albumId: album.id,
             ratings,
-            review: text,
-            markdown: text,
+            review: currentText,
+            markdown: currentText,
             total,
             published: true,
         });
@@ -125,13 +148,37 @@ export default function WriteReviewPage({
                 <Pressable onPress={() => router.back()}>
                     <AltArrowLeft size={32} color="#eee" />
                 </Pressable>
+                <View
+                    style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        position: "absolute",
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        height: 38,
+                        zIndex: -1,
+                    }}
+                >
+                    <View style={[styles.saveStatus, { backgroundColor: saveState === "saving" ? "rgba(255,255,255,0.05)" : "rgba(28, 165, 23,0.1)" }]}>
+                        {saveState === "saving" ? (
+                            <ActivityIndicator size={14} color="#aaa" />
+                        ) : (
+                            <CheckCircle  size={14} color="#4ade80" />
+                        )}
+                        <TextDefault style={styles.saveStatusText}>
+                            {saveState === "saving" ? "Salvando" : "Salvo"}
+                        </TextDefault>
+                    </View>
+                </View>
                 <Pressable onPress={handleSubmit} style={styles.btn}>
-                    <Text style={styles.btnText}>Publicar</Text>
+                    <TextDefault style={styles.btnText}>Publicar</TextDefault>
                 </Pressable>
             </View>
 
             <PostEditor
-                onChange={setReviewText}
+                onDraftChange={handleDraftChange}
+                onAutoSave={handleAutoSave}
                 initialValue={text}
                 total={total}
                 album={album}
@@ -144,7 +191,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: "100%",
-        backgroundColor: "#161718",
+        backgroundColor: "transparent",
         flexDirection: "column",
     },
     header: {
@@ -153,6 +200,20 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         paddingHorizontal: 16,
         paddingBottom: 8,
+    },
+    saveStatus: {
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 6,
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 999,
+    },
+    saveStatusText: {
+        color: "#bbb",
+        fontSize: 12,
+        fontWeight: "700",
+        letterSpacing: 0.2,
     },
     btn: {
         paddingVertical: 8,
@@ -163,7 +224,7 @@ const styles = StyleSheet.create({
     btnText: {
         color: "#eee",
         fontSize: 16,
-        fontWeight: "800",
+        fontWeight: "700",
     },
     overlay: {
         flex: 1,

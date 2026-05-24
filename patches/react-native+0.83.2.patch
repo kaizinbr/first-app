@@ -1,0 +1,13 @@
+diff --git a/node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDefaults.h b/node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDefaults.h
+index 8e1c008..b32a0bd 100644
+--- a/node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDefaults.h
++++ b/node_modules/react-native/ReactCommon/react/featureflags/ReactNativeFeatureFlagsDefaults.h
+@@ -280,7 +280,7 @@ class ReactNativeFeatureFlagsDefaults : public ReactNativeFeatureFlagsProvider {
+   }
+ 
+   bool preventShadowTreeCommitExhaustion() override {
+-    return false;
++    return true;
+   }
+ 
+   bool shouldPressibilityUseW3CPointerEventsForHover() override {

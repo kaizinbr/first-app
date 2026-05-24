@@ -1,15 +1,12 @@
-import { LinearGradient } from "expo-linear-gradient";
-import {
-    ColorValue,
-    Image,
-    Text,
-    TouchableOpacity,
-    View,
-    StyleSheet,
-} from "react-native";
 import TextDefault from "@/components/core/text-core";
-import api from "@/lib/api";
-import { useState, useEffect } from "react";
+import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useState } from "react";
+import {
+    Image,
+    StyleSheet,
+    TouchableOpacity,
+    View
+} from "react-native";
 import { getColors } from "react-native-image-colors";
 
 import { Palette, ReviewWithAlbum } from "@/lib/types";
@@ -107,20 +104,27 @@ export function AlbumCard({
                         </TextDefault>
                         {!editor && (
                             <>
-                                <TextDefault numberOfLines={2} style={[styles.cardTitle]}>
+                                <TextDefault
+                                    numberOfLines={2}
+                                    style={[styles.cardTitle]}
+                                >
                                     {review.album.name}
                                 </TextDefault>
-                                <TextDefault  numberOfLines={1} style={{
-                                    marginTop: 4,
-                                    color: "#d1d5db",
-                                    fontSize: 12,}}>
+                                <TextDefault
+                                    numberOfLines={1}
+                                    style={{
+                                        marginTop: 4,
+                                        color: "#d1d5db",
+                                        fontSize: 12,
+                                    }}
+                                >
                                     {review.album.artists
                                         .map((artist) => artist.name)
                                         .join(", ")}
                                 </TextDefault>
                             </>
                         )}
-                        {subtitle && (
+                        {subtitle !== undefined && subtitle !== null && (
                             <TextDefault
                                 style={{
                                     marginTop: 4,
@@ -154,6 +158,5 @@ const styles = StyleSheet.create({
         fontWeight: 500,
         color: "#eee",
         marginTop: 4,
-        
     },
 });

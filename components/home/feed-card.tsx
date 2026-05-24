@@ -45,6 +45,7 @@ import { ShareLargeBtn, ShareSmBtn } from "@/components/core/share-btn";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { LikeButton } from "@/components/reviews/like-btn";
+import { CommentButton } from "@/components/core/comment-card-btn";
 
 const MAX_PREVIEW_CHARS = 500;
 
@@ -128,9 +129,7 @@ export default function FeedCard({
     const handleDelete = async () => {
         try {
             setIsLoading(true);
-            await apiAuthDELETE(`/reviews/${review.id}`, {
-                method: "DELETE",
-            });
+            await apiAuthDELETE(`/reviews/${review.id}`);
             onRefresh();
             setIsLoading(false);
         } catch (error) {
@@ -146,6 +145,7 @@ export default function FeedCard({
                     styles.main,
                     pressed && styles.mainPressed,
                 ]}
+                onLongPress={openSheet}
             >
                 <View style={styles.card}>
                     <Image
@@ -192,7 +192,7 @@ export default function FeedCard({
                                 </View>
                                 <Pressable
                                     onPress={(e) => {
-                                        // e.stopPropagation();
+                                        e.stopPropagation();
                                         openSheet();
                                     }}
                                 >
@@ -254,23 +254,11 @@ export default function FeedCard({
                                     initialCount={review.likesCount} // vem da query pública
                                     size="md"
                                 />
-                                <Pressable
-                                    onPress={() =>
-                                        router.push(
-                                            `/review/${review.id}#comments`,
-                                        )
-                                    }
-                                    style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        gap: 4,
-                                    }}
-                                >
-                                    <ChatSquare size={20} color="#888" />
-                                    <TextDefault style={styles.extraInfo}>
-                                        0
-                                    </TextDefault>
-                                </Pressable>
+                                <CommentButton
+                                    reviewId={review.id}
+                                    initialCount={review.commentsCount} // vem da query pública
+                                    size="md"
+                                />
 
                                 <ShareSmBtn
                                     url={`https://whistle.kaizin.work/r/${review.shorten}`}

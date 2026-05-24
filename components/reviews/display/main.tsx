@@ -1,15 +1,17 @@
-import { KeyboardAvoidingView, Platform } from "react-native"
 import ConfirmModal from "@/components/core/confirm-modal";
+import FixedHeader from "@/components/core/fixed-header";
 import { ShareLargeBtn } from "@/components/core/share-btn";
+import TextDefault from "@/components/core/text-core";
+import { CommentInput } from "@/components/reviews/display/comments/comment-input";
 import AlbumData, { AlbumExtraData } from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
 import ReviewContent from "@/components/reviews/display/review-content";
 import ReviewScore from "@/components/reviews/display/score";
 import Tracklist from "@/components/reviews/display/tracklist";
+import { LikeButton } from "@/components/reviews/like-btn";
 import { apiAuth, apiAuthDELETE } from "@/lib/api";
 import { Album, Palette, Review } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
 import {
     BottomSheetBackdrop,
     BottomSheetModal,
@@ -21,7 +23,6 @@ import {
     ForbiddenCircle,
     MenuDots,
     Pen,
-    Share,
     TrashBinTrash,
     User,
     Vinyl,
@@ -38,12 +39,12 @@ import React, {
 } from "react";
 import {
     ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
     Pressable,
     StyleSheet,
-    Text,
     View,
 } from "react-native";
-import TextDefault from "@/components/core/text-core";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -52,10 +53,7 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import FixedHeader from "@/components/core/fixed-header";
-import { LikeButton } from "@/components/reviews/like-btn";
-import { CommentInput } from "@/components/reviews/display/comments/comment-input";
-import CommentsSection from "@/components/reviews/display/comments/comments-section";
+import CommentsSection from "./comments/comments-section";
 
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -134,6 +132,11 @@ export default function ReviewAlbumScreen({
     const [itsMine, setItsMine] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [commentsRefreshKey, setCommentsRefreshKey] = useState(0);
+
+    const refreshComments = useCallback(() => {
+        setCommentsRefreshKey((currentKey) => currentKey + 1);
+    }, []);
 
     useEffect(() => {
         const checkOwnership = async () => {
@@ -168,283 +171,300 @@ export default function ReviewAlbumScreen({
     };
 
     return (
-        <View style={styles.container}>
-            {/* O FUNDO GRADIENTE ANIMADO */}
-            <Animated.View
-                style={[
-                    styles.gradientContainer,
-                    { height: HEADER_MAX_HEIGHT },
-                    backgroundStyle,
-                ]}
-            >
-                {/* Camada 1: A cor principal (Ex: Verde escuro) descendo na diagonal */}
-                <LinearGradient
-                    colors={[selectRightColor(colors), "#161718"]} // Troque pela cor dinâmica do álbum depois
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                />
-                <LinearGradient
-                    colors={[colors.muted, "#161718"]} // Troque pela cor dinâmica do álbum depois
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
-                />
-                {/* Camada 2: Uma sombra que vem de baixo pra criar a "profundidade" do mesh */}
-                <LinearGradient
-                    colors={["transparent", "rgba(22, 23, 24, 1)"]}
-                    start={{ x: 0.5, y: 0.2 }}
-                    end={{ x: 0.5, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                />
-            </Animated.View>
-
-            <FixedHeader data={albumData} colors={colors} scrollY={scrollY} />
-
-            {/* BOTÃO VOLTAR */}
-            <Pressable
-                onPress={() => router.back()}
-                style={[styles.backButton, { top: insets.top + 4 }]}
-            >
-                <AltArrowLeft size={32} color="#eee" />
-            </Pressable>
-
-            <Pressable
-                style={[styles.dotsBtn, { top: insets.top + 4 }]}
-                onPress={openSheet}
-            >
-                <MenuDots
-                    // albumData={albumData}
-                    size={26}
-                    color="#eee"
-                    style={{ transform: [{ rotate: "90deg" }] }}
-                />
-            </Pressable>
-                <CommentInput reviewId={reviewData.id} />
-
-            {/* O CONTEÚDO DA PÁGINA */}
-            <Animated.ScrollView
-                onScroll={onScroll}
-                scrollEventThrottle={16}
-                showsVerticalScrollIndicator={false}
-                style={{ zIndex: 1, marginBottom: 56, position: "relative" }} // zIndex para ficar acima do gradiente
-            >
-                <View
-                    style={{
-                        backgroundColor: "transparent",
-                        paddingBottom: 16,
-                        flexDirection: "row",
-                    }}
-                >
-                    <AlbumHeader
-                        maxHeight={HEADER_MAX_HEIGHT}
-                        data={albumData}
-                        headerContentStyle={headerContentStyle}
-                    />
-                    <AlbumData
-                        data={albumData}
-                        headerContentStyle={headerContentStyle}
-                    />
-                </View>
-                <ReviewScore review={reviewData} />
-                {reviewData.review.length > 0 && (
-                    <ReviewContent review={reviewData} />
-                )}
-                <LikeButton
-                    ratingId={reviewData.id}
-                    initialCount={reviewData.likesCount} // vem da query pública
-                    size="md"
-                    style={{ marginLeft: 12 }}
-                />
-                <Tracklist
-                    review={reviewData}
-                    albumTracks={albumData.tracks.items}
-                />
-                <AlbumExtraData data={albumData} />
-                <CommentsSection reviewData={reviewData} refreshComments={() => {}} />
-                <View style={{ height: 100 }} />
-            </Animated.ScrollView>
-            <BottomSheetModal
-                ref={bottomSheetRef}
-                index={1}
-                snapPoints={snapPoints}
-                enablePanDownToClose
-                topInset={insets.top}
-                // containerStyle={{ zIndex: 1000 }}
-                backgroundStyle={{ backgroundColor: "#161718" }}
-                handleIndicatorStyle={{ backgroundColor: "#555" }}
-                backdropComponent={(props) => (
-                    <BottomSheetBackdrop
-                        {...props}
-                        disappearsOnIndex={-1}
-                        appearsOnIndex={0}
-                    />
-                )}
-            >
-                <BottomSheetView>
-                    <View style={styles.sheetView}>
-                        {itsMine && (
-                            <>
-                                <Pressable
-                                    style={({ pressed }) => [
-                                        styles.optBtn,
-                                        {
-                                            backgroundColor: pressed
-                                                ? "rgba(255, 255, 255, 0.05)"
-                                                : "transparent",
-                                        },
-                                    ]}
-                                    onPress={() => {
-                                        dismiss();
-                                        setShowDeleteModal(true);
-                                    }}
-                                >
-                                    <TrashBinTrash size={24} color="#eee" />
-                                    <TextDefault style={styles.optText}>
-                                        Excluir
-                                    </TextDefault>
-                                </Pressable>
-                                <Pressable
-                                    style={({ pressed }) => [
-                                        styles.optBtn,
-                                        {
-                                            backgroundColor: pressed
-                                                ? "rgba(255, 255, 255, 0.05)"
-                                                : "transparent",
-                                        },
-                                    ]}
-                                    onPress={() => {
-                                        router.push({
-                                            pathname:
-                                                "/(app)/create/review/tracks/[id]",
-                                            params: { id: reviewData.album_id },
-                                        });
-                                        dismiss();
-                                    }}
-                                >
-                                    <Pen size={24} color="#eee" />
-                                    <TextDefault style={styles.optText}>
-                                        Editar
-                                    </TextDefault>
-                                </Pressable>
-                            </>
-                        )}
-                        <ShareLargeBtn
-                            type="review"
-                            url={`https://whistle.kaizin.work/r/${reviewData.shorten}`}
-                            dismiss={dismiss}
-                        />
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.optBtn,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {}}
-                        >
-                            <Flag size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>
-                                Denunciar
-                            </TextDefault>
-                        </Pressable>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.optBtn,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {
-                                router.push({
-                                    pathname: "/(app)/(tabs)/(home)/album/[id]",
-                                    params: { id: reviewData.album_id },
-                                });
-                                dismiss();
-                            }}
-                        >
-                            <Vinyl size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>
-                                Ver álbum
-                            </TextDefault>
-                        </Pressable>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.optBtn,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {
-                                router.push({
-                                    pathname:
-                                        "/(app)/(tabs)/(home)/user/[username]",
-                                    params: {
-                                        username: reviewData.Profile.username,
-                                    },
-                                });
-                                dismiss();
-                            }}
-                        >
-                            <User size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>
-                                Ver usuário
-                            </TextDefault>
-                        </Pressable>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.optBtn,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {}}
-                        >
-                            <ForbiddenCircle size={24} color="#eee" />
-                            <TextDefault style={styles.optText}>
-                                Bloquear usuário
-                            </TextDefault>
-                        </Pressable>
-                    </View>
-                </BottomSheetView>
-            </BottomSheetModal>
-            <ConfirmModal
-                visible={showDeleteModal}
-                title="Apagar avaliação"
-                message="Essa ação não pode ser desfeita."
-                confirmLabel="Apagar"
-                cancelLabel="Cancelar"
-                confirmDestructive
-                onConfirm={() => {
-                    handleDelete();
-                    setShowDeleteModal(false);
-                }}
-                onCancel={() => setShowDeleteModal(false)}
-            />
-            {isLoading && (
-                <View
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+            <View style={styles.container}>
+                <Animated.View
                     style={[
-                        StyleSheet.absoluteFill,
-                        {
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "rgba(0,0,0,0.5)",
-                            zIndex: 999,
-                        },
+                        styles.gradientContainer,
+                        { height: HEADER_MAX_HEIGHT },
+                        backgroundStyle,
                     ]}
                 >
-                    <ActivityIndicator size="large" color="#8065ef" />
-                </View>
-            )}
-        </View>
+                    <LinearGradient
+                        colors={[selectRightColor(colors), "#161718"]}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 1 }}
+                        style={StyleSheet.absoluteFill}
+                    />
+                    <LinearGradient
+                        colors={[colors.muted, "#161718"]}
+                        start={{ x: 1, y: 0 }}
+                        end={{ x: 0, y: 1 }}
+                        style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
+                    />
+                    <LinearGradient
+                        colors={["transparent", "rgba(22, 23, 24, 1)"]}
+                        start={{ x: 0.5, y: 0.2 }}
+                        end={{ x: 0.5, y: 1 }}
+                        style={StyleSheet.absoluteFill}
+                    />
+                </Animated.View>
+
+                <FixedHeader
+                    data={albumData}
+                    colors={colors}
+                    scrollY={scrollY}
+                />
+
+                <Pressable
+                    onPress={() => router.back()}
+                    style={[styles.backButton, { top: insets.top + 4 }]}
+                >
+                    <AltArrowLeft size={32} color="#eee" />
+                </Pressable>
+
+                <Pressable
+                    style={[styles.dotsBtn, { top: insets.top + 4 }]}
+                    onPress={openSheet}
+                >
+                    <MenuDots
+                        size={26}
+                        color="#eee"
+                        style={{ transform: [{ rotate: "90deg" }] }}
+                    />
+                </Pressable>
+
+                <Animated.ScrollView
+                    onScroll={onScroll}
+                    scrollEventThrottle={16}
+                    showsVerticalScrollIndicator={false}
+                    style={{ zIndex: 1, flex: 1, position: "relative" }}
+                >
+                    <View
+                        style={{
+                            backgroundColor: "transparent",
+                            paddingBottom: 16,
+                            flexDirection: "row",
+                        }}
+                    >
+                        <AlbumHeader
+                            maxHeight={HEADER_MAX_HEIGHT}
+                            data={albumData}
+                            headerContentStyle={headerContentStyle}
+                        />
+                        <AlbumData
+                            data={albumData}
+                            headerContentStyle={headerContentStyle}
+                        />
+                    </View>
+                    <ReviewScore review={reviewData} />
+                    {reviewData.review.length > 0 && (
+                        <ReviewContent review={reviewData} />
+                    )}
+                    <LikeButton
+                        ratingId={reviewData.id}
+                        initialCount={reviewData.likesCount}
+                        size="md"
+                        style={{ marginLeft: 16 }}
+                    />
+                    <Tracklist
+                        review={reviewData}
+                        albumTracks={albumData.tracks.items}
+                    />
+                    <AlbumExtraData data={albumData} />
+                    <CommentsSection
+                        reviewData={reviewData}
+                        refreshKey={commentsRefreshKey}
+                        refreshComments={refreshComments}
+                    />
+                    <View style={{ height: 100 }} />
+                </Animated.ScrollView>
+
+                <CommentInput
+                    reviewId={reviewData.id}
+                    onCommentPosted={refreshComments}
+                />
+
+                <BottomSheetModal
+                    ref={bottomSheetRef}
+                    index={1}
+                    snapPoints={snapPoints}
+                    enablePanDownToClose
+                    topInset={insets.top}
+                    backgroundStyle={{ backgroundColor: "#161718" }}
+                    handleIndicatorStyle={{ backgroundColor: "#555" }}
+                    backdropComponent={(props) => (
+                        <BottomSheetBackdrop
+                            {...props}
+                            disappearsOnIndex={-1}
+                            appearsOnIndex={0}
+                        />
+                    )}
+                >
+                    <BottomSheetView>
+                        <View style={styles.sheetView}>
+                            {itsMine && (
+                                <>
+                                    <Pressable
+                                        style={({ pressed }) => [
+                                            styles.optBtn,
+                                            {
+                                                backgroundColor: pressed
+                                                    ? "rgba(255, 255, 255, 0.05)"
+                                                    : "transparent",
+                                            },
+                                        ]}
+                                        onPress={() => {
+                                            dismiss();
+                                            setShowDeleteModal(true);
+                                        }}
+                                    >
+                                        <TrashBinTrash size={24} color="#eee" />
+                                        <TextDefault style={styles.optText}>
+                                            Excluir
+                                        </TextDefault>
+                                    </Pressable>
+                                    <Pressable
+                                        style={({ pressed }) => [
+                                            styles.optBtn,
+                                            {
+                                                backgroundColor: pressed
+                                                    ? "rgba(255, 255, 255, 0.05)"
+                                                    : "transparent",
+                                            },
+                                        ]}
+                                        onPress={() => {
+                                            router.push({
+                                                pathname:
+                                                    "/(app)/create/review/tracks/[id]",
+                                                params: {
+                                                    id: reviewData.album_id,
+                                                },
+                                            });
+                                            dismiss();
+                                        }}
+                                    >
+                                        <Pen size={24} color="#eee" />
+                                        <TextDefault style={styles.optText}>
+                                            Editar
+                                        </TextDefault>
+                                    </Pressable>
+                                </>
+                            )}
+                            <ShareLargeBtn
+                                type="review"
+                                url={`https://whistle.kaizin.work/r/${reviewData.shorten}`}
+                                dismiss={dismiss}
+                            />
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.optBtn,
+                                    {
+                                        backgroundColor: pressed
+                                            ? "rgba(255, 255, 255, 0.05)"
+                                            : "transparent",
+                                    },
+                                ]}
+                                onPress={() => {}}
+                            >
+                                <Flag size={24} color="#eee" />
+                                <TextDefault style={styles.optText}>
+                                    Denunciar
+                                </TextDefault>
+                            </Pressable>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.optBtn,
+                                    {
+                                        backgroundColor: pressed
+                                            ? "rgba(255, 255, 255, 0.05)"
+                                            : "transparent",
+                                    },
+                                ]}
+                                onPress={() => {
+                                    router.push({
+                                        pathname:
+                                            "/(app)/(tabs)/(home)/album/[id]",
+                                        params: { id: reviewData.album_id },
+                                    });
+                                    dismiss();
+                                }}
+                            >
+                                <Vinyl size={24} color="#eee" />
+                                <TextDefault style={styles.optText}>
+                                    Ver álbum
+                                </TextDefault>
+                            </Pressable>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.optBtn,
+                                    {
+                                        backgroundColor: pressed
+                                            ? "rgba(255, 255, 255, 0.05)"
+                                            : "transparent",
+                                    },
+                                ]}
+                                onPress={() => {
+                                    router.push({
+                                        pathname:
+                                            "/(app)/(tabs)/(home)/user/[username]",
+                                        params: {
+                                            username:
+                                                reviewData.Profile.username,
+                                        },
+                                    });
+                                    dismiss();
+                                }}
+                            >
+                                <User size={24} color="#eee" />
+                                <TextDefault style={styles.optText}>
+                                    Ver usuário
+                                </TextDefault>
+                            </Pressable>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.optBtn,
+                                    {
+                                        backgroundColor: pressed
+                                            ? "rgba(255, 255, 255, 0.05)"
+                                            : "transparent",
+                                    },
+                                ]}
+                                onPress={() => {}}
+                            >
+                                <ForbiddenCircle size={24} color="#eee" />
+                                <TextDefault style={styles.optText}>
+                                    Bloquear usuário
+                                </TextDefault>
+                            </Pressable>
+                        </View>
+                    </BottomSheetView>
+                </BottomSheetModal>
+
+                <ConfirmModal
+                    visible={showDeleteModal}
+                    title="Apagar avaliação"
+                    message="Essa ação não pode ser desfeita."
+                    confirmLabel="Apagar"
+                    cancelLabel="Cancelar"
+                    confirmDestructive
+                    onConfirm={() => {
+                        handleDelete();
+                        setShowDeleteModal(false);
+                    }}
+                    onCancel={() => setShowDeleteModal(false)}
+                />
+
+                {isLoading && (
+                    <View
+                        style={[
+                            StyleSheet.absoluteFill,
+                            {
+                                justifyContent: "center",
+                                alignItems: "center",
+                                backgroundColor: "rgba(0,0,0,0.5)",
+                                zIndex: 999,
+                            },
+                        ]}
+                    >
+                        <ActivityIndicator size="large" color="#8065ef" />
+                    </View>
+                )}
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 

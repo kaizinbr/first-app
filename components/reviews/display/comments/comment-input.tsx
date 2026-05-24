@@ -1,45 +1,43 @@
+import { useCallback, useRef, useState } from "react";
 import {
-    KeyboardAvoidingView,
-    Platform,
-    Keyboard,
-    Animated,
-    Easing,
-} from "react-native";
-import { useRef, useState, useEffect, useCallback } from "react";
-import {
-    View,
-    Text,
-    Pressable,
-    FlatList,
-    StyleSheet,
     ActivityIndicator,
+    FlatList,
+    Keyboard,
+    Pressable,
+    StyleSheet,
+    Text,
+    View,
 } from "react-native";
 import {
     EnrichedMarkdownTextInput,
     type EnrichedMarkdownTextInputInstance,
     type StyleState,
 } from "react-native-enriched-markdown";
-import axios from "axios";
+import Animated, {
+    useAnimatedKeyboard,
+    useAnimatedStyle,
+} from "react-native-reanimated";
 
 import {
+    Plain2Bold,
     TextBoldSquareBold,
     TextBoldSquareOutline,
-    TextItalicSquareLinear,
     TextItalicSquareBold,
-    Plain2Bold,
+    TextItalicSquareLinear,
 } from "@solar-icons/react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { apiAuth, apiAuthPost } from "@/lib/api";
+import { AvatarNoPress } from "@/components/core/avatar";
+import TextDefault from "@/components/core/text-core";
 
 interface Suggestion {
     id: string;
     username: string;
+    name: string;
     avatar_url: string;
 }
 
 const MENTION_REGEX = /@(\w+)$/;
-const TAB_BAR_HEIGHT = 56;
 
 export function CommentInput({
     reviewId,
@@ -51,7 +49,6 @@ export function CommentInput({
     onCommentPosted?: () => void;
 }) {
     const ref = useRef<EnrichedMarkdownTextInputInstance>(null);
-    const insets = useSafeAreaInsets();
     const [styleState, setStyleState] = useState<StyleState | null>(null);
     const [markdown, setMarkdown] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -60,6 +57,15 @@ export function CommentInput({
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
     const [mentionQuery, setMentionQuery] = useState<string | null>(null);
     const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const keyboard = useAnimatedKeyboard();
+
+    const containerStyle = useAnimatedStyle(() => {
+        const keyboardHeight = keyboard.height.value;
+
+        return {
+            bottom: keyboardHeight > 0 ? keyboardHeight : 56,
+        };
+    });
 
     const handleChangeMarkdown = useCallback((text: string) => {
         setMarkdown(text);
@@ -93,7 +99,7 @@ export function CommentInput({
             // substitui o @query pelo link de menção no markdown
             const newMarkdown = markdown.replace(
                 MENTION_REGEX,
-                `[@${user.username}](/profile/${user.username}) `,
+                `[@${user.username}](${user.username}) `,
             );
             // limpa sugestões
             setSuggestions([]);
@@ -115,10 +121,11 @@ export function CommentInput({
         try {
             await apiAuthPost(`/reviews/${reviewId}/comment`, {
                 body,
-                    ...(parentId && { parentId }),
+                ...(parentId && { parentId }),
             });
             ref.current?.setValue?.("");
             setMarkdown("");
+            Keyboard.dismiss();
             onCommentPosted?.();
         } catch (err) {
             // trate o erro com toast/alert conforme seu padrão
@@ -127,139 +134,132 @@ export function CommentInput({
         }
     }, [markdown, submitting, reviewId, parentId, onCommentPosted]);
 
-    // teclado
-
-    const keyboardOffset = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        const showEvent =
-            Platform.OS === "ios" ? "keyboardWillShow" : "keyboardDidShow";
-
-        const hideEvent =
-            Platform.OS === "ios" ? "keyboardWillHide" : "keyboardDidHide";
-
-        const showSub = Keyboard.addListener(showEvent, (event) => {
-            Animated.timing(keyboardOffset, {
-                toValue: event.endCoordinates.height,
-                duration: 250,
-                easing: Easing.out(Easing.ease),
-                useNativeDriver: false,
-            }).start();
-        });
-
-        const hideSub = Keyboard.addListener(hideEvent, () => {
-            Animated.timing(keyboardOffset, {
-                toValue: 0,
-                duration: 250,
-                easing: Easing.out(Easing.ease),
-                useNativeDriver: false,
-            }).start();
-        });
-
-        return () => {
-            showSub.remove();
-            hideSub.remove();
-        };
-    }, []);
-
     return (
         <Animated.View
-            style={{
-                backgroundColor: "#161718",
-                position: "absolute",
-                bottom: Animated.add(
-                    keyboardOffset,
-                    new Animated.Value(TAB_BAR_HEIGHT + insets.bottom),
-                ),
-                left: 0,
-                right: 0,
-                zIndex: 10,
-            }}
+            pointerEvents="box-none"
+            style={[styles.container, containerStyle]}
         >
-            {/* Dropdown de mentions */}
-            {suggestions.length > 0 && (
-                <View style={styles.suggestions}>
-                    <FlatList
-                        data={suggestions}
-                        keyExtractor={(item) => item.id}
-                        keyboardShouldPersistTaps="always"
-                        renderItem={({ item }) => (
-                            <Pressable
-                                style={styles.suggestionItem}
-                                onPress={() => handleSelectMention(item)}
-                            >
-                                <Text style={styles.suggestionText}>
-                                    @{item.username}
-                                </Text>
-                            </Pressable>
-                        )}
-                    />
-                </View>
-            )}
-
-            <View style={styles.row}>
-                {/* Toolbar bold/italic */}
-                <Pressable
-                    onPress={() => ref.current?.toggleBold()}
-                    hitSlop={8}
-                    style={styles.toolbarBtn}
-                >
-                    {styleState?.bold.isActive ? (
-                        <TextBoldSquareBold size={22} color="#fff" />
-                    ) : (
-                        <TextBoldSquareOutline size={22} color="#888" />
-                    )}
-                </Pressable>
-
-                <Pressable
-                    onPress={() => ref.current?.toggleItalic()}
-                    hitSlop={8}
-                    style={styles.toolbarBtn}
-                >
-                    {styleState?.italic.isActive ? (
-                        <TextItalicSquareBold size={22} color="#fff" />
-                    ) : (
-                        <TextItalicSquareLinear size={22} color="#888" />
-                    )}
-                </Pressable>
-
-                <EnrichedMarkdownTextInput
-                    ref={ref}
-                    placeholder="Adicione um comentário..."
-                    placeholderTextColor="#555"
-                    onChangeState={setStyleState}
-                    onChangeMarkdown={handleChangeMarkdown}
-                    style={styles.input}
-                    markdownStyle={{
-                        strong: { color: "#fff" },
-                        em: { color: "#aaa" },
-                        link: { color: "#8065ef", underline: false },
-                    }}
-                    multiline
-                    scrollEnabled={true}
-                />
-
-                <Pressable
-                    onPress={handleSubmit}
-                    disabled={!markdown.trim() || submitting}
-                    hitSlop={8}
-                    style={[styles.toolbarSendBtn, { backgroundColor: markdown.trim() ? "#8065ef" : "#333" }]}
-                >
-                    {submitting ? (
-                        <ActivityIndicator size="small" color="#fff" />
-                    ) : (
-                        <Plain2Bold
-                            size={20}
-                            color={markdown.trim() ? "#fff" : "#999"}
+            <View style={styles.sheet}>
+                {/* Dropdown de mentions */}
+                {suggestions.length > 0 && (
+                    <View style={styles.suggestions}>
+                        <FlatList
+                            data={suggestions}
+                            keyExtractor={(item) => item.id}
+                            keyboardShouldPersistTaps="always"
+                            renderItem={({ item }) => (
+                                <Pressable
+                                    style={styles.suggestionItem}
+                                    onPress={() => handleSelectMention(item)}
+                                >
+                                    <AvatarNoPress data={item} size={28} />
+                                    <View
+                                        style={{
+                                            flexDirection: "column",
+                                            gap: 2,
+                                        }}
+                                    >
+                                        <TextDefault
+                                            style={styles.suggestionText}
+                                            
+                                        >
+                                            {item.name}
+                                        </TextDefault>
+                                        <TextDefault
+                                            style={[styles.suggestionText, { color: "#888", fontSize: 12 }]}
+                                        >
+                                            @{item.username}
+                                        </TextDefault>
+                                    </View>
+                                </Pressable>
+                            )}
                         />
-                    )}
-                </Pressable>
+                    </View>
+                )}
+
+                <View style={styles.row}>
+                    {/* Toolbar bold/italic */}
+                    <Pressable
+                        onPress={() => ref.current?.toggleBold()}
+                        hitSlop={8}
+                        style={styles.toolbarBtn}
+                    >
+                        {styleState?.bold.isActive ? (
+                            <TextBoldSquareBold size={22} color="#fff" />
+                        ) : (
+                            <TextBoldSquareOutline size={22} color="#888" />
+                        )}
+                    </Pressable>
+
+                    <Pressable
+                        onPress={() => ref.current?.toggleItalic()}
+                        hitSlop={8}
+                        style={styles.toolbarBtn}
+                    >
+                        {styleState?.italic.isActive ? (
+                            <TextItalicSquareBold size={22} color="#fff" />
+                        ) : (
+                            <TextItalicSquareLinear size={22} color="#888" />
+                        )}
+                    </Pressable>
+
+                    <EnrichedMarkdownTextInput
+                        ref={ref}
+                        placeholder="Adicione um comentário..."
+                        placeholderTextColor="#555"
+                        onChangeState={setStyleState}
+                        onChangeMarkdown={handleChangeMarkdown}
+                        style={styles.input}
+                        markdownStyle={{
+                            strong: { color: "#fff" },
+                            em: { color: "#aaa" },
+                            link: { color: "#8065ef", underline: false },
+                        }}
+                        multiline
+                        scrollEnabled={true}
+                    />
+
+                    <Pressable
+                        onPress={handleSubmit}
+                        disabled={!markdown.trim() || submitting}
+                        hitSlop={8}
+                        style={[
+                            styles.toolbarSendBtn,
+                            {
+                                backgroundColor: markdown.trim()
+                                    ? "#8065ef"
+                                    : "#333",
+                            },
+                        ]}
+                    >
+                        {submitting ? (
+                            <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                            <Plain2Bold
+                                size={20}
+                                color={markdown.trim() ? "#fff" : "#999"}
+                            />
+                        )}
+                    </Pressable>
+                </View>
             </View>
         </Animated.View>
     );
 }
 
 const styles = StyleSheet.create({
+    container: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        width: "100%",
+        justifyContent: "flex-end",
+        zIndex: 10,
+    },
+
+    sheet: {
+        backgroundColor: "#161718",
+    },
     row: {
         flexDirection: "row",
         alignItems: "flex-end",
@@ -303,6 +303,9 @@ const styles = StyleSheet.create({
         paddingVertical: 10,
         borderBottomWidth: StyleSheet.hairlineWidth,
         borderBottomColor: "#222",
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
     },
     suggestionText: {
         color: "#fff",

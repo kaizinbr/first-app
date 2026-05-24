@@ -126,7 +126,7 @@ export default function Banner({
     }, []);
 
     useEffect(() => {
-        console.log("Current index:", currentIndex);
+        // console.log("Current index:", currentIndex);
         // setCurrentIndex(currentIndex);
     }, [currentIndex, bannerData]);
 
@@ -148,7 +148,7 @@ export default function Banner({
                         snapEnabled={true}
                         style={{
                             width: width,
-                            height: HEADER_MAX_HEIGHT * 0.5,
+                            height: HEADER_MAX_HEIGHT * 0.55,
                         }}
                         width={width}
                         mode="parallax"
