@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Alert, StyleSheet, View } from "react-native";
 import { getColors } from "react-native-image-colors";
 
-export function Page() {
+export default function Page() {
     const { id } = useLocalSearchParams();
     console.log("Avaliando o album", id);
 
@@ -160,7 +160,7 @@ export function Page() {
 
     return (
         <>
-            {reviewData && colors ? (
+            {/* {reviewData && colors ? (
                 <ReviewCreateMain
                     reviewData={reviewData}
                     colors={colors}
@@ -180,7 +180,10 @@ export function Page() {
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#8065ef" />
                 </View>
-            )}
+            )} */}
+            <View style={styles.overlay}>
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
         </>
     );
 }

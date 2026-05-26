@@ -96,7 +96,7 @@ export default function TabsDynamicLayout() {
                         headerShown: false,
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <HomeSmileAngle size={28} color={color} />
+                            <HomeSmileAngle size={28} color={color as string} />
                         ),
                     }}
                 />
@@ -106,7 +106,7 @@ export default function TabsDynamicLayout() {
                         headerShown: false,
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <MinimalisticMagnifier size={28} color={color} />
+                            <MinimalisticMagnifier size={28} color={color as string} />
                         ),
                     }}
                 />
@@ -116,7 +116,7 @@ export default function TabsDynamicLayout() {
                         headerShown: false,
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <Library size={28} color={color} />
+                            <Library size={28} color={color as string} />
                         ),
                     }}
                 />
@@ -125,11 +125,12 @@ export default function TabsDynamicLayout() {
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
+                        
                         tabBarIcon: ({ color }) =>
                             profile ? (
                                 <AvatarNoPress data={profile} size={28} />
                             ) : (
-                                <User size={28} color={color} />
+                                <User size={28} color={color as string} />
                             ),
                     }}
                 />

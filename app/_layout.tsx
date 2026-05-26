@@ -2,23 +2,42 @@ import { Stack } from "expo-router";
 import { SafeAreaView, SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { authClient } from "@/lib/auth-client";
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
+import { useEffect } from "react";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import {
     DarkTheme,
     DefaultTheme,
     ThemeProvider,
-} from "@react-navigation/native";
+} from "expo-router/react-navigation";
 import { useColorScheme, View, StyleSheet } from "react-native";
 import * as WebBrowser from "expo-web-browser";
+import { registerForPushNotifications } from "@/lib/util/registerForPushNotifications";
 
 WebBrowser.maybeCompleteAuthSession();
+
 export default function Layout() {
     const { data: session } = authClient.useSession();
     console.log("Session data in layout:", session);
-    const isLoggedIn = false;
+    const isLoggedIn = !!session;
     console.log("Is user logged in?", isLoggedIn);
     const colorScheme = useColorScheme();
+
+    // Registrar para notificações push quando o usuário fizer login
+    useEffect(() => {
+        if (isLoggedIn) {
+            registerForPushNotifications()
+                .then((token) => {
+                    console.log("Push notification token registered:", token);
+                })
+                .catch((error) => {
+                    console.error(
+                        "Error registering for push notifications:",
+                        error,
+                    );
+                });
+        }
+    }, [isLoggedIn]);
 
     const MyTheme = {
         ...(colorScheme === "dark" ? DarkTheme : DefaultTheme),
@@ -37,15 +56,20 @@ export default function Layout() {
             <SafeAreaProvider>
                 <GestureHandlerRootView style={{ flex: 1 }}>
                     <BottomSheetModalProvider>
-                        <SafeAreaView edges={["bottom", "left", "right"]} style={{ flex: 1, backgroundColor: MyTheme.colors.background }}>
-                            <StatusBar style="light" translucent={true} />
-                            
+                        <SafeAreaView
+                            edges={["bottom", "left", "right"]}
+                            style={{
+                                flex: 1,
+                                backgroundColor: MyTheme.colors.background,
+                            }}
+                        >
+                            <StatusBar style="auto" />
+
                             {/* DEIXE O STACK LIMPO E ESTÁTICO */}
                             <Stack screenOptions={{ headerShown: false }}>
-                            <Stack.Screen name="(auth)" />
-                            <Stack.Screen name="(app)" />
-                        </Stack>
-
+                                <Stack.Screen name="(auth)" />
+                                <Stack.Screen name="(app)" />
+                            </Stack>
                         </SafeAreaView>
                     </BottomSheetModalProvider>
                 </GestureHandlerRootView>

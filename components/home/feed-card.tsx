@@ -181,23 +181,21 @@ export default function FeedCard({
                                         {review.Profile.name}
                                     </TextDefault>
                                     <TextDefault
-                                        style={{ color: "#777", fontSize: 12 }}
+                                        style={{ color: "#777", fontSize: 12, marginBottom: 1 }}
                                     >
                                         ·{" "}
+                                        @{review.Profile.username}
+                                    </TextDefault>
+                                </View>
+                                    <TextDefault
+                                        style={{ color: "#777", fontSize: 12 }}
+                                    >
                                         {getPastRelativeTime(
                                             new Date(review.created_at),
                                             new Date(),
                                         )}
                                     </TextDefault>
-                                </View>
-                                <Pressable
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        openSheet();
-                                    }}
-                                >
-                                    <MenuDots color="#aaa" size={20} />
-                                </Pressable>
+                                
                             </View>
                             {content ? (
                                 <>
@@ -263,6 +261,14 @@ export default function FeedCard({
                                 <ShareSmBtn
                                     url={`https://whistle.kaizin.work/r/${review.shorten}`}
                                 />
+                                <Pressable
+                                    onPress={(e) => {
+                                        e.stopPropagation();
+                                        openSheet();
+                                    }}
+                                >
+                                    <MenuDots color="#aaa" size={20} />
+                                </Pressable>
                             </View>
                         </View>
                     ) : null}

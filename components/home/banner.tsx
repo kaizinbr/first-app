@@ -20,7 +20,7 @@ import { getBannerColor, getBannerColors } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
 import { getPalette } from "@b.taranenko/expo-color-thief";
 import { Palette } from "@/lib/types";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused } from "expo-router/react-navigation";
 
 import TextDefault from "@/components/core/text-core";
 

@@ -8,7 +8,7 @@ import Animated, {
     interpolateColor,
     runOnJS,
 } from "react-native-reanimated";
-import { useIsFocused } from "@react-navigation/native";
+import { useIsFocused } from "expo-router/react-navigation";
 import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
 import { UserProfile, Palette } from "@/lib/types";

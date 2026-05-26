@@ -1,5 +1,6 @@
 import React from "react";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
+import { View, Text, StyleSheet, Image } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
 import TextDefault from "@/components/core/text-core";
 import Animated, {
     useAnimatedStyle,
@@ -7,6 +8,8 @@ import Animated, {
     useSharedValue,
     interpolate,
     Extrapolation,
+    withSpring,
+    withSequence,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -14,7 +17,11 @@ import { useRouter } from "expo-router";
 
 import { Album, Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor, getBannerColors } from "@/lib/util/workWithColors";
+import {
+    lightenColor,
+    darkenColor,
+    getBannerColors,
+} from "@/lib/util/workWithColors";
 import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import Tracklist from "@/components/albuns/tracklist";
@@ -98,6 +105,12 @@ export default function AlbumScreen({
         return { opacity, transform: [{ scale }] };
     });
 
+    const scale = useSharedValue(1);
+
+    const animatedStyle = useAnimatedStyle(() => ({
+        transform: [{ scale: scale.value }],
+    }));
+
     return (
         <View style={styles.container}>
             {/* FUNDO */}
@@ -108,7 +121,6 @@ export default function AlbumScreen({
                     backgroundStyle,
                 ]}
             >
-
                 <LinearGradient
                     colors={[darkenColor(testColor1, 1.5), "#161718"]}
                     style={StyleSheet.absoluteFill}
@@ -134,10 +146,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: lightenColor(
-                                testColor1,
-                                1,
-                            ),
+                            backgroundColor: lightenColor(testColor1, 1),
                             width: 260,
                             height: 260,
                             bottom: 170,
@@ -150,10 +159,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: lightenColor(
-                                testColor1,
-                                0.7,
-                            ),
+                            backgroundColor: lightenColor(testColor1, 0.7),
                             width: 160,
                             height: 160,
                             bottom: 80,
@@ -166,10 +172,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: lightenColor(
-                                testColor1,
-                                0.8,
-                            ),
+                            backgroundColor: lightenColor(testColor1, 0.8),
                             width: 160,
                             height: 160,
                             top: 130,
@@ -241,29 +244,46 @@ export default function AlbumScreen({
                 </View>
             )}
 
-
-            <Pressable
-                onPress={() =>
-                    router.push({
-                        pathname: `/(app)/create/review/tracks/[id]`,
-                        params: { id: albumData.id },
-                    })
-                }
-                style={({ pressed }) => [
-                    styles.reviewButton,
+            <Animated.View
+                style={[
+                    animatedStyle,
                     {
-                        backgroundColor: pressed
-                            ? "#7051ED"
-                            : "#8065ef",
+                        position: "absolute",
+                        left: 16,
+                        right: 70,
+                        bottom: 64,
+                        zIndex: 11,
+                        height: 46,
                     },
                 ]}
             >
-                <TextDefault
-                    style={{ color: "#eee", fontSize: 16, fontWeight: "bold" }}
+                <Pressable
+                    onPressIn={() => {
+                        scale.value = withSpring(0.96);
+                    }}
+                    onPressOut={() => {
+                        scale.value = withSpring(1);
+                    }}
+                    onPress={() =>
+                        router.push({
+                            pathname: `/(app)/create/review/tracks/[id]`,
+                            params: { id: albumData.id },
+                        })
+                    }
+                    style={styles.reviewButton}
                 >
-                    Avaliar álbum
-                </TextDefault>
-            </Pressable>
+                    <TextDefault
+                        style={{
+                            color: "#eee",
+                            fontSize: 16,
+                            fontWeight: "bold",
+                        }}
+                    >
+                        Avaliar álbum
+                    </TextDefault>
+                </Pressable>
+            </Animated.View>
+
             <WishlistAlbumBtn albumData={albumData} size={30} colors={colors} />
 
             <Animated.ScrollView
@@ -329,15 +349,11 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     reviewButton: {
-        position: "absolute",
-        left: 16,
-        right: 70,
-        bottom: 64,
-        zIndex: 11,
         height: 46,
+        width: "100%",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#1c494f",
+        backgroundColor: "#8065ef",
         borderRadius: 12,
         paddingHorizontal: 20,
         paddingVertical: 12,

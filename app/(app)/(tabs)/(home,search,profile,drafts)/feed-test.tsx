@@ -1,176 +1,226 @@
-import { FlatList, StyleProp, StyleSheet, useWindowDimensions, View, ViewProps, ViewStyle } from "react-native";
-import CustomTabBar from "@/components/test/CustomTabBar";
-import { TAB_BAR_HEIGHT, TABS } from "@/components/test/TabConfig";
-import { useCallback, useMemo, useRef, useState } from "react";
-import Header from "@/components/test/Header";
-import OverviewTab from "@/components/test/tabs/OverviewTab";
-import HistoryTab from "@/components/test/tabs/HistoryTab";
+import {
+    Text,
+    View,
+    StyleSheet,
+    ScrollView,
+    KeyboardAvoidingView,
+    Image,
+    Platform,
+    TextInput,
+    FlatList,
+    useWindowDimensions,
+    ActivityIndicator,
+} from "react-native";
+
+import { useState, useEffect, useCallback } from "react";
+import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import Animated, { useAnimatedScrollHandler, useAnimatedStyle, useDerivedValue, useSharedValue } from "react-native-reanimated";
-import { HeaderConfig } from "@/lib/types";
-import useScrollSync from "@/lib/useScrollSync";
-import { ScrollPair } from "@/lib/types";
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-    },
-    tabContent: {
-        flex: 1,
-    },
-    header: {
-        position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 10,
-        backgroundColor: 'white',
-    },
-    tabContentAbsolute: {
-        position: "absolute",
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
-    },
-    tabContentHidden: {
-        opacity: 0,
-    },
-});
+import SearchInput from "@/components/search/search-input";
+import SearchTabs from "@/components/search/search-result-tabs";
 
-const Home = () => {
-    const [activeTab, setActiveTab] = useState(TABS.OVERVIEW);
-    const { bottom } = useSafeAreaInsets();
-    const { height: screenHeight } = useWindowDimensions();
+import ChipBtn from "@/components/chip-btn";
+import {
+    ResultAlbumBtn,
+    ResultArtistBtn,
+    ResultTrackBtn,
+    ResultUserBtn,
+} from "@/components/search/result-btns";
+import {
+    Album,
+    Artist,
+    ReviewWithAlbum,
+    SearchResponse,
+    Track,
+    UserProfile,
+} from "@/lib/types";
+import TextDefault from "@/components/core/text-core";
+import FeedCard from "@/components/home/feed-card";
 
-    const overviewRef = useRef<FlatList>(null);
-    const historyRef = useRef<FlatList>(null);
+export default function Index() {
+    const insets = useSafeAreaInsets();
+    const [results, setResults] = useState<SearchResponse | null>(null);
+    const [type, setType] = useState<
+        "tracks" | "artists" | "albums" | "users" | "reviews"
+    >("albums");
+    const [loading, setLoading] = useState(false);
 
-    const [headerHeight, setHeaderHeight] = useState(0);
-    const handleHeaderLayout = useCallback<NonNullable<ViewProps["onLayout"]>>(
-        (event) => setHeaderHeight(event.nativeEvent.layout.height),
-        []
-    );
-
-    const headerConfig = useMemo<HeaderConfig>(
-        () => ({
-            heightCollapsed: TAB_BAR_HEIGHT,
-            heightExpanded: headerHeight,
-        }),
-        [headerHeight]
-    );
-
-    const { heightCollapsed, heightExpanded } = headerConfig;
-    const headerDiff = heightExpanded - heightCollapsed;
-    const rendered = headerHeight > 0;
-
-
-    const overviewScrollValue = useSharedValue(0);
-    const overviewScrollHandler = useAnimatedScrollHandler(
-        (event) => (overviewScrollValue.value = event.contentOffset.y)
-    );
-
-    const historyScrollValue = useSharedValue(0);
-    const historyScrollHandler = useAnimatedScrollHandler(
-        (event) => (historyScrollValue.value = event.contentOffset.y)
-    );
-
-
-    const currentScrollValue = useDerivedValue(() =>
-        activeTab === TABS.OVERVIEW ? overviewScrollValue.value : historyScrollValue.value
-    );
-
-    const translateY = useDerivedValue(() =>
-        -Math.min(currentScrollValue.value, headerDiff)
-    );
-
-    const headerAnimatedStyle = useAnimatedStyle(() => ({
-        transform: [{ translateY: translateY.value }],
-    }));
-
-    const headerContainerStyle = useMemo<StyleProp<ViewStyle>>(
-        () => [
-            rendered ? styles.header : undefined,
-            headerAnimatedStyle,
-        ],
-        [rendered, headerAnimatedStyle]
-    );
-
-    const contentContainerStyle = useMemo<StyleProp<ViewStyle>>(
-        () => ({
-            paddingTop: rendered ? headerHeight : 0,
-            paddingBottom: bottom,
-            minHeight: screenHeight + headerDiff,
-        }),
-        [headerHeight, screenHeight, headerDiff, bottom, rendered]
-    );
-
-    const scrollPairs = useMemo<ScrollPair[]>(
-        () => [
-            { list: overviewRef, position: overviewScrollValue },
-            { list: historyRef, position: historyScrollValue },
-        ],
-        [overviewScrollValue, historyScrollValue]
-    );
-
-    const { sync } = useScrollSync(scrollPairs, headerConfig);
-
-
-    const sharedProps = useMemo(
-        () => ({
-            contentContainerStyle,
-            onMomentumScrollEnd: sync,
-            onScrollEndDrag: sync,
-            scrollEventThrottle: 16,
-            scrollIndicatorInsets: { top: heightExpanded },
-        }),
-        [contentContainerStyle, sync, heightExpanded]
+    const renderTabBar = useCallback(
+        (props: any) => (
+            <MaterialTabBar
+                {...props}
+                scrollEnabled={true}
+                indicatorStyle={{ backgroundColor: "#8065ef", height: 2 }}
+                style={{ backgroundColor: "#161718", elevation: 0 }}
+                labelStyle={{
+                    fontSize: 14,
+                    fontWeight: "600",
+                    fontFamily: "Walsheim",
+                }}
+                activeColor="#eee"
+                inactiveColor="#777"
+                pressColor="transparent"
+            />
+        ),
+        [],
     );
 
     return (
-        <View style={styles.container}>
-            <Animated.View onLayout={handleHeaderLayout} style={headerContainerStyle}>
-                <Header
-                    name="Anshul Thakur"
-                    mob="+91 98765-43210"
-                    photo="https://picsum.photos/id/4/300/300"
-                />
-                <CustomTabBar selectedTab={activeTab} onTabPress={setActiveTab} />
-            </Animated.View>
-            <View style={styles.tabContent}>
-                <View
-                    style={[
-                        styles.tabContent,
-                        styles.tabContentAbsolute,
-                        activeTab !== TABS.OVERVIEW && styles.tabContentHidden,
-                    ]}
-                    pointerEvents={activeTab === TABS.OVERVIEW ? "auto" : "none"}
-                >
-                    <OverviewTab
-                        ref={overviewRef}
-                        onScroll={overviewScrollHandler}
-                        {...sharedProps}
+        <View style={[styles.main]}>
+            <SearchInput
+                results={results}
+                setResults={setResults}
+                type={type}
+                setLoading={setLoading}
+            />
+            <Tabs.Container
+                renderTabBar={renderTabBar}
+                headerContainerStyle={{ shadowOpacity: 0, elevation: 0 }}
+                // style={{ flex: 1, width: "100%" }}
+                onTabChange={({ tabName }) => {
+                    setType(tabName as any);
+                }}
+            >
+                <Tabs.Tab name="albums" label="Álbuns">
+                    <Tabs.FlatList
+                        data={results?.albums?.items ?? []}
+                        keyExtractor={(item: any) => item.id}
+                        renderItem={({ item }) => (
+                            <ResultAlbumBtn data={item} />
+                        )}
+                        ListEmptyComponent={
+                            loading ? (
+                                <ActivityIndicator
+                                    color="#8065ef"
+                                    style={{ padding: 20 }}
+                                />
+                            ) : null
+                        }
+                        ItemSeparatorComponent={() => (
+                            <View
+                                style={{
+                                    height: 0.5,
+                                    backgroundColor: "#3d3d3d",
+                                }}
+                            />
+                        )}
+                        ListFooterComponent={
+                            <View style={{ height: 80 }} />
+                        }
                     />
-                </View>
-
-                <View
-                    style={[
-                        styles.tabContent,
-                        styles.tabContentAbsolute,
-                        activeTab !== TABS.HISTORY && styles.tabContentHidden,
-                    ]}
-                    pointerEvents={activeTab === TABS.HISTORY ? "auto" : "none"}
-                >
-                    <HistoryTab
-                        ref={historyRef}
-                        onScroll={historyScrollHandler}
-                        {...sharedProps}
+                </Tabs.Tab>
+                <Tabs.Tab name="tracks" label="Músicas">
+                    <Tabs.FlatList
+                        data={results?.tracks?.items ?? []}
+                        keyExtractor={(item: any) => item.id}
+                        renderItem={({ item }) => (
+                            <ResultTrackBtn data={item} />
+                        )}
+                        ListEmptyComponent={
+                            loading ? (
+                                <ActivityIndicator
+                                    color="#8065ef"
+                                    style={{ padding: 20 }}
+                                />
+                            ) : null
+                        }
+                        ItemSeparatorComponent={() => (
+                            <View
+                                style={{
+                                    height: 0.5,
+                                    backgroundColor: "#3d3d3d",
+                                }}
+                            />
+                        )}
                     />
-                </View>
-
-            </View>
-
+                </Tabs.Tab>
+                <Tabs.Tab name="artists" label="Artistas">
+                    <Tabs.FlatList
+                        data={results?.artists?.items ?? []}
+                        keyExtractor={(item: any) => item.id}
+                        renderItem={({ item }) => (
+                            <ResultArtistBtn data={item} />
+                        )}
+                        ListEmptyComponent={
+                            loading ? (
+                                <ActivityIndicator
+                                    color="#8065ef"
+                                    style={{ padding: 20 }}
+                                />
+                            ) : null
+                        }
+                        ItemSeparatorComponent={() => (
+                            <View
+                                style={{
+                                    height: 0.5,
+                                    backgroundColor: "#3d3d3d",
+                                }}
+                            />
+                        )}
+                    />
+                </Tabs.Tab>
+                <Tabs.Tab name="users" label="Pessoas">
+                    <Tabs.FlatList
+                        data={results?.users ?? []}
+                        keyExtractor={(item: any) => item.id}
+                        renderItem={({ item }) => <ResultUserBtn data={item} />}
+                        ListEmptyComponent={
+                            loading ? (
+                                <ActivityIndicator
+                                    color="#8065ef"
+                                    style={{ padding: 20 }}
+                                />
+                            ) : null
+                        }
+                        ItemSeparatorComponent={() => (
+                            <View
+                                style={{
+                                    height: 0.5,
+                                    backgroundColor: "#3d3d3d",
+                                }}
+                            />
+                        )}
+                    />
+                </Tabs.Tab>
+                <Tabs.Tab name="reviews" label="Reviews">
+                    <Tabs.FlatList
+                        data={results?.reviews ?? []}
+                        keyExtractor={(item: any) => item.id}
+                        renderItem={({ item }) => (
+                            <FeedCard review={item} onRefresh={() => {}} />
+                        )}
+                        ListEmptyComponent={
+                            loading ? (
+                                <ActivityIndicator
+                                    color="#8065ef"
+                                    style={{ padding: 20 }}
+                                />
+                            ) : null
+                        }
+                        ItemSeparatorComponent={() => (
+                            <View
+                                style={{
+                                    height: 0.5,
+                                    backgroundColor: "#3d3d3d",
+                                }}
+                            />
+                        )}
+                        ListFooterComponent={
+                            <View style={{ height: 80 }} />
+                        }
+                    />
+                </Tabs.Tab>
+            </Tabs.Container>
         </View>
-    )
+    );
 }
-export default Home;
+
+const styles = StyleSheet.create({
+    main: {
+        flex: 1,
+        backgroundColor: "#161718",
+        alignItems: "center",
+        justifyContent: "flex-start",
+        width: "100%",
+    },
+});

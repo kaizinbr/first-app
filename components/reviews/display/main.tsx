@@ -17,6 +17,7 @@ import {
     BottomSheetModal,
     BottomSheetView,
     useBottomSheetModal,
+    BottomSheetScrollView 
 } from "@gorhom/bottom-sheet";
 import {
     Flag,
@@ -121,7 +122,7 @@ export default function ReviewAlbumScreen({
     });
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ["50%", "85%", "100%"], []);
+    const snapPoints = useMemo(() => ["10%", "85%", "100%"], []);
 
     const openSheet = useCallback(() => {
         bottomSheetRef.current?.present();
@@ -286,6 +287,8 @@ export default function ReviewAlbumScreen({
                     topInset={insets.top}
                     backgroundStyle={{ backgroundColor: "#161718" }}
                     handleIndicatorStyle={{ backgroundColor: "#555" }}
+                    enableDynamicSizing={true}
+                    maxDynamicContentSize={500}
                     backdropComponent={(props) => (
                         <BottomSheetBackdrop
                             {...props}
@@ -295,7 +298,7 @@ export default function ReviewAlbumScreen({
                     )}
                 >
                     <BottomSheetView>
-                        <View style={styles.sheetView}>
+                        <BottomSheetScrollView contentContainerStyle={styles.sheetView}>
                             {itsMine && (
                                 <>
                                     <Pressable
@@ -430,7 +433,7 @@ export default function ReviewAlbumScreen({
                                     Bloquear usuário
                                 </TextDefault>
                             </Pressable>
-                        </View>
+                        </BottomSheetScrollView>
                     </BottomSheetView>
                 </BottomSheetModal>
 

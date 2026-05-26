@@ -56,6 +56,7 @@ function ItemRenderer({ type, item }: { type: string; item: any }) {
             return (
                 <FeedCard
                         review={review}
+                        onRefresh={() => {}}
                     />
             );
         default:

@@ -1,9 +1,14 @@
-// Learn more https://docs.expo.io/guides/customizing-metro
+const { gracefulify } = require('graceful-fs');
+const fs = require('fs');
+gracefulify(fs);
+
+// patch no promises também
+const fsp = require('fs/promises');
+const { open: originalOpen, readFile: originalReadFile } = fsp;
+
 const { getDefaultConfig } = require('expo/metro-config');
 
-/** @type {import('expo/metro-config').MetroConfig} */
 const config = getDefaultConfig(__dirname);
-
-config.resolver.unstable_enablePackageExports = true; 
+config.maxWorkers = 2;
 
 module.exports = config;
