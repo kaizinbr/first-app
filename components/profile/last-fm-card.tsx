@@ -1,5 +1,5 @@
 import { useEffect, useRef, useCallback, useState } from "react";
-import { View, StyleSheet, ActivityIndicator } from "react-native";
+import { View, StyleSheet, ActivityIndicator, Pressable } from "react-native";
 import { Image } from "react-native";
 import Animated, {
     useSharedValue,
@@ -14,11 +14,13 @@ import api from "@/lib/api";
 import { UserProfile, Palette } from "@/lib/types";
 import { getColors } from "react-native-image-colors";
 import { selectRightColorLastFm } from "@/lib/util/selectRightColor";
+import { useRouter } from "expo-router";
 
 const POLL_INTERVAL = 10_000;
 const FADE_MS = 400;
 
 export default function PlayingOnLastFM({ data }: { data: UserProfile }) {
+    const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [track, setTrack] = useState<any>(null);
     const [colors, setColors] = useState<any>(null);
@@ -84,7 +86,8 @@ export default function PlayingOnLastFM({ data }: { data: UserProfile }) {
             });
 
             const newColor =
-                selectRightColorLastFm(resultColors as any) ?? "rgba(22, 23, 24, 0.8)";
+                selectRightColorLastFm(resultColors as any) ??
+                "rgba(22, 23, 24, 0.8)";
 
             if (currentTrackName.current !== newTrack?.name) {
                 currentTrackName.current = newTrack?.name ?? null;
@@ -119,25 +122,34 @@ export default function PlayingOnLastFM({ data }: { data: UserProfile }) {
 
     return (
         <Animated.View style={[styles.card, cardAnimatedStyle]}>
-            <Animated.Image
-                source={{
-                    uri:
-                        track?.image[1]["#text"] ||
-                        "https://via.placeholder.com/150",
-                }}
-                style={[styles.albumArt, imageAnimatedStyle]}
-                resizeMode="cover"
-            />
-            <View style={{ justifyContent: "center", maxWidth: 232 }}>
-                <TextDefault style={styles.text}>Ouvindo agora</TextDefault>
-                <TextDefault
-                    style={styles.trackName}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                >
-                    {track?.name}
-                </TextDefault>
-            </View>
+            <Pressable
+                style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
+                onPress={() =>
+                    router.push(
+                        `/(app)/(tabs)/(search)?album=${track?.album["#text"]}&artist=${track.artist["#text"]}`,
+                    )
+                }
+            >
+                <Animated.Image
+                    source={{
+                        uri:
+                            track?.image[1]["#text"] ||
+                            "https://via.placeholder.com/150",
+                    }}
+                    style={[styles.albumArt, imageAnimatedStyle]}
+                    resizeMode="cover"
+                />
+                <View style={{ justifyContent: "center", maxWidth: 232 }}>
+                    <TextDefault style={styles.text}>Ouvindo agora</TextDefault>
+                    <TextDefault
+                        style={styles.trackName}
+                        numberOfLines={1}
+                        ellipsizeMode="tail"
+                    >
+                        {track?.name}
+                    </TextDefault>
+                </View>
+            </Pressable>
         </Animated.View>
     );
 }

@@ -90,14 +90,14 @@ export default function Header({
                     fixedBarStyle,
                 ]}
             >
-                <Animated.View
+                {/* <Animated.View
                     style={[
                         StyleSheet.absoluteFill,
                         styles.fixedBg,
                         bgOpacityStyle,
                         { backgroundColor: dominantColor },
                     ]}
-                />
+                /> */}
 
                 <View
                     style={[
@@ -112,11 +112,11 @@ export default function Header({
                         <AltArrowLeft size={32} color="#eee" />
                     </Pressable>
 
-                    <Animated.Text
+                    {/* <Animated.Text
                         style={[styles.smallTitle, titleOpacityStyle]}
                     >
                         {data.name || "Perfil"}
-                    </Animated.Text>
+                    </Animated.Text> */}
 
                     {itsUser ? (
                         <View

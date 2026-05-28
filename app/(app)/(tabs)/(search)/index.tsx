@@ -1,25 +1,13 @@
 import {
-    Text,
     View,
     StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
-    TextInput,
-    FlatList,
-    useWindowDimensions,
     ActivityIndicator,
 } from "react-native";
 
 import { useState, useEffect, useCallback } from "react";
 import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
 import SearchInput from "@/components/search/search-input";
-import SearchTabs from "@/components/search/search-result-tabs";
-
-import ChipBtn from "@/components/chip-btn";
 import {
     ResultAlbumBtn,
     ResultArtistBtn,
@@ -27,15 +15,11 @@ import {
     ResultUserBtn,
 } from "@/components/search/result-btns";
 import {
-    Album,
-    Artist,
-    ReviewWithAlbum,
     SearchResponse,
-    Track,
-    UserProfile,
 } from "@/lib/types";
 import TextDefault from "@/components/core/text-core";
 import FeedCard from "@/components/home/feed-card";
+import { useLocalSearchParams } from "expo-router";
 
 export default function Index() {
     const insets = useSafeAreaInsets();
@@ -44,6 +28,9 @@ export default function Index() {
         "tracks" | "artists" | "albums" | "users" | "reviews"
     >("albums");
     const [loading, setLoading] = useState(false);
+
+    const { album, artist } = useLocalSearchParams<{ album?: string; artist?: string }>();
+    console.log("Search query:", album, artist);
 
     const renderTabBar = useCallback(
         (props: any) => (
@@ -72,6 +59,8 @@ export default function Index() {
                 setResults={setResults}
                 type={type}
                 setLoading={setLoading}
+                initialAlbum={album}
+                initialArtist={artist}
             />
             <Tabs.Container
                 renderTabBar={renderTabBar}

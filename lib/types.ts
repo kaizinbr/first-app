@@ -312,3 +312,24 @@ export type ScrollPair = {
     list: RefObject<FlatList | null>;
     position: SharedValue<number>;
 };
+
+
+export interface ProfileNotificationSenderProfile {
+	id: string;
+	username: string;
+	name: string;
+	avatar_url: string;
+	verified: boolean;
+}
+
+export interface Notification {
+	id: string;
+	ratingId: string | null;
+	type: 'follow' | 'like' | 'comment' | 'reply';
+	seen: boolean;
+	created_at: string;
+	sender_id: string;
+	user_id: string;
+	Profile_Notification_sender_idToProfile: ProfileNotificationSenderProfile;
+    Rating: Review | null;
+}

@@ -22,10 +22,13 @@ import {
 import { apiAuth } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
 import NotificationObserver from "@/lib/util/notification-observer";
+import { useRouter } from "expo-router";
 
 export default function TabsDynamicLayout() {
+    const router = useRouter();
     const { data: session, isPending } = authClient.useSession();
     const isLoggedIn = !!session;
+    console.log(isLoggedIn)
     const [profile, setProfile] = useState<any>(null);
 
     const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(
@@ -47,7 +50,7 @@ export default function TabsDynamicLayout() {
                 console.log("Perfil do usuário:", response.public);
             } catch (error) {
                 console.error("Erro ao buscar perfil:", error);
-                setIsProfilePublic(false);
+                router.push("/(app)/offline");
             } finally {
                 setIsProfileLoading(false);
             }

@@ -9,6 +9,7 @@ import Animated, {
     interpolate,
     Extrapolation,
 } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
 
 export default function Index() {
     const scrollOffsetY = useSharedValue(0);
@@ -39,12 +40,17 @@ export default function Index() {
                 style={[
                     styles.statusBarBg,
                     {
-                        height: insets.top,
+                        height: insets.top +24,
                     },
                     statusBarOpacityStyle,
                 ]}
                 pointerEvents="none"
-            />
+            >
+                <LinearGradient
+                    colors={["#161718", "transparent"]}
+                    style={StyleSheet.absoluteFill}
+                />
+            </Animated.View>
         </View>
     );
 }
@@ -63,8 +69,15 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
-        backgroundColor: "#161718",
+        backgroundColor: "transparent",
         zIndex: 10,
+    },
+    background: {
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        height: 300,
     },
     main: {
         flex: 1,

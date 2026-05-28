@@ -1,15 +1,18 @@
 require('graceful-fs').gracefulify(require('fs'));
-const { gracefulify } = require('graceful-fs');
-const fs = require('fs');
-gracefulify(fs);
 
-// patch no promises também
-const fsp = require('fs/promises');
-const { open: originalOpen, readFile: originalReadFile } = fsp;
+const path = require('path');
+const fs = require('fs');
 
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
-config.maxWorkers = 2;
+
+const cacheDir = path.join(__dirname, '.metro-cache');
+
+if (!fs.existsSync(cacheDir)) {
+  fs.mkdirSync(cacheDir, { recursive: true });
+}
+
+config.fileMapCacheDirectory = cacheDir;
 
 module.exports = config;

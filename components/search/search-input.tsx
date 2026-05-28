@@ -6,20 +6,34 @@ import api from "@/lib/api";
 import { useEffect, useState } from "react";
 
 import { SearchResponse } from "@/lib/types";
-import { MinimalisticMagnifier  } from '@solar-icons/react-native/Outline'
+import { MinimalisticMagnifier } from "@solar-icons/react-native/Outline";
 
 export default function SearchInput({
     results,
     setResults,
     type,
     setLoading,
+    initialAlbum,
+    initialArtist,
 }: {
     results: SearchResponse | null;
     setResults: (results: SearchResponse | null) => void;
     type: "tracks" | "artists" | "albums" | "users" | "reviews";
     setLoading: (loading: boolean) => void;
+    initialAlbum?: string;
+    initialArtist?: string;
 }) {
-    const [searchQuery, setSearchQuery] = useState("");
+    const [searchQuery, setSearchQuery] = useState(
+        `${initialAlbum || ""} ${initialArtist || ""}`,
+    );
+
+    const [album, setAlbum] = useState(initialAlbum ?? "");
+    const [artist, setArtist] = useState(initialArtist ?? "");
+
+    useEffect(() => {
+        setSearchQuery(`${initialAlbum || ""} ${initialArtist || ""}`.trim());
+    }, [initialAlbum, initialArtist]);
+
     const [debounced, setDebounced] = useState("");
     const insets = useSafeAreaInsets();
 
@@ -51,7 +65,11 @@ export default function SearchInput({
     return (
         <View style={[styles.main, { paddingTop: insets.top + 16 }]}>
             <View style={styles.searchWrapper}>
-                <MinimalisticMagnifier color="#9c9c9c" size={20} style={{ marginRight: 8 }} />
+                <MinimalisticMagnifier
+                    color="#9c9c9c"
+                    size={20}
+                    style={{ marginRight: 8 }}
+                />
                 <TextInput
                     placeholder="Pesquisar..."
                     value={searchQuery}

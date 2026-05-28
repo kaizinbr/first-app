@@ -15,7 +15,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TextDefault from "@/components/core/text-core";
 import { useRouter } from "expo-router";
-import DraftCard from "@/components/drafts/draft-card";
+import NotsCard from "@/components/notifications/nots-card";
 
 import {
     Flag,
@@ -23,20 +23,20 @@ import {
     MenuDots,
     Pen,
     TrashBinTrash,
-    User,
-    Vinyl,
+    Eye 
 } from "@solar-icons/react-native/Bold";
 
 import {
     BottomSheetBackdrop,
     BottomSheetModal,
     BottomSheetView,
+    BottomSheetScrollView,
     useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
 import ConfirmModal from "@/components/core/confirm-modal";
 import { ShareLargeBtn } from "@/components/core/share-btn";
 
-import { apiAuth } from "@/lib/api";
+import { apiAuth, apiAuthPost, apiAuthDELETE } from "@/lib/api";
 
 export default function Drafts() {
     const insets = useSafeAreaInsets();
@@ -44,13 +44,25 @@ export default function Drafts() {
     const [drafts, setDrafts] = useState<ReviewDraft[]>([]);
 
     const [refreshing, setRefreshing] = useState(false);
+    const [notifications, setNotifications] = useState<any[]>([]);
+
+    const checkNotifications = async () => {
+        try {
+            const response = await apiAuth("/notifications");
+            setNotifications(response.notifications);
+            // console.log("Notificações:", response.notifications);
+        } catch (error) {
+            console.error("Erro ao buscar notificações:", error);
+        }
+    };
+
+    useEffect(() => {
+        checkNotifications();
+    }, []);
 
     const onRefresh = () => {
         setRefreshing(true);
-        const orderedDrafts = DraftStorage.listAll().sort(
-            (a, b) => b.savedAt - a.savedAt,
-        );
-        setDrafts(orderedDrafts);
+        checkNotifications();
         setRefreshing(false);
     };
 
@@ -77,9 +89,7 @@ export default function Drafts() {
     const handleDelete = async () => {
         try {
             setIsLoading(true);
-            DraftStorage.listAll().forEach((draft) => {
-                DraftStorage.remove(draft.albumId);
-            });
+            await apiAuthDELETE(`/notifications/all`);
             setIsLoading(false);
             onRefresh();
         } catch (error) {
@@ -87,20 +97,14 @@ export default function Drafts() {
         }
     };
 
-    const [notifications, setNotifications] = useState<any[]>([]);
-
-    useEffect(() => {
-        const checkNotifications = async () => {
+    const setAllSeen = async () => {
             try {
-                const response = await apiAuth("/notifications");
-                console.log("Notificações:", response.notifications);
+                await apiAuthPost(`/notifications/all`);
+                onRefresh();
             } catch (error) {
-                console.error("Erro ao buscar notificações:", error);
+                console.error("Error setting notification as seen:", error);
             }
         };
-        checkNotifications();
-    }, []);
-
 
     return (
         <KeyboardAvoidingView
@@ -119,30 +123,36 @@ export default function Drafts() {
                     }}
                 >
                     <TextDefault style={styles.title}>Notificações</TextDefault>
-                    <Pressable
-                        onPress={openSheet}
-                    >
+                    <Pressable onPress={openSheet}>
                         <MenuDots color="#eee" />
                     </Pressable>
                 </View>
 
-                {/* <FlatList
+                <FlatList
                     style={{ width: "100%" }}
-                    contentContainerStyle={{ padding: 16, gap: 12 }}
+                    contentContainerStyle={{ paddingVertical: 16 }}
                     data={notifications}
-                    keyExtractor={(item) => String(item.albumId)}
+                    keyExtractor={(item) => String(item.id)}
                     renderItem={({ item }) => (
-                        <DraftCard draft={item} onRefresh={onRefresh} />
+                        <NotsCard nots={item} onRefresh={onRefresh} />
                     )}
                     ListEmptyComponent={
                         <TextDefault style={styles.empty}>
-                            Nenhum rascunho salvo.
+                            Nenhuma notificação.
                         </TextDefault>
                     }
                     ListFooterComponent={<View style={{ height: 38 }} />}
+                    ItemSeparatorComponent={() => (
+                        <View
+                            style={{
+                                height: 0.5,
+                                backgroundColor: "#3d3d3d",
+                            }}
+                        />
+                    )}
                     refreshing={refreshing}
                     onRefresh={onRefresh}
-                /> */}
+                />
             </View>
             <BottomSheetModal
                 ref={bottomSheetRef}
@@ -150,7 +160,6 @@ export default function Drafts() {
                 snapPoints={snapPoints}
                 enablePanDownToClose
                 topInset={insets.top}
-                // containerStyle={{ zIndex: 1000 }}
                 backgroundStyle={{ backgroundColor: "#161718" }}
                 handleIndicatorStyle={{ backgroundColor: "#555" }}
                 backdropComponent={(props) => (
@@ -162,7 +171,26 @@ export default function Drafts() {
                 )}
             >
                 <BottomSheetView>
-                    <View style={styles.sheetView}>
+                    <BottomSheetScrollView contentContainerStyle={styles.sheetView}>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.optBtn,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {
+                                dismiss();
+                                setAllSeen();
+                            }}
+                        >
+                            <Eye size={24} color="#eee" />
+                            <TextDefault style={styles.optText}>
+                                Marcar todas como lidas
+                            </TextDefault>
+                        </Pressable>
                         <Pressable
                             style={({ pressed }) => [
                                 styles.optBtn,
@@ -176,18 +204,19 @@ export default function Drafts() {
                                 dismiss();
                                 setShowDeleteModal(true);
                             }}
+                            disabled={notifications.length === 0}
                         >
                             <TrashBinTrash size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Excluir todos
                             </TextDefault>
                         </Pressable>
-                    </View>
+                    </BottomSheetScrollView>
                 </BottomSheetView>
             </BottomSheetModal>
             <ConfirmModal
                 visible={showDeleteModal}
-                title="Apagar rascunhos"
+                title="Apagar notificações"
                 message="Essa ação não pode ser desfeita."
                 confirmLabel="Apagar"
                 cancelLabel="Cancelar"
