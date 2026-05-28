@@ -9,7 +9,7 @@ import {
     MinimalisticMagnifier,
     User,
     Library,
-    PenNewSquare,
+    Bell,
 } from "@solar-icons/react-native/Bold";
 import {
     HomeSmileAngleBold,
@@ -21,6 +21,7 @@ import {
 } from "@solar-icons/react-native";
 import { apiAuth } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
+import NotificationObserver from "@/lib/util/notification-observer";
 
 export default function TabsDynamicLayout() {
     const { data: session, isPending } = authClient.useSession();
@@ -80,6 +81,7 @@ export default function TabsDynamicLayout() {
 
     return (
         <>
+            <NotificationObserver />
             <Tabs
                 initialRouteName="(home)"
                 screenOptions={{
@@ -117,6 +119,16 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
                             <Library size={28} color={color as string} />
+                        ),
+                    }}
+                />
+                <Tabs.Screen
+                    name="(notifications)"
+                    options={{
+                        headerShown: false,
+                        tabBarLabel: () => null,
+                        tabBarIcon: ({ color }) => (
+                            <Bell size={28} color={color as string} />
                         ),
                     }}
                 />
