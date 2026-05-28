@@ -15,6 +15,7 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotifications(): Promise<string | null> {
+    
     // if (!Device.isDevice) return null; // emulador não funciona
 
     const { status: existingStatus } =
@@ -36,7 +37,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
     }
 
     const token = await Notifications.getExpoPushTokenAsync({
-        projectId: "e19b7ddb-7890-4a4a-97d9-bfb51c60f880",
+        projectId: "a1236a00-ff58-44a6-b648-34ca61371df0",
     });
 
     const response = await apiAuthPost("/push-tokens", {

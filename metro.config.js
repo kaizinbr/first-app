@@ -1,3 +1,4 @@
+require('graceful-fs').gracefulify(require('fs'));
 const { gracefulify } = require('graceful-fs');
 const fs = require('fs');
 gracefulify(fs);
