@@ -5,7 +5,7 @@ import { Ionicons } from "@expo/vector-icons";
 interface PasswordInputProps extends React.ComponentProps<typeof TextInput> {
     value: string;
     onChangeText: (text: string) => void;
-    login: Boolean
+    login?: Boolean
 }
 
 export function PasswordInput({

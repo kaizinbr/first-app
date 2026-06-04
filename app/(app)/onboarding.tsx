@@ -12,6 +12,7 @@ import {
     Pressable,
     KeyboardAvoidingView,
     Platform,
+    AppState,
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -193,13 +194,14 @@ export default function Onboarding() {
     const isUsernameValid = usernameValidation.status === "success";
 
     const pickImage = async () => {
-        // No permissions request is necessary for launching the image library.
-        // Manually request permissions for videos on iOS when `allowsEditing` is set to `false`
-        // and `videoExportPreset` is `'Passthrough'` (the default), ideally before launching the picker
-        // so the app users aren't surprised by a system dialog after picking a video.
-        // See "Invoke permissions for videos" sub section for more details.
+            if (AppState.currentState !== "active") return;
+    
+            // Pequeno delay pra garantir que a Activity está pronta
+            await new Promise((resolve) => setTimeout(resolve, 150));
         const permissionResult =
             await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+            console.log("Permission result:", permissionResult);
 
         if (!permissionResult.granted) {
             Alert.alert(
@@ -216,21 +218,24 @@ export default function Onboarding() {
             quality: 1,
         });
 
+        console.log("Image picker result:", result);
+
         // console.log(result);
 
         if (!result.canceled) {
             const asset = result.assets[0];
+        console.log(asset);
 
             // 3. Verifica o tamanho final (fileSize vem em bytes)
-            // Se a foto for maior que 2MB (2 * 1024 * 1024), bloqueamos
+            // Se a foto for maior que 5MB (5 * 1024 * 1024), bloqueamos
             const fileSizeMB = asset.fileSize
                 ? asset.fileSize / (1024 * 1024)
                 : 0;
 
-            if (fileSizeMB > 2) {
+            if (fileSizeMB > 5) {
                 Alert.alert(
                     "Imagem muito grande",
-                    "Por favor, escolha uma imagem com menos de 2MB.",
+                    "Por favor, escolha uma imagem com menos de 5MB.",
                 );
                 return null;
             }
@@ -365,6 +370,7 @@ export default function Onboarding() {
                                     flexDirection: "row",
                                     gap: 12,
                                     width: "100%",
+                                    justifyContent: "space-between",
                                 }}
                             >
                                 <Button
@@ -372,7 +378,7 @@ export default function Onboarding() {
                                     // disabled={!name.trim()}
                                     className="mt-4"
                                     style={{
-                                        width: "50%",
+                                        width: "47%",
                                         backgroundColor: "transparent",
                                         borderWidth: 1,
                                         borderColor: "#8065ef",
@@ -384,7 +390,7 @@ export default function Onboarding() {
                                     onPress={() => setStep((prev) => prev + 1)}
                                     disabled={!isUsernameValid}
                                     className="mt-4"
-                                    style={{ width: "50%" }}
+                                    style={{ width: "47%" }}
                                 >
                                     Próximo
                                 </Button>
@@ -410,6 +416,7 @@ export default function Onboarding() {
                                     flexDirection: "row",
                                     gap: 12,
                                     width: "100%",
+                                    justifyContent: "space-between",
                                 }}
                             >
                                 <Button
@@ -417,7 +424,7 @@ export default function Onboarding() {
                                     // disabled={!name.trim()}
                                     className="mt-4"
                                     style={{
-                                        width: "50%",
+                                        width: "47%",
                                         backgroundColor: "transparent",
                                         borderWidth: 1,
                                         borderColor: "#8065ef",
@@ -429,7 +436,7 @@ export default function Onboarding() {
                                     onPress={() => setStep((prev) => prev + 1)}
                                     disabled={!isUsernameValid}
                                     className="mt-4"
-                                    style={{ width: "50%" }}
+                                    style={{ width: "47%" }}
                                 >
                                     Próximo
                                 </Button>
@@ -460,6 +467,7 @@ export default function Onboarding() {
                                     flexDirection: "row",
                                     gap: 12,
                                     width: "100%",
+                                    justifyContent: "space-between",
                                 }}
                             >
                                 <Button
@@ -467,7 +475,7 @@ export default function Onboarding() {
                                     // disabled={!name.trim()}
                                     className="mt-4"
                                     style={{
-                                        width: "50%",
+                                        width: "47%",
                                         backgroundColor: "transparent",
                                         borderWidth: 1,
                                         borderColor: "#8065ef",
@@ -479,7 +487,7 @@ export default function Onboarding() {
                                     onPress={() => setStep((prev) => prev + 1)}
                                     disabled={!isUsernameValid}
                                     className="mt-4"
-                                    style={{ width: "50%" }}
+                                    style={{ width: "47%" }}
                                 >
                                     Próximo
                                 </Button>
@@ -591,7 +599,7 @@ const styles = StyleSheet.create({
     stepper: {
         flex: 1,
         width: "100%",
-        paddingHorizontal: 16,
+        paddingHorizontal: 32,
         alignItems: "center",
         justifyContent: "center",
         gap: 16,
@@ -616,6 +624,7 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         borderRadius: 8,
         color: "#eee",
+        flex: 1,
     },
     helperText: {
         color: "#9f9f9f",

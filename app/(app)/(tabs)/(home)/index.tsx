@@ -40,7 +40,7 @@ export default function Index() {
                 style={[
                     styles.statusBarBg,
                     {
-                        height: insets.top +24,
+                        height: insets.top + 24,
                     },
                     statusBarOpacityStyle,
                 ]}

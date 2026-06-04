@@ -1,6 +1,8 @@
 import React, { useRef, useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 
+import { OtpInput } from "react-native-otp-entry";
+
 interface OTPInputProps {
     length?: number;
     onComplete: (code: string) => void;
@@ -28,45 +30,44 @@ export default function OTPInput({ length = 6, onComplete }: OTPInputProps) {
 
     return (
         <View style={styles.container}>
-            {/* 1. O INPUT INVISÍVEL (O verdadeiro motor da tela) */}
-            <TextInput
-                ref={inputRef}
-                value={code}
-                onChangeText={handleChange}
-                maxLength={length}
-                keyboardType="number-pad"
-                // 🌟 AS PROPRIEDADES OFICIAIS PARA AUTOFILL DE SMS NO EXPO 🌟
-                textContentType="oneTimeCode" // Puxa o código do SMS no iOS
-                autoComplete="sms-otp" // Puxa o código do SMS no Android
-                style={styles.hiddenInput}
-                autoFocus // Já abre o teclado sozinho ao entrar na tela
+            <OtpInput
+                numberOfDigits={6}
+                focusColor="#8065ef"
+                onTextChange={(text) => onComplete(text)}
+                onFilled={(text) => onComplete(text)}
+                placeholder="******"
+                type="numeric"
+                textProps={{
+                    accessibilityRole: "text",
+                    accessibilityLabel: "OTP digit",
+                    allowFontScaling: false,
+                }}
+                theme={{
+                    containerStyle: {
+                        gap: 8,
+                    },
+                    pinCodeContainerStyle: {
+                        width: 50,
+                        height: 60,
+                        borderWidth: 2,
+                        borderColor: "#333",
+                        borderRadius: 12,
+                        backgroundColor: "#1e1e1e",
+                        justifyContent: "center",
+                        alignItems: "center",
+                    },
+                    pinCodeTextStyle: {
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        color: "#eee",
+                    },
+                    placeholderTextStyle: {
+                        fontSize: 24,
+                        fontWeight: "bold",
+                        color: "#eee",
+                    },
+                }}
             />
-
-            {/* 2. OS QUADRADINHOS VISÍVEIS */}
-            <Pressable style={styles.boxContainer} onPress={handlePress}>
-                {[...Array(length)].map((_, index) => {
-                    const digit = code[index] || "";
-
-                    // Lógica para saber qual quadrado deve ficar com a borda acesa
-                    const isCurrentDigit = index === code.length;
-                    const isLastDigit =
-                        index === length - 1 && code.length === length;
-                    const isFocused = isCurrentDigit || isLastDigit;
-
-                    return (
-                        <View
-                            key={index}
-                            style={[
-                                styles.box,
-                                isFocused && styles.boxFocused,
-                                digit !== "" && styles.boxFilled, // Muda a cor se já tiver número
-                            ]}
-                        >
-                            <Text style={styles.boxText}>{digit}</Text>
-                        </View>
-                    );
-                })}
-            </Pressable>
         </View>
     );
 }

@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "first-app",
+    "name": "Pitchforkd (beta)",
     "slug": "music",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -10,7 +10,7 @@
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",
-      "backgroundColor": "#161718"
+      "backgroundColor": "#8065ef"
     },
     "ios": {
       "supportsTablet": true

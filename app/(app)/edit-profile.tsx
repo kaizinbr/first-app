@@ -159,7 +159,7 @@ export default function EditProfile() {
                     cache: true,
                     key: asset.uri,
                 });
-                console.log(resultColors)
+                console.log(resultColors);
                 const bannerColors = getBannerColors(resultColors);
                 setColors(bannerColors);
                 setAvatarAsset(asset);
@@ -431,10 +431,10 @@ export default function EditProfile() {
                 ? asset.fileSize / (1024 * 1024)
                 : 0;
 
-            if (fileSizeMB > 2) {
+            if (fileSizeMB > 5) {
                 Alert.alert(
                     "Imagem muito grande",
-                    "Por favor, escolha uma imagem com menos de 2MB.",
+                    "Por favor, escolha uma imagem com menos de 5MB.",
                 );
                 return null;
             }
@@ -445,9 +445,9 @@ export default function EditProfile() {
                 key: asset.uri,
             });
 
-                setMainColor(selectRightColorDominant(resultColors as any));
+            setMainColor(selectRightColorDominant(resultColors as any));
             setColors(resultColors);
-            console.log(resultColors)
+            console.log(resultColors);
             setAvatarAsset(asset);
 
             setAvatar(result.assets[0].uri);
@@ -561,7 +561,8 @@ export default function EditProfile() {
                         style={[
                             styles.blob,
                             {
-                                backgroundColor: selectRightColorDominant(colors),
+                                backgroundColor:
+                                    selectRightColorDominant(colors),
                                 width: 320,
                                 height: 320,
                                 top: -80,

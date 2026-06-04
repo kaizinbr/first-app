@@ -1,4 +1,5 @@
 import { useState, useRef } from "react";
+import { Pressable } from "react-native";
 import { authClient } from "@/lib/auth-client";
 import { useLocalSearchParams } from "expo-router";
 import TextDefault from "@/components/core/text-core";
@@ -47,7 +48,6 @@ export default function Password() {
         const { data, error } = await authClient.signIn.email({
             email: email as string,
             password,
-            
         });
 
         console.log("Resposta", { data, error });
@@ -64,14 +64,12 @@ export default function Password() {
             setIsLoading(false);
             return;
         } else if (error) {
-            setErrorMessage(
-                "Ocorreu um erro. Por favor, tente novamente.",
-            );
+            setErrorMessage("Ocorreu um erro. Por favor, tente novamente.");
             setIsLoading(false);
             return;
         }
 
-        router.push("/(app)/(tabs)/(home)")
+        router.push("/(app)/(tabs)/(home)");
     };
 
     return (
@@ -121,8 +119,21 @@ export default function Password() {
                         <Button onPress={handleSignIn}>Entrar</Button>
                     </View>
                     <Link href="/sign-up" style={{ marginTop: 16 }}>
-                        <TextDefault>Não tem uma conta? Entre aqui</TextDefault>
+                        <TextDefault>
+                            Não tem uma conta? Cadastre-se
+                        </TextDefault>
                     </Link>
+                    <Pressable
+                        onPress={() =>
+                            router.push({
+                                pathname: "/(auth)/forgot-password/[email]",
+                                params: { email: emailValue as string },
+                            })
+                        }
+                        style={{ marginTop: 16 }}
+                    >
+                        <TextDefault>Esqueceu sua senha?</TextDefault>
+                    </Pressable>
                 </View>
             </ScrollView>
             {isLoading && (
@@ -179,7 +190,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 8,
     },
-    
+
     input: {
         width: "100%",
         padding: 12,

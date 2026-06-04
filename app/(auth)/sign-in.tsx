@@ -97,6 +97,12 @@ export default function Index() {
                     <TextDefault style={styles.title}>
                         Olá, insira seu e-mail
                     </TextDefault>
+
+                    <View style={{ marginTop: 8 }}>
+                        <TextDefault>
+                            Informe seu e-mail para entrar ou criar uma conta
+                        </TextDefault>
+                    </View>
                     <View style={styles.container}>
                         <Input
                             placeholder="Email"
@@ -126,12 +132,12 @@ export default function Index() {
                             onPress={handleGoogleSignIn}
                             disabled={isLoading}
                             style={{
-                                backgroundColor: "transparent",
+                                backgroundColor: "#8065ef22",
                                 borderWidth: 1,
-                                borderColor: "#8065ef",
+                                borderColor: "#8065ef22",
                             }}
                         >
-                            Login com Google
+                            Continuar com Google
                         </Button>
                     </View>
                 </View>
