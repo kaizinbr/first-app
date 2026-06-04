@@ -20,6 +20,13 @@ import { AlbumCard } from "@/components/home/album-section";
 import { apiAuth } from "@/lib/api";
 import { Album, ReviewWithAlbum } from "@/lib/types";
 
+import {
+    TextItalic,
+    TextBold,
+    TextCross,
+    TextUnderline,
+} from "@solar-icons/react-native/Bold";
+
 interface Suggestion {
     id: string;
     username: string;
@@ -27,23 +34,15 @@ interface Suggestion {
     avatar_url: string;
 }
 
-interface PostEditorProps {
-    onDraftChange?: (text: string) => void;
-    onAutoSave?: (text: string) => void;
-    initialValue?: string;
-    album: Album;
-    total: number;
-}
-
 const MENTION_REGEX = /@(\w+)$/;
 
 const ToolbarButton = React.memo(
     ({
-        label,
+        icon,
         active,
         onPress,
     }: {
-        label: string;
+        icon: React.ReactNode;
         active: boolean;
         onPress: () => void;
     }) => (
@@ -52,9 +51,7 @@ const ToolbarButton = React.memo(
             onPress={onPress}
             hitSlop={8}
         >
-            <Text style={[styles.buttonText, active && styles.textActive]}>
-                {label}
-            </Text>
+            {icon}
         </Pressable>
     ),
 );
@@ -62,10 +59,16 @@ const ToolbarButton = React.memo(
 export default function PostEditor({
     onDraftChange,
     onAutoSave,
-    initialValue = "",
+    initialValue,
     album,
     total,
-}: PostEditorProps) {
+}: {
+    onDraftChange?: (text: string) => void;
+    onAutoSave?: (text: string) => void;
+    initialValue: string;
+    album: Album;
+    total: number;
+}) {
     const ref = useRef<EnrichedMarkdownTextInputInstance>(null);
     const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
     const markdownRef = useRef(initialValue);
@@ -75,6 +78,15 @@ export default function PostEditor({
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
 
     useEffect(() => {
+        if (initialValue === markdownRef.current) {
+            dirtyRef.current = false;
+            return;
+        }
+
+        if (dirtyRef.current) {
+            return;
+        }
+
         setMarkdown(initialValue);
         markdownRef.current = initialValue;
         dirtyRef.current = false;
@@ -207,6 +219,7 @@ export default function PostEditor({
                         ref={ref}
                         placeholder="Escreva sua review..."
                         placeholderTextColor="#555"
+                        defaultValue={initialValue}
                         onChangeState={setStyleState}
                         onChangeMarkdown={handleChangeMarkdown}
                         style={styles.input}
@@ -221,15 +234,26 @@ export default function PostEditor({
 
                     <View style={styles.toolbar}>
                         <ToolbarButton
-                            label="B"
+                            icon={<TextBold size={16} color={styleState?.bold?.isActive ? "#eee" : "#666"} />}
                             active={!!styleState?.bold?.isActive}
                             onPress={() => ref.current?.toggleBold()}
                         />
                         <ToolbarButton
-                            label="I"
+                            icon={<TextItalic size={16} color={styleState?.italic?.isActive ? "#eee" : "#666"} />}
                             active={!!styleState?.italic?.isActive}
                             onPress={() => ref.current?.toggleItalic()}
                         />
+                        <ToolbarButton
+                            icon={<TextUnderline size={16} color={styleState?.underline?.isActive ? "#eee" : "#666"} />}
+                            active={!!styleState?.underline?.isActive}
+                            onPress={() => ref.current?.toggleUnderline()}
+                        />
+                        <ToolbarButton
+                            icon={<TextCross size={16} color={styleState?.strikethrough?.isActive ? "#eee" : "#666"} />}
+                            active={!!styleState?.strikethrough?.isActive}
+                            onPress={() => ref.current?.toggleStrikethrough()}
+                        />
+
                     </View>
                 </View>
             </View>
@@ -279,11 +303,11 @@ const styles = StyleSheet.create({
         fontFamily: "Walsheim",
     },
     suggestions: {
+        width: "100%",
         backgroundColor: "#1a1a1a",
         borderWidth: StyleSheet.hairlineWidth,
         borderColor: "#333",
         borderRadius: 12,
-        marginHorizontal: 12,
         maxHeight: 180,
         overflow: "hidden",
     },

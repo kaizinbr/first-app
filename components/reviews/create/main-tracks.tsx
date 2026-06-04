@@ -137,6 +137,21 @@ export default function ReviewCreateMain({
         <View style={styles.container}>
             <Animated.View
                 style={[
+                    styles.statusBarBg,
+                    {
+                        height: insets.top + 24,
+                    },
+                    // statusBarOpacityStyle,
+                ]}
+                pointerEvents="none"
+            >
+                <LinearGradient
+                    colors={["#161718", "transparent"]}
+                    style={StyleSheet.absoluteFill}
+                />
+            </Animated.View>
+            <Animated.View
+                style={[
                     styles.gradientContainer,
                     { height: HEADER_MAX_HEIGHT },
                     backgroundStyle,
@@ -292,13 +307,13 @@ export default function ReviewCreateMain({
                             setShowLyrics={setShowLyrics}
                         />
 
-                        {/* {showLyrics && (
-                                    <Lyrics
-                                        reviewData={{ album }}
-                                        colors={colors}
-                                        currentTrack={currentTrack}
-                                    />
-                                )} */}
+                        {showLyrics && (
+                            <Lyrics
+                                reviewData={{ album }}
+                                colors={colors}
+                                currentTrack={currentTrack}
+                            />
+                        )}
                     </View>
                     <View style={{ height: 80 }} />
                 </Animated.View>
@@ -309,11 +324,9 @@ export default function ReviewCreateMain({
                     router.push({
                         pathname: `/(app)/create/review/write/[id]`,
                         params: { id: album.id },
-                    })
+                    });
                 }}
-                style={({ pressed }) => [
-                    styles.nextBtn,
-                ]}
+                style={({ pressed }) => [styles.nextBtn]}
             >
                 <TextDefault
                     style={{ color: "#eee", fontSize: 16, fontWeight: "bold" }}
@@ -398,5 +411,14 @@ const styles = StyleSheet.create({
         right: 16,
         zIndex: 10,
         backgroundColor: "#8065ef",
+    },
+
+    statusBarBg: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "transparent",
+        zIndex: 10,
     },
 });

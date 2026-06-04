@@ -15,11 +15,21 @@ import TextDefault from "@/components/core/text-core";
 import { SkipNext, SkipPrevious } from "@solar-icons/react-native/Bold";
 import { useReviewSession } from "@/store/reviewSessionStore";
 
-function TrackRating({ track, colors }: { track: Track; colors: Palette }) {
+function TrackRating({
+    track,
+    colors,
+    showComment,
+}: {
+    track: Track;
+    colors: Palette;
+    showComment: boolean;
+}) {
     const entry = useReviewSession((s) => s.ratings[track.id]);
     const setTrackRating = useReviewSession((s) => s.setTrackRating);
     const setTrackSkip = useReviewSession((s) => s.setTrackSkip);
     const setTrackComment = useReviewSession((s) => s.setTrackComment);
+
+    const [prevTrackComment, setPrevTrackComment] = useState("");
 
     const value = entry?.value ?? 0;
     const skip = entry?.skip ?? false;
@@ -34,6 +44,20 @@ function TrackRating({ track, colors }: { track: Track; colors: Palette }) {
         if (isNaN(num)) return;
         setTrackRating(track.id, Math.min(100, Math.max(0, num)));
     };
+
+    useEffect(() => {
+        if (!showComment) {
+            setPrevTrackComment(comment);
+            setTrackComment(track.id, "");
+        } else {
+            if (comment === "") {
+                setTrackComment(track.id, prevTrackComment);
+            }
+
+            setTrackComment(track.id, prevTrackComment);
+            // console.log("Comment updated for track", track.id, prevTrackComment);
+        }
+    }, [prevTrackComment]);
 
     return (
         <KeyboardAvoidingView
@@ -64,18 +88,27 @@ function TrackRating({ track, colors }: { track: Track; colors: Palette }) {
                     </View>
                 )}
 
-                <TextInput
-                    style={styles.commentInput}
-                    value={comment}
-                    onChangeText={(text) => setTrackComment(track.id, text)}
-                    placeholder="Comentário sobre a faixa..."
-                    placeholderTextColor="#555"
-                    maxLength={300}
-                    multiline
-                />
-                <TextDefault style={styles.charCount}>
-                    {comment.length}/300
-                </TextDefault>
+                {showComment && (
+                    <View style={styles.textSec}>
+                        <TextDefault style={styles.label}>
+                            Comentário:
+                        </TextDefault>
+                        <TextInput
+                            style={styles.commentInput}
+                            value={prevTrackComment}
+                            onChangeText={(text) =>
+                                setPrevTrackComment(text)
+                            }
+                            placeholder="Escreva um comentário sobre a música..."
+                            placeholderTextColor="#555"
+                            multiline
+                            maxLength={300}
+                        />
+                        <TextDefault style={styles.charCount}>
+                            {comment.length}/300
+                        </TextDefault>
+                    </View>
+                )}
             </View>
         </KeyboardAvoidingView>
     );
@@ -102,13 +135,19 @@ export default function TrackRater({
     const skip = useReviewSession((s) => s.ratings[track.id]?.skip ?? false);
     const setTrackSkip = useReviewSession((s) => s.setTrackSkip);
 
+    const [showComment, setShowComment] = useState(false);
+
     return (
         <View style={styles.container}>
             <TextDefault style={styles.sectionLabel}>
                 Avalie as músicas
             </TextDefault>
 
-            <TrackRating track={track} colors={colors} />
+            <TrackRating
+                track={track}
+                colors={colors}
+                showComment={showComment}
+            />
 
             <View style={styles.actionsRow}>
                 <Pressable
@@ -122,6 +161,22 @@ export default function TrackRater({
                         ]}
                     >
                         Pular música
+                    </TextDefault>
+                </Pressable>
+                <Pressable
+                    style={[
+                        styles.toggleBtn,
+                        showComment && styles.toggleBtnActive,
+                    ]}
+                    onPress={() => setShowComment(!showComment)}
+                >
+                    <TextDefault
+                        style={[
+                            styles.toggleText,
+                            skip && styles.toggleTextActive,
+                        ]}
+                    >
+                        Comentário
                     </TextDefault>
                 </Pressable>
 
@@ -152,10 +207,7 @@ export default function TrackRater({
                     }
                     style={styles.navBtn}
                 >
-                    <SkipPrevious
-                        size={24}
-                        color={"#8065ef"}
-                    />
+                    <SkipPrevious size={24} color={"#8065ef"} />
                 </Pressable>
 
                 <TextDefault style={styles.trackCount}>
@@ -170,10 +222,7 @@ export default function TrackRater({
                     }
                     style={styles.navBtn}
                 >
-                    <SkipNext
-                        size={24}
-                        color={"#8065ef"}
-                    />
+                    <SkipNext size={24} color={"#8065ef"} />
                 </Pressable>
             </View>
         </View>
@@ -202,7 +251,7 @@ const styles = StyleSheet.create({
     label: {
         color: "#eee",
         fontSize: 16,
-        fontWeight: "800",
+        fontWeight: "600",
         fontFamily: "Walsheim",
     },
     inputWrapper: { flexDirection: "row", alignItems: "center" },
@@ -224,7 +273,12 @@ const styles = StyleSheet.create({
         marginTop: 4,
         textAlign: "right",
     },
-    actionsRow: { flexDirection: "row", gap: 8, marginTop: 4 },
+    actionsRow: {
+        flexDirection: "row",
+        gap: 8,
+        marginTop: 4,
+        flexWrap: "wrap",
+    },
     toggleBtn: {
         paddingVertical: 8,
         paddingHorizontal: 16,

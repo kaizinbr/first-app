@@ -1,6 +1,8 @@
 import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
+import * as Linking from 'expo-linking';
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
+
 import { Review } from "@/lib/types";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
@@ -9,8 +11,10 @@ import api from "@/lib/api";
 import { Image } from "expo-image";
 import { useEffect, useState } from "react";
 import TextDefault from "@/components/core/text-core";
+import Avatar from "@/components/core/avatar";
 
 export default function ReviewContent({ review }: { review: Review }) {
+    const router = useRouter();
     const [content, setContent] = useState<{
         jsonContent: any;
         html: string;
@@ -50,45 +54,67 @@ export default function ReviewContent({ review }: { review: Review }) {
     return (
         <View style={styles.container}>
             <View style={styles.top}>
-                <Image
-                    source={{ uri: review.Profile.avatar_url! }}
+                <Avatar
+                    data={review.Profile}
                     style={styles.cardImage}
+                    size={38}
                 />
                 <View style={{ marginLeft: 8 }}>
-                    <TextDefault style={styles.sectionTitle}>
-                        {review.Profile.name}
+                    <Pressable
+                        onPress={() =>
+                            router.push({
+                                pathname: "/(app)/(tabs)/(home)/user/[username]",
+                                params: { username: review.Profile.username },
+                            })
+                        }
+                    >
+                        <TextDefault style={styles.sectionTitle}>
+                            {review.Profile.name}
+                        </TextDefault>
+                    </Pressable>
+                    <TextDefault style={styles.date}>
+                        @{review.Profile.username}
                     </TextDefault>
-                    <TextDefault style={styles.date}>@{review.Profile.username}</TextDefault>
                 </View>
             </View>
-                    <EnrichedMarkdownText
-                        markdown={review.review}
-                        markdownStyle={{
-                            paragraph: {
-                                color: "#fff",
-                                fontSize: 14,
-                                marginTop: 4,
-                                lineHeight: 20,
-                                fontFamily: "Walsheim",
-                                fontWeight: "400",
-                            },
-                            h1: {
-                                color: "#fff",
-                                fontSize: 18,
-                                fontWeight: "bold",
-                                lineHeight: 24,
-                                marginTop: 8,
-                            },
-                            h2: {
-                                color: "#fff",
-                                fontSize: 16,
-                                fontWeight: "bold",
-                                marginTop: 4,
-                                lineHeight: 20,
-                            },
-                        }}
-                        //   onLinkPress={({ url }) => Linking.openURL(url)}
-                    />
+            <EnrichedMarkdownText
+                markdown={review.review}
+                onLinkPress={({ url }) => {
+                    if (url.startsWith("http")) {
+                        Linking.openURL(url);
+                    } else {
+                        router.push({
+                            pathname: "/(app)/(tabs)/(drafts)/user/[username]",
+                            params: { username: url.replace("@", "") },
+                        });
+                    }
+                }}
+                markdownStyle={{
+                    paragraph: {
+                        color: "#fff",
+                        fontSize: 14,
+                        marginTop: 4,
+                        lineHeight: 20,
+                        fontFamily: "Walsheim",
+                        fontWeight: "400",
+                    },
+                    h1: {
+                        color: "#fff",
+                        fontSize: 18,
+                        fontWeight: "bold",
+                        lineHeight: 24,
+                        marginTop: 8,
+                    },
+                    h2: {
+                        color: "#fff",
+                        fontSize: 16,
+                        fontWeight: "bold",
+                        marginTop: 4,
+                        lineHeight: 20,
+                    },
+                }}
+                //   onLinkPress={({ url }) => Linking.openURL(url)}
+            />
         </View>
     );
 }

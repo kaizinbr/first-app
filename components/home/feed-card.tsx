@@ -10,6 +10,7 @@ import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
 
 import TextDefault from "@/components/core/text-core";
+import Avatar from "@/components/core/avatar";
 import { useRouter, Href, Link } from "expo-router";
 import api, { apiAuth, apiAuthDELETE } from "@/lib/api";
 import { Image } from "expo-image";
@@ -148,9 +149,10 @@ export default function FeedCard({
                 onLongPress={openSheet}
             >
                 <View style={styles.card}>
-                    <Image
-                        source={{ uri: review.Profile.avatar_url! }}
-                        style={styles.cardImage}
+                    <Avatar
+                        data={review.Profile}
+                        size={40}
+                        // style={styles.cardImage}
                     />
                     {review.album ? (
                         <View style={styles.cardContent}>
@@ -162,7 +164,17 @@ export default function FeedCard({
                                     // backgroundColor: "blue",
                                 }}
                             >
-                                <View
+                                <Pressable
+                                    onPress={() =>
+                                        router.push({
+                                            pathname:
+                                                "/user/[username]",
+                                            params: {
+                                                username:
+                                                    review.Profile.username,
+                                            },
+                                        })
+                                    }
                                     style={{
                                         flexDirection: "row",
                                         maxWidth: "90%",
@@ -181,21 +193,32 @@ export default function FeedCard({
                                         {review.Profile.name}
                                     </TextDefault>
                                     <TextDefault
-                                        style={{ color: "#777", fontSize: 12, marginBottom: 1 }}
+                                        style={{
+                                            color: "#777",
+                                            fontSize: 12,
+                                            marginBottom: 1,
+                                        }}
                                     >
-                                        ·{" "}
+                                        ·
+                                    </TextDefault>
+                                    <TextDefault
+                                        style={{
+                                            color: "#777",
+                                            fontSize: 12,
+                                            marginBottom: 1,
+                                        }}
+                                    >
                                         @{review.Profile.username}
                                     </TextDefault>
-                                </View>
-                                    <TextDefault
-                                        style={{ color: "#777", fontSize: 12 }}
-                                    >
-                                        {getPastRelativeTime(
-                                            new Date(review.created_at),
-                                            new Date(),
-                                        )}
-                                    </TextDefault>
-                                
+                                </Pressable>
+                                <TextDefault
+                                    style={{ color: "#777", fontSize: 12 }}
+                                >
+                                    {getPastRelativeTime(
+                                        new Date(review.created_at),
+                                        new Date(),
+                                    )}
+                                </TextDefault>
                             </View>
                             {content ? (
                                 <>

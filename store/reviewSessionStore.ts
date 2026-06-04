@@ -71,7 +71,7 @@ type ReviewSessionState = {
     useMedia: boolean;
     reviewText: string;
 
-    initSession: (albumId: string, initialRatings: TrackRatingEntry[]) => void;
+    initSession: (albumId: string, initialRatings: TrackRatingEntry[], text: string) => void;
     setTrackRating: (trackId: string, value: number) => void;
     setOverallRating: (value: number) => void;
     setUseMedia: (value: boolean) => void;
@@ -90,8 +90,9 @@ export const useReviewSession = create<ReviewSessionState>()((set, get) => ({
     useMedia: true,
     reviewText: "",
 
-    initSession: (albumId, initialRatings) => {
+    initSession: (albumId, initialRatings, text) => {
         const existing = DraftStorage.load(albumId);
+        console.log("Initializing review session for album", albumId, { existing, initialRatings, text });
 
         if (existing) {
             set({
@@ -112,7 +113,7 @@ export const useReviewSession = create<ReviewSessionState>()((set, get) => ({
             ratings: ratingsMap,
             overallRating: 0,
             useMedia: true,
-            reviewText: "",
+            reviewText: text,
         });
     },
 

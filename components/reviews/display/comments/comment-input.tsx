@@ -26,6 +26,7 @@ import {
     TextItalicSquareLinear,
 } from "@solar-icons/react-native";
 
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { apiAuth, apiAuthPost } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
 import TextDefault from "@/components/core/text-core";
@@ -49,6 +50,8 @@ export function CommentInput({
     onCommentPosted?: () => void;
 }) {
     const ref = useRef<EnrichedMarkdownTextInputInstance>(null);
+    const insets = useSafeAreaInsets();
+    console.log("insets", insets);
     const [styleState, setStyleState] = useState<StyleState | null>(null);
     const [markdown, setMarkdown] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -63,7 +66,7 @@ export function CommentInput({
         const keyboardHeight = keyboard.height.value;
 
         return {
-            bottom: keyboardHeight > 0 ? keyboardHeight : 56,
+            bottom: keyboardHeight > 0 ? keyboardHeight - insets.bottom : 56,
         };
     });
 

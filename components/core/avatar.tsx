@@ -30,6 +30,11 @@ export default function Avatar({
             style={({ pressed }) => [
                 styles.main,
                 pressed && styles.mainPressed,
+                {
+                    width: size || 32,
+                    height: size || 32,
+                    borderRadius: (size || 32) * 0.306,
+                },
             ]}
         >
             <Image
@@ -38,8 +43,8 @@ export default function Avatar({
                     styles.cardImage,
                     style,
                     {
-                        width: size,
-                        height: size,
+                        width: size || 32,
+                        height: size || 32,
                         borderRadius: (size || 32) * 0.306,
                     },
                 ]}
@@ -64,8 +69,8 @@ export function AvatarNoPress({
                 styles.cardImage,
                 style,
                 {
-                    width: size,
-                    height: size,
+                    width: size || 32,
+                    height: size || 32,
                     borderRadius: (size || 32) * 0.306,
                 },
             ]}
@@ -75,7 +80,6 @@ export function AvatarNoPress({
 
 const styles = StyleSheet.create({
     main: {
-        width: "100%",
         backgroundColor: "transparent",
         borderRadius: 8,
     },

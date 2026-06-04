@@ -1,5 +1,6 @@
 // import { Host, Slider } from "@expo/ui/jetpack-compose";
 import { Album, Palette, Rating, Review, Track } from "@/lib/types";
+import TextDefault from "@/components/core/text-core";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import React, { useEffect, useState } from "react";
@@ -38,8 +39,8 @@ export default function Lyrics({
     currentTrack,
 }: {
     reviewData: {
-        reviewed: boolean;
-        rating: Review | null;
+        reviewed?: boolean;
+        rating?: Review | null;
         album: Album;
     };
     colors: Palette | any;
@@ -79,14 +80,17 @@ export default function Lyrics({
                 { backgroundColor: darkenColor(selectRightColor(colors), 0.5) },
             ]}
         >
-            <Text style={styles.textDefault}>
+            <TextDefault style={styles.textDefault}>
                 Letras de{" "}
                 {trackData?.name ||
                     reviewData.album.tracks.items[currentTrack].name}
-            </Text>
+            </TextDefault>
             <LinearGradient
                 // Background Linear Gradient
-                colors={[darkenColor(selectRightColor(colors), 0.8), "transparent"]}
+                colors={[
+                    darkenColor(selectRightColor(colors), 0.8),
+                    "transparent",
+                ]}
                 style={styles.background}
             />
             <View
@@ -106,24 +110,42 @@ export default function Lyrics({
                     nestedScrollEnabled={true}
                     scrollEnabled={true}
                     contentContainerStyle={{
-                        paddingBottom: 40,
+                        paddingBottom: "50%",
                         paddingTop: 16,
                     }}
                     style={styles.lyriscWrapper}
                 >
                     {lines.length > 0 ? (
                         lines.map((line, index) => (
-                            <Text key={index} style={styles.textSec}>
+                            <TextDefault key={index} style={styles.textSec}>
                                 {line.words}
-                            </Text>
+                            </TextDefault>
                         ))
                     ) : (
-                        <Text style={styles.textSec}>
+                        <TextDefault style={styles.textSec}>
                             Letras não encontradas para esta faixa.
-                        </Text>
+                        </TextDefault>
                     )}
                 </ScrollView>
             </View>
+
+            <LinearGradient
+                // Background Linear Gradient
+                colors={[
+                    "transparent",
+                    darkenColor(selectRightColor(colors), 0.8),
+                ]}
+                style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    height: 64,
+                    borderBottomRightRadius: 12,
+                    borderBottomLeftRadius: 12,
+                    zIndex: 5,
+                }}
+            />
         </View>
     );
 }
@@ -132,7 +154,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         width: "100%",
-        height: 500,
+
+        minHeight: 500,
         backgroundColor: "#1b1c1d", // Cor de fundo do editor
         borderRadius: 12,
         padding: 16,
@@ -170,6 +193,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "800",
         fontFamily: "Walsheim",
+        zIndex: 10,
     },
     title: {
         fontSize: 24,

@@ -92,7 +92,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
             }
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={() => (
-                <View style={{ flexDirection: "row", padding: 12, gap: 8 }}>
+                <View style={{ flexDirection: "row", padding: 12, paddingBottom: 0, gap: 8 }}>
                     <Pressable
                         style={[
                             styles.sortBtn,
