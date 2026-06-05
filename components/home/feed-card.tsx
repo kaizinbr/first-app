@@ -9,6 +9,7 @@ import {
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
 
+import * as Linking from 'expo-linking';
 import TextDefault from "@/components/core/text-core";
 import Avatar from "@/components/core/avatar";
 import { useRouter, Href, Link } from "expo-router";
@@ -160,15 +161,14 @@ export default function FeedCard({
                                 style={{
                                     flexDirection: "row",
                                     justifyContent: "space-between",
-                                    alignItems: "center",
+                                    alignItems: "flex-end",
                                     // backgroundColor: "blue",
                                 }}
                             >
                                 <Pressable
                                     onPress={() =>
                                         router.push({
-                                            pathname:
-                                                "/user/[username]",
+                                            pathname: "/user/[username]",
                                             params: {
                                                 username:
                                                     review.Profile.username,
@@ -211,14 +211,22 @@ export default function FeedCard({
                                         @{review.Profile.username}
                                     </TextDefault>
                                 </Pressable>
-                                <TextDefault
-                                    style={{ color: "#777", fontSize: 12 }}
+                                <View
+                                    style={{
+                                        flexDirection: "row",
+                                        alignItems: "flex-end",
+                                        marginBottom: 1,
+                                    }}
                                 >
-                                    {getPastRelativeTime(
-                                        new Date(review.created_at),
-                                        new Date(),
-                                    )}
-                                </TextDefault>
+                                    <TextDefault
+                                        style={{ color: "#777", fontSize: 12 }}
+                                    >
+                                        {getPastRelativeTime(
+                                            new Date(review.created_at),
+                                            new Date(),
+                                        )}
+                                    </TextDefault>
+                                </View>
                             </View>
                             {content ? (
                                 <>
@@ -226,6 +234,22 @@ export default function FeedCard({
                                         markdown={
                                             previewContent ? previewContent : ""
                                         }
+                                        onLinkPress={({ url }) => {
+                                            if (url.startsWith("http")) {
+                                                Linking.openURL(url);
+                                            } else {
+                                                router.push({
+                                                    pathname:
+                                                        "/(app)/(tabs)/(drafts)/user/[username]",
+                                                    params: {
+                                                        username: url.replace(
+                                                            "@",
+                                                            "",
+                                                        ),
+                                                    },
+                                                });
+                                            }
+                                        }}
                                         markdownStyle={{
                                             paragraph: {
                                                 color: "#fff",

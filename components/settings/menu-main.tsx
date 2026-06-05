@@ -15,6 +15,9 @@ import {
     Letter,
     QuestionSquare,
     Logout2,
+    CodeSquare,
+    InfoSquare,
+    ShieldCheck,
 } from "@solar-icons/react-native/Bold";
 import { AltArrowRight, AltArrowLeft } from "@solar-icons/react-native/Outline";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -178,12 +181,71 @@ export default function Menu({
                             backgroundColor: pressed
                                 ? "rgba(255, 255, 255, 0.05)"
                                 : "transparent",
-                            opacity: 0.6,
                         },
                     ]}
+                    onPress={() => {
+                        router.push("/(app)/settings/help");
+                    }}
                 >
                     <QuestionSquare size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>Ajuda</TextDefault>
+                </Pressable>
+                
+                <View style={styles.divider} />
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.button,
+                        {
+                            backgroundColor: pressed
+                                ? "rgba(255, 255, 255, 0.05)"
+                                : "transparent",
+                        },
+                    ]}
+                    onPress={() => {
+                        router.push("/(app)/settings/about");
+                    }}
+                >
+                    <InfoSquare size={24} color="#eee" />
+                    <TextDefault style={styles.textDefault}>Sobre</TextDefault>
+                </Pressable>
+                
+                <View style={styles.divider} />
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.button,
+                        {
+                            backgroundColor: pressed
+                                ? "rgba(255, 255, 255, 0.05)"
+                                : "transparent",
+                        },
+                    ]}
+                    onPress={() => {
+                        router.push("/(app)/settings/policy");
+                    }}
+                >
+                    <ShieldCheck size={24} color="#eee" />
+                    <TextDefault style={styles.textDefault}>Privacidade</TextDefault>
+                </Pressable>
+                
+                <View style={styles.divider} />
+
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.button,
+                        {
+                            backgroundColor: pressed
+                                ? "rgba(255, 255, 255, 0.05)"
+                                : "transparent",
+                        },
+                    ]}
+                    onPress={() => {
+                        router.push("/(app)/settings/app-infos");
+                    }}
+                >
+                    <CodeSquare  size={24} color="#eee" />
+                    <TextDefault style={styles.textDefault}>
+                        Nerdices do App
+                    </TextDefault>
                 </Pressable>
             </View>
             {/* <View style={styles.section}>

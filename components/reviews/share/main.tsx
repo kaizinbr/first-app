@@ -1,26 +1,40 @@
+import TextDefault from "@/components/core/text-core";
 import { Album, Palette, Review } from "@/lib/types";
 import { AltArrowLeft } from "@solar-icons/react-native/Linear";
-import { LinearGradient } from "expo-linear-gradient";
-import { useRouter } from "expo-router";
-import React, { useRef, useState } from "react";
-import ViewShot, { captureRef } from "react-native-view-shot";
-import * as Sharing from "expo-sharing";
-import * as MediaLibrary from "expo-media-library";
-import {
-    ActivityIndicator,
-    Pressable,
-    StyleSheet,
-    ScrollView,
-    View,
-    Image,
-} from "react-native";
-import TextDefault from "@/components/core/text-core";
-import Animated, { useSharedValue } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import {
     GalleryDownload,
     SquareShareLine,
 } from "@solar-icons/react-native/Outline";
+import { LinearGradient } from "expo-linear-gradient";
+import { Asset, requestPermissionsAsync } from "expo-media-library";
+import { useRouter } from "expo-router";
+import * as Sharing from "expo-sharing";
+import { useRef, useState } from "react";
+import {
+    ActivityIndicator,
+    Image,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    View,
+} from "react-native";
+import Animated, { useSharedValue } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import ViewShot, { captureRef } from "react-native-view-shot";
+
+const COLOR_OPTIONS = [
+    { key: "dominant", label: "Dominant" },
+    { key: "vibrant", label: "Vibrant" },
+    { key: "darkVibrant", label: "Dark Vibrant" },
+    { key: "lightVibrant", label: "Light Vibrant" },
+    { key: "muted", label: "Muted" },
+    { key: "darkMuted", label: "Dark Muted" },
+    { key: "lightMuted", label: "Light Muted" },
+    { key: "black", label: "Black" },
+    { key: "white", label: "White" },
+] as const;
+
+type ColorOptionKey = (typeof COLOR_OPTIONS)[number]["key"];
 
 export default function ShareReview({
     reviewData,
@@ -41,37 +55,88 @@ export default function ShareReview({
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const [asset, setAsset] = useState<Asset | null>(null);
+
+    const getColorValue = (key: ColorOptionKey) => {
+        switch (key) {
+            case "dominant":
+                return colors.dominant;
+            case "vibrant":
+                return colors.vibrant;
+            case "darkVibrant":
+                return colors.darkVibrant;
+            case "lightVibrant":
+                return colors.lightVibrant;
+            case "muted":
+                return colors.muted;
+            case "darkMuted":
+                return colors.darkMuted;
+            case "lightMuted":
+                return colors.lightMuted;
+            case "black":
+                return "#000";
+            case "white":
+                return "#fff";
+        }
+    };
+
     const cardRef = useRef(null);
     const captureCard = async (): Promise<string> => {
         return await captureRef(cardRef, {
             format: "png",
             quality: 1,
-            // Para story (9:16), garante que o output seja a resolução certa
+            width: 1080,
+            height: 1920,
             result: "tmpfile",
         });
     };
 
     // Abre o share sheet nativo — funciona pra Instagram, WhatsApp, etc.
     const handleShare = async () => {
-        const uri = await captureCard();
-        await Sharing.shareAsync(uri, {
-            mimeType: "image/png",
-            dialogTitle: "Compartilhar review",
-        });
+        setIsLoading(true);
+        try {
+            const uri = await captureCard();
+            await Sharing.shareAsync(uri, {
+                mimeType: "image/png",
+                dialogTitle: "Compartilhar review",
+            });
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Salva na galeria (caso queira dar essa opção separada)
     const handleSaveToGallery = async () => {
-        const { status } = await MediaLibrary.requestPermissionsAsync();
-        console.log("Permission status:", status);
-        if (status !== "granted") return;
+        setIsLoading(true);
+        try {
+            const { status } = await requestPermissionsAsync();
+            console.log("Permission status:", status);
+            if (status !== "granted") return;
 
-        const uri = await captureCard();
-        await MediaLibrary.saveToLibraryAsync(uri);
+            const uri = await captureCard();
+            const savedAsset = await Asset.create(uri);
+            setAsset(savedAsset);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
         <>
+            <Animated.View
+                style={[
+                    styles.statusBarBg,
+                    {
+                        height: insets.top + 24,
+                    },
+                ]}
+                pointerEvents="none"
+            >
+                <LinearGradient
+                    colors={["#161718", "transparent"]}
+                    style={StyleSheet.absoluteFill}
+                />
+            </Animated.View>
             <Pressable
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
@@ -79,7 +144,7 @@ export default function ShareReview({
                 <AltArrowLeft size={32} color="#eee" />
             </Pressable>
             <ScrollView
-                style={[styles.container, { marginTop: insets.top }]}
+                style={[styles.container]}
                 showsVerticalScrollIndicator={false}
             >
                 <View
@@ -111,7 +176,12 @@ export default function ShareReview({
                     >
                         <ViewShot
                             ref={cardRef}
-                            options={{ format: "png", quality: 1 }}
+                            options={{
+                                format: "png",
+                                quality: 1,
+                                width: 1080 * 2,
+                                height: 1920 * 2,
+                            }}
                             style={{
                                 aspectRatio: "9/16",
                                 width: "100%",
@@ -140,7 +210,7 @@ export default function ShareReview({
                                             uri: reviewData.Profile.avatar_url,
                                         }}
                                         style={{
-                                            width: 18,
+                                            width: 22,
                                             aspectRatio: 1,
                                             marginTop: 16,
                                             borderRadius: 18 * 0.306,
@@ -148,7 +218,10 @@ export default function ShareReview({
                                             top: -12,
                                             zIndex: 2,
                                             shadowColor: "rgba(0,0,0,0.5)",
-                                            shadowOffset: { width: 0, height: 4 },
+                                            shadowOffset: {
+                                                width: 0,
+                                                height: 4,
+                                            },
                                             shadowRadius: 8,
                                             shadowOpacity: 0.5,
                                         }}
@@ -159,12 +232,15 @@ export default function ShareReview({
                                             uri: albumData.images[0].url,
                                         }}
                                         style={{
-                                            width: "50%",
+                                            width: "55%",
                                             aspectRatio: 1,
                                             marginTop: 16,
                                             borderRadius: 6,
                                             shadowColor: "rgba(0,0,0,0.5)",
-                                            shadowOffset: { width: 0, height: 4 },
+                                            shadowOffset: {
+                                                width: 0,
+                                                height: 4,
+                                            },
                                             shadowRadius: 8,
                                             shadowOpacity: 0.5,
                                         }}
@@ -196,10 +272,12 @@ export default function ShareReview({
                                 <TextDefault
                                     style={{
                                         color: "#eee",
-                                        fontSize: 7,
+                                        fontSize: 8,
                                         fontWeight: 700,
+                                        marginTop: 6,
                                         fontFamily: "Walsheim",
                                     }}
+                                    numberOfLines={2}
                                 >
                                     {albumData.name}
                                 </TextDefault>
@@ -208,8 +286,10 @@ export default function ShareReview({
                                         color: "#989898",
                                         fontSize: 7,
                                         fontWeight: 400,
+                                        marginTop: 4,
                                         fontFamily: "Walsheim",
                                     }}
+                                    numberOfLines={2}
                                 >
                                     {albumData.artists[0].name}
                                 </TextDefault>
@@ -262,105 +342,22 @@ export default function ShareReview({
                                 flexWrap: "wrap",
                             }}
                         >
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.dominant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne(colors.dominant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.vibrant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne(colors.vibrant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.darkVibrant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne(colors.darkVibrant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.lightVibrant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne(colors.lightVibrant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.muted,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne(colors.muted);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.darkMuted,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne(colors.darkMuted);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.lightMuted,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne(colors.lightMuted);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: "#000",
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne("#000");
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: "#fff",
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorOne("#fff");
-                                }}
-                            />
+                            {COLOR_OPTIONS.map((option) => (
+                                <Pressable
+                                    key={option.key}
+                                    style={{
+                                        backgroundColor: getColorValue(
+                                            option.key,
+                                        ),
+                                        height: 44,
+                                        width: 44,
+                                        borderRadius: 8,
+                                    }}
+                                    onPress={() => {
+                                        setColorOne(getColorValue(option.key));
+                                    }}
+                                />
+                            ))}
                         </View>
                     </View>
 
@@ -376,105 +373,22 @@ export default function ShareReview({
                                 flexWrap: "wrap",
                             }}
                         >
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.dominant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo(colors.dominant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.vibrant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo(colors.vibrant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.darkVibrant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo(colors.darkVibrant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.lightVibrant,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo(colors.lightVibrant);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.muted,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo(colors.muted);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.darkMuted,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo(colors.darkMuted);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: colors.lightMuted,
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo(colors.lightMuted);
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: "#000",
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo("#000");
-                                }}
-                            />
-                            <Pressable
-                                style={{
-                                    backgroundColor: "#fff",
-                                    height: 44,
-                                    width: 44,
-                                    borderRadius: 8,
-                                }}
-                                onPress={() => {
-                                    setColorTwo("#fff");
-                                }}
-                            />
+                            {COLOR_OPTIONS.map((option) => (
+                                <Pressable
+                                    key={option.key}
+                                    style={{
+                                        backgroundColor: getColorValue(
+                                            option.key,
+                                        ),
+                                        height: 44,
+                                        width: 44,
+                                        borderRadius: 8,
+                                    }}
+                                    onPress={() => {
+                                        setColorTwo(getColorValue(option.key));
+                                    }}
+                                />
+                            ))}
                         </View>
                     </View>
 
@@ -588,5 +502,14 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 12,
         overflow: "hidden",
+    },
+
+    statusBarBg: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "transparent",
+        zIndex: 10,
     },
 });

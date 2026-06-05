@@ -21,7 +21,7 @@ import { TrashBinTrash } from "@solar-icons/react-native/Outline";
 import ConfirmModal from "@/components/core/confirm-modal";
 
 import { getShortPastRelativeTime } from "@/lib/util/time";
-import { Hearts, ChatLine } from "@solar-icons/react-native/Bold";
+import { Hearts, ChatLine, SirenRounded  } from "@solar-icons/react-native/Bold";
 
 const MAX_PREVIEW_CHARS = 500;
 
@@ -41,6 +41,7 @@ export default function NotsCard({
 
     useEffect(() => {
         const fecthAlbumData = async () => {
+            setIsLoading(true);
             try {
                 if (nots.ratingId && nots.type !== "follow") {
                     const response = await api.get(`/reviews/${nots.ratingId}`);
@@ -52,10 +53,12 @@ export default function NotsCard({
                     //     setAlbumData(albumResponse.data);
                     //     console.log("Album data fetched successfully:", albumResponse.data);
                     // }
+                    setLoading(false);
                 }
                 // console.log("Content fetched successfully:", content.html);
             } catch (error) {
                 console.error("Error fetching content:", error);
+                setLoading(false);
             }
         };
 
@@ -148,7 +151,33 @@ export default function NotsCard({
                                     </TextDefault>
                                 </View>
                             </>
-                        ) : null}
+                        ) : <>
+                                <View
+                                    style={{
+                                        height: 36,
+                                        width: 36,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        backgroundColor: "#8065ef22",
+                                        borderRadius: 36 * 0.306,
+                                    }}
+                                >
+                                    <SirenRounded size={24} color="#8065ef" />
+                                </View>
+                                <View style={styles.cardContent}>
+                                    <View style={{
+                                            padding: 8,
+                                            backgroundColor: "#202020",
+                                            borderRadius: 4,
+                                    }} />
+                                    <View style={{
+                                            marginTop: 8,
+                                            padding: 6,
+                                            backgroundColor: "#202020",
+                                            borderRadius: 4,
+                                    }} />
+                                </View>
+                            </>}
                     </View>
                 </Pressable>
             )}
@@ -186,10 +215,6 @@ export default function NotsCard({
                                     .name || "Usuário não encontrado"}{" "}
                                 seguiu você
                             </TextDefault>
-                            {/* <TextDefault style={styles.cardText}>
-                                    {Object.keys(draft.ratings).length} músicas
-                                    · nota {draft.overallRating}
-                                </TextDefault> */}
 
                             <TextDefault style={styles.cardMeta}>
                                 {getShortPastRelativeTime(
@@ -201,6 +226,7 @@ export default function NotsCard({
                     </View>
                 </Pressable>
             )}
+            
             {nots.type === "comment" && (
                 <Pressable
                     onPress={() => {
@@ -246,10 +272,6 @@ export default function NotsCard({
                                         {reviewData.album?.name ||
                                             "Álbum não encontrado"}
                                     </TextDefault>
-                                    {/* <TextDefault style={styles.cardText}>
-                                    {Object.keys(draft.ratings).length} músicas
-                                    · nota {draft.overallRating}
-                                </TextDefault> */}
 
                                     <TextDefault style={styles.cardMeta}>
                                         {getShortPastRelativeTime(
@@ -259,10 +281,90 @@ export default function NotsCard({
                                     </TextDefault>
                                 </View>
                             </>
-                        ) : null}
+                        ) : <>
+                                <View
+                                    style={{
+                                        height: 36,
+                                        width: 36,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        backgroundColor: "#8065ef22",
+                                        borderRadius: 36 * 0.306,
+                                    }}
+                                >
+                                    <SirenRounded size={24} color="#8065ef" />
+                                </View>
+                                <View style={styles.cardContent}>
+                                    <View style={{
+                                            padding: 8,
+                                            backgroundColor: "#202020",
+                                            borderRadius: 4,
+                                    }} />
+                                    <View style={{
+                                            marginTop: 8,
+                                            padding: 6,
+                                            backgroundColor: "#202020",
+                                            borderRadius: 4,
+                                    }} />
+                                </View>
+                            </>}
                     </View>
                 </Pressable>
             )}
+
+            {/* {isLoading && (
+                <Pressable
+                    onPress={() => {
+                        setSeen();
+                        router.push({
+                            pathname:
+                                "/(app)/(tabs)/(notifications)/review/[id]",
+                            params: { id: nots.ratingId as unknown as string },
+                        });
+                    }}
+                    style={({ pressed }) => [
+                        styles.main,
+                        pressed && styles.mainPressed,
+                        {
+                            backgroundColor: nots.seen
+                                ? "transparent"
+                                : "#1b1c1d",
+                        },
+                    ]}
+                >
+                    <View style={styles.card}>
+                        {reviewData ? (
+                            <>
+                                <View
+                                    style={{
+                                        height: 36,
+                                        width: 36,
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        backgroundColor: "#8065ef22",
+                                        borderRadius: 36 * 0.306,
+                                    }}
+                                >
+                                    <SirenRounded size={24} color="#8065ef" />
+                                </View>
+                                <View style={styles.cardContent}>
+                                    <View style={{
+                                            padding: 8,
+                                            backgroundColor: "#202020",
+                                            borderRadius: 4,
+                                    }} />
+                                    <View style={{
+                                            marginTop: 8,
+                                            padding: 6,
+                                            backgroundColor: "#202020",
+                                            borderRadius: 4,
+                                    }} />
+                                </View>
+                            </>
+                        ) : null}
+                    </View>
+                </Pressable>
+            )} */}
             {/* {nots.type === "like" && (
                 <Pressable
                     // onPress={() =>
@@ -333,21 +435,6 @@ export default function NotsCard({
                 }}
                 onCancel={() => setShowDeleteModal(false)}
             />
-            {isLoading && (
-                <View
-                    style={[
-                        StyleSheet.absoluteFill,
-                        {
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "rgba(0,0,0,0.5)",
-                            zIndex: 999,
-                        },
-                    ]}
-                >
-                    <ActivityIndicator size="large" color="#8065ef" />
-                </View>
-            )}
         </>
     );
 }

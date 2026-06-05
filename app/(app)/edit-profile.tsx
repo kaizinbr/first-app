@@ -58,7 +58,7 @@ import EditFavAlbuns from "@/components/profile/edit/edit-fav-albuns";
 import EditFavArtists from "@/components/profile/edit/edit-fav-artists";
 import LyricsCard from "@/components/profile/lyrics-card";
 
-const USERNAME_MAX_LENGTH = 20;
+const USERNAME_MAX_LENGTH = 24;
 const USERNAME_ALLOWED_REGEX = /^[a-zA-Z0-9._]+$/;
 const ALBUM_GRID_GAP = 8;
 const ALBUM_GRID_MIN_ITEM_SIZE = 80;
@@ -266,6 +266,7 @@ export default function EditProfile() {
         // }
 
         if (trimmedUsername.length > USERNAME_MAX_LENGTH) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message: `O username deve ter no máximo ${USERNAME_MAX_LENGTH} caracteres.`,
@@ -273,6 +274,7 @@ export default function EditProfile() {
         }
 
         if (trimmedUsername.length <= 0) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message: `O username não pode ser vazio.`,
@@ -280,6 +282,7 @@ export default function EditProfile() {
         }
 
         if (trimmedUsername.length <= 3) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message: `O username deve ter pelo menos 4 caracteres.`,
@@ -290,6 +293,7 @@ export default function EditProfile() {
             trimmedUsername.startsWith(".") ||
             trimmedUsername.startsWith("_")
         ) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message:
@@ -298,6 +302,7 @@ export default function EditProfile() {
         }
 
         if (trimmedUsername.endsWith(".") || trimmedUsername.endsWith("_")) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message:
@@ -306,6 +311,7 @@ export default function EditProfile() {
         }
 
         if (!USERNAME_ALLOWED_REGEX.test(trimmedUsername)) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message:
@@ -314,6 +320,7 @@ export default function EditProfile() {
         }
 
         if (isLoadingUsernames) {
+            setCanUpdate(false);
             return {
                 status: "loading",
                 message: "Validando disponibilidade do username...",
@@ -321,6 +328,7 @@ export default function EditProfile() {
         }
 
         if (usernameLookupError) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message: usernameLookupError,
@@ -335,12 +343,14 @@ export default function EditProfile() {
         const isCurrentUsername = requestedLowername === currentLowername;
 
         if (!isCurrentUsername && usedUsernames.has(requestedLowername)) {
+            setCanUpdate(false);
             return {
                 status: "error",
                 message: "Esse username ja esta em uso.",
             };
         }
 
+        setCanUpdate(true);
         return {
             status: "success",
             message: "Username disponivel.",
@@ -455,6 +465,14 @@ export default function EditProfile() {
     };
 
     const saveProfile = async () => {
+        if (!canUpdate) {
+            Alert.alert(
+                "Dados inválidos",
+                "Por favor, corrija os erros antes de salvar seu perfil.",
+            );
+            return;
+        }
+
         try {
             setIsLoading(true);
             console.log("Saving profile with data:");
@@ -632,9 +650,8 @@ export default function EditProfile() {
                     pointerEvents="none" // Para não bloquear o clique de voltar
                 >
                     <Text style={styles.fixedTitle} numberOfLines={1}>
-                        Perfil de{" "}
-                        {name.length > 36
-                            ? name.substring(0, 36) + "..."
+                        {name.length > 24
+                            ? name.substring(0, 24) + "..."
                             : name}
                     </Text>
                     {colors.length > 0 && (
@@ -663,16 +680,7 @@ export default function EditProfile() {
                 </Pressable>
                 <Pressable
                     onPress={saveProfile}
-                    style={{
-                        position: "absolute",
-                        right: 16,
-                        top: insets.top + 4,
-                        backgroundColor: "#8065ef",
-                        paddingHorizontal: 16,
-                        paddingVertical: 8,
-                        borderRadius: 999,
-                        zIndex: 11,
-                    }}
+                    style={[styles.saveButton, { top: insets.top + 4 }, !canUpdate && styles.disabledSaveButton]}
                     // disabled={!isUsernameValid}
                 >
                     <Text style={{ color: "#eee", fontWeight: "bold" }}>
@@ -775,6 +783,7 @@ export default function EditProfile() {
                                 placeholderTextColor="#555"
                                 value={name}
                                 onChangeText={setName}
+                                maxLength={24}
                             />
                             <Text style={styles.title}>Username</Text>
                             <TextInput
@@ -783,6 +792,7 @@ export default function EditProfile() {
                                 placeholderTextColor="#555"
                                 value={username}
                                 onChangeText={setUsername}
+                                maxLength={24}
                             />
                             {usernameValidation.message && (
                                 <Text
@@ -1143,5 +1153,18 @@ const styles = StyleSheet.create({
         opacity: 0.6,
         // blur no RN é via style diretamente no iOS
         // no Android precisa de uma alternativa
+    },
+    saveButton: {
+        position: "absolute",
+        right: 16,
+        backgroundColor: "#8065ef",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 999,
+        zIndex: 11,
+    },
+    disabledSaveButton: {
+        backgroundColor: "#555",
+        opacity: 0.6,
     },
 });
