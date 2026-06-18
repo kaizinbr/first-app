@@ -18,22 +18,22 @@ export default function NotificationObserver() {
                         });
                     } else if (data?.type === "like") {
                         router.push({
-                            pathname: "/(app)/(tabs)/(home)/review/[id]",
+                            pathname: "/(app)/(tabs)/(ahome)/review/[id]",
                             params: { id: data.reviewId as string },
                         });
                     } else if (data?.type === "comment") {
                         router.push({
-                            pathname: "/(app)/(tabs)/(home)/review/[id]",
+                            pathname: "/(app)/(tabs)/(ahome)/review/[id]",
                             params: { id: data.reviewId as string },
                         });
                     } else if (data?.type === "mention") {
                         router.push({
-                            pathname: "/(app)/(tabs)/(home)/review/[id]",
+                            pathname: "/(app)/(tabs)/(ahome)/review/[id]",
                             params: { id: data.reviewId as string },
                         });
                     } else if (data?.type === "follow") {
                         router.push({
-                            pathname: "/(app)/(tabs)/(home)/user/[username]",
+                            pathname: "/(app)/(tabs)/(ahome)/user/[username]",
                             params: { username: data.username as string },
                         });
                     }

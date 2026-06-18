@@ -4,6 +4,7 @@ import {
     AltArrowLeft,
     Settings,
     Share as ShareIcon,
+    SquareShareLine 
 } from "@solar-icons/react-native/Outline";
 
 export default function ShareBtn({ type, url }: { type: string; url: string }) {

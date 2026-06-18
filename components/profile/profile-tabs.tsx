@@ -44,7 +44,7 @@ export default function ProfileTabs({
     const renderHeader = React.useCallback(() => {
         return (
             <ScrollView
-                style={styles.headerWrapper}
+                style={[styles.headerWrapper, { backgroundColor: "transparent" }]}
                 refreshControl={
                     <RefreshControl
                         refreshing={refreshing}
@@ -101,10 +101,10 @@ export default function ProfileTabs({
             <Tabs.Tab name="reviews" label="Reviews">
                 <PostsRoute data={data} />
             </Tabs.Tab>
-            <Tabs.Tab name="about" label="Mural">
+            <Tabs.Tab name="about" label="Sobre">
                 <AboutRoute data={data} />
             </Tabs.Tab>
-            <Tabs.Tab name="list" label="Quero ouvir">
+            <Tabs.Tab name="list" label="Quero avaliar">
                 <WishlistRoute data={data} />
             </Tabs.Tab>
             <Tabs.Tab name="following" label="Seguindo">

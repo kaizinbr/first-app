@@ -102,7 +102,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                     >
                         <SortFromBottomToTop size={16} color={sort === "desc" ? "#8065ef" : "#777"} />
                         <TextDefault style={styles.sortText}>
-                            Mais recentes
+                            Recentes
                         </TextDefault>
                     </Pressable>
                     <Pressable
@@ -114,7 +114,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                     >
                         <SortFromTopToBottom size={16} color={sort === "asc" ? "#8065ef" : "#777"} />
                         <TextDefault style={styles.sortText}>
-                            Mais antigas
+                            Antigas
                         </TextDefault>
                     </Pressable>
                 </View>

@@ -41,6 +41,8 @@ export default function IndexSettings() {
                 </Pressable>
             <ScrollView
                 style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}
+                
+                    showsVerticalScrollIndicator={false}
             >
 
                 <View style={[styles.section, { padding: 16 }]}>

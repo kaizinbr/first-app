@@ -125,6 +125,7 @@ export default function Drafts() {
                     ListFooterComponent={<View style={{ height: 38 }} />}
                     refreshing={refreshing}
                     onRefresh={onRefresh}
+                    showsVerticalScrollIndicator={false}
                 />
             </View>
             <BottomSheetModal

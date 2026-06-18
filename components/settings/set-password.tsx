@@ -5,6 +5,7 @@ import {
     RefreshControl,
     Text,
     Pressable,
+    KeyboardAvoidingView,
 } from "react-native";
 import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
 import { UserProfile, Palette } from "@/lib/types";
@@ -53,7 +54,7 @@ export default function Password({
                   account.providerId === "credential" && !!account.password,
           )
         : accountData?.providerId === "credential" && !!accountData?.password;
-    const [step, setStep] = useState(0);
+    const [step, setStep] = useState(2);
 
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -65,6 +66,7 @@ export default function Password({
     const [isLengthOk, setIsLengthOk] = useState(false);
     const [isSpecialCharOk, setIsSpecialCharOk] = useState(false);
     const [isEqual, setIsEqual] = useState(false);
+    const [hasSpace, setHasSpace] = useState(false);
 
     console.log(
         accountData.some(
@@ -77,6 +79,7 @@ export default function Password({
         setIsLengthOk(password.length >= 8 && password.length <= 32);
         setIsCharOk(/[a-z]/.test(password) && /[A-Z]/.test(password));
         setIsSpecialCharOk(/[0-9!@#$%^&*(),.?":{}|<>]/.test(password));
+        setHasSpace(/ /.test(password));
     };
 
     function handleCurrentPassword(value: string) {
@@ -107,7 +110,7 @@ export default function Password({
             return;
         }
 
-        console.log(newPassword)
+        console.log(newPassword);
 
         try {
             const setPasswordResponse = await apiAuthPost(
@@ -118,8 +121,6 @@ export default function Password({
                     confirm_password: confirmPassword,
                 },
             );
-
-            console.log("Password change response:", setPasswordResponse);
 
             if (setPasswordResponse.error) {
                 console.error(
@@ -136,7 +137,7 @@ export default function Password({
             setCurrentPassword("");
             setNewPassword("");
             setConfirmPassword("");
-            router.back();
+            router.push("/(app)/settings/menu");
         } catch (error) {
             console.error("Error changing password:", error);
             setMessage("Ocorreu um erro ao alterar a senha. Tente novamente.");
@@ -144,20 +145,20 @@ export default function Password({
     }
 
     const handleResetPassword = async () => {
-
-
         const { data, error } = await authClient.emailOtp.requestPasswordReset({
             email: userData.email,
         });
 
         if (error) {
             console.error("Error requesting password reset:", error);
-            setMessage("Erro ao solicitar redefinição de senha. Verifique sua senha atual e tente novamente.");
+            setMessage(
+                "Erro ao solicitar redefinição de senha. Verifique sua senha atual e tente novamente.",
+            );
             return;
         }
 
         console.log("Password reset requested successfully:", data);
-        
+
         setStep(1);
         setMessage("");
 
@@ -165,50 +166,15 @@ export default function Password({
     };
 
     return (
-        <View style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}>
+        <KeyboardAvoidingView
+            style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}
+        >
             <Pressable
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
                 <AltArrowLeft size={32} color="#eee" />
             </Pressable>
-
-            <View style={styles.section}>
-                <View style={styles.button}>
-                    <AvatarNoPress data={data} size={48} />
-                    <View style={{ flex: 1 }}>
-                        <TextDefault
-                            style={[styles.textDefault, { fontWeight: "bold" }]}
-                        >
-                            {data.name}
-                        </TextDefault>
-                        <TextDefault
-                            style={[styles.textDefault, { opacity: 0.6 }]}
-                        >
-                            @{data.username}
-                        </TextDefault>
-                    </View>
-                </View>
-            </View>
-            <View style={[styles.section, { padding: 16 }]}>
-                <TextDefault style={[styles.textDefault, styles.title]}>
-                    Senha definida
-                </TextDefault>
-                <TextDefault style={[styles.textDefault]}>
-                    {Array.isArray(accountData)
-                        ? accountData.some(
-                              (account: any) =>
-                                  account.providerId === "credential" &&
-                                  !!account.password,
-                          )
-                            ? "Sim"
-                            : "Não"
-                        : accountData?.providerId === "credential" &&
-                            !!accountData?.password
-                          ? "Sim"
-                          : "Não"}
-                </TextDefault>
-            </View>
 
             {step === 0 && (
                 <View style={[styles.section, { padding: 16 }]}>
@@ -219,7 +185,7 @@ export default function Password({
                             { marginBottom: 8 },
                         ]}
                     >
-                        Para redefinir sua senha, precisamos que verifique seu
+                        Para definir uma senha, precisamos que verifique seu
                         email.
                     </TextDefault>
 
@@ -266,6 +232,26 @@ export default function Password({
                     >
                         Parâmetros de senha:
                     </TextDefault>
+
+                    {hasSpace && (
+                        <View
+                            style={{
+                                flexDirection: "row",
+                                gap: 4,
+                                marginBottom: 4,
+                            }}
+                        >
+                            <TextDefault
+                                style={[
+                                    styles.textDefault,
+                                    { fontSize: 14 },
+                                    { color: "#eee" },
+                                ]}
+                            >
+                                Não pode conter espaços em branco!
+                            </TextDefault>
+                        </View>
+                    )}
 
                     <View
                         style={{
@@ -366,25 +352,6 @@ export default function Password({
                         </TextDefault>
                     ) : null}
 
-                    {/* {accountData.password && (
-                        <View style={{ marginBottom: 16 }}>
-                            <TextDefault
-                                style={[
-                                    styles.textDefault,
-                                    styles.title,
-                                    { marginBottom: 4 },
-                                ]}
-                            >
-                                Senha atual
-                            </TextDefault>
-                            <PasswordInput
-                                placeholder="Senha atual"
-                                value={currentPassword}
-                                onChangeText={handleCurrentPassword}
-                            />
-                        </View>
-                    )} */}
-
                     <TextDefault
                         style={[
                             styles.textDefault,
@@ -424,7 +391,8 @@ export default function Password({
                                     !isLengthOk ||
                                     !isCharOk ||
                                     !isSpecialCharOk ||
-                                    !isEqual
+                                    !isEqual ||
+                                    hasSpace
                                         ? 0.6
                                         : 1,
                             },
@@ -433,7 +401,8 @@ export default function Password({
                             !isLengthOk ||
                             !isCharOk ||
                             !isSpecialCharOk ||
-                            !isEqual
+                            !isEqual ||
+                            hasSpace
                         }
                     >
                         <TextDefault
@@ -447,8 +416,7 @@ export default function Password({
                     </Pressable>
                 </View>
             )}
-            
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 

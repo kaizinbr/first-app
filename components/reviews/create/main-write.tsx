@@ -13,7 +13,11 @@ import {
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
+import {
+    EnrichedMarkdownTextInput,
+    type EnrichedMarkdownTextInputInstance,
+    type StyleState,
+} from "react-native-enriched-markdown";
 import TextDefault from "@/components/core/text-core";
 import { Album, Palette } from "@/lib/types";
 
@@ -37,7 +41,7 @@ export default function WriteReviewPage({
     const [ready, setReady] = useState(false);
     const [publishing, setPublishing] = useState(false);
     const [saveState, setSaveState] = useState<"saved" | "saving">("saved");
-    const latestTextRef = useRef("");
+    const latestTextRef = useRef<EnrichedMarkdownTextInputInstance | any>(null);
 
     useEffect(() => {
         const init = async () => {
@@ -132,10 +136,10 @@ export default function WriteReviewPage({
 
         clearSession(album.id);
         router.dismissAll();
-        router.replace("/(app)/(tabs)/(home)");
+        router.replace("/(app)/(tabs)/(ahome)");
         requestAnimationFrame(() => {
             router.push({
-                pathname: `/(app)/(tabs)/(home)/review/[id]`,
+                pathname: `/(app)/(tabs)/(ahome)/review/[id]`,
                 params: { id: response.data.id },
             });
         });

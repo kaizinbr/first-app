@@ -40,6 +40,7 @@ export default function IndexSettings() {
                 <AltArrowLeft size={32} color="#eee" />
             </Pressable>
             <ScrollView
+                    showsVerticalScrollIndicator={false}
                 style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}
             >
                 <View style={[styles.section, { padding: 16 }]}>

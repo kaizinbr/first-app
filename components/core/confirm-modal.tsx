@@ -1,5 +1,6 @@
-// components/core/confirm-modal.tsx
 import { Modal, View, Text, Pressable, StyleSheet } from "react-native";
+import { useState } from "react";
+import { ActivityIndicator } from "react-native";
 
 interface ConfirmModalProps {
     visible: boolean;
@@ -22,6 +23,8 @@ export default function ConfirmModal({
     onConfirm,
     onCancel,
 }: ConfirmModalProps) {
+    const [loading, setLoading] = useState(false);
+    
     return (
         <Modal
             visible={visible}
@@ -55,17 +58,25 @@ export default function ConfirmModal({
                                 styles.confirmBtn,
                                 confirmDestructive && styles.destructiveBtn,
                             ]}
-                            onPress={onConfirm}
+                            onPress={() => {
+                                setLoading(true);
+                                onConfirm();
+                            }}
+                            disabled={loading}
                         >
-                            <Text
-                                style={[
-                                    styles.confirmText,
-                                    confirmDestructive &&
-                                        styles.destructiveText,
-                                ]}
-                            >
-                                {confirmLabel}
-                            </Text>
+                            {loading ? (
+                                <ActivityIndicator size="small" color="#fff" />
+                            ) : (
+                                <Text
+                                    style={[
+                                        styles.confirmText,
+                                        confirmDestructive &&
+                                            styles.destructiveText,
+                                    ]}
+                                >
+                                    {confirmLabel}
+                                </Text>
+                            )}
                         </Pressable>
                     </View>
                 </Pressable>

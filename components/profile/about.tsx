@@ -74,48 +74,6 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                     <LyricsCard saved={data.lyrics as any} />
                 )}
 
-                {data.lastfm_username && (
-                    <Pressable
-                        style={[
-                            styles.sec,
-                            {
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            },
-                        ]}
-                        onPress={() => {
-                            Linking.openURL(`https://last.fm/user/${data.lastfm_username}`);
-                        }}
-                    >
-                        <FontAwesome5 name="lastfm" size={24} color="#eee" />
-                        <TextDefault style={styles.textDefault}>
-                            {data.lastfm_username}
-                        </TextDefault>
-                        <ArrowRightUp size={18} color="#eee" />
-                    </Pressable>
-                )}
-                {data.site && (
-                    <Pressable
-                        style={[
-                            styles.sec,
-                            {
-                                flexDirection: "row",
-                                alignItems: "center",
-                                justifyContent: "space-between",
-                            },
-                        ]}
-                        onPress={() => {
-                            // Lógica para abrir o site, por exemplo, usando Linking
-                        }}
-                    >
-                        <TextDefault style={styles.textDefault}>
-                            {data.site}
-                        </TextDefault>
-                        <ArrowRightUp size={18} color="#eee" />
-                    </Pressable>
-                )}
-
                 {data.albuns.length > 0 && (
                     <View
                         style={[
@@ -188,6 +146,48 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                             listKey="artists"
                         />
                     </View>
+                )}
+
+                {data.lastfm_username && (
+                    <Pressable
+                        style={[
+                            styles.sec,
+                            {
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            },
+                        ]}
+                        onPress={() => {
+                            Linking.openURL(`https://last.fm/user/${data.lastfm_username}`);
+                        }}
+                    >
+                        <FontAwesome5 name="lastfm" size={24} color="#eee" />
+                        <TextDefault style={styles.textDefault}>
+                            {data.lastfm_username}
+                        </TextDefault>
+                        <ArrowRightUp size={18} color="#eee" />
+                    </Pressable>
+                )}
+                {data.site && (
+                    <Pressable
+                        style={[
+                            styles.sec,
+                            {
+                                flexDirection: "row",
+                                alignItems: "center",
+                                justifyContent: "space-between",
+                            },
+                        ]}
+                        onPress={() => {
+                            // Lógica para abrir o site, por exemplo, usando Linking
+                        }}
+                    >
+                        <TextDefault style={styles.textDefault}>
+                            {data.site}
+                        </TextDefault>
+                        <ArrowRightUp size={18} color="#eee" />
+                    </Pressable>
                 )}
             </View>
         </Tabs.ScrollView>

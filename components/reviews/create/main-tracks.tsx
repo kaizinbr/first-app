@@ -1,10 +1,18 @@
 // components/reviews/create/main.tsx
+import TextDefault from "@/components/core/text-core";
+import Lyrics from "@/components/reviews/create/lyrics";
+import TrackRater from "@/components/reviews/create/track-rating";
+import AlbumData from "@/components/reviews/display/data";
+import AlbumHeader from "@/components/reviews/display/header";
+import { Album, Palette } from "@/lib/types";
+import { selectRightColor } from "@/lib/util/selectRightColor";
+import { darkenColor } from "@/lib/util/workWithColors";
+import { useReviewSession } from "@/store/reviewSessionStore";
 import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, TextInput, View } from "react-native";
-import TextDefault from "@/components/core/text-core";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -15,15 +23,6 @@ import Animated, {
     withTiming,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import ReviewStep from "@/components/reviews/create/review";
-import TrackRater from "@/components/reviews/create/track-rating";
-import AlbumData from "@/components/reviews/display/data";
-import AlbumHeader from "@/components/reviews/display/header";
-import Lyrics from "@/components/reviews/create/lyrics";
-import { Album, Palette } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { useReviewSession } from "@/store/reviewSessionStore";
 
 export default function ReviewCreateMain({
     album,
@@ -36,6 +35,7 @@ export default function ReviewCreateMain({
     const router = useRouter();
 
     const overallRating = useReviewSession((s) => s.overallRating);
+    console.log("overallRating", overallRating);    
     const setOverallRating = useReviewSession((s) => s.setOverallRating);
     const useMedia = useReviewSession((s) => s.useMedia);
     const setUseMedia = useReviewSession((s) => s.setUseMedia);
@@ -44,7 +44,9 @@ export default function ReviewCreateMain({
     const setReviewText = useReviewSession((s) => s.setReviewText);
 
     const [totalInput, setTotalInput] = useState(
-        overallRating > 0 ? overallRating.toString() : "",
+        Number.isNaN(overallRating) || overallRating <= 0
+            ? "0"
+            : overallRating.toString(),
     );
     const [currentTrack, setCurrentTrack] = useState(0);
     const [showLyrics, setShowLyrics] = useState(false);

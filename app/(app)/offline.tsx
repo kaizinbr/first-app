@@ -1,32 +1,15 @@
 import Button from "@/components/button";
-import { apiAuth, apiAuthPUT } from "@/lib/api";
-import { UserProfile } from "@/lib/types";
-import { useEffect, useMemo, useState } from "react";
+import TextDefault from "@/components/core/text-core";
 import { useRouter } from "expo-router";
 import {
     StyleSheet,
-    Text,
-    TextInput,
-    View,
-    Image,
-    Pressable,
-    KeyboardAvoidingView,
-    Platform,
+    View
 } from "react-native";
-import TextDefault from "@/components/core/text-core";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Alert } from "react-native";
 
-import { Palette } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
 
-import * as ImagePicker from "expo-image-picker";
-import { LinearGradient } from "expo-linear-gradient";
 
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
 
-import uploadImageToVercel from "@/lib/util/uploadImage";
 
 const blurhash =
     "|rF?hV%2WCj[ayj[a|j[az_NaeWBj@ayfRayfQfQM{M|azj[azf6fQfQfQIpWXofj[ayj[j[fQayWCoeoeaya}j[ayfQa{oLj?j[WVj[ayayj[fQoff7azayj[ayj[j[ayofayayayj[fQj[ayayj[ayfjj[j[ayjuayj[";
@@ -52,7 +35,7 @@ export default function Onboarding() {
                 internet e tente novamente.
             </TextDefault>
             <Button
-                onPress={() => router.push("/(app)/(tabs)/(home)")}
+                onPress={() => router.push("/(app)/(tabs)/(ahome)")}
                 style={{ marginTop: 16 }}
             >
                 Tentar novamente

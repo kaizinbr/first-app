@@ -1,38 +1,29 @@
-import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import {
-    Linking,
-    StyleSheet,
-    View,
     Pressable,
-    ActivityIndicator,
+    StyleSheet,
+    View
 } from "react-native";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 
 import { authClient } from "@/lib/auth-client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TextDefault from "@/components/core/text-core";
-import { useRouter, Href, Link } from "expo-router";
+import { useRouter } from "expo-router";
+import { useCallback, useMemo, useRef, useState } from "react";
 
-import { apiAuth, apiAuthDELETE } from "@/lib/api";
+import { apiAuthDELETE } from "@/lib/api";
 import { Image } from "expo-image";
 
 import { Comment } from "@/lib/types";
-import { displayPastRelativeTime, getPastRelativeTime } from "@/lib/util/time";
+import { getPastRelativeTime } from "@/lib/util/time";
 
 import {
     Flag,
     ForbiddenCircle,
     MenuDots,
-    Pen,
     TrashBinTrash,
-    User,
-    Vinyl,
+    User
 } from "@solar-icons/react-native/Bold";
-import {
-    ChatRound,
-    ChatSquare,
-    Share,
-} from "@solar-icons/react-native/Outline";
 
 import {
     BottomSheetBackdrop,
@@ -42,7 +33,7 @@ import {
 } from "@gorhom/bottom-sheet";
 
 import ConfirmModal from "@/components/core/confirm-modal";
-import { ShareLargeBtn, ShareSmBtn } from "@/components/core/share-btn";
+import { ShareSmBtn } from "@/components/core/share-btn";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { LikeCommentButton } from "@/components/reviews/like-btn";
@@ -141,23 +132,20 @@ export default function CommentCard({
                                     )}
                                 </TextDefault>
                             </View>
-                            <Pressable
-                                onPress={(e) => {
-                                    // e.stopPropagation();
-                                    openSheet();
-                                }}
-                            >
-                                <MenuDots color="#aaa" size={20} />
-                            </Pressable>
                         </View>
                         <View>
                             <EnrichedMarkdownText
                                 markdown={commentData.body}
-                                onLinkPress={({ url }) => router.push({
-                                    pathname: "/(app)/(tabs)/(drafts)/user/[username]",
-                                    params: { username: url.replace("@", "") },
-                                })}
-                                
+                                onLinkPress={({ url }) =>
+                                    router.push({
+                                        pathname:
+                                            "/(app)/(tabs)/(drafts)/user/[username]",
+                                        params: {
+                                            username: url.replace("@", ""),
+                                        },
+                                    })
+                                }
+                                selectable={false}
                                 containerStyle={{
                                     flex: 1,
                                     color: "#fff",
@@ -181,6 +169,76 @@ export default function CommentCard({
                                         lineHeight: 20,
                                         fontFamily: "Walsheim",
                                         fontWeight: "400",
+                                    },
+                                    strikethrough: {
+                                        color: "#999",
+                                    },
+                                    underline: {
+                                        color: "#333",
+                                    },
+                                    list: {
+                                        color: "#fff",
+                                        fontSize: 14,
+                                        marginTop: 4,
+                                        lineHeight: 20,
+                                        fontFamily: "Walsheim",
+                                        fontWeight: "400",
+                                    },
+                                    h1: {
+                                        color: "#fff",
+                                        fontSize: 22,
+                                        fontWeight: "bold",
+                                    },
+                                    h2: {
+                                        color: "#fff",
+                                        fontSize: 18,
+                                        fontWeight: "bold",
+                                    },
+                                    h3: {
+                                        color: "#fff",
+                                        fontSize: 16,
+                                    },
+                                    h4: {
+                                        color: "#fff",
+                                        fontSize: 14,
+                                    },
+                                    h5: {
+                                        color: "#fff",
+                                        fontSize: 14,
+                                    },
+                                    h6: {
+                                        color: "#fff",
+                                        fontSize: 14,
+                                    },
+                                    codeBlock: {
+                                        fontSize: 14,
+                                        fontFamily: "monospace",
+                                        backgroundColor: "#1E1E1E",
+                                        color: "#D4D4D4",
+                                        padding: 16,
+                                        borderRadius: 8,
+                                        marginBottom: 16,
+                                    },
+                                    blockquote: {
+                                        fontSize: 14,
+                                        borderColor: "#8065ef",
+                                        borderWidth: 3,
+                                        backgroundColor: "#1E1E1E",
+                                        color: "#D4D4D4",
+                                        marginBottom: 12,
+                                    },
+                                    taskList: {
+                                        checkedColor: "#8065ef",
+                                        borderColor: "#9E9E9E",
+                                        checkmarkColor: "#FFFFFF",
+                                        checkboxSize: 16,
+                                    },
+                                    code: {
+                                        fontFamily: "CutiveMono-Regular",
+                                        fontSize: 16,
+                                        color: "#8065ef",
+                                        backgroundColor: "#F5F5F5",
+                                        borderColor: "#E0E0E0",
                                     },
                                 }}
                             />
@@ -213,6 +271,15 @@ export default function CommentCard({
                             <ShareSmBtn
                                 url={`https://whistle.kaizin.work/r/${commentData.id}`}
                             />
+
+                            <Pressable
+                                onPress={(e) => {
+                                    // e.stopPropagation();
+                                    openSheet();
+                                }}
+                            >
+                                <MenuDots color="#aaa" size={20} />
+                            </Pressable>
                         </View>
                     </View>
                 </View>
@@ -315,7 +382,7 @@ export default function CommentCard({
                             ]}
                             onPress={() => {
                                 router.push({
-                                    pathname: "/(app)/(tabs)/(home)/album/[id]",
+                                    pathname: "/(app)/(tabs)/(ahome)/album/[id]",
                                     params: { id: commentData.album_id },
                                 });
                                 dismiss();
@@ -338,7 +405,7 @@ export default function CommentCard({
                             onPress={() => {
                                 router.push({
                                     pathname:
-                                        "/(app)/(tabs)/(home)/user/[username]",
+                                        "/(app)/(tabs)/(ahome)/user/[username]",
                                     params: {
                                         username: commentData.Profile.username,
                                     },

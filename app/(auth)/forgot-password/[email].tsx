@@ -1,22 +1,19 @@
-import { useState, useRef } from "react";
+import Button from "@/components/button";
+import TextDefault from "@/components/core/text-core";
+import Input from "@/components/input";
 import { authClient } from "@/lib/auth-client";
 import { useLocalSearchParams } from "expo-router";
-import TextDefault from "@/components/core/text-core";
-import Button from "@/components/button";
-import Input from "@/components/input";
+import { useState } from "react";
 
 import { PasswordInput } from "@/components/core/input-password";
 import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    TextInput,
-    Platform,
     ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
-import OTPInput from "@/components/auth/otp-input";
 
 import { Link, useRouter } from "expo-router";
 
@@ -47,7 +44,6 @@ export default function Password() {
         const { data, error } = await authClient.signIn.email({
             email: email as string,
             password,
-            
         });
 
         console.log("Resposta", { data, error });
@@ -64,14 +60,12 @@ export default function Password() {
             setIsLoading(false);
             return;
         } else if (error) {
-            setErrorMessage(
-                "Ocorreu um erro. Por favor, tente novamente.",
-            );
+            setErrorMessage("Ocorreu um erro. Por favor, tente novamente.");
             setIsLoading(false);
             return;
         }
 
-        router.push("/(app)/(tabs)/(home)")
+        router.push("/(app)/(tabs)/(ahome)");
     };
 
     return (
@@ -121,7 +115,9 @@ export default function Password() {
                         <Button onPress={handleSignIn}>Entrar</Button>
                     </View>
                     <Link href="/sign-up" style={{ marginTop: 16 }}>
-                        <TextDefault>Não tem uma conta? Cadastre-se</TextDefault>
+                        <TextDefault>
+                            Não tem uma conta? Cadastre-se
+                        </TextDefault>
                     </Link>
                 </View>
             </ScrollView>
@@ -179,7 +175,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginTop: 8,
     },
-    
+
     input: {
         width: "100%",
         padding: 12,

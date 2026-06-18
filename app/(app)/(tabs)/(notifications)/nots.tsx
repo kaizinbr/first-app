@@ -23,7 +23,7 @@ import {
     MenuDots,
     Pen,
     TrashBinTrash,
-    Eye 
+    Eye,
 } from "@solar-icons/react-native/Bold";
 
 import {
@@ -98,13 +98,13 @@ export default function Drafts() {
     };
 
     const setAllSeen = async () => {
-            try {
-                await apiAuthPost(`/notifications/all`);
-                onRefresh();
-            } catch (error) {
-                console.error("Error setting notification as seen:", error);
-            }
-        };
+        try {
+            await apiAuthPost(`/notifications/all`);
+            onRefresh();
+        } catch (error) {
+            console.error("Error setting notification as seen:", error);
+        }
+    };
 
     return (
         <KeyboardAvoidingView
@@ -152,6 +152,7 @@ export default function Drafts() {
                     )}
                     refreshing={refreshing}
                     onRefresh={onRefresh}
+                    showsVerticalScrollIndicator={false}
                 />
             </View>
             <BottomSheetModal
@@ -171,7 +172,10 @@ export default function Drafts() {
                 )}
             >
                 <BottomSheetView>
-                    <BottomSheetScrollView contentContainerStyle={styles.sheetView}>
+                    <BottomSheetScrollView
+                        showsVerticalScrollIndicator={false}
+                        contentContainerStyle={styles.sheetView}
+                    >
                         <Pressable
                             style={({ pressed }) => [
                                 styles.optBtn,

@@ -238,6 +238,7 @@ export default function ReviewAlbumScreen({
                         style={{
                             backgroundColor: "transparent",
                             paddingBottom: 16,
+                            paddingTop: 16,
                             flexDirection: "row",
                         }}
                     >
@@ -380,7 +381,7 @@ export default function ReviewAlbumScreen({
                                 onPress={() => {
                                     router.push({
                                         pathname:
-                                            "/(app)/(tabs)/(home)/album/[id]",
+                                            "/(app)/(tabs)/(ahome)/album/[id]",
                                         params: { id: reviewData.album_id },
                                     });
                                     dismiss();
@@ -403,7 +404,7 @@ export default function ReviewAlbumScreen({
                                 onPress={() => {
                                     router.push({
                                         pathname:
-                                            "/(app)/(tabs)/(home)/user/[username]",
+                                            "/(app)/(tabs)/(ahome)/user/[username]",
                                         params: {
                                             username:
                                                 reviewData.Profile.username,

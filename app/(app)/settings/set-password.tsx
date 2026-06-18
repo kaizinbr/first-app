@@ -38,7 +38,7 @@ export default function PasswordSettings() {
                 setProfileData(response);
 
                 const userResponse = await apiAuth("/me/user");
-                // console.log("User data fetched successfully:", userResponse);
+                console.log("User data fetched successfully:", userResponse);
                 setUserData(userResponse);
 
                 const accountResponse = await apiAuth("/me/account");

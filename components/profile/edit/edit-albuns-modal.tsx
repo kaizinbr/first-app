@@ -148,6 +148,7 @@ export default function EditAlbunsModal({
                         />
                         <ScrollView
                             style={{ marginTop: 16, maxHeight: "100%" }}
+                    showsVerticalScrollIndicator={false}
                         >
                             {results?.albums.items.map((album: any) => (
                                 <Pressable

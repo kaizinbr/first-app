@@ -15,6 +15,11 @@ export function darkenColor(color: string, amount: number) {
     return chroma(color).darken(amount).hex();
 }
 
+export function saturateColor(color: string, amount: number) {
+
+    return chroma(color).saturate(amount).hex();
+}
+
 export function getHeaderColor(colors: Palette) {
     let finalColor = "#2458aa";
     if (colors.dominant && chroma(colors.dominant).luminance() > 0.2) {

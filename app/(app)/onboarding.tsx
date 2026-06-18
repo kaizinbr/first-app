@@ -1,22 +1,22 @@
 import Button from "@/components/button";
+import TextDefault from "@/components/core/text-core";
 import { apiAuth, apiAuthPUT } from "@/lib/api";
 import { UserProfile } from "@/lib/types";
-import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "expo-router";
+import { useEffect, useMemo, useState } from "react";
 import {
+    Alert,
+    AppState,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
     StyleSheet,
     Text,
     TextInput,
     View,
-    Image,
-    Pressable,
-    KeyboardAvoidingView,
-    Platform,
-    AppState,
 } from "react-native";
-import TextDefault from "@/components/core/text-core";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Alert } from "react-native";
 
 import { Palette } from "@/lib/types";
 import { getColors } from "react-native-image-colors";
@@ -25,7 +25,6 @@ import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
 
 import uploadImageToVercel from "@/lib/util/uploadImage";
 
@@ -194,14 +193,14 @@ export default function Onboarding() {
     const isUsernameValid = usernameValidation.status === "success";
 
     const pickImage = async () => {
-            if (AppState.currentState !== "active") return;
-    
-            // Pequeno delay pra garantir que a Activity está pronta
-            await new Promise((resolve) => setTimeout(resolve, 150));
+        if (AppState.currentState !== "active") return;
+
+        // Pequeno delay pra garantir que a Activity está pronta
+        await new Promise((resolve) => setTimeout(resolve, 150));
         const permissionResult =
             await ImagePicker.requestMediaLibraryPermissionsAsync();
 
-            console.log("Permission result:", permissionResult);
+        console.log("Permission result:", permissionResult);
 
         if (!permissionResult.granted) {
             Alert.alert(
@@ -224,7 +223,7 @@ export default function Onboarding() {
 
         if (!result.canceled) {
             const asset = result.assets[0];
-        console.log(asset);
+            console.log(asset);
 
             // 3. Verifica o tamanho final (fileSize vem em bytes)
             // Se a foto for maior que 5MB (5 * 1024 * 1024), bloqueamos
@@ -270,12 +269,14 @@ export default function Onboarding() {
 
             if (response) {
                 // console.log("Profile updated successfully:", response);
-                Alert.alert("Perfil atualizado", "Suas informações foram salvas.");
-                router.push("/(app)/(tabs)/(home)");
+                Alert.alert(
+                    "Perfil atualizado",
+                    "Suas informações foram salvas.",
+                );
+                router.push("/(app)/(tabs)/(ahome)");
             } else {
                 throw new Error("Unexpected response from server");
             }
-            
         } catch (error) {
             console.error("Error updating profile:", error);
             Alert.alert(
@@ -293,7 +294,9 @@ export default function Onboarding() {
             <View style={[styles.container, { paddingTop: insets.top }]}>
                 <View style={styles.stepper}>
                     <View style={styles.step}>
-                        <TextDefault style={{ color: "#bfbfbf" }}>{step + 1}/5</TextDefault>
+                        <TextDefault style={{ color: "#bfbfbf" }}>
+                            {step + 1}/5
+                        </TextDefault>
                         <TextDefault style={styles.stepText}>
                             Vamos começar definindo seu perfil
                         </TextDefault>
@@ -410,7 +413,7 @@ export default function Onboarding() {
                                 placeholderTextColor="#9f9f9f"
                                 style={styles.input}
                             />
-                            
+
                             <View
                                 style={{
                                     flexDirection: "row",
@@ -526,7 +529,9 @@ export default function Onboarding() {
                                     // placeholder={blurhash}
                                     style={styles.profilePicture}
                                 />
-                                <TextDefault style={styles.userName}>{name}</TextDefault>
+                                <TextDefault style={styles.userName}>
+                                    {name}
+                                </TextDefault>
                                 <TextDefault style={styles.userEmail}>
                                     @{username}
                                 </TextDefault>

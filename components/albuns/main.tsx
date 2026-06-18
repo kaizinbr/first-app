@@ -21,6 +21,7 @@ import {
     lightenColor,
     darkenColor,
     getBannerColors,
+    saturateColor
 } from "@/lib/util/workWithColors";
 import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
@@ -126,7 +127,6 @@ export default function AlbumScreen({
                     style={StyleSheet.absoluteFill}
                 />
 
-                {/* blob principal - vem da cor dominante do álbum */}
                 <View
                     style={[
                         styles.blob,
@@ -141,12 +141,25 @@ export default function AlbumScreen({
                     ]}
                 />
 
-                {/* blob secundário - complementar mais frio */}
                 <View
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: lightenColor(testColor1, 1),
+                            backgroundColor: selectRightColor(colors),
+                            width: 120,
+                            height: 120,
+                            top: -20,
+                            left: "50%",
+                            filter: [{ blur: 90 }],
+                        },
+                    ]}
+                />
+
+                <View
+                    style={[
+                        styles.blob,
+                        {
+                            backgroundColor: saturateColor(testColor1, 1),
                             width: 260,
                             height: 260,
                             bottom: 170,
@@ -155,6 +168,8 @@ export default function AlbumScreen({
                         },
                     ]}
                 />
+                
+
                 <View
                     style={[
                         styles.blob,
@@ -172,10 +187,36 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: lightenColor(testColor1, 0.8),
+                            backgroundColor: saturateColor(testColor1, 0.7),
+                            width: 80,
+                            height: 80,
+                            bottom: 140,
+                            right: 40,
+                            filter: [{ blur: 70 }],
+                        },
+                    ]}
+                />
+                <View
+                    style={[
+                        styles.blob,
+                        {
+                            backgroundColor: saturateColor(testColor1, 0.7),
+                            width: 80,
+                            height: 80,
+                            bottom: 140,
+                            left: 40,
+                            filter: [{ blur: 70 }],
+                        },
+                    ]}
+                />
+                <View
+                    style={[
+                        styles.blob,
+                        {
+                            backgroundColor: saturateColor(testColor1, 0.8),
                             width: 160,
                             height: 160,
-                            top: 130,
+                            bottom: 80,
                             left: 80,
                             filter: [{ blur: 70 }],
                         },

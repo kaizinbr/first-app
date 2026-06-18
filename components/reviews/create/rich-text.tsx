@@ -5,7 +5,6 @@ import {
     Platform,
     Pressable,
     StyleSheet,
-    Text,
     View,
 } from "react-native";
 import {
@@ -21,9 +20,9 @@ import { apiAuth } from "@/lib/api";
 import { Album, ReviewWithAlbum } from "@/lib/types";
 
 import {
-    TextItalic,
     TextBold,
     TextCross,
+    TextItalic,
     TextUnderline,
 } from "@solar-icons/react-native/Bold";
 
@@ -164,7 +163,7 @@ export default function PostEditor({
         },
         [onDraftChange],
     );
-
+    
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -219,7 +218,8 @@ export default function PostEditor({
                         ref={ref}
                         placeholder="Escreva sua review..."
                         placeholderTextColor="#555"
-                        defaultValue={initialValue}
+                        defaultValue={`${markdown}`}
+
                         onChangeState={setStyleState}
                         onChangeMarkdown={handleChangeMarkdown}
                         style={styles.input}
@@ -234,26 +234,61 @@ export default function PostEditor({
 
                     <View style={styles.toolbar}>
                         <ToolbarButton
-                            icon={<TextBold size={16} color={styleState?.bold?.isActive ? "#eee" : "#666"} />}
+                            icon={
+                                <TextBold
+                                    size={16}
+                                    color={
+                                        styleState?.bold?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
+                            }
                             active={!!styleState?.bold?.isActive}
                             onPress={() => ref.current?.toggleBold()}
                         />
                         <ToolbarButton
-                            icon={<TextItalic size={16} color={styleState?.italic?.isActive ? "#eee" : "#666"} />}
+                            icon={
+                                <TextItalic
+                                    size={16}
+                                    color={
+                                        styleState?.italic?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
+                            }
                             active={!!styleState?.italic?.isActive}
                             onPress={() => ref.current?.toggleItalic()}
                         />
                         <ToolbarButton
-                            icon={<TextUnderline size={16} color={styleState?.underline?.isActive ? "#eee" : "#666"} />}
+                            icon={
+                                <TextUnderline
+                                    size={16}
+                                    color={
+                                        styleState?.underline?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
+                            }
                             active={!!styleState?.underline?.isActive}
                             onPress={() => ref.current?.toggleUnderline()}
                         />
                         <ToolbarButton
-                            icon={<TextCross size={16} color={styleState?.strikethrough?.isActive ? "#eee" : "#666"} />}
+                            icon={
+                                <TextCross
+                                    size={16}
+                                    color={
+                                        styleState?.strikethrough?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
+                            }
                             active={!!styleState?.strikethrough?.isActive}
                             onPress={() => ref.current?.toggleStrikethrough()}
                         />
-
                     </View>
                 </View>
             </View>

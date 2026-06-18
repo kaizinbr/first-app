@@ -2,7 +2,7 @@
   "expo": {
     "name": "Pitchforkd (beta)",
     "slug": "music",
-    "version": "1.0.0",
+    "version": "0.1.2(beta)",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "firstapp",

@@ -35,7 +35,7 @@ export default function FixedHeader({
 }) {
     const insets = useSafeAreaInsets();
 
-    const HEADER_MAX_HEIGHT = 420; // Tamanho total da área do gradiente
+    const HEADER_MAX_HEIGHT = 264; // Tamanho total da área do gradiente
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 

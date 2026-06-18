@@ -9,7 +9,7 @@ import {
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
 
-import * as Linking from 'expo-linking';
+import * as Linking from "expo-linking";
 import TextDefault from "@/components/core/text-core";
 import Avatar from "@/components/core/avatar";
 import { useRouter, Href, Link } from "expo-router";
@@ -181,6 +181,7 @@ export default function FeedCard({
                                         alignItems: "flex-end",
                                         gap: 6,
                                         // backgroundColor: "red",
+                                        // maxHeight: 22,
                                     }}
                                 >
                                     <TextDefault
@@ -419,7 +420,8 @@ export default function FeedCard({
                             ]}
                             onPress={() => {
                                 router.push({
-                                    pathname: "/(app)/(tabs)/(home)/album/[id]",
+                                    pathname:
+                                        "/(app)/(tabs)/(ahome)/album/[id]",
                                     params: { id: review.album_id },
                                 });
                                 dismiss();
@@ -442,7 +444,7 @@ export default function FeedCard({
                             onPress={() => {
                                 router.push({
                                     pathname:
-                                        "/(app)/(tabs)/(home)/user/[username]",
+                                        "/(app)/(tabs)/(ahome)/user/[username]",
                                     params: {
                                         username: review.Profile.username,
                                     },
@@ -541,6 +543,8 @@ const styles = StyleSheet.create({
         color: "#eee",
         marginTop: 4,
         fontSize: 14,
+        // maxHeight: 22,
+        overflow: "visible",
         // wordWrap: "break-word",
     },
     albumSection: {

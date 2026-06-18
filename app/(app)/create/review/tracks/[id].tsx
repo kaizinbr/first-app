@@ -21,7 +21,7 @@ export default function TracksPage() {
         const fetchReviewData = async () => {
             try {
                 const response = await apiAuth(`/me/reviewed/${id}`);
-                console.log(response.rating.review)
+                // console.log(response)
 
                 const initialRatings =
                     response.reviewed && response.rating
@@ -34,7 +34,12 @@ export default function TracksPage() {
                               skip: false,
                           }));
 
-                initSession(id, initialRatings, response.rating.review);
+                if (response.reviewed) {
+                    initSession(id, initialRatings, response.rating.review);
+                } else {
+                    initSession(id, initialRatings, "");
+                }
+                
                 setAlbum(response.album);
 
                 const palette = await getColors(response.album.images[0].url);

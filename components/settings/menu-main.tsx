@@ -109,7 +109,7 @@ export default function Menu({
                 </Pressable>
                 <View style={styles.divider} />
 
-                {Array.isArray(accountData) &&
+                {/* {Array.isArray(accountData) &&
                     (accountData.some(
                         (account: any) =>
                             account.providerId === "credential" &&
@@ -152,7 +152,26 @@ export default function Menu({
                                 Definir senha
                             </TextDefault>
                         </Pressable>
-                    ))}
+                    ))} */}
+                    
+                    <Pressable
+                            style={({ pressed }) => [
+                                styles.button,
+                                {
+                                    backgroundColor: pressed
+                                        ? "rgba(255, 255, 255, 0.05)"
+                                        : "transparent",
+                                },
+                            ]}
+                            onPress={() => {
+                                router.push("/(app)/settings/password");
+                            }}
+                        >
+                            <LockPassword size={24} color="#eee" />
+                            <TextDefault style={styles.textDefault}>
+                                Configurações de senha
+                            </TextDefault>
+                        </Pressable>
 
                 <View style={styles.divider} />
 
@@ -248,7 +267,7 @@ export default function Menu({
                     </TextDefault>
                 </Pressable>
             </View>
-            {/* <View style={styles.section}>
+            <View style={styles.section}>
                 <Pressable
                     style={({ pressed }) => [
                         styles.button,
@@ -259,15 +278,15 @@ export default function Menu({
                         },
                     ]}
                     onPress={() => {
-                        router.push("/(app)/(tabs)/(search)/feed-test");
+                        router.push("/(app)/settings/teste");
                     }}
                 >
                     <QuestionSquare size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
-                        Feed Alt
+                        Teste
                     </TextDefault>
                 </Pressable>
-            </View> */}
+            </View>
             <View style={styles.section}>
                 <Pressable
                     style={({ pressed }) => [

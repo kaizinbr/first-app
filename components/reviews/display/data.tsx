@@ -20,21 +20,11 @@ import { Album } from "@/lib/types";
 import TextDefault from "@/components/core/text-core";
 
 export default function AlbumData({ data, headerContentStyle }: any) {
+    console.log(data.total_tracks)
     return (
         <Animated.View style={[headerContentStyle, styles.container]}>
             <TextDefault style={styles.albumType}>
-                {(() => {
-                    switch (data.type) {
-                        case "album":
-                            return "Álbum";
-                        case "single":
-                            return "Single/EP";
-                        case "compilation":
-                            return "Compilação";
-                        default:
-                            return "Outro";
-                    }
-                })()}{" "}
+                {data.total_tracks < 4 ? "Single" : data.total_tracks < 8 ? "EP" : "Álbum"}{" "}
                 • {new Date(data.release_date).getFullYear()} •{" "}
                 {data.total_tracks} faixa{data.total_tracks > 1 ? "s" : ""}
             </TextDefault>

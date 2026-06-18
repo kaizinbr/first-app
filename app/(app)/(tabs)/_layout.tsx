@@ -23,6 +23,7 @@ import { apiAuth } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
 import NotificationObserver from "@/lib/util/notification-observer";
 import { useRouter } from "expo-router";
+import NotsBtn from "@/components/core/nots-btn";
 
 export default function TabsDynamicLayout() {
     const router = useRouter();
@@ -86,7 +87,7 @@ export default function TabsDynamicLayout() {
         <>
             <NotificationObserver />
             <Tabs
-                initialRouteName="(home)"
+                initialRouteName="(ahome)"
                 screenOptions={{
                     headerShown: false,
                     tabBarStyle: styles.tabBar,
@@ -96,7 +97,7 @@ export default function TabsDynamicLayout() {
                 }}
             >
                 <Tabs.Screen
-                    name="(home)"
+                    name="(ahome)"
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
@@ -131,7 +132,7 @@ export default function TabsDynamicLayout() {
                         headerShown: false,
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color }) => (
-                            <Bell size={28} color={color as string} />
+                            <NotsBtn color={color as string} />
                         ),
                     }}
                 />

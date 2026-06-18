@@ -151,6 +151,7 @@ export default function EditArtistsModal({
                         />
                         <ScrollView
                             style={{ marginTop: 16, maxHeight: "100%" }}
+                    showsVerticalScrollIndicator={false}
                         >
                             {results?.artists.items.map((artist: any) => (
                             <Pressable

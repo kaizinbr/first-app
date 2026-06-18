@@ -1,23 +1,20 @@
-import { useState, useRef } from "react";
-import { Pressable } from "react-native";
+import Button from "@/components/button";
+import TextDefault from "@/components/core/text-core";
+import Input from "@/components/input";
 import { authClient } from "@/lib/auth-client";
 import { useLocalSearchParams } from "expo-router";
-import TextDefault from "@/components/core/text-core";
-import Button from "@/components/button";
-import Input from "@/components/input";
+import { useState } from "react";
+import { Pressable } from "react-native";
 
 import { PasswordInput } from "@/components/core/input-password";
 import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    TextInput,
-    Platform,
     ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View
 } from "react-native";
-import OTPInput from "@/components/auth/otp-input";
 
 import { Link, useRouter } from "expo-router";
 
@@ -69,7 +66,7 @@ export default function Password() {
             return;
         }
 
-        router.push("/(app)/(tabs)/(home)");
+        router.push("/(app)/(tabs)/(ahome)");
     };
 
     return (

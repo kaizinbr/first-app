@@ -188,7 +188,8 @@ export default function LyricsModal({
                                 type="tracks"
                                 setLoading={() => {}}
                             />
-                            <ScrollView style={{ marginTop: 16 }}>
+                            <ScrollView style={{ marginTop: 16 }}
+                    showsVerticalScrollIndicator={false}>
                                 {results?.tracks.items.map((item: any) => (
                                     <Pressable
                                         key={item.id}
@@ -379,7 +380,7 @@ const styles = StyleSheet.create({
         overflow: "hidden",
     },
     scrollContainer: {
-        ...StyleSheet.absoluteFillObject,
+        ...StyleSheet.absoluteFill,
         borderRadius: 16,
         overflow: "hidden",
     },

@@ -5,6 +5,7 @@ import {
     RefreshControl,
     Text,
     Pressable,
+    KeyboardAvoidingView,
 } from "react-native";
 import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
 import { UserProfile, Palette } from "@/lib/types";
@@ -65,6 +66,7 @@ export default function Password({
     const [isLengthOk, setIsLengthOk] = useState(false);
     const [isSpecialCharOk, setIsSpecialCharOk] = useState(false);
     const [isEqual, setIsEqual] = useState(false);
+    const [hasSpace, setHasSpace] = useState(false);
 
     console.log(
         accountData.some(
@@ -77,6 +79,7 @@ export default function Password({
         setIsLengthOk(password.length >= 8 && password.length <= 32);
         setIsCharOk(/[a-z]/.test(password) && /[A-Z]/.test(password));
         setIsSpecialCharOk(/[0-9!@#$%^&*(),.?":{}|<>]/.test(password));
+        setHasSpace(/ /.test(password));
     };
 
     function handleCurrentPassword(value: string) {
@@ -117,8 +120,6 @@ export default function Password({
                 },
             );
 
-            console.log("Password change response:", setPasswordResponse);
-
             if (setPasswordResponse.error) {
                 console.error(
                     "Error changing password:",
@@ -129,8 +130,8 @@ export default function Password({
                 );
                 return;
             }
-            
-            router.back();
+
+            router.push("/(app)/settings/menu");
         } catch (error) {
             console.error("Error changing password:", error);
             setMessage("Ocorreu um erro ao alterar a senha. Tente novamente.");
@@ -178,31 +179,15 @@ export default function Password({
     };
 
     return (
-        <View style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}>
+        <KeyboardAvoidingView
+            style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}
+        >
             <Pressable
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
                 <AltArrowLeft size={32} color="#eee" />
             </Pressable>
-
-            <View style={styles.section}>
-                <View style={styles.button}>
-                    <AvatarNoPress data={data} size={48} />
-                    <View style={{ flex: 1 }}>
-                        <TextDefault
-                            style={[styles.textDefault, { fontWeight: "bold" }]}
-                        >
-                            {data.name}
-                        </TextDefault>
-                        <TextDefault
-                            style={[styles.textDefault, { opacity: 0.6 }]}
-                        >
-                            @{data.username}
-                        </TextDefault>
-                    </View>
-                </View>
-            </View>
             <View style={[styles.section, { padding: 16 }]}>
                 <TextDefault style={[styles.textDefault, styles.title]}>
                     Senha definida
@@ -242,6 +227,26 @@ export default function Password({
                 >
                     Parâmetros de senha:
                 </TextDefault>
+
+                {hasSpace && (
+                    <View
+                        style={{
+                            flexDirection: "row",
+                            gap: 4,
+                            marginBottom: 4,
+                        }}
+                    >
+                        <TextDefault
+                            style={[
+                                styles.textDefault,
+                                { fontSize: 14 },
+                                { color: "#eee" },
+                            ]}
+                        >
+                            Não pode conter espaços em branco!
+                        </TextDefault>
+                    </View>
+                )}
 
                 <View
                     style={{
@@ -390,7 +395,8 @@ export default function Password({
                                 !isCharOk ||
                                 !isSpecialCharOk ||
                                 !isEqual ||
-                                currentPassword.length === 0
+                                currentPassword.length === 0 ||
+                                hasSpace
                                     ? 0.6
                                     : 1,
                         },
@@ -400,7 +406,8 @@ export default function Password({
                         !isCharOk ||
                         !isSpecialCharOk ||
                         !isEqual ||
-                        currentPassword.length === 0
+                        currentPassword.length === 0 ||
+                        hasSpace
                     }
                 >
                     <TextDefault
@@ -413,7 +420,7 @@ export default function Password({
                     </TextDefault>
                 </Pressable>
             </View>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 

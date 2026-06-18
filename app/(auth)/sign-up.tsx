@@ -1,30 +1,23 @@
-import { useState, useRef, useEffect } from "react";
-import { authClient } from "@/lib/auth-client";
-import { useLocalSearchParams } from "expo-router";
-import TextDefault from "@/components/core/text-core";
 import Button from "@/components/button";
+import TextDefault from "@/components/core/text-core";
 import Input from "@/components/input";
+import { authClient } from "@/lib/auth-client";
 import { LinearGradient } from "expo-linear-gradient";
+import { useEffect, useState } from "react";
 
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PasswordInput } from "@/components/core/input-password";
 import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    TextInput,
-    Platform,
-    ActivityIndicator,
-} from "react-native";
-import OTPInput from "@/components/auth/otp-input";
-import {
-    AltArrowRight,
-    AltArrowLeft,
-    Unread,
-    CloseSquare,
+    Unread
 } from "@solar-icons/react-native/Outline";
+import {
+    ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { Link, useRouter } from "expo-router";
 
@@ -151,7 +144,7 @@ export default function Password() {
             return;
         }
 
-        router.push("/(app)/(tabs)/(home)");
+        router.push("/(app)/(tabs)/(ahome)");
     };
 
     return (
