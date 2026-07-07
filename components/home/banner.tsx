@@ -164,7 +164,11 @@ export default function Banner({
                             const newIndex = Math.round(absoluteProgress);
                             if (newIndex !== currentIndex) {
                                 setCurrentIndex(newIndex);
-                                setCurrentBannerUrl(bannerData?.[newIndex % (bannerData?.length ?? 1)]?.src || "");
+                                setCurrentBannerUrl(
+                                    bannerData?.[
+                                        newIndex % (bannerData?.length ?? 1)
+                                    ]?.src || "",
+                                );
                                 // Pega a cor do item que ficou em foco
                                 // const item =
                                 //     bannerData?.[

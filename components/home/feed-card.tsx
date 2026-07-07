@@ -16,7 +16,10 @@ import { useRouter, Href, Link } from "expo-router";
 import api, { apiAuth, apiAuthDELETE } from "@/lib/api";
 import { Image } from "expo-image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { displayPastRelativeTime, getPastRelativeTime } from "@/lib/util/time";
+import {
+    displayPastRelativeTime,
+    getPastShortRelativeTime,
+} from "@/lib/util/time";
 import { AlbumCard } from "@/components/home/album-section";
 import { ReviewWithAlbum, SpotifyAlbum } from "@/lib/types";
 
@@ -40,6 +43,8 @@ import {
     BottomSheetModal,
     BottomSheetView,
     useBottomSheetModal,
+    BottomSheetScrollView,
+    
 } from "@gorhom/bottom-sheet";
 
 import ConfirmModal from "@/components/core/confirm-modal";
@@ -120,7 +125,7 @@ export default function FeedCard({
     }, []);
 
     const bottomSheetRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ["50%", "85%", "100%"], []);
+    const snapPoints = useMemo(() => ["10%", "85%", "100%"], []);
 
     const openSheet = useCallback(() => {
         bottomSheetRef.current?.present();
@@ -222,7 +227,7 @@ export default function FeedCard({
                                     <TextDefault
                                         style={{ color: "#777", fontSize: 12 }}
                                     >
-                                        {getPastRelativeTime(
+                                        {getPastShortRelativeTime(
                                             new Date(review.created_at),
                                             new Date(),
                                         )}
@@ -235,6 +240,7 @@ export default function FeedCard({
                                         markdown={
                                             previewContent ? previewContent : ""
                                         }
+                                        selectable={false}
                                         onLinkPress={({ url }) => {
                                             if (url.startsWith("http")) {
                                                 Linking.openURL(url);
@@ -329,7 +335,7 @@ export default function FeedCard({
                 snapPoints={snapPoints}
                 enablePanDownToClose
                 topInset={insets.top}
-                // containerStyle={{ zIndex: 1000 }}
+                containerStyle={{ zIndex: 1000 }}
                 backgroundStyle={{ backgroundColor: "#161718" }}
                 handleIndicatorStyle={{ backgroundColor: "#555" }}
                 backdropComponent={(props) => (
@@ -340,8 +346,13 @@ export default function FeedCard({
                     />
                 )}
             >
-                <BottomSheetView>
-                    <View style={styles.sheetView}>
+                <BottomSheetView style={{ flex: 1 }}>
+                    <BottomSheetScrollView
+                        contentContainerStyle={[
+                            styles.sheetView,
+                            { paddingBottom: insets.bottom + 16 },
+                        ]}
+                    >
                         {itsMine && (
                             <>
                                 <Pressable
@@ -473,7 +484,7 @@ export default function FeedCard({
                                 Bloquear usuário
                             </TextDefault>
                         </Pressable>
-                    </View>
+                    </BottomSheetScrollView>
                 </BottomSheetView>
             </BottomSheetModal>
             <ConfirmModal
@@ -512,7 +523,6 @@ const styles = StyleSheet.create({
     main: {
         width: "100%",
         backgroundColor: "transparent",
-        borderRadius: 8,
     },
     mainPressed: {
         backgroundColor: "#1e1e1e",
@@ -522,8 +532,8 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
         color: "#eee",
         paddingHorizontal: 16,
-        paddingTop: 12,
-        paddingBottom: 4,
+        paddingTop: 16,
+        paddingBottom: 12,
         borderRadius: 8,
         flexDirection: "row",
         gap: 8,

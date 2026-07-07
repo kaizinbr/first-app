@@ -24,7 +24,7 @@ export default function Index() {
     const statusBarOpacityStyle = useAnimatedStyle(() => ({
         opacity: interpolate(
             scrollOffsetY.value,
-            [300, 374],
+            [100, 160],
             [0, 1],
             Extrapolation.CLAMP,
         ),
@@ -32,10 +32,6 @@ export default function Index() {
 
     return (
         <View style={styles.container}>
-            <HomePage
-                onScrollAnimado={handleScroll}
-                scrollOffsetY={scrollOffsetY}
-            />
             <Animated.View
                 style={[
                     styles.statusBarBg,
@@ -51,6 +47,10 @@ export default function Index() {
                     style={StyleSheet.absoluteFill}
                 />
             </Animated.View>
+            <HomePage
+                onScrollAnimado={handleScroll}
+                scrollOffsetY={scrollOffsetY}
+            />
         </View>
     );
 }

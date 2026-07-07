@@ -13,11 +13,6 @@ import {
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-    EnrichedMarkdownTextInput,
-    type EnrichedMarkdownTextInputInstance,
-    type StyleState,
-} from "react-native-enriched-markdown";
 import TextDefault from "@/components/core/text-core";
 import { Album, Palette } from "@/lib/types";
 
@@ -37,33 +32,33 @@ export default function WriteReviewPage({
     const getRatingsArray = useReviewSession((s) => s.getRatingsArray);
     const clearSession = useReviewSession((s) => s.clearSession);
     const albumId = useReviewSession((s) => s.albumId);
+    const useMedia = useReviewSession((s) => s.useMedia);
 
     const [ready, setReady] = useState(false);
     const [publishing, setPublishing] = useState(false);
     const [saveState, setSaveState] = useState<"saved" | "saving">("saved");
-    const latestTextRef = useRef<EnrichedMarkdownTextInputInstance | any>(null);
+    const latestTextRef = useRef<string>("");
 
     useEffect(() => {
         const init = async () => {
-            // se o store já tem esse álbum, usa direto
             if (albumId === album.id) {
+                latestTextRef.current = reviewText;
                 setReady(true);
                 return;
             }
 
-            // tenta carregar do draft local
             const draft = DraftStorage.load(album.id);
             if (draft) {
+                latestTextRef.current = draft.reviewText;
                 setReady(true);
                 return;
             }
 
-            // nenhum dos dois — busca do servidor
             try {
                 const response = await apiAuth(`/me/reviewed/${album.id}`);
-                console.log("Review fetch response:", response);
                 if (response.reviewed && response.rating?.review) {
                     setReviewText(response.rating.review);
+                    latestTextRef.current = response.rating.review;
                 }
             } catch (e) {
                 console.error("Erro ao buscar review existente:", e);
@@ -79,9 +74,6 @@ export default function WriteReviewPage({
         albumId === album.id
             ? reviewText
             : (DraftStorage.load(album.id)?.reviewText ?? reviewText);
-
-    console.log("Renderizando WriteReviewPage", text);
-
     const total =
         albumId === album.id
             ? overallRating
@@ -91,19 +83,13 @@ export default function WriteReviewPage({
             ? getRatingsArray()
             : Object.values(DraftStorage.load(album.id)?.ratings ?? {});
 
-    useEffect(() => {
-        latestTextRef.current = text;
-    }, [text]);
-
     const handleDraftChange = useCallback((value: string) => {
         latestTextRef.current = value;
         setSaveState("saving");
-        console.log("Draft changed:", value);
     }, []);
 
     const handleAutoSave = useCallback(
         (value: string) => {
-            latestTextRef.current = value;
             if (value !== reviewText) {
                 setReviewText(value);
             }
@@ -123,6 +109,7 @@ export default function WriteReviewPage({
             markdown: currentText,
             total,
             published: true,
+            manual: !useMedia,
         });
 
         if (!response.saved) {
@@ -160,18 +147,7 @@ export default function WriteReviewPage({
                     <Pressable onPress={() => router.back()}>
                         <AltArrowLeft size={32} color="#eee" />
                     </Pressable>
-                    <View
-                        style={{
-                            alignItems: "center",
-                            justifyContent: "center",
-                            position: "absolute",
-                            left: 0,
-                            right: 0,
-                            top: 0,
-                            height: 38,
-                            zIndex: -1,
-                        }}
-                    >
+                    <View style={styles.centeredStatusContainer}>
                         <View
                             style={[
                                 styles.saveStatus,
@@ -245,6 +221,16 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "700",
         letterSpacing: 0.2,
+    },
+    centeredStatusContainer: {
+        alignItems: "center",
+        justifyContent: "center",
+        position: "absolute",
+        left: 0,
+        right: 0,
+        top: 0,
+        height: 38,
+        zIndex: -1,
     },
     btn: {
         paddingVertical: 8,

@@ -35,11 +35,17 @@ export default function TracksPage() {
                           }));
 
                 if (response.reviewed) {
-                    initSession(id, initialRatings, response.rating.review);
+                    initSession(
+                        id,
+                        initialRatings,
+                        response.rating.review,
+                        parseFloat(response.rating.total),
+                        response.rating.manual,
+                    );
                 } else {
                     initSession(id, initialRatings, "");
                 }
-                
+
                 setAlbum(response.album);
 
                 const palette = await getColors(response.album.images[0].url);

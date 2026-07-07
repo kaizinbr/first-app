@@ -176,6 +176,7 @@ export interface Review {
     ratings: Rating[];
     review: string;
     total: string;
+    manual: boolean;
     shorten: string;
     content: Record<string, unknown>;
     html: string;
@@ -186,7 +187,7 @@ export interface Review {
     user_id: string;
     Profile: UserProfile;
     likesCount: number; // campo adicional para contagem de likes
-        commentsCount: number; // campo adicional para contagem de comentários
+    commentsCount: number; // campo adicional para contagem de comentários
 }
 
 export interface ReviewWithAlbum extends Review {
@@ -313,23 +314,22 @@ export type ScrollPair = {
     position: SharedValue<number>;
 };
 
-
 export interface ProfileNotificationSenderProfile {
-	id: string;
-	username: string;
-	name: string;
-	avatar_url: string;
-	verified: boolean;
+    id: string;
+    username: string;
+    name: string;
+    avatar_url: string;
+    verified: boolean;
 }
 
 export interface Notification {
-	id: string;
-	ratingId: string | null;
-	type: 'follow' | 'like' | 'comment' | 'reply';
-	seen: boolean;
-	created_at: string;
-	sender_id: string;
-	user_id: string;
-	Profile_Notification_sender_idToProfile: ProfileNotificationSenderProfile;
+    id: string;
+    ratingId: string | null;
+    type: "follow" | "like" | "comment" | "reply";
+    seen: boolean;
+    created_at: string;
+    sender_id: string;
+    user_id: string;
+    Profile_Notification_sender_idToProfile: ProfileNotificationSenderProfile;
     Rating: Review | null;
 }

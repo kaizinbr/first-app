@@ -27,14 +27,16 @@ export default function Tracklist({
     albumTracks: Track[];
     review: Review;
 }) {
-
     const newData = albumTracks.map((track) => {
         const ratingForTrack = review.ratings.find(
             (rating) => rating.id === track.id,
         );
         return {
             ...track,
-            userRating: ratingForTrack ? ratingForTrack.value : null,
+            value: ratingForTrack ? ratingForTrack.value : null,
+            comment: ratingForTrack ? ratingForTrack.comment : null,
+            favorite: ratingForTrack ? ratingForTrack.favorite : null,
+            skip: ratingForTrack ? ratingForTrack.skip : null,
         };
     });
 
@@ -43,17 +45,24 @@ export default function Tracklist({
             <View style={{ marginTop: 24 }}>
                 <View style={styles.trackRow}>
                     <View style={styles.numberColumn}>
-                        <TextDefault style={styles.listHeaderText}>#</TextDefault>
+                        <TextDefault style={styles.listHeaderText}>
+                            #
+                        </TextDefault>
                     </View>
 
                     <View style={styles.infoColumn}>
-                        <TextDefault style={styles.listHeaderText} numberOfLines={1}>
+                        <TextDefault
+                            style={styles.listHeaderText}
+                            numberOfLines={1}
+                        >
                             Título
                         </TextDefault>
                     </View>
 
                     <View style={styles.actionColumn}>
-                        <TextDefault style={styles.listHeaderText}>Total</TextDefault>
+                        <TextDefault style={styles.listHeaderText}>
+                            Nota
+                        </TextDefault>
                     </View>
                 </View>
                 {newData.map((track) => (
@@ -61,7 +70,7 @@ export default function Tracklist({
                         key={track.id}
                         track={track}
                         onPress={() =>
-                            console.log(`Tocar música ${track.name}`)
+                            console.log(`Tocar música ${track.favorite}`)
                         }
                     />
                 ))}
@@ -108,7 +117,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingVertical: 12, // Espaçamento entre as linhas
         width: "100%",
-        borderBottomWidth: .5,
+        borderBottomWidth: 0.5,
         borderBottomColor: "rgba(255,255,255,0.05)",
     },
     numberColumn: {

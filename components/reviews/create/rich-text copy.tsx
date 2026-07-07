@@ -1,27 +1,30 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import { FlatList, Pressable, StyleSheet, View } from "react-native";
+import {
+    FlatList,
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    StyleSheet,
+    View,
+} from "react-native";
 import {
     EnrichedMarkdownTextInput,
     type EnrichedMarkdownTextInputInstance,
     type StyleState,
 } from "react-native-enriched-markdown";
+
 import { AvatarNoPress } from "@/components/core/avatar";
 import TextDefault from "@/components/core/text-core";
 import { AlbumCard } from "@/components/home/album-section";
 import { apiAuth } from "@/lib/api";
 import { Album, ReviewWithAlbum } from "@/lib/types";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import {
     TextBold,
     TextCross,
     TextItalic,
     TextUnderline,
 } from "@solar-icons/react-native/Bold";
-import Animated, {
-    useAnimatedStyle,
-    useSharedValue,
-} from "react-native-reanimated";
-import { useKeyboardHandler } from "react-native-keyboard-controller";
 
 interface Suggestion {
     id: string;
@@ -54,7 +57,16 @@ const ToolbarButton = React.memo(
 
 const normalizeNewlines = (text: string) => {
     if (!text) return "";
-    return text.replace(/\\n/g, "\n").replace(/\r/g, "");
+    
+    // 1. Trata possíveis quebras escapadas (literais "\\n") que vêm de JSON/Bancos de Dados
+    let parsedText = text.replace(/\\n/g, '\n');
+    
+    // 2. Garante que cada linha termine com 2 espaços (Hard Break do Markdown)
+    return parsedText
+        .split('\n')
+        .map(line => line.trimEnd() + '  ')
+        .join('\n')
+        .trimEnd(); // Removemos o excesso do final do texto
 };
 
 export default function PostEditor({
@@ -72,69 +84,66 @@ export default function PostEditor({
 }) {
     const ref = useRef<EnrichedMarkdownTextInputInstance>(null);
     const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const insets = useSafeAreaInsets();
-
+    
+    // 1. Inicia o valor já formatado para o Markdown
     const normalizedInitial = normalizeNewlines(initialValue);
+    
     const markdownRef = useRef(normalizedInitial);
     const dirtyRef = useRef(false);
-
-    // Trava de segurança para impedir o feedback loop corrupto
-    const isSettingValueRef = useRef(false);
-
     const [styleState, setStyleState] = useState<StyleState | null>(null);
     const [markdown, setMarkdown] = useState(normalizedInitial);
     const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
-    const [currentAlbumId, setCurrentAlbumId] = useState(album.id);
-
-    const keyboardHeight = useSharedValue(0);
 
     useEffect(() => {
-        const updated = normalizeNewlines(initialValue);
-        setMarkdown(updated);
-        markdownRef.current = updated;
+        // 2. Normaliza todo o texto novo que chegar de fora (Server/Draft)
+        const normalizedIncoming = normalizeNewlines(initialValue);
+        
+        if (normalizedIncoming === markdownRef.current) {
+            dirtyRef.current = false;
+            return;
+        }
+
+        if (dirtyRef.current) {
+            return;
+        }
+
+        setMarkdown(normalizedIncoming);
+        markdownRef.current = normalizedIncoming;
         dirtyRef.current = false;
-        setCurrentAlbumId(album.id);
-
-        // 1. Ativa a trava antes de injetar o valor nativo
-        isSettingValueRef.current = true;
-
+        
+        // 3. Pequeno delay garante que a ref foi injetada corretamente no component interno nativo
         setTimeout(() => {
-            ref.current?.setValue?.(updated);
-
-            // 2. Libera a trava apenas após o componente nativo processar o texto puro
-            setTimeout(() => {
-                isSettingValueRef.current = false;
-            }, 250);
-        }, 150);
-    }, [album.id]);
+            ref.current?.setValue?.(normalizedIncoming);
+        }, 50);
+        
+    }, [initialValue]);
 
     useEffect(() => {
         const interval = setInterval(() => {
             if (!dirtyRef.current) return;
-            onAutoSave?.(markdownRef.current);
             dirtyRef.current = false;
+            onAutoSave?.(markdownRef.current);
         }, 10000);
 
         return () => {
             if (searchTimeout.current) clearTimeout(searchTimeout.current);
             clearInterval(interval);
+
             if (dirtyRef.current) {
-                onAutoSave?.(markdownRef.current);
                 dirtyRef.current = false;
+                onAutoSave?.(markdownRef.current);
             }
         };
     }, [onAutoSave]);
 
     const handleChangeMarkdown = useCallback(
         (text: string) => {
-            // SE A TRAVA ESTIVER ATIVA: Ignora o evento defeituoso do componente e mantém o texto puro intacto
-            if (isSettingValueRef.current) return;
-
             setMarkdown(text);
             markdownRef.current = text;
-            dirtyRef.current = true;
-
-            onDraftChange?.(text);
+            if (!dirtyRef.current) {
+                dirtyRef.current = true;
+                onDraftChange?.(text);
+            }
 
             const match = text.match(MENTION_REGEX);
             if (!match) {
@@ -150,6 +159,7 @@ export default function PostEditor({
                     setSuggestions([]);
                     return;
                 }
+
                 try {
                     const result = await apiAuth(`/users?q=${query}&limit=5`);
                     setSuggestions(result.profiles);
@@ -167,51 +177,25 @@ export default function PostEditor({
                 MENTION_REGEX,
                 `[@${user.username}](${user.username}) `,
             );
+
             setSuggestions([]);
             setMarkdown(newMarkdown);
             markdownRef.current = newMarkdown;
-            dirtyRef.current = true;
-
-            onDraftChange?.(newMarkdown);
+            if (!dirtyRef.current) {
+                dirtyRef.current = true;
+                onDraftChange?.(newMarkdown);
+            }
             ref.current?.setValue?.(newMarkdown);
         },
         [onDraftChange],
     );
-
-    useKeyboardHandler(
-        {
-            onMove: (event) => {
-                "worklet";
-                keyboardHeight.value = Math.max(event.height, 0);
-            },
-            onEnd: (event) => {
-                "worklet";
-                keyboardHeight.value = Math.max(event.height, 0);
-            },
-        },
-        [],
-    );
-
-    const toolbarStyle = useAnimatedStyle(() => {
-        const kbHeight = keyboardHeight.value;
-        return {
-            bottom: kbHeight > 0 ? kbHeight + 8 : Math.max(insets.bottom, 24),
-        };
-    });
-
-    const editorContainerStyle = useAnimatedStyle(() => {
-        const kbHeight = keyboardHeight.value;
-        return {
-            paddingBottom:
-                kbHeight > 0 ? kbHeight : Math.max(insets.bottom, 24),
-        };
-    });
-
+    
     return (
-        <View style={styles.container}>
-            <Animated.View
-                style={[styles.editorContainer, editorContainerStyle]}
-            >
+        <KeyboardAvoidingView
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={styles.container}
+        >
+            <View style={styles.editorContainer}>
                 <AlbumCard
                     image={album.images[0].url}
                     value={
@@ -261,6 +245,7 @@ export default function PostEditor({
                         placeholder="Escreva sua review..."
                         placeholderTextColor="#555"
                         defaultValue={markdown}
+
                         onChangeState={setStyleState}
                         onChangeMarkdown={handleChangeMarkdown}
                         style={styles.input}
@@ -272,99 +257,110 @@ export default function PostEditor({
                         multiline
                         scrollEnabled
                     />
-                </View>
-            </Animated.View>
 
-            <Animated.View style={[styles.toolbar, toolbarStyle]}>
-                <ToolbarButton
-                    icon={
-                        <TextBold
-                            size={16}
-                            color={styleState?.bold?.isActive ? "#eee" : "#666"}
-                        />
-                    }
-                    active={!!styleState?.bold?.isActive}
-                    onPress={() => ref.current?.toggleBold()}
-                />
-                <ToolbarButton
-                    icon={
-                        <TextItalic
-                            size={16}
-                            color={
-                                styleState?.italic?.isActive ? "#eee" : "#666"
+                    <View style={styles.toolbar}>
+                        <ToolbarButton
+                            icon={
+                                <TextBold
+                                    size={16}
+                                    color={
+                                        styleState?.bold?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
                             }
+                            active={!!styleState?.bold?.isActive}
+                            onPress={() => ref.current?.toggleBold()}
                         />
-                    }
-                    active={!!styleState?.italic?.isActive}
-                    onPress={() => ref.current?.toggleItalic()}
-                />
-                <ToolbarButton
-                    icon={
-                        <TextUnderline
-                            size={16}
-                            color={
-                                styleState?.underline?.isActive
-                                    ? "#eee"
-                                    : "#666"
+                        <ToolbarButton
+                            icon={
+                                <TextItalic
+                                    size={16}
+                                    color={
+                                        styleState?.italic?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
                             }
+                            active={!!styleState?.italic?.isActive}
+                            onPress={() => ref.current?.toggleItalic()}
                         />
-                    }
-                    active={!!styleState?.underline?.isActive}
-                    onPress={() => ref.current?.toggleUnderline()}
-                />
-                <ToolbarButton
-                    icon={
-                        <TextCross
-                            size={16}
-                            color={
-                                styleState?.strikethrough?.isActive
-                                    ? "#eee"
-                                    : "#666"
+                        <ToolbarButton
+                            icon={
+                                <TextUnderline
+                                    size={16}
+                                    color={
+                                        styleState?.underline?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
                             }
+                            active={!!styleState?.underline?.isActive}
+                            onPress={() => ref.current?.toggleUnderline()}
                         />
-                    }
-                    active={!!styleState?.strikethrough?.isActive}
-                    onPress={() => ref.current?.toggleStrikethrough()}
-                />
-            </Animated.View>
-        </View>
+                        <ToolbarButton
+                            icon={
+                                <TextCross
+                                    size={16}
+                                    color={
+                                        styleState?.strikethrough?.isActive
+                                            ? "#eee"
+                                            : "#666"
+                                    }
+                                />
+                            }
+                            active={!!styleState?.strikethrough?.isActive}
+                            onPress={() => ref.current?.toggleStrikethrough()}
+                        />
+                    </View>
+                </View>
+            </View>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        width: "100%",
+        backgroundColor: "#161718",
     },
     editorContainer: {
         flex: 1,
         backgroundColor: "transparent",
-        paddingHorizontal: 16,
+        paddingHorizontal: 12,
+        paddingBottom: 12,
         gap: 12,
     },
     editorSurface: {
         flex: 1,
-        // overflow: "hidden",
-        backgroundColor: "transparent",
-        height: "100%",
+        // backgroundColor: "#1a1a1c",
+        // borderRadius: 18,
+        overflow: "hidden",
+        // borderWidth: StyleSheet.hairlineWidth,
+        // borderColor: "#2a2a2a",
     },
     toolbar: {
         flexDirection: "row",
         alignItems: "center",
         gap: 4,
-        padding: 8,
+        paddingHorizontal: 16,
+        paddingVertical: 10,
+        borderTopWidth: StyleSheet.hairlineWidth,
+        borderTopColor: "#2a2a2a",
         backgroundColor: "#1a1a1c",
-        marginHorizontal: 16,
-        borderRadius: 12,
     },
     input: {
         flex: 1,
+        paddingHorizontal: 16,
         paddingTop: 14,
         paddingBottom: 18,
         color: "#eee",
         fontSize: 16,
         textAlignVertical: "top",
-        // minHeight: 260,
+        minHeight: 260,
         fontFamily: "Walsheim",
     },
     suggestions: {

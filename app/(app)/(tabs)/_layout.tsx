@@ -11,14 +11,6 @@ import {
     Library,
     Bell,
 } from "@solar-icons/react-native/Bold";
-import {
-    HomeSmileAngleBold,
-    MinimalisticMagnifierBold,
-    UserBold,
-    HomeSmileAngleOutline,
-    MinimalisticMagnifierOutline,
-    UserOutline,
-} from "@solar-icons/react-native";
 import { apiAuth } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
 import NotificationObserver from "@/lib/util/notification-observer";

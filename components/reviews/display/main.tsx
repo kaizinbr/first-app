@@ -172,9 +172,8 @@ export default function ReviewAlbumScreen({
     };
 
     return (
-        <KeyboardAvoidingView
+        <View
             style={styles.container}
-            behavior={Platform.OS === "ios" ? "padding" : undefined}
         >
             <View style={styles.container}>
                 <Animated.View
@@ -468,7 +467,7 @@ export default function ReviewAlbumScreen({
                     </View>
                 )}
             </View>
-        </KeyboardAvoidingView>
+        </View>
     );
 }
 

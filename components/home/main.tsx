@@ -60,7 +60,9 @@ export default function HomePage({
             showsVerticalScrollIndicator={false}
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <FeedCard review={item} onRefresh={onRefresh} />}
+            renderItem={({ item }) => (
+                <FeedCard review={item} onRefresh={onRefresh} />
+            )}
             onEndReached={loadMore}
             onEndReachedThreshold={0.2}
             onMomentumScrollBegin={onMomentumScrollBegin}
@@ -70,7 +72,22 @@ export default function HomePage({
                 <FeedHeader scrollOffsetY={scrollOffsetY} />
             )}
             ItemSeparatorComponent={() => (
-                <View style={{ height: 0.5, backgroundColor: "#3d3d3d" }} />
+                <View
+                    style={{
+                        height: 0.5,
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <View
+                        style={{
+                            height: 0.5,
+                            backgroundColor: "#3d3d3d",
+                            width: "95%",
+                        }}
+                    />
+                </View>
             )}
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />

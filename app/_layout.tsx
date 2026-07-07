@@ -5,6 +5,7 @@ import { authClient } from "@/lib/auth-client";
 import { useEffect } from "react";
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { KeyboardProvider } from "react-native-keyboard-controller";
 import {
     DarkTheme,
     DefaultTheme,
@@ -54,25 +55,25 @@ export default function Layout() {
     return (
         <ThemeProvider value={MyTheme}>
             <SafeAreaProvider>
-                <GestureHandlerRootView style={{ flex: 1 }}>
-                    <BottomSheetModalProvider>
-                        <SafeAreaView
-                            edges={["bottom", "left", "right"]}
-                            style={{
-                                flex: 1,
-                                backgroundColor: MyTheme.colors.background,
-                            }}
-                        >
-                            <StatusBar style="auto" />
-
-                            {/* DEIXE O STACK LIMPO E ESTÁTICO */}
-                            <Stack screenOptions={{ headerShown: false }}>
-                                <Stack.Screen name="(auth)" />
-                                <Stack.Screen name="(app)" />
-                            </Stack>
-                        </SafeAreaView>
-                    </BottomSheetModalProvider>
-                </GestureHandlerRootView>
+                <KeyboardProvider>
+                    <GestureHandlerRootView style={{ flex: 1 }}>
+                        <BottomSheetModalProvider>
+                            <SafeAreaView
+                                edges={["bottom", "left", "right"]}
+                                style={{
+                                    flex: 1,
+                                    backgroundColor: MyTheme.colors.background,
+                                }}
+                            >
+                                <StatusBar style="auto" />
+                                <Stack screenOptions={{ headerShown: false }}>
+                                    <Stack.Screen name="(auth)" />
+                                    <Stack.Screen name="(app)" />
+                                </Stack>
+                            </SafeAreaView>
+                        </BottomSheetModalProvider>
+                    </GestureHandlerRootView>
+                </KeyboardProvider>
             </SafeAreaProvider>
         </ThemeProvider>
     );

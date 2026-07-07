@@ -1,7 +1,5 @@
 // components/reviews/create/track-rating.tsx
 import { Album, Palette, Track } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
 import React, { useEffect, useState } from "react";
 import {
     KeyboardAvoidingView,
@@ -12,7 +10,7 @@ import {
     View,
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
-import { SkipNext, SkipPrevious } from "@solar-icons/react-native/Bold";
+import { SkipNext, SkipPrevious, Stars } from "@solar-icons/react-native/Bold";
 import { useReviewSession } from "@/store/reviewSessionStore";
 
 function TrackRating({
@@ -29,8 +27,6 @@ function TrackRating({
     const setTrackSkip = useReviewSession((s) => s.setTrackSkip);
     const setTrackComment = useReviewSession((s) => s.setTrackComment);
 
-    const [prevTrackComment, setPrevTrackComment] = useState("");
-
     const value = entry?.value ?? 0;
     const skip = entry?.skip ?? false;
     const comment = entry?.comment ?? "";
@@ -45,72 +41,47 @@ function TrackRating({
         setTrackRating(track.id, Math.min(100, Math.max(0, num)));
     };
 
-    useEffect(() => {
-        if (!showComment) {
-            setPrevTrackComment(comment);
-            setTrackComment(track.id, "");
-        } else {
-            if (comment === "") {
-                setTrackComment(track.id, prevTrackComment);
-            }
-
-            setTrackComment(track.id, prevTrackComment);
-            // console.log("Comment updated for track", track.id, prevTrackComment);
-        }
-    }, [prevTrackComment]);
-
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
-        >
-            <View style={styles.editorContainer}>
-                <TextDefault style={styles.trackName}>{track.name}</TextDefault>
-                <TextDefault style={styles.trackArtist}>
-                    {track.artists.map((a) => a.name).join(", ")}
-                </TextDefault>
+        <View style={styles.editorContainer}>
+            <TextDefault style={styles.trackName}>{track.name}</TextDefault>
+            <TextDefault style={styles.trackArtist}>
+                {track.artists.map((a) => a.name).join(", ")}
+            </TextDefault>
 
-                {!skip && (
-                    <View style={styles.textSec}>
-                        <TextDefault style={styles.label}>Nota:</TextDefault>
-                        <View style={styles.inputWrapper}>
-                            <TextInput
-                                style={styles.input}
-                                value={value === 0 ? "" : value.toString()}
-                                onChangeText={handleInputChange}
-                                placeholder="0"
-                                placeholderTextColor="#555"
-                                keyboardType="numeric"
-                            />
-                            <TextDefault style={styles.inputSide}>
-                                /100
-                            </TextDefault>
-                        </View>
-                    </View>
-                )}
-
-                {showComment && (
-                    <View style={styles.textSec}>
-                        <TextDefault style={styles.label}>
-                            Comentário:
-                        </TextDefault>
+            {!skip && (
+                <View style={styles.textSec}>
+                    <View style={styles.inputWrapper}>
                         <TextInput
-                            style={styles.commentInput}
-                            value={prevTrackComment}
-                            onChangeText={(text) =>
-                                setPrevTrackComment(text)
-                            }
-                            placeholder="Escreva um comentário sobre a música..."
+                            style={styles.input}
+                            value={value === 0 ? "" : value.toString()}
+                            onChangeText={handleInputChange}
+                            placeholder="0"
                             placeholderTextColor="#555"
-                            multiline
-                            maxLength={300}
+                            keyboardType="numeric"
                         />
-                        <TextDefault style={styles.charCount}>
-                            {comment.length}/300
-                        </TextDefault>
+                        <TextDefault style={styles.inputSide}>/100</TextDefault>
                     </View>
-                )}
-            </View>
-        </KeyboardAvoidingView>
+                </View>
+            )}
+
+            {(showComment || comment.length > 0) && (
+                <View style={styles.textSec}>
+                    <TextDefault style={styles.label}>Comentário:</TextDefault>
+                    <TextInput
+                        style={styles.commentInput}
+                        value={comment}
+                        onChangeText={(text) => setTrackComment(track.id, text)}
+                        placeholder="Escreva um comentário sobre a música..."
+                        placeholderTextColor="#555"
+                        multiline
+                        maxLength={300}
+                    />
+                    <TextDefault style={styles.charCount}>
+                        {comment.length}/300
+                    </TextDefault>
+                </View>
+            )}
+        </View>
     );
 }
 
@@ -133,9 +104,20 @@ export default function TrackRater({
     const total = album.tracks.items.length;
 
     const skip = useReviewSession((s) => s.ratings[track.id]?.skip ?? false);
+    const favorite = useReviewSession(
+        (s) => s.ratings[track.id]?.favorite ?? false,
+    );
+    const comment = useReviewSession((s) => s.ratings[track.id]?.comment ?? "");
+
     const setTrackSkip = useReviewSession((s) => s.setTrackSkip);
+    const setTrackFavorite = useReviewSession((s) => s.setTrackFavorite);
 
     const [showComment, setShowComment] = useState(false);
+
+    useEffect(() => {
+        setShowComment(false);
+        setShowLyrics(false);
+    }, [currentTrack]);
 
     return (
         <View style={styles.container}>
@@ -151,29 +133,36 @@ export default function TrackRater({
 
             <View style={styles.actionsRow}>
                 <Pressable
-                    style={[styles.toggleBtn, skip && styles.toggleBtnActive]}
-                    onPress={() => setTrackSkip(track.id, !skip)}
+                    style={[
+                        styles.toggleBtn,
+                        favorite && styles.toggleBtnActive,
+                    ]}
+                    onPress={() => setTrackFavorite(track.id, !favorite)}
                 >
+                    <Stars size={12} color="#eee" />
                     <TextDefault
                         style={[
                             styles.toggleText,
-                            skip && styles.toggleTextActive,
+                            favorite && styles.toggleTextActive,
                         ]}
                     >
-                        Pular música
+                        Favorita
                     </TextDefault>
                 </Pressable>
+
                 <Pressable
                     style={[
                         styles.toggleBtn,
-                        showComment && styles.toggleBtnActive,
+                        (showComment || comment.length > 0) &&
+                            styles.toggleBtnActive,
                     ]}
                     onPress={() => setShowComment(!showComment)}
                 >
                     <TextDefault
                         style={[
                             styles.toggleText,
-                            skip && styles.toggleTextActive,
+                            (showComment || comment.length > 0) &&
+                                styles.toggleTextActive,
                         ]}
                     >
                         Comentário
@@ -194,6 +183,19 @@ export default function TrackRater({
                         ]}
                     >
                         Letras
+                    </TextDefault>
+                </Pressable>
+                <Pressable
+                    style={[styles.toggleBtn, skip && styles.toggleBtnActive]}
+                    onPress={() => setTrackSkip(track.id, !skip)}
+                >
+                    <TextDefault
+                        style={[
+                            styles.toggleText,
+                            skip && styles.toggleTextActive,
+                        ]}
+                    >
+                        Pular
                     </TextDefault>
                 </Pressable>
             </View>
@@ -247,7 +249,7 @@ const styles = StyleSheet.create({
     },
     trackName: { color: "#eee", fontSize: 18, fontWeight: "bold" },
     trackArtist: { color: "#777", fontSize: 14, marginBottom: 0 },
-    textSec: { paddingTop: 16, width: "100%" },
+    textSec: { paddingTop: 8, width: "100%" },
     label: {
         color: "#eee",
         fontSize: 16,
@@ -285,8 +287,10 @@ const styles = StyleSheet.create({
         borderRadius: 32,
         backgroundColor: "#282828",
         alignItems: "center",
+        flexDirection: "row",
+        gap: 4,
     },
-    toggleBtnActive: { backgroundColor: "#404245" },
+    toggleBtnActive: { backgroundColor: "#8065ef" },
     toggleText: { color: "#eee", fontSize: 12 },
     toggleTextActive: { color: "#fff" },
     navRow: {

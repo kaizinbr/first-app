@@ -71,7 +71,7 @@ export default function FeedHeader({
     const [colors, setColors] = useState<any>(["#182840", "#00001a"]);
 
     const [currentBannerUrl, setCurrentBannerUrl] = useState<string>(
-        "https://i.scdn.co/image/ab67616d0000b2735f42ea05cfc5233136e8546a",
+        "https://i.scdn.co/image/ab67616d0000b2735cf234eeb7a2edf44bf64a46",
     );
 
     const Header_Min_Height = insets.top;
@@ -230,7 +230,6 @@ export default function FeedHeader({
 
                 <Animated.View
                     style={[
-                        bannerOpacityStyle,
                         {
                             // transform: [{ scale: bannerScale }],
                             width: "100%",

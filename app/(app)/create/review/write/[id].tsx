@@ -58,7 +58,7 @@ export default function TracksPage() {
     }
 
     return (
-        <View style={{ flex: 1 }}>
+        <View style={{ flex: 1, backgroundColor: "transparent" }}>
             <WriteReviewPage
                 album={album}
                 colors={colors}
@@ -72,6 +72,5 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#161718",
     },
 });

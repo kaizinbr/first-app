@@ -108,70 +108,24 @@ export default function Menu({
                     </TextDefault>
                 </Pressable>
                 <View style={styles.divider} />
-
-                {/* {Array.isArray(accountData) &&
-                    (accountData.some(
-                        (account: any) =>
-                            account.providerId === "credential" &&
-                            !!account.password,
-                    ) ? (
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.button,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {
-                                router.push("/(app)/settings/change-password");
-                            }}
-                        >
-                            <LockPassword size={24} color="#eee" />
-                            <TextDefault style={styles.textDefault}>
-                                Alterar senha
-                            </TextDefault>
-                        </Pressable>
-                    ) : (
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.button,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {
-                                router.push("/(app)/settings/set-password");
-                            }}
-                        >
-                            <LockPassword size={24} color="#eee" />
-                            <TextDefault style={styles.textDefault}>
-                                Definir senha
-                            </TextDefault>
-                        </Pressable>
-                    ))} */}
-                    
-                    <Pressable
-                            style={({ pressed }) => [
-                                styles.button,
-                                {
-                                    backgroundColor: pressed
-                                        ? "rgba(255, 255, 255, 0.05)"
-                                        : "transparent",
-                                },
-                            ]}
-                            onPress={() => {
-                                router.push("/(app)/settings/password");
-                            }}
-                        >
-                            <LockPassword size={24} color="#eee" />
-                            <TextDefault style={styles.textDefault}>
-                                Configurações de senha
-                            </TextDefault>
-                        </Pressable>
+                <Pressable
+                    style={({ pressed }) => [
+                        styles.button,
+                        {
+                            backgroundColor: pressed
+                                ? "rgba(255, 255, 255, 0.05)"
+                                : "transparent",
+                        },
+                    ]}
+                    onPress={() => {
+                        router.push("/(app)/settings/password");
+                    }}
+                >
+                    <LockPassword size={24} color="#eee" />
+                    <TextDefault style={styles.textDefault}>
+                        Configurações de senha
+                    </TextDefault>
+                </Pressable>
 
                 <View style={styles.divider} />
 
@@ -209,7 +163,7 @@ export default function Menu({
                     <QuestionSquare size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>Ajuda</TextDefault>
                 </Pressable>
-                
+
                 <View style={styles.divider} />
                 <Pressable
                     style={({ pressed }) => [
@@ -227,7 +181,7 @@ export default function Menu({
                     <InfoSquare size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>Sobre</TextDefault>
                 </Pressable>
-                
+
                 <View style={styles.divider} />
                 <Pressable
                     style={({ pressed }) => [
@@ -243,9 +197,11 @@ export default function Menu({
                     }}
                 >
                     <ShieldCheck size={24} color="#eee" />
-                    <TextDefault style={styles.textDefault}>Privacidade</TextDefault>
+                    <TextDefault style={styles.textDefault}>
+                        Privacidade
+                    </TextDefault>
                 </Pressable>
-                
+
                 <View style={styles.divider} />
 
                 <Pressable
@@ -261,7 +217,7 @@ export default function Menu({
                         router.push("/(app)/settings/app-infos");
                     }}
                 >
-                    <CodeSquare  size={24} color="#eee" />
+                    <CodeSquare size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
                         Nerdices do App
                     </TextDefault>
@@ -282,9 +238,7 @@ export default function Menu({
                     }}
                 >
                     <QuestionSquare size={24} color="#eee" />
-                    <TextDefault style={styles.textDefault}>
-                        Teste
-                    </TextDefault>
+                    <TextDefault style={styles.textDefault}>Área de teste</TextDefault>
                 </Pressable>
             </View>
             <View style={styles.section}>

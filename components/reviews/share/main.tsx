@@ -5,7 +5,7 @@ import Feather from "@expo/vector-icons/Feather";
 import { AltArrowLeft } from "@solar-icons/react-native/Linear";
 import {
     LinkMinimalistic2,
-    SquareShareLine
+    SquareShareLine,
 } from "@solar-icons/react-native/Outline";
 
 import * as Clipboard from "expo-clipboard";
@@ -27,7 +27,6 @@ import { captureRef } from "react-native-view-shot";
 
 import { getPalette } from "@b.taranenko/expo-color-thief";
 
-// Dimensões fixas do card de alta resolução (offscreen)
 const CARD_WIDTH = 1080;
 const CARD_HEIGHT = 1920;
 
@@ -58,9 +57,36 @@ export default function ShareReview({
     const [colorOne, setColorOne] = useState(colors.dominant);
     const [colorTwo, setColorTwo] = useState(colors.vibrant);
     const [isLoading, setIsLoading] = useState(false);
+    const [colorsA, setColors] = useState<any>(null);
 
-    // Ref aponta para o card offscreen — renderizado no tamanho real de captura
-    const previewRef = useRef<View>(null);
+    // --- LÓGICA DE INFORMAÇÃO EXTRA ---
+    const hasComment =
+        !!reviewData.review && reviewData.review.trim().length > 0;
+
+    const favoriteTracks =
+        albumData.tracks?.items?.filter((track) =>
+            reviewData.ratings?.some(
+                (rating) => rating.id === track.id && rating.favorite,
+            ),
+        ) || [];
+    const hasFavorites = favoriteTracks.length > 0;
+
+    const [extraType, setExtraType] = useState<"comment" | "favorite" | null>(
+        null,
+    );
+    const [selectedTrackName, setSelectedTrackName] = useState<string | null>(
+        hasFavorites ? favoriteTracks[0].name : null,
+    );
+
+    const toggleExtraType = (type: "comment" | "favorite") => {
+        setExtraType((prev) => (prev === type ? null : type));
+    };
+
+    const extraData =
+        extraType === "comment" ? reviewData.review : selectedTrackName;
+    // ----------------------------------
+
+    const offscreenRef = useRef<View>(null);
 
     const getColorValue = (key: ColorOptionKey): string => {
         switch (key) {
@@ -82,11 +108,10 @@ export default function ShareReview({
     };
 
     const captureCard = async (): Promise<string> => {
-        return captureRef(previewRef, {
+        return captureRef(offscreenRef, {
             format: "png",
             quality: 1,
             result: "tmpfile",
-            // Sem width/height aqui — captura o tamanho real do componente (1080×1920)
         });
     };
 
@@ -104,11 +129,10 @@ export default function ShareReview({
     };
 
     const handleCopyLink = async () => {
-        // tenta usar propriedades comumente presentes; se não houver, monta uma url padrão com id
         const url =
             (reviewData as any).shareUrl ||
             (reviewData as any).url ||
-            `https://whistle.kaizin.work/${(reviewData.shorten as any)}`;
+            `https://whistle.kaizin.work/${reviewData.shorten as any}`;
         try {
             await Clipboard.setStringAsync(url);
         } catch (e) {
@@ -128,8 +152,6 @@ export default function ShareReview({
         }
     };
 
-    const [colorsA, setColors] = useState<any>(null);
-
     useEffect(() => {
         const fetchColors = async () => {
             if (albumData.images && albumData.images.length > 0) {
@@ -140,10 +162,6 @@ export default function ShareReview({
                         quality: 10,
                     });
                     setColors(fetchedColors);
-                    console.log(
-                        "Colors fetched for album image:",
-                        fetchedColors,
-                    );
                 } catch (error) {
                     console.error("Erro ao buscar cores da imagem:", error);
                 }
@@ -154,9 +172,9 @@ export default function ShareReview({
 
     return (
         <>
-            {/* Card offscreen em resolução full — fora da viewport, mas montado no DOM */}
+            {/* Card offscreen em resolução full */}
             <View
-                // ref={offscreenRef}
+                ref={offscreenRef}
                 style={{
                     position: "absolute",
                     top: -CARD_HEIGHT,
@@ -173,6 +191,8 @@ export default function ShareReview({
                     colorOne={colorOne}
                     colorTwo={colorTwo}
                     width={CARD_WIDTH}
+                    extraType={extraType}
+                    extraData={extraData}
                 />
             </View>
 
@@ -199,23 +219,23 @@ export default function ShareReview({
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.content}>
-                    <View ref={previewRef} style={styles.previewWrapper}>
+                    <View style={styles.previewWrapper}>
                         <ReviewCard
                             reviewData={reviewData}
                             albumData={albumData}
                             colorOne={colorOne}
                             colorTwo={colorTwo}
-                            width={312} // ~80% de uma tela de 375 pt
+                            width={312}
+                            extraType={extraType}
+                            extraData={extraData}
                         />
                     </View>
 
-                    {/* Seletores de cor */}
                     <View style={styles.colorRow}>
                         {colorsA && (
                             <ScrollView
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
-                                key="Palette"
                                 style={styles.section}
                             >
                                 <View style={styles.colorGrid}>
@@ -231,12 +251,11 @@ export default function ShareReview({
                                                         ),
                                                 },
                                             ]}
-                                            onPress={() => {
-                                                const val = getColorValue(
-                                                    option.key,
-                                                );
-                                                setColorOne(val);
-                                            }}
+                                            onPress={() =>
+                                                setColorOne(
+                                                    getColorValue(option.key),
+                                                )
+                                            }
                                         />
                                     ))}
                                     {colorsA.map((colors: { hex: string }) => (
@@ -244,13 +263,11 @@ export default function ShareReview({
                                             key={colors.hex}
                                             style={[
                                                 styles.colorSwatch,
-                                                {
-                                                    backgroundColor: colors.hex,
-                                                },
+                                                { backgroundColor: colors.hex },
                                             ]}
-                                            onPress={() => {
-                                                setColorOne(colors.hex);
-                                            }}
+                                            onPress={() =>
+                                                setColorOne(colors.hex)
+                                            }
                                         />
                                     ))}
                                 </View>
@@ -258,8 +275,123 @@ export default function ShareReview({
                         )}
                     </View>
 
+                    {(hasComment || hasFavorites) && (
+                        <View
+                            style={{
+                                marginTop: 16,
+                                width: "100%",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    gap: 12,
+                                    flexWrap: "wrap",
+                                    justifyContent: "center",
+                                    paddingHorizontal: 16,
+                                }}
+                            >
+                                {hasComment && (
+                                    <Pressable
+                                        style={[
+                                            styles.pillBtn,
+                                            extraType === "comment" &&
+                                                styles.pillBtnActive,
+                                        ]}
+                                        onPress={() =>
+                                            toggleExtraType("comment")
+                                        }
+                                    >
+                                        <TextDefault
+                                            style={[
+                                                styles.pillText,
+                                                extraType === "comment" &&
+                                                    styles.pillTextActive,
+                                            ]}
+                                        >
+                                            Mostrar comentário
+                                        </TextDefault>
+                                    </Pressable>
+                                )}
+
+                                {hasFavorites && (
+                                    <Pressable
+                                        style={[
+                                            styles.pillBtn,
+                                            extraType === "favorite" &&
+                                                styles.pillBtnActive,
+                                        ]}
+                                        onPress={() =>
+                                            toggleExtraType("favorite")
+                                        }
+                                    >
+                                        <TextDefault
+                                            style={[
+                                                styles.pillText,
+                                                extraType === "favorite" &&
+                                                    styles.pillTextActive,
+                                            ]}
+                                        >
+                                            Música Favorita
+                                        </TextDefault>
+                                    </Pressable>
+                                )}
+                            </View>
+
+                            {extraType === "favorite" &&
+                                favoriteTracks.length > 1 && (
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        style={{ marginTop: 12 }}
+                                    >
+                                        <View
+                                            style={{
+                                                flexDirection: "row",
+                                                gap: 8,
+                                                paddingHorizontal: 16,
+                                            }}
+                                        >
+                                            {favoriteTracks.map((track) => (
+                                                <Pressable
+                                                    key={track.id}
+                                                    style={[
+                                                        styles.trackPill,
+                                                        selectedTrackName ===
+                                                            track.name &&
+                                                            styles.trackPillActive,
+                                                    ]}
+                                                    onPress={() =>
+                                                        setSelectedTrackName(
+                                                            track.name,
+                                                        )
+                                                    }
+                                                >
+                                                    <TextDefault
+                                                        style={[
+                                                            styles.trackPillText,
+                                                            selectedTrackName ===
+                                                                track.name &&
+                                                                styles.trackPillTextActive,
+                                                        ]}
+                                                    >
+                                                        {track.name}
+                                                    </TextDefault>
+                                                </Pressable>
+                                            ))}
+                                        </View>
+                                    </ScrollView>
+                                )}
+                        </View>
+                    )}
+
                     <View
-                        style={{ flexDirection: "row", gap: 8, marginTop: 16 }}
+                        style={{
+                            flexDirection: "row",
+                            gap: 8,
+                            marginTop: 16,
+                        }}
                     >
                         <View style={{ alignItems: "center", width: 48 }}>
                             <Pressable
@@ -269,7 +401,7 @@ export default function ShareReview({
                                 <LinkMinimalistic2 size={24} color="#eee" />
                             </Pressable>
                             <TextDefault style={styles.btnText}>
-                                Copiar link
+                                Link
                             </TextDefault>
                         </View>
                         <View style={{ alignItems: "center", width: 48 }}>
@@ -292,7 +424,7 @@ export default function ShareReview({
                                 />
                             </Pressable>
                             <TextDefault style={styles.btnText}>
-                                Salvar na galeria
+                                Salvar
                             </TextDefault>
                         </View>
                     </View>
@@ -316,7 +448,7 @@ const styles = StyleSheet.create({
     content: {
         flex: 1,
         width: "100%",
-        marginTop: 124,
+        marginTop: 100,
         justifyContent: "flex-start",
         alignItems: "center",
         gap: 16,
@@ -368,7 +500,7 @@ const styles = StyleSheet.create({
     colorSwatch: {
         height: 32,
         aspectRatio: 1,
-        borderRadius: 8,
+        borderRadius: 12,
     },
     btn: {
         backgroundColor: "#262829",
@@ -396,4 +528,31 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.5)",
         zIndex: 999,
     },
+    pillBtn: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: 20,
+        backgroundColor: "#2A2A2A",
+        borderWidth: 1,
+        borderColor: "transparent",
+    },
+    pillBtnActive: {
+        backgroundColor: "#8065ef",
+        borderColor: "#8065ef",
+    },
+    pillText: { color: "#989898", fontSize: 14 },
+    pillTextActive: { color: "#eee" },
+
+    // Pílulas das Músicas
+    trackPill: {
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 16,
+        backgroundColor: "#1c1c1c",
+        borderWidth: 1,
+        borderColor: "#333",
+    },
+    trackPillActive: { borderColor: "#eee", backgroundColor: "#eee" },
+    trackPillText: { color: "#989898", fontSize: 12 },
+    trackPillTextActive: { color: "#161718", fontWeight: "bold" },
 });

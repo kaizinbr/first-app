@@ -1,4 +1,3 @@
-// components/reviews/create/main.tsx
 import TextDefault from "@/components/core/text-core";
 import Lyrics from "@/components/reviews/create/lyrics";
 import TrackRater from "@/components/reviews/create/track-rating";
@@ -6,13 +5,19 @@ import AlbumData from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
 import { Album, Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
 import { useReviewSession } from "@/store/reviewSessionStore";
 import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Pressable, StyleSheet, TextInput, View } from "react-native";
+import {
+    KeyboardAvoidingView,
+    Platform,
+    Pressable,
+    StyleSheet,
+    TextInput,
+    View,
+} from "react-native";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -35,7 +40,7 @@ export default function ReviewCreateMain({
     const router = useRouter();
 
     const overallRating = useReviewSession((s) => s.overallRating);
-    console.log("overallRating", overallRating);    
+    console.log("overallRating", overallRating);
     const setOverallRating = useReviewSession((s) => s.setOverallRating);
     const useMedia = useReviewSession((s) => s.useMedia);
     const setUseMedia = useReviewSession((s) => s.setUseMedia);
@@ -43,11 +48,15 @@ export default function ReviewCreateMain({
     const reviewText = useReviewSession((s) => s.reviewText);
     const setReviewText = useReviewSession((s) => s.setReviewText);
 
-    const [totalInput, setTotalInput] = useState(
-        Number.isNaN(overallRating) || overallRating <= 0
-            ? "0"
-            : overallRating.toString(),
-    );
+    const [totalInput, setTotalInput] = useState(() => {
+        if (
+            overallRating == null ||
+            Number.isNaN(overallRating) ||
+            overallRating <= 0
+        )
+            return "0";
+        return String(overallRating);
+    });
     const [currentTrack, setCurrentTrack] = useState(0);
     const [showLyrics, setShowLyrics] = useState(false);
     const [step, setStep] = useState<"rating" | "review">("rating");
@@ -60,14 +69,14 @@ export default function ReviewCreateMain({
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
     useEffect(() => {
-        if (!useMedia) return;
-        const values = Object.values(ratings);
-        if (values.length === 0) return;
-        const avg = values.reduce((acc, r) => acc + r.value, 0) / values.length;
-        const rounded = parseFloat(avg.toFixed(2));
-        setOverallRating(rounded);
-        setTotalInput(rounded.toString());
-    }, [ratings, useMedia]);
+        if (useMedia) {
+            if (overallRating == null || Number.isNaN(overallRating)) {
+                setTotalInput("0");
+            } else {
+                setTotalInput(String(overallRating));
+            }
+        }
+    }, [overallRating, useMedia]);
 
     const handleInputChange = (text: string) => {
         const normalized = text.replace(",", ".");
@@ -115,6 +124,15 @@ export default function ReviewCreateMain({
         ),
     }));
 
+    const statusBarOpacityStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(
+            scrollY.value,
+            [24, 80],
+            [0, 1],
+            Extrapolation.CLAMP,
+        ),
+    }));
+
     const goToReview = () => {
         slideX.value = withTiming(-500, { duration: 300 }, (finished) => {
             if (finished) {
@@ -136,14 +154,18 @@ export default function ReviewCreateMain({
     };
 
     return (
-        <View style={styles.container}>
+        <KeyboardAvoidingView
+            style={styles.container}
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 40}
+        >
             <Animated.View
                 style={[
                     styles.statusBarBg,
                     {
                         height: insets.top + 24,
                     },
-                    // statusBarOpacityStyle,
+                    statusBarOpacityStyle,
                 ]}
                 pointerEvents="none"
             >
@@ -177,26 +199,6 @@ export default function ReviewCreateMain({
                     end={{ x: 0.5, y: 1 }}
                     style={StyleSheet.absoluteFill}
                 />
-            </Animated.View>
-
-            <Animated.View
-                style={[
-                    styles.fixedTopBar,
-                    {
-                        height: HEADER_MIN_HEIGHT,
-                        paddingTop: insets.top,
-                        backgroundColor: darkenColor(
-                            selectRightColor(colors),
-                            0.7,
-                        ),
-                    },
-                    topBarStyle,
-                ]}
-                pointerEvents="none"
-            >
-                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
-                    {album.name}
-                </TextDefault>
             </Animated.View>
 
             <Pressable
@@ -336,12 +338,12 @@ export default function ReviewCreateMain({
                     Próximo
                 </TextDefault>
             </Pressable>
-        </View>
+        </KeyboardAvoidingView>
     );
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: "#161718" },
+    container: { flex: 1, backgroundColor: "#161718", height: "100%" },
     gradientContainer: {
         position: "absolute",
         top: 0,
@@ -405,7 +407,7 @@ const styles = StyleSheet.create({
     nextBtn: {
         marginTop: 16,
         paddingVertical: 12,
-        borderRadius: 8,
+        borderRadius: 16,
         alignItems: "center",
         position: "absolute",
         bottom: 16,

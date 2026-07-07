@@ -1,63 +1,38 @@
 import TextDefault from "@/components/core/text-core";
-import { Album, Palette, Review } from "@/lib/types";
+import { Album, Review } from "@/lib/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image, StyleSheet, View } from "react-native";
-import {
-    lightenColor,
-    darkenColor,
-    getBannerColors,
-    saturateColor
-} from "@/lib/util/workWithColors";
+import { Stars } from "@solar-icons/react-native/Bold";
 
 type ReviewCardProps = {
     reviewData: Review;
     albumData: Album;
     colorOne: string;
     colorTwo: string;
-    /** Card width in pixels — height is always 16/9 of this (portrait 9:16) */
     width: number;
+    extraType?: "comment" | "favorite" | null;
+    extraData?: string | null;
 };
 
-/**
- * Pure presentational card — no refs, no capture logic.
- * Used both in the on-screen preview and in the offscreen high-res layer.
- */
 export default function ReviewCard({
     reviewData,
     albumData,
     colorOne,
     colorTwo,
     width,
+    extraType = null,
+    extraData,
 }: ReviewCardProps) {
     const height = (width * 16) / 9;
-
-    // Scale all sizes relative to the card width so the card looks
-    // identical whether rendered at 270 px (preview) or 1080 px (capture).
-    const s = (n: number) => (n / 270) * width;
+    const s = (n: number) => (n / 312) * width;
 
     return (
         <View style={{ width, height, backgroundColor: "#000" }}>
-            {/* Gradients — rendered behind everything else via zIndex */}
             <LinearGradient
                 colors={[colorOne, "#000"]}
-                start={{ x: 0, y: 0 }}
-                                end={{ x: 1, y: 1 }}
-                style={[StyleSheet.absoluteFill, { opacity: 0.4 }]}
-            />
-            <LinearGradient
-                colors={[saturateColor(colorOne, 1), "#000"]}
-                start={{ x: 1, y: 0 }}
-                end={{ x: 0, y: 1 }}
-                style={[StyleSheet.absoluteFill, { opacity: 0.4 }]}
-            />
-            <LinearGradient
-                colors={["transparent", "rgba(0,0,0,0.5)"]}
-                start={{ x: 0.5, y: 0.2 }}
-                end={{ x: 0.5, y: 1 }}
-                style={StyleSheet.absoluteFill}
+                style={[StyleSheet.absoluteFill, { opacity: 0.9 }]}
             />
 
-            {/* Content */}
             <View
                 style={{
                     width: "100%",
@@ -65,10 +40,9 @@ export default function ReviewCard({
                     zIndex: 1,
                     justifyContent: "center",
                     alignItems: "center",
-                    padding: s(24),
+                    padding: s(32),
                 }}
             >
-                {/* Avatar + Album art */}
                 <View
                     style={{
                         width: "100%",
@@ -80,7 +54,7 @@ export default function ReviewCard({
                     <Image
                         source={{ uri: reviewData.Profile.avatar_url }}
                         style={{
-                            width: s(32),
+                            width: s(28),
                             aspectRatio: 1,
                             borderRadius: s(18 * 0.36),
                             position: "absolute",
@@ -96,10 +70,10 @@ export default function ReviewCard({
                     <Image
                         source={{ uri: albumData.images[0].url }}
                         style={{
-                            width: "55%",
+                            width: "60%",
                             aspectRatio: 1,
                             marginTop: s(16),
-                            borderRadius: s(6),
+                            borderRadius: s(8),
                             shadowColor: "rgba(0,0,0,0.5)",
                             shadowOffset: { width: 0, height: s(4) },
                             shadowRadius: s(8),
@@ -150,7 +124,6 @@ export default function ReviewCard({
                     {albumData.name}
                 </TextDefault>
 
-                {/* Artist */}
                 <TextDefault
                     style={{
                         color: "#989898",
@@ -164,7 +137,77 @@ export default function ReviewCard({
                     {albumData.artists[0].name}
                 </TextDefault>
 
-                {/* Footer */}
+                {/* --- OPÇÃO SELECIONADA --- */}
+                {extraType === "comment" && extraData && (
+                    <View
+                        style={[
+                            {
+                                marginTop: s(16),
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: s(8),
+                                backgroundColor: "#161718",
+                                padding: s(12),
+                                borderRadius: s(8),
+                            },
+                        ]}
+                    >
+                        <TextDefault
+                            style={{
+                                color: "#eee",
+                                fontSize: s(10),
+                                fontWeight: "400",
+                                fontFamily: "Walsheim",
+                            }}
+                            numberOfLines={3}
+                        >
+                            {extraData}
+                        </TextDefault>
+                    </View>
+                )}
+
+                {extraType === "favorite" && extraData && (
+                    <View
+                        style={[
+                            {
+                                marginTop: s(16),
+                                flexDirection: "row",
+                                alignItems: "center",
+                                gap: s(8),
+                                backgroundColor: "#161718",
+                                padding: s(12),
+                                borderRadius: s(8),
+                            },
+                        ]}
+                    >
+                        <Stars size={s(24)} color="#8065ef" />
+                        <View>
+                            <TextDefault
+                                style={{
+                                    color: "#989898",
+                                    fontSize: s(10),
+                                    fontWeight: "400",
+                                    fontFamily: "Walsheim",
+                                }}
+                                numberOfLines={1}
+                            >
+                                Música favorita
+                            </TextDefault>
+                            <TextDefault
+                                style={{
+                                    color: "#eee",
+                                    fontSize: s(10),
+                                    fontWeight: "400",
+                                    fontFamily: "Walsheim",
+                                }}
+                                numberOfLines={1}
+                            >
+                                {extraData}
+                            </TextDefault>
+                        </View>
+                    </View>
+                )}
+
                 <TextDefault
                     style={{
                         color: "#989898",
@@ -186,5 +229,14 @@ const styles = StyleSheet.create({
         position: "absolute",
         borderRadius: 999,
         opacity: 0.6,
+    },
+    section: {
+        backgroundColor: "#161718",
+        padding: 12,
+        borderRadius: 8,
+        marginTop: 16,
+        flexDirection: "row",
+        alignItems: "center",
+        gap: 8,
     },
 });

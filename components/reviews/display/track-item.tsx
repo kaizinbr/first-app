@@ -1,13 +1,19 @@
 import { View, Text, StyleSheet, Pressable } from "react-native";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import TextDefault from "@/components/core/text-core";
 import { Track, Rating } from "@/lib/types";
+import { Stars, ChatRoundLine  } from "@solar-icons/react-native/Bold";
 
 export default function TrackItem({
     track,
     onPress,
 }: {
-    track: Track & { userRating?: number | null };
+    track: Track & {
+        value?: number | null;
+        comment?: string | null;
+        favorite?: boolean | null;
+        skip?: boolean | null;
+    };
     onPress: () => void;
 }) {
     return (
@@ -19,21 +25,22 @@ export default function TrackItem({
             onPress={onPress}
         >
             <View style={styles.numberColumn}>
-                <TextDefault style={styles.trackNumber}>{track.track_number}</TextDefault>
+                <TextDefault style={styles.trackNumber}>
+                    {track.track_number}
+                </TextDefault>
             </View>
 
             <View style={styles.infoColumn}>
                 <View style={styles.titleLine}>
                     {track.explicit && (
-                            <MaterialIcons
-                                name="explicit"
-                                size={16}
-                                    color="#777"
-                                style={{ marginRight: 4 }}
-                            />
-                        )}
+                        <MaterialIcons
+                            name="explicit"
+                            size={16}
+                            color="#777"
+                            style={{ marginRight: 4 }}
+                        />
+                    )}
                     <TextDefault style={styles.trackTitle} numberOfLines={1}>
-                    
                         {track.name}
                     </TextDefault>
                 </View>
@@ -41,10 +48,23 @@ export default function TrackItem({
                     {track.artists.map((artist) => artist.name).join(", ")}
                 </TextDefault>
             </View>
-
+            {track.comment ? (
+                <View style={styles.actionColumn}>
+                    <ChatRoundLine size={24} color="#8065ef" />
+                </View>
+            ) : null}
+            {track.favorite ? (
+                <View style={styles.actionColumn}>
+                        <Stars size={24} color="#8065ef" />
+                </View>
+            ) : null}
             <View style={styles.actionColumn}>
                 <TextDefault style={styles.trackDuration}>
-                    {track.userRating !== null && track.userRating !== undefined ? track.userRating : "N/A"}
+                    {track.skip === true
+                        ? "N/A"
+                        : track.value !== null && track.value !== undefined
+                          ? track.value
+                          : "N/A"}
                 </TextDefault>
             </View>
         </Pressable>
