@@ -21,6 +21,10 @@ import { Palette } from "@/lib/types";
 import { LinearGradient } from "expo-linear-gradient";
 import TextDefault from "@/components/core/text-core";
 
+
+import { getPalette } from "expo-color-thief-native";
+import { selectBackgroundColor } from "@/lib/util/selectRightColor";
+
 interface Props extends AnimatedProps<ViewProps> {
     item: any; // O objeto do álbum que acabamos de passar
     style?: StyleProp<ImageStyle>;
@@ -42,6 +46,7 @@ export const SlideItem: React.FC<Props> = (props) => {
     } = props;
 
     const [palette, setPalette] = useState<Palette | any>(null);
+    const [mainColor, setMainColor] = useState<string | null>(null);
 
     const router = useRouter();
     // console.log(item);
@@ -55,6 +60,9 @@ export const SlideItem: React.FC<Props> = (props) => {
                     key: item.src,
                 });
                 setPalette(result);
+
+                const pal = await getPalette(item.src, { quality: 10 });
+                setMainColor(selectBackgroundColor(pal).background);
             } catch (error) {
                 console.error("Error fetching colors:", error);
             }
@@ -64,14 +72,14 @@ export const SlideItem: React.FC<Props> = (props) => {
 
     return (
         <>
-            {palette && colorFill && (
+            {mainColor && colorFill && (
                 <Animated.View
                     testID={testID}
                     style={{
                         flex: 1,
                         alignItems: "flex-start",
                         justifyContent: "flex-start",
-                        backgroundColor: getBannerColor(palette),
+                        backgroundColor: mainColor,
                         borderRadius: 24,
                         overflow: "hidden",
                     }}
@@ -93,13 +101,13 @@ export const SlideItem: React.FC<Props> = (props) => {
                             style={[
                                 styles.back,
                                 {
-                                    backgroundColor: getBannerColor(palette),
+                                    backgroundColor: mainColor,
                                 },
                             ]}
                         />
                         <LinearGradient
                             colors={[
-                                getBannerColor(palette),
+                                mainColor,
                                 "transparent",
                             ]}
                             start={{ x: 0, y: 0 }}

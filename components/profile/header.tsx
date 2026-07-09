@@ -79,7 +79,6 @@ export default function Header({
         <View style={styles.headerWrapper}>
             <ProfileHeader
                 data={data}
-                dominantColor={dominantColor}
                 itsUser={itsUser}
             />
 

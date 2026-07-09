@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     sec: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 16,
         borderRadius: 12,
         gap: 8,

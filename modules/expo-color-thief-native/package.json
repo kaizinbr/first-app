@@ -1,0 +1,30 @@
+{
+  "name": "expo-color-thief-native",
+  "version": "0.1.0",
+  "description": "Módulo Expo (Kotlin nativo, Android) que replica a API do colorthief v3: getColor, getPalette e getSwatches (Vibrant/Muted/DarkVibrant/DarkMuted/LightVibrant/LightMuted), com proportions, quantização em RGB ou OKLCH e objetos Color ricos (hex, hsl, oklch, css, contrast, textColor).",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "src",
+    "android",
+    "expo-module.config.json"
+  ],
+  "keywords": [
+    "expo",
+    "expo-module",
+    "color-thief",
+    "colorthief",
+    "mmcq",
+    "palette",
+    "android"
+  ],
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  },
+  "devDependencies": {
+    "expo-module-scripts": "^4.0.0",
+    "typescript": "^5.4.0"
+  }
+}

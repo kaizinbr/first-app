@@ -15,7 +15,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import ArtistAlbuns from "@/components/artists/albuns";
 import Header from "@/components/artists/header";
 import { ArtistResponse, Palette } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
+import { selectBackgroundGradient, selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { AltArrowLeft } from "@solar-icons/react-native/Outline";
 import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
@@ -28,10 +28,12 @@ function hexToRgb(hex: string) {
 }
 export default function ArtistScreen({
     data,
-    colors,
+    mainColor,
+    accentColor,
 }: {
     data: ArtistResponse;
-    colors: Palette;
+    mainColor: string;
+    accentColor: string;
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
@@ -94,13 +96,13 @@ export default function ArtistScreen({
                 ]}
             >
                 <LinearGradient
-                    colors={[selectRightColor(colors), "#161718"]}
+                    colors={[mainColor, "#161718"]}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                     style={StyleSheet.absoluteFill}
                 />
                 <LinearGradient
-                    colors={[colors.muted, "#161718"]}
+                    colors={[accentColor, "#161718"]}
                     start={{ x: 1, y: 0 }}
                     end={{ x: 0, y: 1 }}
                     style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
@@ -113,7 +115,7 @@ export default function ArtistScreen({
                 />
             </Animated.View>
 
-            <FixedHeader data={data} colors={colors} scrollY={scrollY} />
+            <FixedHeader data={data} mainColor={mainColor} scrollY={scrollY} />
 
             <Pressable
                 onPress={() => router.back()}
@@ -207,7 +209,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     sec: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 16,
         borderRadius: 12,
         gap: 4,

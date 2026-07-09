@@ -2,7 +2,24 @@ import { View } from "react-native";
 import { StyleSheet } from "react-native";
 
 export function ItemSeparator() {
-    return <View style={styles.separator} />;
+    return (
+        <View
+            style={{
+                height: 0.5,
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+            }}
+        >
+            <View
+                style={{
+                    height: 0.5,
+                    backgroundColor: "#3d3d3d",
+                    width: "95%",
+                }}
+            />
+        </View>
+    );
 }
 
 const styles = StyleSheet.create({

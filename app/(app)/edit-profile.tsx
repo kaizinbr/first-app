@@ -1,38 +1,33 @@
+import EditArtistsModal from "@/components/profile/edit/edit-artists-modal";
+import LyricsModal from "@/components/profile/edit/lyrics-modal";
 import { apiAuth, apiAuthPUT } from "@/lib/api";
-import { UserProfile } from "@/lib/types";
-import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Palette, UserProfile } from "@/lib/types";
 import {
     BottomSheetBackdrop,
     BottomSheetModal,
-    BottomSheetView,
     useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import { FlatGrid } from "react-native-super-grid";
 import {
+    Pen,
+    GalleryWide,
+    GalleryMinimalistic,
+} from "@solar-icons/react-native/Bold";
+import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+    ActivityIndicator,
+    Alert,
     AppState,
     Image,
-    KeyboardAvoidingView,
     LayoutChangeEvent,
-    Platform,
     Pressable,
     StyleSheet,
-    Text,
     TextInput,
     View,
-    ActivityIndicator,
-    FlatList,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import EditAlbunsModal from "@/components/profile/edit/edit-albuns-modal";
-import EditArtistsModal from "@/components/profile/edit/edit-artists-modal";
-import LyricsModal from "@/components/profile/edit/lyrics-modal";
-import { Palette } from "@/lib/types";
-import { Pen } from "@solar-icons/react-native/Bold";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
-import { AddCircle } from "@solar-icons/react-native/Bold";
-import { Alert } from "react-native";
 import { getColors } from "react-native-image-colors";
+import { KeyboardAvoidingView } from "react-native-keyboard-controller";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -40,23 +35,22 @@ import Animated, {
     useAnimatedStyle,
     useSharedValue,
 } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FlatGrid } from "react-native-super-grid";
 
-import hexToRgb from "@/lib/util/hexToRgb";
 import * as ImagePicker from "expo-image-picker";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { selectRightColorDominant } from "@/lib/util/selectRightColor";
-import {
-    darkenColor,
-    getBannerColors,
-    lightenColor,
-} from "@/lib/util/workWithColors";
+import { darkenColor, getBannerColors } from "@/lib/util/workWithColors";
 
 import uploadImageToVercel from "@/lib/util/uploadImage";
 
+import TextDefault from "@/components/core/text-core";
 import EditFavAlbuns from "@/components/profile/edit/edit-fav-albuns";
 import EditFavArtists from "@/components/profile/edit/edit-fav-artists";
 import LyricsCard from "@/components/profile/lyrics-card";
+import ProfileHeaderBG from "@/components/profile/profile-header-bg";
 
 const USERNAME_MAX_LENGTH = 24;
 const USERNAME_ALLOWED_REGEX = /^[a-zA-Z0-9._]+$/;
@@ -83,7 +77,9 @@ export default function EditProfile() {
     const [bio, setBio] = useState("");
     const [site, setSite] = useState("");
     const [lastfm, setLastFM] = useState("");
-    const [avatar, setAvatar] = useState<string | null>(null);
+    const [avatar, setAvatar] = useState<string>(
+        "https://zf4goehfa7fevldb.public.blob.vercel-storage.com/avatar/default",
+    );
     const [avatarAsset, setAvatarAsset] =
         useState<ImagePicker.ImagePickerAsset | null>(null);
     const [albuns, setAlbuns] = useState<any[]>([]);
@@ -510,7 +506,7 @@ export default function EditProfile() {
 
     const scrollY = useSharedValue(0);
 
-    const HEADER_MAX_HEIGHT = 420; // Tamanho total da área do gradiente
+    const HEADER_MAX_HEIGHT = 324; // Tamanho total da área do gradiente
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
@@ -547,461 +543,24 @@ export default function EditProfile() {
     const [showArtistsModal, setShowArtistsModal] = useState(false);
     const [showLyricsModal, setShowLyricsModal] = useState(false);
 
-    const bottomSheetRef = useRef<BottomSheetModal>(null);
-    const snapPoints = useMemo(() => ["50%", "85%", "100%"], []);
-    const openSheet = useCallback(() => {
-        bottomSheetRef.current?.present();
+    const snapPoints = useMemo(() => ["85%", "100%"], []);
+    const bottomSheetAlbunsRef = useRef<BottomSheetModal>(null);
+    const openSheetAlbuns = useCallback(() => {
+        bottomSheetAlbunsRef.current?.present();
+    }, []);
+
+    const bottomSheetArtistsRef = useRef<BottomSheetModal>(null);
+    const openSheetArtists = useCallback(() => {
+        bottomSheetArtistsRef.current?.present();
     }, []);
 
     const { dismiss } = useBottomSheetModal();
 
     return (
         <KeyboardAvoidingView
-            style={{ flex: 1 }}
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+            style={{ flex: 1, height: "100%", backgroundColor: "#161718" }}
+            behavior={"padding"}
         >
-            <View style={styles.container}>
-                {/* O FUNDO GRADIENTE ANIMADO */}
-                <Animated.View
-                    style={[
-                        styles.gradientContainer,
-                        { height: HEADER_MAX_HEIGHT },
-                        backgroundStyle,
-                    ]}
-                >
-                    <LinearGradient
-                        colors={[darkenColor(mainColor, 1.5), "#161718"]}
-                        style={StyleSheet.absoluteFill}
-                    />
-
-                    {/* blob principal - vem da cor dominante do álbum */}
-                    <View
-                        style={[
-                            styles.blob,
-                            {
-                                backgroundColor:
-                                    selectRightColorDominant(colors),
-                                width: 320,
-                                height: 320,
-                                top: -80,
-                                left: -60,
-                                filter: [{ blur: 90 }],
-                            },
-                        ]}
-                    />
-
-                    {/* blob secundário - complementar mais frio */}
-                    <View
-                        style={[
-                            styles.blob,
-                            {
-                                backgroundColor: lightenColor(mainColor, 1),
-                                width: 260,
-                                height: 260,
-                                bottom: 170,
-                                right: -80,
-                                filter: [{ blur: 70 }],
-                            },
-                        ]}
-                    />
-                    <View
-                        style={[
-                            styles.blob,
-                            {
-                                backgroundColor: lightenColor(mainColor, 0.7),
-                                width: 160,
-                                height: 160,
-                                top: 110,
-                                right: 80,
-                                filter: [{ blur: 70 }],
-                            },
-                        ]}
-                    />
-                    <View
-                        style={[
-                            styles.blob,
-                            {
-                                backgroundColor: lightenColor(mainColor, 0.8),
-                                width: 160,
-                                height: 160,
-                                top: 80,
-                                left: 80,
-                                filter: [{ blur: 70 }],
-                            },
-                        ]}
-                    />
-
-                    {/* vinheta no topo pra escurecer onde fica o header */}
-                    <LinearGradient
-                        colors={["rgba(0,0,0,0.6)", "transparent"]}
-                        style={[StyleSheet.absoluteFill, { height: 180 }]}
-                    />
-                </Animated.View>
-                <Animated.View
-                    style={[
-                        styles.fixedTopBar,
-                        {
-                            height: HEADER_MIN_HEIGHT,
-                            paddingTop: insets.top,
-                            backgroundColor: darkenColor(mainColor, 1),
-                        },
-                        topBarStyle,
-                    ]}
-                    pointerEvents="none" // Para não bloquear o clique de voltar
-                >
-                    <Text style={styles.fixedTitle} numberOfLines={1}>
-                        {name.length > 24
-                            ? name.substring(0, 24) + "..."
-                            : name}
-                    </Text>
-                    {colors.length > 0 && (
-                        <LinearGradient
-                            colors={[
-                                `rgba(0,0,0, 0)`,
-                                darkenColor(mainColor, 1.8),
-                            ]}
-                            style={{
-                                position: "absolute",
-                                top: 0,
-                                left: 0,
-                                right: 0,
-                                height: HEADER_MIN_HEIGHT,
-                                zIndex: -1,
-                            }}
-                        />
-                    )}
-                </Animated.View>
-                {/* BOTÃO VOLTAR */}
-                <Pressable
-                    onPress={() => router.back()}
-                    style={[styles.backButton, { top: insets.top + 4 }]}
-                >
-                    <AltArrowLeft size={32} color="#eee" />
-                </Pressable>
-                <Pressable
-                    onPress={saveProfile}
-                    style={[styles.saveButton, { top: insets.top + 4 }, !canUpdate && styles.disabledSaveButton]}
-                    // disabled={!isUsernameValid}
-                >
-                    <Text style={{ color: "#eee", fontWeight: "bold" }}>
-                        Salvar
-                    </Text>
-                </Pressable>
-                <Animated.ScrollView
-                    onScroll={onScroll}
-                    scrollEventThrottle={16}
-                    showsVerticalScrollIndicator={false}
-                >
-                    <View style={styles.header}>
-                        <View style={styles.wrapper}>
-                            <Pressable
-                                style={{
-                                    position: "relative",
-                                }}
-                                onPress={pickImage}
-                            >
-                                <Image
-                                    source={{ uri: avatar || undefined }}
-                                    style={[
-                                        styles.avatar,
-                                        {
-                                            width: 112,
-                                            height: 112,
-                                            borderRadius: 112 * 0.306,
-                                        },
-                                    ]}
-                                />
-                                <View
-                                    style={{
-                                        position: "absolute",
-                                        bottom: 8,
-                                        right: -12,
-                                        backgroundColor: "#8065ef",
-                                        width: 32,
-                                        height: 32,
-                                        borderRadius: 16,
-                                        justifyContent: "center",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <Pen size={16} color="#eee" />
-                                </View>
-                            </Pressable>
-                            {pronouns ? (
-                                <View style={[styles.pronouns]}>
-                                    <Text style={styles.pronounstext}>
-                                        {pronouns}
-                                    </Text>
-                                </View>
-                            ) : null}
-                        </View>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                alignItems: "center",
-                                gap: 4,
-                            }}
-                        >
-                            <Text style={styles.name}>{name}</Text>{" "}
-                        </View>
-                        <Text style={styles.username}>@{username}</Text>
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                gap: 16,
-                                marginTop: 8,
-                            }}
-                        >
-                            <Text style={styles.textDefault}>
-                                {reviewsCount} reviews
-                            </Text>
-                            <Text style={styles.textDefault}>
-                                {followingCount} seguindo
-                            </Text>
-                            <Text style={styles.textDefault}>
-                                {folowersCount} seguidores
-                            </Text>
-                        </View>
-                        <View
-                            style={[
-                                styles.followBtn,
-                                { backgroundColor: "#8065ef" },
-                            ]}
-                        >
-                            <Text style={{ color: "#eee", fontWeight: "bold" }}>
-                                Botão
-                            </Text>
-                        </View>
-                    </View>
-                    <View style={styles.lowerContent}>
-                        <View style={styles.sec}>
-                            <Text style={styles.headTitle}>Perfil</Text>
-                            <Text style={styles.title}>Nome</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Nome"
-                                placeholderTextColor="#555"
-                                value={name}
-                                onChangeText={setName}
-                                maxLength={24}
-                            />
-                            <Text style={styles.title}>Username</Text>
-                            <TextInput
-                                style={[styles.input, { marginBottom: 4 }]}
-                                placeholder="Username"
-                                placeholderTextColor="#555"
-                                value={username}
-                                onChangeText={setUsername}
-                                maxLength={24}
-                            />
-                            {usernameValidation.message && (
-                                <Text
-                                    style={{
-                                        color:
-                                            usernameValidation.status ===
-                                            "error"
-                                                ? "#ff6b6b"
-                                                : "#4ade80",
-                                        marginBottom: 12,
-                                    }}
-                                >
-                                    {usernameValidation.message}
-                                </Text>
-                            )}
-                            <Text style={styles.title}>Pronomes</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Pronomes (ex: ele/lo, ela/la, elu/les)"
-                                placeholderTextColor="#555"
-                                value={pronouns}
-                                onChangeText={setPronouns}
-                            />
-                            <Text style={styles.title}>Bio</Text>
-                            <TextInput
-                                style={[
-                                    styles.input,
-                                    {
-                                        height: 164,
-                                        textAlignVertical: "top",
-                                    },
-                                ]}
-                                placeholder="Bio"
-                                placeholderTextColor="#555"
-                                value={bio}
-                                onChangeText={setBio}
-                                maxLength={200}
-                                multiline
-                            />
-                            <Text style={styles.title}>Last.Fm</Text>
-                            <TextInput
-                                style={styles.input}
-                                placeholder="Last.Fm"
-                                placeholderTextColor="#555"
-                                value={lastfm}
-                                onChangeText={setLastFM}
-                            />
-                            <Text style={styles.title}>Site</Text>
-                            <TextInput
-                                style={[styles.input, { marginBottom: 0 }]}
-                                placeholder="Site"
-                                placeholderTextColor="#555"
-                                value={site}
-                                onChangeText={setSite}
-                            />
-                        </View>
-                    </View>
-                    <View style={styles.lowerContent}>
-                        <Pressable
-                            style={styles.sec}
-                            onPress={() => setShowLyricsModal(true)}
-                        >
-                            <Text style={styles.title}>Letras</Text>
-
-                            {lyrics ? (
-                                <LyricsCard
-                                    saved={lyrics}
-                                    setLyrics={setLyrics}
-                                />
-                            ) : (
-                                <Text style={{ color: "#555" }}>
-                                    Adicione suas letras favoritas!
-                                </Text>
-                            )}
-                        </Pressable>
-                    </View>
-                    <View style={styles.lowerContent}>
-                        <Pressable
-                            style={styles.sec}
-                            onPress={() => setShowAlbunsModal(true)}
-                        >
-                            <Text style={styles.title}>Álbuns Favoritos</Text>
-                            {albuns.length === 0 && (
-                                <Text style={{ color: "#555" }}>
-                                    Adicione seus álbuns favoritos!
-                                </Text>
-                            )}
-
-                            <FlatGrid
-                                itemDimension={70}
-                                data={albuns}
-                                renderItem={({ item }) => (
-                                    <Image
-                                        source={{ uri: item.src }}
-                                        style={{
-                                            width: "100%",
-                                            // height: 80,
-                                            aspectRatio: 1,
-                                            flex: 1,
-                                            borderRadius: 8,
-                                        }}
-                                    />
-                                )}
-                                style={{ padding: 0 }}
-                                contentContainerStyle={{
-                                    padding: 0,
-                                    margin: 0,
-                                }}
-                            />
-                        </Pressable>
-                    </View>
-                    <View style={styles.lowerContent}>
-                        <Pressable
-                            style={styles.sec}
-                            onPress={() => setShowArtistsModal(true)}
-                        >
-                            <Text style={styles.title}>Artistas Favoritos</Text>
-                            {artists.length === 0 && (
-                                <Text style={{ color: "#555" }}>
-                                    Adicione seus artistas favoritos!
-                                </Text>
-                            )}
-
-                            <FlatGrid
-                                itemDimension={70}
-                                data={artists}
-                                renderItem={({ item }) => (
-                                    <Image
-                                        source={{ uri: item.src }}
-                                        style={{
-                                            width: "100%",
-                                            // height: 80,
-                                            aspectRatio: 1,
-                                            flex: 1,
-                                            borderRadius: 999,
-                                        }}
-                                    />
-                                )}
-                                style={{ padding: 0 }}
-                                contentContainerStyle={{
-                                    padding: 0,
-                                    margin: 0,
-                                }}
-                            />
-                        </Pressable>
-                    </View>
-                </Animated.ScrollView>
-
-                <EditAlbunsModal
-                    albuns={albuns}
-                    setAlbuns={setAlbuns}
-                    visible={showAlbunsModal}
-                    title="Apagar avaliação"
-                    message="Essa ação não pode ser desfeita."
-                    confirmLabel="Apagar"
-                    cancelLabel="Cancelar"
-                    confirmDestructive
-                    onConfirm={() => {
-                        // handleDelete();
-                        setShowAlbunsModal(false);
-                    }}
-                    onCancel={() => setShowAlbunsModal(false)}
-                />
-                <EditArtistsModal
-                    artists={artists}
-                    setArtists={setArtists}
-                    visible={showArtistsModal}
-                    title="Apagar avaliação"
-                    message="Essa ação não pode ser desfeita."
-                    confirmLabel="Apagar"
-                    cancelLabel="Cancelar"
-                    confirmDestructive
-                    onConfirm={() => {
-                        // handleDelete();
-                        setShowArtistsModal(false);
-                    }}
-                    onCancel={() => setShowArtistsModal(false)}
-                />
-                <LyricsModal
-                    visible={showLyricsModal}
-                    savedLyrics={lyrics}
-                    onConfirm={(saved) => {
-                        setLyrics(saved);
-                        setShowLyricsModal(false);
-                    }}
-                    onCancel={() => setShowLyricsModal(false)}
-                />
-                {/* <BottomSheetModal
-                    ref={bottomSheetRef}
-                    index={1}
-                    snapPoints={snapPoints}
-                    enablePanDownToClose
-                    topInset={insets.top}
-                    // containerStyle={{ zIndex: 1000 }}
-                    backgroundStyle={{ backgroundColor: "#161718" }}
-                    handleIndicatorStyle={{ backgroundColor: "#555" }}
-                    backdropComponent={(props) => (
-                        <BottomSheetBackdrop
-                            {...props}
-                            disappearsOnIndex={-1}
-                            appearsOnIndex={0}
-                        />
-                    )}
-                >
-                    <BottomSheetView>
-                        <EditFavAlbuns albuns={albuns} setAlbuns={setAlbuns} />
-                    </BottomSheetView>
-                </BottomSheetModal> */}
-            </View>
             {isLoading && (
                 <View
                     style={[
@@ -1017,17 +576,409 @@ export default function EditProfile() {
                     <ActivityIndicator size="large" color="#8065ef" />
                 </View>
             )}
+
+            {/* BOTÃO VOLTAR */}
+            <Pressable
+                onPress={() => router.back()}
+                style={[styles.backButton, { top: insets.top + 4 }]}
+            >
+                <AltArrowLeft size={32} color="#eee" />
+            </Pressable>
+            <Pressable
+                onPress={saveProfile}
+                style={[
+                    styles.saveButton,
+                    { top: insets.top + 4 },
+                    !canUpdate && styles.disabledSaveButton,
+                ]}
+                // disabled={!isUsernameValid}
+            >
+                <TextDefault style={{ color: "#eee", fontWeight: "bold" }}>
+                    Salvar
+                </TextDefault>
+            </Pressable>
+            <Animated.View
+                style={[
+                    styles.fixedTopBar,
+                    {
+                        height: HEADER_MIN_HEIGHT,
+                        paddingTop: insets.top,
+                        backgroundColor: darkenColor(mainColor, 1),
+                    },
+                    topBarStyle,
+                ]}
+                pointerEvents="none" // Para não bloquear o clique de voltar
+            >
+                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
+                    {name.length > 24 ? name.substring(0, 24) + "..." : name}
+                </TextDefault>
+                {colors.length > 0 && (
+                    <LinearGradient
+                        colors={[`rgba(0,0,0, 0)`, darkenColor(mainColor, 1.8)]}
+                        style={{
+                            position: "absolute",
+                            top: 0,
+                            left: 0,
+                            right: 0,
+                            height: HEADER_MIN_HEIGHT,
+                            zIndex: -1,
+                        }}
+                    />
+                )}
+            </Animated.View>
+
+            {profileData && (
+                <Animated.ScrollView
+                    style={styles.container}
+                    onScroll={onScroll}
+                    scrollEventThrottle={16}
+                    showsVerticalScrollIndicator={false}
+                >
+                    <ProfileHeaderBG avatar_url={avatar} />
+
+                    <Animated.View>
+                        <View style={styles.header}>
+                            <View style={styles.wrapper}>
+                                <Pressable
+                                    style={{
+                                        position: "relative",
+                                    }}
+                                    onPress={pickImage}
+                                >
+                                    <Image
+                                        source={{ uri: avatar || undefined }}
+                                        style={[
+                                            styles.avatar,
+                                            {
+                                                width: 112,
+                                                height: 112,
+                                                borderRadius: 112 * 0.306,
+                                            },
+                                        ]}
+                                    />
+                                    <View
+                                        style={{
+                                            position: "absolute",
+                                            bottom: 8,
+                                            right: -12,
+                                            backgroundColor: "#8065ef",
+                                            width: 36,
+                                            height: 36,
+                                            borderRadius: 16,
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        }}
+                                    >
+                                        <GalleryMinimalistic
+                                            size={24}
+                                            color="#eee"
+                                        />
+                                    </View>
+                                </Pressable>
+                                {pronouns ? (
+                                    <View style={[styles.pronouns]}>
+                                        <TextDefault
+                                            style={styles.pronounstext}
+                                        >
+                                            {pronouns}
+                                        </TextDefault>
+                                    </View>
+                                ) : null}
+                            </View>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    gap: 4,
+                                }}
+                            >
+                                <TextDefault style={styles.name}>
+                                    {name}{" "}
+                                </TextDefault>
+                            </View>
+                            <TextDefault style={styles.username}>
+                                @{username}
+                            </TextDefault>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    gap: 16,
+                                    marginTop: 8,
+                                }}
+                            >
+                                <TextDefault style={styles.textDefault}>
+                                    {reviewsCount} reviews
+                                </TextDefault>
+                                <TextDefault style={styles.textDefault}>
+                                    {followingCount} seguindo
+                                </TextDefault>
+                                <TextDefault style={styles.textDefault}>
+                                    {folowersCount} seguidores
+                                </TextDefault>
+                            </View>
+                            <View
+                                style={[
+                                    styles.followBtn,
+                                    { backgroundColor: "#8065ef" },
+                                ]}
+                            >
+                                <TextDefault
+                                    style={{
+                                        color: "#eee",
+                                        fontWeight: "bold",
+                                    }}
+                                >
+                                    Seguir
+                                </TextDefault>
+                            </View>
+                        </View>
+                        <View style={styles.lowerContent}>
+                            <View style={styles.sec}>
+                                <TextDefault style={styles.headTitle}>
+                                    Perfil
+                                </TextDefault>
+                                <TextDefault style={styles.title}>
+                                    Nome
+                                </TextDefault>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Nome"
+                                    placeholderTextColor="#555"
+                                    value={name}
+                                    onChangeText={setName}
+                                    maxLength={24}
+                                />
+                                <TextDefault style={styles.title}>
+                                    Username
+                                </TextDefault>
+                                <TextInput
+                                    style={[styles.input, { marginBottom: 4 }]}
+                                    placeholder="Username"
+                                    placeholderTextColor="#555"
+                                    value={username}
+                                    onChangeText={setUsername}
+                                    maxLength={24}
+                                />
+                                {usernameValidation.message && (
+                                    <TextDefault
+                                        style={{
+                                            color:
+                                                usernameValidation.status ===
+                                                "error"
+                                                    ? "#ff6b6b"
+                                                    : "#4ade80",
+                                            marginBottom: 12,
+                                        }}
+                                    >
+                                        {usernameValidation.message}
+                                    </TextDefault>
+                                )}
+                                <TextDefault style={styles.title}>
+                                    Pronomes
+                                </TextDefault>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Pronomes (ex: ele/lo, ela/la, elu/les)"
+                                    placeholderTextColor="#555"
+                                    value={pronouns}
+                                    onChangeText={setPronouns}
+                                />
+                                <TextDefault style={styles.title}>
+                                    Bio
+                                </TextDefault>
+                                <TextInput
+                                    style={[
+                                        styles.input,
+                                        {
+                                            height: 164,
+                                            textAlignVertical: "top",
+                                        },
+                                    ]}
+                                    placeholder="Bio"
+                                    placeholderTextColor="#555"
+                                    value={bio}
+                                    onChangeText={setBio}
+                                    maxLength={200}
+                                    multiline
+                                />
+                                <TextDefault style={styles.title}>
+                                    Last.Fm
+                                </TextDefault>
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Last.Fm"
+                                    placeholderTextColor="#555"
+                                    value={lastfm}
+                                    onChangeText={setLastFM}
+                                />
+                                <TextDefault style={styles.title}>
+                                    Site
+                                </TextDefault>
+                                <TextInput
+                                    style={[styles.input, { marginBottom: 0 }]}
+                                    placeholder="Site"
+                                    placeholderTextColor="#555"
+                                    value={site}
+                                    onChangeText={setSite}
+                                />
+                            </View>
+                        </View>
+                        <View style={styles.lowerContent}>
+                            <Pressable
+                                style={styles.sec}
+                                onPress={() => setShowLyricsModal(true)}
+                            >
+                                <TextDefault style={styles.title}>
+                                    Letras
+                                </TextDefault>
+
+                                {lyrics ? (
+                                    <LyricsCard
+                                        saved={lyrics}
+                                        setLyrics={setLyrics}
+                                    />
+                                ) : (
+                                    <TextDefault style={{ color: "#555" }}>
+                                        Adicione suas letras favoritas!
+                                    </TextDefault>
+                                )}
+                            </Pressable>
+                        </View>
+                        <View style={styles.lowerContent}>
+                            <Pressable
+                                style={styles.sec}
+                                onPress={openSheetAlbuns}
+                            >
+                                <TextDefault style={styles.title}>
+                                    Álbuns Favoritos
+                                </TextDefault>
+                                {albuns.length === 0 && (
+                                    <TextDefault style={{ color: "#555" }}>
+                                        Adicione seus álbuns favoritos!
+                                    </TextDefault>
+                                )}
+
+                                <FlatGrid
+                                    itemDimension={70}
+                                    data={albuns}
+                                    renderItem={({ item }) => (
+                                        <Image
+                                            source={{ uri: item.src }}
+                                            style={{
+                                                width: "100%",
+                                                // height: 80,
+                                                aspectRatio: 1,
+                                                flex: 1,
+                                                borderRadius: 8,
+                                            }}
+                                        />
+                                    )}
+                                    style={{ padding: 0 }}
+                                    contentContainerStyle={{
+                                        padding: 0,
+                                        margin: 0,
+                                    }}
+                                />
+                            </Pressable>
+                        </View>
+                        <View style={styles.lowerContent}>
+                            <Pressable
+                                style={styles.sec}
+                                onPress={openSheetArtists}
+                            >
+                                <TextDefault style={styles.title}>
+                                    Artistas Favoritos
+                                </TextDefault>
+                                {artists.length === 0 && (
+                                    <TextDefault style={{ color: "#555" }}>
+                                        Adicione seus artistas favoritos!
+                                    </TextDefault>
+                                )}
+
+                                <FlatGrid
+                                    itemDimension={70}
+                                    data={artists}
+                                    renderItem={({ item }) => (
+                                        <Image
+                                            source={{ uri: item.src }}
+                                            style={{
+                                                width: "100%",
+                                                // height: 80,
+                                                aspectRatio: 1,
+                                                flex: 1,
+                                                borderRadius: 999,
+                                            }}
+                                        />
+                                    )}
+                                    style={{ padding: 0 }}
+                                    contentContainerStyle={{
+                                        padding: 0,
+                                        margin: 0,
+                                    }}
+                                />
+                            </Pressable>
+                        </View>
+                    </Animated.View>
+
+                    <LyricsModal
+                        visible={showLyricsModal}
+                        savedLyrics={lyrics}
+                        onConfirm={(saved) => {
+                            setLyrics(saved);
+                            setShowLyricsModal(false);
+                        }}
+                        onCancel={() => setShowLyricsModal(false)}
+                    />
+                </Animated.ScrollView>
+            )}
+            <BottomSheetModal
+                ref={bottomSheetAlbunsRef}
+                snapPoints={snapPoints}
+                enablePanDownToClose
+                topInset={insets.top}
+                enableDynamicSizing={false}
+                enableOverDrag
+                backgroundStyle={{ backgroundColor: "#161718" }}
+                handleIndicatorStyle={{ backgroundColor: "#555" }}
+                backdropComponent={(props) => (
+                    <BottomSheetBackdrop
+                        {...props}
+                        disappearsOnIndex={-1}
+                        appearsOnIndex={0}
+                    />
+                )}
+            >
+                <EditFavAlbuns albuns={albuns} setAlbuns={setAlbuns} />
+            </BottomSheetModal>
+            <BottomSheetModal
+                ref={bottomSheetArtistsRef}
+                snapPoints={snapPoints}
+                enablePanDownToClose
+                topInset={insets.top}
+                enableDynamicSizing={false}
+                enableOverDrag
+                backgroundStyle={{ backgroundColor: "#161718" }}
+                handleIndicatorStyle={{ backgroundColor: "#555" }}
+                backdropComponent={(props) => (
+                    <BottomSheetBackdrop
+                        {...props}
+                        disappearsOnIndex={-1}
+                        appearsOnIndex={0}
+                    />
+                )}
+            >
+                <EditFavArtists artists={artists} setArtists={setArtists} />
+            </BottomSheetModal>
         </KeyboardAvoidingView>
     );
 }
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
     },
 
     sec: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 16,
         borderRadius: 12,
     },
@@ -1131,7 +1082,7 @@ const styles = StyleSheet.create({
     followBtn: {
         marginTop: 16,
         paddingHorizontal: 24,
-        paddingVertical: 8,
+        paddingVertical: 12,
         borderRadius: 9999,
         borderWidth: 1,
         borderColor: "#8065ef",
@@ -1144,7 +1095,7 @@ const styles = StyleSheet.create({
         padding: 12,
         borderRadius: 12,
         color: "#eee",
-        backgroundColor: "#282828",
+        backgroundColor: "#2b2c2d",
         marginBottom: 12,
     },
     blob: {

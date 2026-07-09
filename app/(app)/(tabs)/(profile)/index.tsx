@@ -7,8 +7,10 @@ import { useEffect, useState } from "react";
 import ProfileTabs from "@/components/profile/profile-tabs";
 import { UserProfile } from "@/lib/types";
 import { getColors } from "react-native-image-colors";
+import { getPalette } from "expo-color-thief-native";
+import type { ColorThiefColorData } from "expo-color-thief-native";
 import { darkenColor } from "@/lib/util/workWithColors";
-import { selectRightColor } from "@/lib/util/selectRightColor";
+import { selectRightColor, selectBackgroundColor } from "@/lib/util/selectRightColor";
 import { Palette } from "@/lib/types";
 import { SkeletonProfile } from "@/components/core/skeletons";
 export default function Index() {
@@ -24,18 +26,14 @@ export default function Index() {
             // console.log("Profile data fetched successfully:", response);
             setProfileData(response);
 
-            getColors(response.avatar_url, {
-                fallback: "#000",
-                cache: true,
-                key: response.avatar_url,
+            getPalette(response.avatar_url, {
+                colorCount: 6,
+                quality: 10,
             })
-                .then((colors) => {
-                    const newColor = darkenColor(
-                        selectRightColor(colors as any),
-                        0.5,
-                    );
-                    setDominantColor(newColor);
-                    setColors(colors);
+                .then((fetchedColors) => {
+                    
+                    setDominantColor(selectBackgroundColor(fetchedColors).background);
+                    setColors(fetchedColors);
 
                     setTimeout(() => {
                         setLoading(false);

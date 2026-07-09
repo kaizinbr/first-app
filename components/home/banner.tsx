@@ -1,28 +1,19 @@
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    Pressable,
-    useWindowDimensions,
-} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { authClient } from "@/lib/auth-client";
+import { renderItem } from "@/components/home/banner/render-item";
 import api from "@/lib/api";
-import { Image } from "expo-image";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import {
+    StyleSheet,
+    useWindowDimensions,
+    View
+} from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
-import { renderItem } from "@/components/home/banner/render-item";
-import * as React from "react";
 
-import { getBannerColor, getBannerColors } from "@/lib/util/workWithColors";
-import { getColors } from "react-native-image-colors";
-import { getPalette } from "@b.taranenko/expo-color-thief";
 import { Palette } from "@/lib/types";
+import { getBannerColors } from "@/lib/util/workWithColors";
 import { useIsFocused } from "expo-router/react-navigation";
+import { getColors } from "react-native-image-colors";
 
-import TextDefault from "@/components/core/text-core";
 
 type SpotifyAlbum = {
     album_type: string;
@@ -169,30 +160,6 @@ export default function Banner({
                                         newIndex % (bannerData?.length ?? 1)
                                     ]?.src || "",
                                 );
-                                // Pega a cor do item que ficou em foco
-                                // const item =
-                                //     bannerData?.[
-                                //         newIndex % (bannerData?.length ?? 1)
-                                //     ];
-                                // const result = await getColors(item!.src, {
-                                //     fallback: "#000",
-                                //     cache: true,
-                                //     key: item?.src,
-                                // });
-                                // setColors(result);
-                                // // console.log("Colors for current item:", result);
-
-                                // const palette = await getPalette(item!.src, {
-                                //     colorCount: 8,
-                                //     quality: 5,
-                                //     ignoreWhite: true,
-                                // });
-                                // setPalette(palette);
-                                // // console.log("Palette from color-thief:", palette);
-
-                                // const [bannerColor1, bannerColor2] =
-                                //     getBannerColors(result);
-                                // onColorChange([bannerColor1, bannerColor2]);
                             }
                         }}
                         renderItem={renderItem({

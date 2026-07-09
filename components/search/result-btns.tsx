@@ -148,7 +148,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     pressedBtnMain: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         width: "100%",
         paddingVertical: 12,
         paddingHorizontal: 12,

@@ -214,7 +214,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
     },
     btnBg: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 12,
         borderRadius: 12,
         overflow: "hidden",

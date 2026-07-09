@@ -1,0 +1,5 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+  <!-- Necessário apenas se você for extrair cores de imagens remotas (http/https). -->
+  <uses-permission android:name="android.permission.INTERNET" />
+</manifest>

@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
     },
     editorContainer: {
         width: "100%",
-        backgroundColor: "#1b1c1d", // Cor de fundo do editor
+        backgroundColor: "#212223", // Cor de fundo do editor
         borderRadius: 8,
         padding: 12,
     },

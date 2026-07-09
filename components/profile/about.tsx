@@ -15,8 +15,8 @@ import { ArrowRightUp } from "@solar-icons/react-native/Linear";
 import { Image } from "expo-image";
 import LyricsCard from "@/components/profile/lyrics-card";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import * as Linking from 'expo-linking';
-
+import * as Linking from "expo-linking";
+import RatingBarChart from "@/components/profile/about/ratings-chart";
 
 import { SimpleGrid } from "react-native-super-grid";
 
@@ -48,7 +48,9 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                     )}
                     {data.location && (
                         <View>
-                            <TextDefault style={styles.title}>Location</TextDefault>
+                            <TextDefault style={styles.title}>
+                                Location
+                            </TextDefault>
                             <TextDefault style={styles.textDefault}>
                                 {data.location}
                             </TextDefault>
@@ -56,7 +58,9 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                     )}
 
                     <View>
-                        <TextDefault style={styles.title}>Membro desde</TextDefault>
+                        <TextDefault style={styles.title}>
+                            Membro desde
+                        </TextDefault>
                         <TextDefault style={styles.textDefault}>
                             {new Date(data.created_at).toLocaleDateString(
                                 process.env.LOCALE || "pt-BR",
@@ -69,6 +73,10 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                         </TextDefault>
                     </View>
                 </View>
+
+                <RatingBarChart
+                    data={data}
+                />
 
                 {data.lyrics !== null && (
                     <LyricsCard saved={data.lyrics as any} />
@@ -159,7 +167,9 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                             },
                         ]}
                         onPress={() => {
-                            Linking.openURL(`https://last.fm/user/${data.lastfm_username}`);
+                            Linking.openURL(
+                                `https://last.fm/user/${data.lastfm_username}`,
+                            );
                         }}
                     >
                         <FontAwesome5 name="lastfm" size={24} color="#eee" />
@@ -180,7 +190,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                             },
                         ]}
                         onPress={() => {
-                            // Lógica para abrir o site, por exemplo, usando Linking
+                            data.site && Linking.openURL(data.site);
                         }}
                     >
                         <TextDefault style={styles.textDefault}>
@@ -213,7 +223,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     sec: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 16,
         borderRadius: 12,
         gap: 8,

@@ -25,7 +25,7 @@ import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
-import { getPalette } from "@b.taranenko/expo-color-thief";
+import { getPalette } from "expo-color-thief-native";
 
 const CARD_WIDTH = 1080;
 const CARD_HEIGHT = 1920;

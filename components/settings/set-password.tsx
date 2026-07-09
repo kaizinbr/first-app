@@ -438,7 +438,7 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     section: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 0,
         borderRadius: 12,
         overflow: "hidden",

@@ -70,23 +70,41 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
 
     return (
         <Tabs.FlatList
-            data={reviews}
-            keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => (
-                <FeedCard review={item} onRefresh={onRefresh} />
-            )}
-            ItemSeparatorComponent={ItemSeparator}
-            onEndReached={() => {
-                console.log("onEndReached fired");
-                loadMoreForTabs();
-            }}
-            onEndReachedThreshold={0.5}
+            style={styles.container}
             contentContainerStyle={{
                 paddingBottom: 80,
                 flexGrow: 1,
                 width: "100%",
                 // backgroundColor: "red",
             }}
+            data={reviews}
+            keyExtractor={(item) => item.id.toString()}
+            renderItem={({ item }) => (
+                <FeedCard review={item} onRefresh={onRefresh} />
+            )}
+            ItemSeparatorComponent={() => (
+                <View
+                    style={{
+                        height: 0.5,
+                        width: "100%",
+                        alignItems: "center",
+                        justifyContent: "center",
+                    }}
+                >
+                    <View
+                        style={{
+                            height: 0.5,
+                            backgroundColor: "#3d3d3d",
+                            width: "95%",
+                        }}
+                    />
+                </View>
+            )}
+            onEndReached={() => {
+                console.log("onEndReached fired");
+                loadMoreForTabs();
+            }}
+            onEndReachedThreshold={0.5}
             refreshControl={
                 <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
@@ -162,6 +180,8 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
 }
 
 const styles = StyleSheet.create({
+    
+    container: { flex: 1, width: "100%" },
     scene: {
         flex: 1,
 

@@ -66,11 +66,13 @@ function hexToRgb(hex: string) {
 export default function ReviewAlbumScreen({
     reviewData,
     albumData,
-    colors,
+    mainColor,
+    accentColor
 }: {
     reviewData: Review;
     albumData: Album;
-    colors: Palette;
+    mainColor: string;
+    accentColor: string;
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
@@ -184,13 +186,13 @@ export default function ReviewAlbumScreen({
                     ]}
                 >
                     <LinearGradient
-                        colors={[selectRightColor(colors), "#161718"]}
+                        colors={[mainColor, "#161718"]}
                         start={{ x: 0, y: 0 }}
                         end={{ x: 1, y: 1 }}
                         style={StyleSheet.absoluteFill}
                     />
                     <LinearGradient
-                        colors={[colors.muted, "#161718"]}
+                        colors={[accentColor, "#161718"]}
                         start={{ x: 1, y: 0 }}
                         end={{ x: 0, y: 1 }}
                         style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
@@ -205,7 +207,7 @@ export default function ReviewAlbumScreen({
 
                 <FixedHeader
                     data={albumData}
-                    colors={colors}
+                    mainColor={mainColor}
                     scrollY={scrollY}
                 />
 

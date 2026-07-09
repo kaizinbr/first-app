@@ -5,6 +5,11 @@ import { useEffect, useState } from "react";
 import { ArtistResponse, Palette } from "@/lib/types";
 import ArtistScreen from "@/components/artists/main";
 import { getColors } from "react-native-image-colors";
+import { getPalette, getColor } from "expo-color-thief-native";
+import {
+    selectBackgroundColor,
+    selectBackgroundGradient,
+} from "@/lib/util/selectRightColor";
 
 export default function ArtistPage() {
     const { id } = useLocalSearchParams();
@@ -12,6 +17,9 @@ export default function ArtistPage() {
 
     const [artistData, setArtistData] = useState<ArtistResponse | null>(null);
     const [colors, setColors] = useState<Palette | any>(null);
+    const [palette, setPalette] = useState<Palette | any>(null);
+    const [mainColor, setMainColor] = useState<string | null>(null);
+    const [accentColor, setAccentColor] = useState<string | null>(null);
 
     useEffect(() => {
         const fetchArtistData = async () => {
@@ -23,13 +31,12 @@ export default function ArtistPage() {
 
                 if (response.images && response.images.length > 0) {
                     const imageUrl = response.images[0].url;
-                    const colors = await getColors(imageUrl, {
-                        fallback: "#1e1e1e",
-                        cache: true,
-                        key: imageUrl,
-                    });
-                    setColors(colors);
-                    // console.log("Colors fetched for album image:", colors);
+                    const palette = await getPalette(imageUrl, { quality: 10 });
+                    setPalette(palette);
+                    const main = selectBackgroundColor(palette);
+                    setMainColor(main.background);
+                    const accent = selectBackgroundGradient(palette);
+                    setAccentColor(accent.accent);
                 }
             } catch (error) {
                 console.error("Error fetching artist data:", error);
@@ -40,8 +47,12 @@ export default function ArtistPage() {
 
     return (
         <View style={styles.container}>
-            {artistData && colors ? (
-                <ArtistScreen data={artistData} colors={colors} />
+            {artistData && palette && mainColor && accentColor ? (
+                <ArtistScreen
+                    data={artistData}
+                    mainColor={mainColor}
+                    accentColor={accentColor}
+                />
             ) : (
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#8065ef" />

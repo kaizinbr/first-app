@@ -25,11 +25,11 @@ function hexToRgb(hex: string) {
 }
 
 export default function FixedHeader({
-    colors,
+    mainColor,
     data,
     scrollY,
 }: {
-    colors: Palette;
+    mainColor: string;
     data: Album | ArtistResponse;
     scrollY: any;
 }) {
@@ -38,8 +38,6 @@ export default function FixedHeader({
     const HEADER_MAX_HEIGHT = 264; // Tamanho total da área do gradiente
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
-
-    const [testColor1, testColor2] = getBannerColors(colors);
 
     const onScroll = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
@@ -61,7 +59,7 @@ export default function FixedHeader({
                 {
                     height: HEADER_MIN_HEIGHT,
                     paddingTop: insets.top,
-                    backgroundColor: darkenColor(selectRightColor(colors), 0.3),
+                    backgroundColor: darkenColor(mainColor, 0.3),
                 },
                 topBarStyle,
             ]}
@@ -75,8 +73,8 @@ export default function FixedHeader({
 
             <LinearGradient
                 colors={[
-                    `rgba(${hexToRgb(selectRightColor(colors))}, 0)`,
-                    darkenColor(selectRightColor(colors), 1.2),
+                    `rgba(${hexToRgb(mainColor)}, 0)`,
+                    darkenColor(mainColor, 1.2),
                 ]}
                 style={{
                     position: "absolute",

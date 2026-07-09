@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         width: "100%",
 
         minHeight: 500,
-        backgroundColor: "#1b1c1d", // Cor de fundo do editor
+        backgroundColor: "#212223", // Cor de fundo do editor
         borderRadius: 12,
         padding: 16,
         marginTop: 16,

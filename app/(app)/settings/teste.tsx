@@ -12,139 +12,71 @@ import { authClient } from "@/lib/auth-client";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import TextDefault from "@/components/core/text-core";
 import { useRouter, Href, Link } from "expo-router";
-
+import ProfileHeader from "@/components/profile/profile-header";
 import { apiAuth, apiAuthDELETE } from "@/lib/api";
 import { Image } from "expo-image";
+import { Palette, UserProfile } from "@/lib/types";
+import { getColors } from "react-native-image-colors";
+import { darkenColor } from "@/lib/util/workWithColors";
+import { selectRightColor } from "@/lib/util/selectRightColor";
 
-import { Comment } from "@/lib/types";
-import { displayPastRelativeTime, getPastRelativeTime } from "@/lib/util/time";
-
-import {
-    Flag,
-    ForbiddenCircle,
-    MenuDots,
-    Pen,
-    TrashBinTrash,
-    User,
-    Vinyl,
-} from "@solar-icons/react-native/Bold";
-import {
-    ChatRound,
-    ChatSquare,
-    Share,
-} from "@solar-icons/react-native/Outline";
-
-import {
-    BottomSheetBackdrop,
-    BottomSheetModal,
-    BottomSheetView,
-    useBottomSheetModal,
-} from "@gorhom/bottom-sheet";
-
-import ConfirmModal from "@/components/core/confirm-modal";
-import { ShareLargeBtn, ShareSmBtn } from "@/components/core/share-btn";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-import { LikeCommentButton } from "@/components/reviews/like-btn";
-
-const markdown = `
-**Teste negrito** *italico* e normal aaaaa ***e os dois***
-`;
 
 export default function CommentCard() {
-    const markdownContent = `# LIKE JENNIE — Avaliação do Álbum
+    const [loading, setLoading] = useState(true);
+    const [profileData, setProfileData] = useState<UserProfile | null>(null);
+    const [colors, setColors] = useState<Palette | any>(null);
+    const [dominantColor, setDominantColor] = useState<string | null>(null);
 
-## Visão Geral
+    const [reload, setReload] = useState(false);
+    const fetchProfileData = async () => {
+        try {
+            const response = await apiAuth("/me");
+            // console.log("Profile data fetched successfully:", response);
+            setProfileData(response);
 
-**LIKE JENNIE** é o álbum de estreia solo de *Jennie Kim*, lançado em 2025. Com produção impecável e uma identidade sonora própria, o projeto consolida sua posição como uma das artistas mais relevantes do K-pop atual.
+            getColors(response.avatar_url, {
+                fallback: "#000",
+                cache: true,
+                key: response.avatar_url,
+            })
+                .then((colors) => {
+                    const newColor = darkenColor(
+                        selectRightColor(colors as any),
+                        0.5,
+                    );
+                    setDominantColor(newColor);
+                    setColors(colors);
 
----
+                    // setTimeout(() => {
+                    // }, 2000);
+                        setLoading(false);
+                })
+                .catch(console.error);
+        } catch (error) {
+            console.error("Error fetching profile data:", error);
+            setLoading(false);
+        }
+    };
 
-## Faixas em Destaque
-
-### 1. Mantra
-
-A faixa de abertura define o tom do álbum: **confiante**, *provocativa* e absolutamente elegante. O beat minimalista contrasta com a entrega vocal de Jennie — uma combinação que só ela consegue fazer funcionar.
-
-### 2. Love Hangover
-
-Uma viagem ao R&B dos anos 90 com produção moderna. A ponte da música tem um momento de ***bold italic*** que literalmente para o tempo.
-
-### 3. ExtraL
-
-> "Se você não entendeu ExtraL na primeira escuta, ouça de novo. E de novo. E de novo."
->
-> > Há camadas aqui que levam semanas para se revelar completamente — desde os samples escondidos até a letra que flerta com a autossabotagem.
-
----
-
-## Produção
-
-O álbum conta com colaboração de produtores como  — nomes que sozinhos já garantem qualidade. O processo de produção seguiu uma lógica clara:
-
-1. Definir a identidade sonora antes das faixas
-2. Gravar vocais em múltiplos países
-3. Revisitar e reeditar com base no feedback da própria Jennie
-   1. Sessões extras em Los Angeles
-   2. Mixagem final em Seul
-
----
-
-## Pontos Fortes
-
-- **Coesão sonora** — cada faixa soa como parte de um todo
-- **Direção artística** — Jennie co-dirigiu a maioria dos videoclipes
-  - Paleta visual consistente
-  - Referências ao cinema francês e à moda haute couture
-- **Letras** — em inglês e coreano, com camadas de significado
-  - Empoderamento feminino sem clichês
-  - Vulnerabilidade real misturada com atitude
-
----
-
-## Checklist de Escuta
-
-- [x] Ouvir o álbum completo sem pular faixas
-- [x] Prestar atenção nas letras de *ExtraL*
-- [ ] Assistir todos os videoclipes na ordem
-- [ ] Ler as anotações do encarte físico
-
----
-
-## Comparativo com Outros Solos do BLACKPINK
-
-| Álbum | Artista | Ano | Estilo Principal | Nota |
-|---|---|---|---|---|
-| LIKE JENNIE | Jennie | 2025 | Pop / R&B | ★★★★★ |
-| R | Rosé | 2025 | Indie Pop | ★★★★☆ |
-| IM NAYEON | Nayeon | 2022 | Pop Coreano | ★★★☆☆ |
-
----
-
-## Trecho Favorito (Mantra)
-
-> A letra de Mantra é um manifesto. Jennie não pede permissão — ela declara.
-
-O refrão usa uma estrutura rítmica baseada em call and response que remete ao gospel americano, mas com uma entrega completamente contemporânea.
-
----
-
-## Nota Final
-
-||Jennie merecia mais do que o mundo estava disposto a dar durante os anos de BLACKPINK. LIKE JENNIE é a prova de que ela sempre soube disso.||
-
-Este álbum é um **marco** na história do K-pop solo feminino. É ousado, é pessoal e, acima de tudo, é inegavelmente *Jennie*.
-
-**Nota:** 9.4/10
-
----
-
-*Avaliação escrita por @kaio • plataforma de reviews musicais*`;
-
+    
+        useEffect(() => {
+            fetchProfileData();
+        }, []);
     return (
-        <View style={styles.card}>
-            <View style={styles.cardContent}>
-            </View>
+        <View style={styles.container}>
+            {loading ? (
+                <View style={styles.overlay}>
+                    <ActivityIndicator size="large" color="#8065ef" />
+                </View>
+            ) : null}
+
+            {profileData && dominantColor && colors ? (
+                <ProfileHeader
+                    data={profileData}
+                    dominantColor={dominantColor!}
+                    itsUser={true}
+                />
+            ) : null}
         </View>
     );
 }
@@ -260,5 +192,16 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         gap: 16,
+    },
+    overlay: {
+        justifyContent: "center",
+        alignItems: "center",
+        position: "absolute",
+        backgroundColor: "#161718",
+        zIndex: 10,
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
     },
 });

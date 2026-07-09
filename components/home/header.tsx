@@ -2,12 +2,7 @@ import FeedCard from "@/components/home/feed-card";
 import api from "@/lib/api";
 import { Review } from "@/lib/types";
 import { useEffect, useRef, useState } from "react";
-import {
-    StyleSheet,
-    View,
-    useWindowDimensions,
-    Pressable,
-} from "react-native";
+import { StyleSheet, View, useWindowDimensions, Pressable } from "react-native";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -23,6 +18,9 @@ import {
 } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
 import TextDefault from "@/components/core/text-core";
+
+import { getPalette } from "expo-color-thief-native";
+import { selectBackgroundColor } from "@/lib/util/selectRightColor";
 
 import Animated, {
     useSharedValue,
@@ -69,6 +67,7 @@ export default function FeedHeader({
     const router = useRouter();
 
     const [colors, setColors] = useState<any>(["#182840", "#00001a"]);
+    const [mainColor, setMainColor] = useState<string>("#8065ef");
 
     const [currentBannerUrl, setCurrentBannerUrl] = useState<string>(
         "https://i.scdn.co/image/ab67616d0000b2735cf234eeb7a2edf44bf64a46",
@@ -99,24 +98,18 @@ export default function FeedHeader({
         ],
     }));
 
-    const blob1Style = useColorTransition(colors[0]);
-    const blob2Style = useColorTransition(lightenColor(colors[0], 1));
-    const blob3Style = useColorTransition(lightenColor(colors[0], 0.7));
-    const blob4Style = useColorTransition(lightenColor(colors[0], 0.8));
+    const blob1Style = useColorTransition(mainColor);
+    const blob2Style = useColorTransition(lightenColor(mainColor, 1));
+    const blob3Style = useColorTransition(lightenColor(mainColor, 0.7));
+    const blob4Style = useColorTransition(lightenColor(mainColor, 0.8));
 
     useEffect(() => {
         // console.log("Cores do banner:", currentBannerUrl);
 
         const fetchColors = async () => {
-            const result = await getColors(currentBannerUrl, {
-                fallback: "#000000",
-                cache: true,
-                key: currentBannerUrl, // Use a URL como chave de cache
-            });
-            // console.log("Resultado do getColors:", result);
-            const newColors = getBannerColors(result);
-            setColors(newColors);
-            // console.log("Nova cor:", newColors[0]);
+
+            const pal = await getPalette(currentBannerUrl, { quality: 10 });
+            setMainColor(selectBackgroundColor(pal).background);
         };
 
         fetchColors();
@@ -133,8 +126,14 @@ export default function FeedHeader({
                     ]}
                 >
                     <LinearGradient
-                        colors={[darkenColor(colors[0], 1.5), "#161718"]}
-                        style={[StyleSheet.absoluteFill, { transitionProperty: "background-color", transitionDuration: "500ms" }]}
+                        colors={[darkenColor(mainColor, 1.5), "#161718"]}
+                        style={[
+                            StyleSheet.absoluteFill,
+                            {
+                                transitionProperty: "background-color",
+                                transitionDuration: "500ms",
+                            },
+                        ]}
                     />
 
                     <Animated.View
@@ -214,12 +213,7 @@ export default function FeedHeader({
                         },
                     ]}
                 >
-                    <Animated.Text
-                        style={[
-                            styles.title,
-                            titleTranslateStyle,
-                        ]}
-                    >
+                    <Animated.Text style={[styles.title, titleTranslateStyle]}>
                         {/* Olá, {session?.user?.name || "usuário"}! */}
                         Whistle
                     </Animated.Text>

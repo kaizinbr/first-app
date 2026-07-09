@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
         padding: 16,
         width: "100%",
         borderRadius: 12,
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         marginBottom: 16,
     },
     textDefault: { color: "#eee", fontSize: 16, fontWeight: "800" },

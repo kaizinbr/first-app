@@ -1,29 +1,27 @@
-import { View, Text, StyleSheet, Pressable } from "react-native";
 import TextDefault from "@/components/core/text-core";
-import { Image } from "expo-image";
-import { UserProfile } from "@/lib/types";
 import api, { apiAuth, apiAuthPost } from "@/lib/api";
-import { useRouter } from "expo-router";
-import { getColors } from "react-native-image-colors";
-import { useState, useEffect, use } from "react";
-import { Palette } from "@/lib/types";
-import { VerifiedCheck } from "@solar-icons/react-native/Bold";
+import { Palette, UserProfile } from "@/lib/types";
+import { selectBackgroundColor } from "@/lib/util/selectRightColor";
+import { getPalette } from "expo-color-thief-native";
+import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import {
-    getBannerColors,
-    darkenColor,
-    lightenColor,
-} from "@/lib/util/workWithColors";
-import { selectRightColorDominant } from "@/lib/util/selectRightColor";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { getColors } from "react-native-image-colors";
+
+import chroma from "chroma-js";
+import type { ColorThiefColorData } from "expo-color-thief-native";
+
 import PlayingOnLastFM from "@/components/profile/last-fm-card";
+import { VerifiedCheck } from "@solar-icons/react-native/Bold";
+import { Pressable, StyleSheet, Text, View } from "react-native";
+import ProfileHeaderBG from "@/components/profile/profile-header-bg";
 
 export default function ProfileHeader({
     data,
-    dominantColor,
     itsUser,
 }: {
     data: UserProfile;
-    dominantColor: string;
     itsUser?: boolean;
 }) {
     const router = useRouter();
@@ -34,7 +32,35 @@ export default function ProfileHeader({
         muted: "#8065ef",
     });
     const [pureColors, setPureColors] = useState<Palette | any>(null);
-    const [mainColor, setMainColor] = useState("#8065ef");
+    const [colorsA, setColorsA] = useState<ColorThiefColorData[] | any>([
+        {
+            b: 40,
+            contrast: {
+                black: 1.2356125186127032,
+                foreground: "#ffffff",
+                white: 16.995619325367446,
+            },
+            g: 23,
+            hex: "#261728",
+            hsl: {
+                h: 292.9411764705883,
+                l: 0.12352941176470589,
+                s: 0.2698412698412698,
+            },
+            isDark: true,
+            isLight: false,
+            oklch: {
+                c: 0.03857433556681822,
+                h: 322.58298061878503,
+                l: 0.2320606739879971,
+            },
+            population: 4629,
+            proportion: 0.514962732228279,
+            r: 38,
+            textColor: "#ffffff",
+        },
+    ]);
+    const [mainColor, setMainColor] = useState("#161718");
     const [folowersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [reviewsCount, setReviewsCount] = useState(0);
@@ -43,18 +69,21 @@ export default function ProfileHeader({
     useEffect(() => {
         const fetchColors = async () => {
             try {
-                const result = await getColors(data.avatar_url, {
-                    fallback: "#000",
-                    cache: true,
-                    key: data.avatar_url,
-                    quality: "low",
-                });
-                setPureColors(result);
-                setMainColor(selectRightColorDominant(result as any));
+                // const result = await getColors(data.avatar_url, {
+                //     fallback: "#000",
+                //     cache: true,
+                //     key: data.avatar_url,
+                //     // quality: "low",
+                // });
+                // setPureColors(result);
 
-                const bannerColors = getBannerColors(result);
-                console.log("Colors fetched successfully:", bannerColors);
-                setColors(bannerColors);
+                const fetchedColors = await getPalette(data.avatar_url, {
+                    colorCount: 6,
+                    quality: 10,
+                });
+                // console.log("Colors fetched successfully:", fetchedColors);
+                setColorsA(fetchedColors);
+                setMainColor(selectBackgroundColor(fetchedColors).background);
             } catch (error) {
                 console.error("Error fetching colors:", error);
             }
@@ -126,72 +155,7 @@ export default function ProfileHeader({
 
     return (
         <View style={styles.scene}>
-            <LinearGradient
-                colors={[darkenColor(mainColor, 1.5), "#161718"]}
-                style={StyleSheet.absoluteFill}
-            />
-
-            {/* blob principal - vem da cor dominante do álbum */}
-            <View
-                style={[
-                    styles.blob,
-                    {
-                        backgroundColor: selectRightColorDominant(colors),
-                        width: 320,
-                        height: 320,
-                        top: -80,
-                        left: -60,
-                        filter: [{ blur: 90 }],
-                    },
-                ]}
-            />
-
-            {/* blob secundário - complementar mais frio */}
-            <View
-                style={[
-                    styles.blob,
-                    {
-                        backgroundColor: lightenColor(mainColor, 1),
-                        width: 260,
-                        height: 260,
-                        bottom: 170,
-                        right: -80,
-                        filter: [{ blur: 70 }],
-                    },
-                ]}
-            />
-            <View
-                style={[
-                    styles.blob,
-                    {
-                        backgroundColor: lightenColor(mainColor, 0.7),
-                        width: 160,
-                        height: 160,
-                        top: 110,
-                        right: 80,
-                        filter: [{ blur: 70 }],
-                    },
-                ]}
-            />
-            <View
-                style={[
-                    styles.blob,
-                    {
-                        backgroundColor: lightenColor(mainColor, 0.8),
-                        width: 160,
-                        height: 160,
-                        top: 80,
-                        left: 80,
-                        filter: [{ blur: 70 }],
-                    },
-                ]}
-            />
-
-            {/* vinheta no topo pra escurecer onde fica o header */}
-            <LinearGradient
-                colors={["rgba(0,0,0,0.6)", "transparent"]}
-                style={[StyleSheet.absoluteFill, { height: 180 }]}
-            />
+            <ProfileHeaderBG avatar_url={data.avatar_url} />
 
             <View style={styles.header}>
                 <View style={styles.wrapper}>
@@ -219,6 +183,7 @@ export default function ProfileHeader({
                         </View>
                     )}
                 </View>
+
                 <View
                     style={{
                         flexDirection: "row",
@@ -305,11 +270,8 @@ const styles = StyleSheet.create({
         zIndex: 0, // Fica atrás do ScrollView
     },
     blob: {
-        position: "absolute",
-        borderRadius: 999,
-        opacity: 0.6,
-        // blur no RN é via style diretamente no iOS
-        // no Android precisa de uma alternativa
+        // position: "absolute",
+        borderRadius: 9999,
     },
     wrapper: {
         alignItems: "center",

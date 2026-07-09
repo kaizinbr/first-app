@@ -44,6 +44,6 @@ yarn-error.*
 # env files (can opt-in for committing if needed)
 .env*
 
-google-services.json
+# google-services.json
 
 .metro-cache

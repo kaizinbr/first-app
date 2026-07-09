@@ -13,11 +13,11 @@ import { Playlist2 } from "@solar-icons/react-native/Bold";
 export default function WishlistAlbumBtn({
     albumData,
     size,
-    colors,
+    mainColor,
 }: {
     albumData: Album;
     size: number;
-    colors: Palette;
+    mainColor: string;
 }) {
     const [isWishlisted, setIsWishlisted] = useState(false);
 

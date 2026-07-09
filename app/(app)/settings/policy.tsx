@@ -286,7 +286,7 @@ const styles = StyleSheet.create({
         fontWeight: "700",
     },
     section: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 16,
         borderRadius: 12,
         overflow: "hidden",

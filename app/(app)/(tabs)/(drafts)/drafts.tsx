@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
         textAlignVertical: "center",
     },
     card: {
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         borderRadius: 12,
         padding: 16,
         gap: 4,

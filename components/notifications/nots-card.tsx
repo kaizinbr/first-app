@@ -109,7 +109,7 @@ export default function NotsCard({
                         {
                             backgroundColor: nots.seen
                                 ? "transparent"
-                                : "#1b1c1d",
+                                : "#212223",
                         },
                     ]}
                 >
@@ -196,7 +196,7 @@ export default function NotsCard({
                         {
                             backgroundColor: nots.seen
                                 ? "transparent"
-                                : "#1b1c1d",
+                                : "#212223",
                         },
                     ]}
                 >
@@ -243,7 +243,7 @@ export default function NotsCard({
                         {
                             backgroundColor: nots.seen
                                 ? "transparent"
-                                : "#1b1c1d",
+                                : "#212223",
                         },
                     ]}
                 >
@@ -328,7 +328,7 @@ export default function NotsCard({
                         {
                             backgroundColor: nots.seen
                                 ? "transparent"
-                                : "#1b1c1d",
+                                : "#212223",
                         },
                     ]}
                 >
@@ -452,7 +452,7 @@ const styles = StyleSheet.create({
         color: "#eee",
         flexDirection: "row",
         gap: 8,
-        // backgroundColor: "#1b1c1d",
+        // backgroundColor: "#212223",
         padding: 16,
     },
     cardImage: {

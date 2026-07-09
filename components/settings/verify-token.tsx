@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
         gap: 16,
         alignItems: "center",
         width: "100%",   
-        backgroundColor: "#1b1c1d",
+        backgroundColor: "#212223",
         padding: 16,
         borderRadius: 12,
         overflow: "hidden",

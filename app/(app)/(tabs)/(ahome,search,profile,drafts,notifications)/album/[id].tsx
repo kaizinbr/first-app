@@ -19,6 +19,7 @@ import { authClient } from "@/lib/auth-client";
 import { Album, UserProfile } from "@/lib/types";
 
 import { getColors } from "react-native-image-colors";
+import { getPalette, getColor } from "expo-color-thief-native";
 
 import { Palette } from "@/lib/types";
 
@@ -32,6 +33,7 @@ export default function AlbumPage() {
     const [albumData, setAlbumData] = useState<Album | null>(null);
 
     const [colors, setColors] = useState<Palette | any>(null);
+    const [palette, setPalette] = useState<Palette | any>(null);
 
     useEffect(() => {
         const fetchAlbumData = async () => {
@@ -45,13 +47,9 @@ export default function AlbumPage() {
                 setAlbumData(response);
                 if (response.images && response.images.length > 0) {
                     const imageUrl = response.images[0].url;
-                    const colors = await getColors(imageUrl, {
-                        fallback: "#000",
-                        cache: true,
-                        key: imageUrl,
-                    });
-                    setColors(colors);
-                    // console.log("Colors fetched for album image:", colors);
+                    
+                    const palette = await getPalette(imageUrl, { quality: 10 });
+                    setPalette(palette);
                 }
             } catch (error) {
                 console.error("Error fetching album data:", error);
@@ -62,11 +60,11 @@ export default function AlbumPage() {
 
     return (
         <>
-            {albumData && colors ? (
+            {albumData && palette ? (
                 <AlbumScreen
                     albumData={albumData}
-                    colors={colors}
                     userData={userData}
+                    palette={palette}
                 />
             ) : (
                 <View style={styles.overlay}>

@@ -8,10 +8,12 @@ import {
     View
 } from "react-native";
 import { getColors } from "react-native-image-colors";
+import { getPalette, getColor } from "expo-color-thief-native";
 
 import { Palette, ReviewWithAlbum } from "@/lib/types";
 
 import { selectRightColor } from "@/lib/util/selectRightColor";
+import { selectBackgroundColor } from "@/lib/util/selectRightColor";
 
 interface GradientCardProps {
     image: string;
@@ -33,19 +35,27 @@ export function AlbumCard({
     const Wrapper = onPress ? TouchableOpacity : View;
 
     const [colors, setColors] = useState<Palette | any>(null);
+    const [dominantColor, setDominantColor] = useState<string | null>(null);
 
     const imgSize = editor ? 80 : 120;
 
     useEffect(() => {
         const fetchColors = async () => {
             try {
-                const result = await getColors(image, {
-                    fallback: "#000",
-                    cache: true,
-                    key: image,
-                });
-                setColors(result);
-                // console.log("Colors fetched for album image:", result);
+                // const result = await getColors(image, {
+                //     fallback: "#000",
+                //     cache: true,
+                //     key: image,
+                // });
+                // setColors(result);
+
+                // const color = await getColor(image);
+                // setDominantColor(color!.hex);
+                
+                const testPalette = await getPalette(image, { quality: 10 });
+                // console.log("Palette:", selectBackgroundColor(testPalette));
+
+                setDominantColor(selectBackgroundColor(testPalette).background);
             } catch (error) {
                 console.error("Error fetching colors:", error);
             }
@@ -56,9 +66,9 @@ export function AlbumCard({
 
     return (
         <Wrapper style={{ marginTop: 12 }} activeOpacity={0.8}>
-            {colors ? (
+            {dominantColor ? (
                 <LinearGradient
-                    colors={[selectRightColor(colors), "#282b30"]}
+                    colors={[dominantColor || "#282b30", "#282b30"]}
                     start={{ x: 0, y: 0.5 }}
                     end={{ x: 1, y: 0.5 }}
                     style={{

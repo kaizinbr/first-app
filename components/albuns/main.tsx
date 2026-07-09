@@ -15,13 +15,25 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
+import {
+    getPalette,
+    getColor,
+    ColorThiefColorData,
+} from "expo-color-thief-native";
+
+import {
+    selectBackgroundColor,
+    selectGradientBackgroundColor,
+    selectBackgroundGradient,
+} from "@/lib/util/selectRightColor";
+
 import { Album, Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import {
     lightenColor,
     darkenColor,
     getBannerColors,
-    saturateColor
+    saturateColor,
 } from "@/lib/util/workWithColors";
 import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
@@ -39,12 +51,12 @@ function hexToRgb(hex: string) {
 }
 export default function AlbumScreen({
     albumData,
-    colors,
     userData,
+    palette,
 }: {
     albumData: Album;
-    colors: Palette;
     userData: UserProfile;
+    palette: ColorThiefColorData[];
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
@@ -55,7 +67,7 @@ export default function AlbumScreen({
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-    const [testColor1, testColor2] = getBannerColors(colors);
+    const mainColor = selectBackgroundColor(palette).background;
 
     const onScroll = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
@@ -123,7 +135,7 @@ export default function AlbumScreen({
                 ]}
             >
                 <LinearGradient
-                    colors={[darkenColor(testColor1, 1.5), "#161718"]}
+                    colors={[darkenColor(mainColor, 1.5), "#161718"]}
                     style={StyleSheet.absoluteFill}
                 />
 
@@ -131,7 +143,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: selectRightColor(colors),
+                            backgroundColor: mainColor,
                             width: 320,
                             height: 320,
                             top: -80,
@@ -145,7 +157,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: selectRightColor(colors),
+                            backgroundColor: mainColor,
                             width: 120,
                             height: 120,
                             top: -20,
@@ -159,7 +171,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: saturateColor(testColor1, 1),
+                            backgroundColor: saturateColor(mainColor, 1),
                             width: 260,
                             height: 260,
                             bottom: 170,
@@ -168,13 +180,12 @@ export default function AlbumScreen({
                         },
                     ]}
                 />
-                
 
                 <View
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: lightenColor(testColor1, 0.7),
+                            backgroundColor: lightenColor(mainColor, 0.7),
                             width: 160,
                             height: 160,
                             bottom: 80,
@@ -187,7 +198,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: saturateColor(testColor1, 0.7),
+                            backgroundColor: saturateColor(mainColor, 0.7),
                             width: 80,
                             height: 80,
                             bottom: 140,
@@ -200,7 +211,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: saturateColor(testColor1, 0.7),
+                            backgroundColor: saturateColor(mainColor, 0.7),
                             width: 80,
                             height: 80,
                             bottom: 140,
@@ -213,7 +224,7 @@ export default function AlbumScreen({
                     style={[
                         styles.blob,
                         {
-                            backgroundColor: saturateColor(testColor1, 0.8),
+                            backgroundColor: saturateColor(mainColor, 0.8),
                             width: 160,
                             height: 160,
                             bottom: 80,
@@ -268,7 +279,7 @@ export default function AlbumScreen({
                 />
             </Animated.View> */}
 
-            <FixedHeader data={albumData} colors={colors} scrollY={scrollY} />
+            <FixedHeader data={albumData} mainColor={mainColor} scrollY={scrollY} />
 
             {/* BOTÃO VOLTAR */}
 
@@ -279,11 +290,11 @@ export default function AlbumScreen({
                 <AltArrowLeft size={32} color="#eee" />
             </Pressable>
             {/* BOTÃO FAVORITAR */}
-            {albumData && colors && (
+            {albumData && palette ? (
                 <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
                     <FavoriteAlbumBtn albumData={albumData} size={30} />
                 </View>
-            )}
+            ): null}
 
             <Animated.View
                 style={[
@@ -325,7 +336,7 @@ export default function AlbumScreen({
                 </Pressable>
             </Animated.View>
 
-            <WishlistAlbumBtn albumData={albumData} size={30} colors={colors} />
+            <WishlistAlbumBtn albumData={albumData} size={30} mainColor={mainColor} />
 
             <Animated.ScrollView
                 onScroll={onScroll}
