@@ -18,13 +18,8 @@ import { useRouter } from "expo-router";
 import DraftCard from "@/components/drafts/draft-card";
 
 import {
-    Flag,
-    ForbiddenCircle,
     MenuDots,
-    Pen,
     TrashBinTrash,
-    User,
-    Vinyl,
 } from "@solar-icons/react-native/Bold";
 
 import {

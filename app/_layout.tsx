@@ -14,6 +14,7 @@ import {
 import { useColorScheme, View, StyleSheet } from "react-native";
 import * as WebBrowser from "expo-web-browser";
 import { registerForPushNotifications } from "@/lib/util/registerForPushNotifications";
+import { BlurTargetProvider } from "@/lib/blur-target-context";
 
 WebBrowser.maybeCompleteAuthSession();
 

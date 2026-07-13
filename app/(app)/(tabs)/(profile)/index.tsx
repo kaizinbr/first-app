@@ -13,6 +13,7 @@ import { darkenColor } from "@/lib/util/workWithColors";
 import { selectRightColor, selectBackgroundColor } from "@/lib/util/selectRightColor";
 import { Palette } from "@/lib/types";
 import { SkeletonProfile } from "@/components/core/skeletons";
+
 export default function Index() {
     const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);

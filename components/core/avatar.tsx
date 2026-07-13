@@ -57,24 +57,39 @@ export function AvatarNoPress({
     data,
     style,
     size,
+    focused
 }: {
     data: UserProfile | any;
     style?: any;
     size?: number;
+    focused?: boolean;
 }) {
     return (
-        <Image
-            source={{ uri: data.avatar_url! }}
+        <View
             style={[
-                styles.cardImage,
-                style,
+                styles.main,
                 {
                     width: size || 32,
                     height: size || 32,
                     borderRadius: (size || 32) * 0.306,
                 },
             ]}
-        />
+        >
+            <Image
+                source={{ uri: data.avatar_url! }}
+                style={[
+                    styles.cardImage,
+                    style,
+                    {
+                        width: size || 32,
+                        height: size || 32,
+                        borderRadius: (size || 32) * 0.306,
+                    borderWidth: focused ? 2 : 0,
+                    borderColor: focused ? "#8065ef" : "transparent",
+                    },
+                ]}
+            />
+        </View>
     );
 }
 

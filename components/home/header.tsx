@@ -8,6 +8,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Banner from "@/components/home/banner";
+import TextDefault from "@/components/core/text-core";
 import { Settings } from "@solar-icons/react-native/Outline";
 import { Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
@@ -17,7 +18,6 @@ import {
     getBannerColors,
 } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
-import TextDefault from "@/components/core/text-core";
 
 import { getPalette } from "expo-color-thief-native";
 import { selectBackgroundColor } from "@/lib/util/selectRightColor";
@@ -31,6 +31,7 @@ import Animated, {
     Extrapolation,
 } from "react-native-reanimated";
 import type { SharedValue } from "react-native-reanimated";
+import FindUsers from "@/components/home/find-users";
 
 // const HEADER_MAX_HEIGHT = 424;
 
@@ -70,7 +71,7 @@ export default function FeedHeader({
     const [mainColor, setMainColor] = useState<string>("#8065ef");
 
     const [currentBannerUrl, setCurrentBannerUrl] = useState<string>(
-        "https://i.scdn.co/image/ab67616d0000b2735cf234eeb7a2edf44bf64a46",
+        "https://i.scdn.co/image/ab67616d0000b273b3825534bf62f2bcc2d23e30",
     );
 
     const Header_Min_Height = insets.top;
@@ -107,7 +108,6 @@ export default function FeedHeader({
         // console.log("Cores do banner:", currentBannerUrl);
 
         const fetchColors = async () => {
-
             const pal = await getPalette(currentBannerUrl, { quality: 10 });
             setMainColor(selectBackgroundColor(pal).background);
         };
@@ -117,7 +117,7 @@ export default function FeedHeader({
 
     return (
         // Este View tem a altura exata do header — o gradiente fica atrás de tudo
-        <View style={{ height: HEADER_MAX_HEIGHT }}>
+        <View>
             {colors && (
                 <Animated.View
                     style={[
@@ -141,16 +141,21 @@ export default function FeedHeader({
                             styles.blob,
                             blob1Style,
                             {
-                                width: 320,
-                                height: 320,
-                                top: -80,
-                                left: -60,
-                                filter: [{ blur: 90 }],
+                                // backgroundColor: mainColor,
+                                width: 624,
+                                height: 486,
+                                top: -264,
+                                // left: 0,
+                                // right: 0,
+                                borderRadius: 9999,
+                                filter: [{ blur: 78 }],
+                                opacity: 0.6,
+                                // zIndex: -5,
                             },
                         ]}
                     />
 
-                    <Animated.View
+                    {/* <Animated.View
                         style={[
                             styles.blob,
                             blob2Style,
@@ -159,7 +164,7 @@ export default function FeedHeader({
                                 height: 260,
                                 bottom: 170,
                                 right: -80,
-                                filter: [{ blur: 70 }],
+                                // filter: [{ blur: 70 }],
                             },
                         ]}
                     />
@@ -172,7 +177,7 @@ export default function FeedHeader({
                                 height: 160,
                                 bottom: 80,
                                 right: 80,
-                                filter: [{ blur: 70 }],
+                                // filter: [{ blur: 70 }],
                             },
                         ]}
                     />
@@ -185,10 +190,10 @@ export default function FeedHeader({
                                 height: 160,
                                 top: 130,
                                 left: 80,
-                                filter: [{ blur: 70 }],
+                                // filter: [{ blur: 70 }],
                             },
                         ]}
-                    />
+                    /> */}
 
                     {/* vinheta no topo pra escurecer onde fica o header */}
                     <LinearGradient
@@ -238,6 +243,7 @@ export default function FeedHeader({
                         HEADER_MAX_HEIGHT={HEADER_MAX_HEIGHT}
                     />
                 </Animated.View>
+                <FindUsers />
             </View>
         </View>
     );
@@ -250,7 +256,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "flex-start",
         gap: 16,
-        marginBottom: 80,
+        marginBottom: 32,
     },
     title: {
         fontSize: 24,
@@ -280,5 +286,7 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         zIndex: 0, // Fica atrás do ScrollView
+        // justifyContent: "center",
+        alignItems: "center",
     },
 });

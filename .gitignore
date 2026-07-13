@@ -40,6 +40,8 @@ yarn-error.*
 /ios
 /android
 
+/modules/expo-color-thief-native/android
+
 
 # env files (can opt-in for committing if needed)
 .env*

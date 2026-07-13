@@ -1,11 +1,11 @@
 import { apiAuth } from "@/lib/api";
-import { Bell } from "@solar-icons/react-native/Bold";
+import { BellBold, BellOutline } from "@solar-icons/react-native";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
 
 const POLL_INTERVAL = 30_000;
 
-export default function NotsBtn({ color }: { color: string }) {
+export default function NotsBtn({ color, focused }: { color: string; focused: boolean }) {
     const [hasUnread, setHasUnread] = useState(false);
     const isFetchingRef = useRef(false);
     const appStateRef = useRef(AppState.currentState);
@@ -51,7 +51,11 @@ export default function NotsBtn({ color }: { color: string }) {
 
     return (
         <View style={{ position: "relative" }}>
-            <Bell size={28} color={color as string} />
+            {focused ? (
+                <BellBold size={28} color={color as string} />
+            ) : (
+                <BellOutline size={26} color={color as string} />
+            )}
             {hasUnread && (
                 <View
                     style={{

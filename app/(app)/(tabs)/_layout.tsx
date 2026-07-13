@@ -1,27 +1,34 @@
 import Icon from "@/components/core/Icon";
 import { authClient } from "@/lib/auth-client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Tabs, Redirect, Stack } from "expo-router";
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
+
 import {
-    HomeSmileAngle,
-    MinimalisticMagnifier,
-    User,
-    Library,
-    Bell,
-} from "@solar-icons/react-native/Bold";
+    HomeSmileAngleBold,
+    MinimalisticMagnifierBold,
+    UserBold,
+    LibraryBold,
+    BellBold,
+    MinimalisticMagnifierOutline,
+    HomeSmileAngleOutline,
+    UserOutline,
+    LibraryOutline,
+} from "@solar-icons/react-native";
 import { apiAuth } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
 import NotificationObserver from "@/lib/util/notification-observer";
 import { useRouter } from "expo-router";
 import NotsBtn from "@/components/core/nots-btn";
 
+
 export default function TabsDynamicLayout() {
     const router = useRouter();
+
     const { data: session, isPending } = authClient.useSession();
     const isLoggedIn = !!session;
-    console.log(isLoggedIn)
+    // console.log(isLoggedIn);
     const [profile, setProfile] = useState<any>(null);
 
     const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(
@@ -62,7 +69,7 @@ export default function TabsDynamicLayout() {
                     alignItems: "center",
                 }}
             >
-                <ActivityIndicator size="large" color="#00a8ff" />
+                <ActivityIndicator size="large" color="#8065ef" />
             </View>
         );
     }
@@ -93,9 +100,20 @@ export default function TabsDynamicLayout() {
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
-                        tabBarIcon: ({ color }) => (
-                            <HomeSmileAngle size={28} color={color as string} />
-                        ),
+                        tabBarIcon: ({ color, focused }) =>
+                            focused ? (
+                                <HomeSmileAngleBold
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
+                            ) : (
+                                <HomeSmileAngleOutline
+                                    size={26}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
+                            ),
                     }}
                 />
                 <Tabs.Screen
@@ -103,9 +121,20 @@ export default function TabsDynamicLayout() {
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
-                        tabBarIcon: ({ color }) => (
-                            <MinimalisticMagnifier size={28} color={color as string} />
-                        ),
+                        tabBarIcon: ({ color, focused }) =>
+                            focused ? (
+                                <MinimalisticMagnifierBold
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
+                            ) : (
+                                <MinimalisticMagnifierOutline
+                                    size={26}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
+                            ),
                     }}
                 />
                 <Tabs.Screen
@@ -113,9 +142,20 @@ export default function TabsDynamicLayout() {
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
-                        tabBarIcon: ({ color }) => (
-                            <Library size={28} color={color as string} />
-                        ),
+                        tabBarIcon: ({ color, focused }) =>
+                            focused ? (
+                                <LibraryBold
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
+                            ) : (
+                                <LibraryOutline
+                                    size={26}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
+                            ),
                     }}
                 />
                 <Tabs.Screen
@@ -123,8 +163,8 @@ export default function TabsDynamicLayout() {
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
-                        tabBarIcon: ({ color }) => (
-                            <NotsBtn color={color as string} />
+                        tabBarIcon: ({ color, focused }) => (
+                            <NotsBtn color={color as string} focused={focused} />
                         ),
                     }}
                 />
@@ -133,12 +173,11 @@ export default function TabsDynamicLayout() {
                     options={{
                         headerShown: false,
                         tabBarLabel: () => null,
-                        
-                        tabBarIcon: ({ color }) =>
+                        tabBarIcon: ({ color, focused }) =>
                             profile ? (
-                                <AvatarNoPress data={profile} size={28} />
+                                <AvatarNoPress data={profile} size={26} focused={focused} />
                             ) : (
-                                <User size={28} color={color as string} />
+                                <UserBold size={26} color={color as string} />
                             ),
                     }}
                 />
@@ -152,6 +191,17 @@ const styles = StyleSheet.create({
         height: 56,
         position: "absolute",
         backgroundColor: "#161718",
+        elevation: 0,
+        shadowOpacity: 0,
+        borderTopWidth: 0,
+    },
+    tabBarBlur: {
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        height: 56,
+        overflow: "hidden",
     },
     tabBarItem: {
         borderRadius: 8,
