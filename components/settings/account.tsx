@@ -14,8 +14,8 @@ import {
     Letter,
     QuestionSquare,
     Logout2,
-} from "@solar-icons/react-native/Bold";
-import { AltArrowRight, AltArrowLeft } from "@solar-icons/react-native/Outline";
+} from "@/lib/solar-icons/Bold";
+import { AltArrowRight, AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AvatarNoPress } from "@/components/core/avatar";
 import { useRouter } from "expo-router";

@@ -11,8 +11,8 @@ import {
     Pen,
     GalleryWide,
     GalleryMinimalistic,
-} from "@solar-icons/react-native/Bold";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+} from "@/lib/solar-icons/Bold";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {

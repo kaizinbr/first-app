@@ -99,6 +99,13 @@ npx expo prebuild --platform android
 npx expo run:android
 ```
 
+Como este pacote contém Kotlin, adicionar ou alterar o módulo exige gerar e
+instalar um novo APK/dev build. Reiniciar o Metro, publicar apenas um update JS
+ou abrir o projeto em um binário criado antes da instalação do módulo não
+adiciona `ExpoColorThiefNative` ao aplicativo. A API JS usa retornos vazios
+nessa situação (`null`, `[]` ou `{}`) para não derrubar o app, mas a extração de
+cores só fica ativa depois do rebuild nativo.
+
 (Se preferir, pode publicar como pacote npm privado depois — a estrutura já
 segue o padrão de módulo Expo, então `npx expo prebuild` também funciona
 puxando de um registry.)

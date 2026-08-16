@@ -16,12 +16,12 @@ import api, { apiAuthPost } from "@/lib/api";
 import { Image } from "expo-image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { TrashBinTrash } from "@solar-icons/react-native/Outline";
+import { TrashBinTrash } from "@/lib/solar-icons/Outline";
 
 import ConfirmModal from "@/components/core/confirm-modal";
 
 import { getShortPastRelativeTime } from "@/lib/util/time";
-import { Hearts, ChatLine, SirenRounded  } from "@solar-icons/react-native/Bold";
+import { Hearts, ChatLine, SirenRounded  } from "@/lib/solar-icons/Bold";
 
 const MAX_PREVIEW_CHARS = 500;
 

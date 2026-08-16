@@ -27,8 +27,8 @@ import {
     TrashBinTrash,
     User,
     Vinyl,
-} from "@solar-icons/react-native/Bold";
-import { AltArrowLeft } from "@solar-icons/react-native/Linear";
+} from "@/lib/solar-icons/Bold";
+import { AltArrowLeft } from "@/lib/solar-icons/Linear";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import React, {
@@ -273,7 +273,7 @@ export default function ReviewAlbumScreen({
                         refreshKey={commentsRefreshKey}
                         refreshComments={refreshComments}
                     />
-                    <View style={{ height: 100 }} />
+                    <View style={{ height: 164 }} />
                 </Animated.ScrollView>
 
                 <CommentInput

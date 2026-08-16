@@ -17,7 +17,7 @@ import Header from "@/components/artists/header";
 import { ArtistResponse, Palette } from "@/lib/types";
 import { selectBackgroundGradient, selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
 import FixedHeader from "@/components/core/fixed-header";
 function hexToRgb(hex: string) {

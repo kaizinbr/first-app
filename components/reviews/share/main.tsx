@@ -2,11 +2,8 @@ import TextDefault from "@/components/core/text-core";
 import ReviewCard from "@/components/reviews/share/reviewcard"; // ajuste o path conforme seu projeto
 import { Album, Palette, Review } from "@/lib/types";
 import Feather from "@expo/vector-icons/Feather";
-import { AltArrowLeft } from "@solar-icons/react-native/Linear";
-import {
-    LinkMinimalistic2,
-    SquareShareLine,
-} from "@solar-icons/react-native/Outline";
+import { AltArrowLeft } from "@/lib/solar-icons/Linear";
+import { LinkMinimalistic2, SquareShareLine } from "@/lib/solar-icons/Outline";
 
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
@@ -25,7 +22,17 @@ import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
-import { getPalette } from "expo-color-thief-native";
+import {
+    getPalette,
+    getColor,
+    ColorThiefColorData,
+} from "expo-color-thief-native";
+
+import {
+    selectBackgroundColor,
+    selectGradientBackgroundColor,
+    selectBackgroundGradient,
+} from "@/lib/util/selectRightColor";
 
 const CARD_WIDTH = 1080;
 const CARD_HEIGHT = 1920;
@@ -45,17 +52,21 @@ type ColorOptionKey = (typeof COLOR_OPTIONS)[number]["key"];
 export default function ShareReview({
     reviewData,
     albumData,
-    colors,
+    palette,
 }: {
     reviewData: Review;
     albumData: Album;
-    colors: Palette;
+    palette: ColorThiefColorData[];
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
 
-    const [colorOne, setColorOne] = useState(colors.dominant);
-    const [colorTwo, setColorTwo] = useState(colors.vibrant);
+    const [colorOne, setColorOne] = useState(
+        selectBackgroundColor(palette).background,
+    );
+    const [colorTwo, setColorTwo] = useState(
+        selectBackgroundColor(palette).background,
+    );
     const [isLoading, setIsLoading] = useState(false);
     const [colorsA, setColors] = useState<any>(null);
 
@@ -84,28 +95,8 @@ export default function ShareReview({
 
     const extraData =
         extraType === "comment" ? reviewData.review : selectedTrackName;
-    // ----------------------------------
 
     const offscreenRef = useRef<View>(null);
-
-    const getColorValue = (key: ColorOptionKey): string => {
-        switch (key) {
-            case "dominant":
-                return colors.dominant;
-            case "vibrant":
-                return colors.vibrant;
-            case "darkVibrant":
-                return colors.darkVibrant;
-            case "lightVibrant":
-                return colors.lightVibrant;
-            case "muted":
-                return colors.muted;
-            case "darkMuted":
-                return colors.darkMuted;
-            case "lightMuted":
-                return colors.lightMuted;
-        }
-    };
 
     const captureCard = async (): Promise<string> => {
         return captureRef(offscreenRef, {
@@ -137,6 +128,31 @@ export default function ShareReview({
             await Clipboard.setStringAsync(url);
         } catch (e) {
             console.error("Erro ao copiar link:", e);
+        }
+    };
+
+    const textToCopy = `Avaliação de ${reviewData.Profile.name} 
+    
+${albumData.name} — ${albumData.artists
+        .map((artist) => artist.name)
+        .join(", ")} — ${reviewData.total}/100
+
+${reviewData.ratings
+    .map((rating: any) => {
+        const track = albumData.tracks?.items?.find(
+            (track) => track.id === rating.id,
+        );
+        return `${track?.track_number}. ${track?.name || "Unknown Track"}: ${rating.value}/100 ${rating.favorite ? "✨" : ""}`;
+    })
+    .join("\n")}
+    
+Comentário: ${reviewData.review}`;
+
+    const handleCopyText = async () => {
+        try {
+            await Clipboard.setStringAsync(textToCopy);
+        } catch (e) {
+            console.error("Erro ao copiar texto:", e);
         }
     };
 
@@ -233,45 +249,18 @@ export default function ShareReview({
 
                     <View style={styles.colorRow}>
                         {colorsA && (
-                            <ScrollView
-                                horizontal
-                                showsHorizontalScrollIndicator={false}
-                                style={styles.section}
-                            >
-                                <View style={styles.colorGrid}>
-                                    {COLOR_OPTIONS.map((option) => (
-                                        <Pressable
-                                            key={option.key}
-                                            style={[
-                                                styles.colorSwatch,
-                                                {
-                                                    backgroundColor:
-                                                        getColorValue(
-                                                            option.key,
-                                                        ),
-                                                },
-                                            ]}
-                                            onPress={() =>
-                                                setColorOne(
-                                                    getColorValue(option.key),
-                                                )
-                                            }
-                                        />
-                                    ))}
-                                    {colorsA.map((colors: { hex: string }) => (
-                                        <Pressable
-                                            key={colors.hex}
-                                            style={[
-                                                styles.colorSwatch,
-                                                { backgroundColor: colors.hex },
-                                            ]}
-                                            onPress={() =>
-                                                setColorOne(colors.hex)
-                                            }
-                                        />
-                                    ))}
-                                </View>
-                            </ScrollView>
+                            <View style={styles.colorGrid}>
+                                {colorsA.map((colors: { hex: string }) => (
+                                    <Pressable
+                                        key={colors.hex}
+                                        style={[
+                                            styles.colorSwatch,
+                                            { backgroundColor: colors.hex },
+                                        ]}
+                                        onPress={() => setColorOne(colors.hex)}
+                                    />
+                                ))}
+                            </View>
                         )}
                     </View>
 
@@ -428,6 +417,63 @@ export default function ShareReview({
                             </TextDefault>
                         </View>
                     </View>
+
+                    <View
+                        style={{
+                            marginTop: 24,
+                            width: "100%",
+                            paddingHorizontal: 16,
+                            justifyContent: "center",
+                            alignItems: "center",
+                        }}
+                    >
+                        <View
+                            style={{
+                                width: "100%",
+                                paddingHorizontal: 16,
+                                backgroundColor: "#262829",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                borderRadius: 16,
+                                borderWidth: 1,
+                                borderColor: "#333",
+                                paddingVertical: 12,
+                            }}
+                        >
+                            <TextDefault
+                                style={{
+                                    color: "#eee",
+                                    fontSize: 12,
+                                    textAlign: "left",
+                                }}
+                            >
+                                {textToCopy}
+                            </TextDefault>
+                        </View>
+                        <Pressable
+                            onPress={handleCopyText}
+                            style={[
+                                {
+                                    marginTop: 8,
+                                    paddingHorizontal: 16,
+                                    paddingVertical: 8,
+                                    borderRadius: 16,
+                                    backgroundColor: "#8065ef",
+                                    borderWidth: 1,
+                                    borderColor: "transparent",
+                                },
+                            ]}
+                        >
+                            <TextDefault
+                                style={{
+                                    color: "#fff",
+                                    fontSize: 14,
+                                }}
+                            >
+                                Copiar texto
+                            </TextDefault>
+                        </Pressable>
+                    </View>
                 </View>
 
                 {isLoading && (
@@ -501,6 +547,8 @@ const styles = StyleSheet.create({
         height: 32,
         aspectRatio: 1,
         borderRadius: 12,
+        borderWidth: 1,
+        borderColor: "#333",
     },
     btn: {
         backgroundColor: "#262829",

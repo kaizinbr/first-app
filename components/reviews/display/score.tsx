@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { Review } from "@/lib/types";
-import { Share } from "@solar-icons/react-native/Bold";
+import { Share } from "@/lib/solar-icons/Bold";
 import { useRouter } from "expo-router";
 
 import TextDefault from "@/components/core/text-core";

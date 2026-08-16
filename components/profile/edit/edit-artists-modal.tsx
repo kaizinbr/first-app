@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
 
-import { AddCircle } from "@solar-icons/react-native/Bold";
+import { AddCircle } from "@/lib/solar-icons/Bold";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 

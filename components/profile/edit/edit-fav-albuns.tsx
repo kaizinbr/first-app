@@ -1,6 +1,6 @@
 import { UserProfile } from "@/lib/types";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
-import { AddCircle } from "@solar-icons/react-native/Bold";
+import { AddCircle } from "@/lib/solar-icons/Bold";
 
 import { useRouter } from "expo-router";
 import { useState } from "react";

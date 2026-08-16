@@ -1,5 +1,5 @@
 import { apiAuth } from "@/lib/api";
-import { BellBold, BellOutline } from "@solar-icons/react-native";
+import { BellBold, BellOutline } from "@/lib/solar-icons";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
 

@@ -11,7 +11,7 @@ import {
     MinimalisticMagnifierOutline,
     HomeSmileAngleOutline,
     LibraryOutline,
-} from "@solar-icons/react-native";
+} from "@/lib/solar-icons";
 // IMPORTANTE: Adicionamos o useFocusEffect diretamente do expo-router
 import { Redirect, Tabs, useRouter, useFocusEffect } from "expo-router";
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";

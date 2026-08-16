@@ -6,7 +6,7 @@ import api, { apiAuth } from "@/lib/api";
 import { getColors } from "react-native-image-colors";
 import { useState, useEffect, use } from "react";
 import { Palette } from "@/lib/types";
-import { VerifiedCheck } from "@solar-icons/react-native/Bold";
+import { VerifiedCheck } from "@/lib/solar-icons/Bold";
 import { LinearGradient } from "expo-linear-gradient";
 
 export function SkeletonProfileHeader() {

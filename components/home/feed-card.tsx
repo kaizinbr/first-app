@@ -31,12 +31,12 @@ import {
     TrashBinTrash,
     User,
     Vinyl,
-} from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Bold";
 import {
     ChatRound,
     ChatSquare,
     Share,
-} from "@solar-icons/react-native/Outline";
+} from "@/lib/solar-icons/Outline";
 
 import {
     BottomSheetBackdrop,

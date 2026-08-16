@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { PasswordInput } from "@/components/core/input-password";
 import {
     Unread
-} from "@solar-icons/react-native/Outline";
+} from "@/lib/solar-icons/Outline";
 import {
     ActivityIndicator,
     KeyboardAvoidingView,

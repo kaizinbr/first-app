@@ -5,7 +5,7 @@ import {
     Settings,
     Share as ShareIcon,
     SquareShareLine 
-} from "@solar-icons/react-native/Outline";
+} from "@/lib/solar-icons/Outline";
 
 export default function ShareBtn({ type, url }: { type: string; url: string }) {
     const onShare = async () => {

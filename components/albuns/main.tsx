@@ -38,8 +38,8 @@ import {
 import AlbumHeader from "@/components/albuns/header";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import Tracklist from "@/components/albuns/tracklist";
-import { AltArrowLeft, Star } from "@solar-icons/react-native/Outline";
-import { Playlist2 } from "@solar-icons/react-native/Bold";
+import { AltArrowLeft, Star } from "@/lib/solar-icons/Outline";
+import { Playlist2 } from "@/lib/solar-icons/Bold";
 import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
 import WishlistAlbumBtn from "@/components/albuns/wishlist-album-btn";
 import FixedHeader from "@/components/core/fixed-header";

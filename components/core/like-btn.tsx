@@ -2,8 +2,8 @@ import * as React from "react";
 import { View, Text, StyleSheet, Pressable, Share, Alert } from "react-native";
 import {
     Heart as HeartOutline,
-} from "@solar-icons/react-native/Outline";
-import { Heart } from '@solar-icons/react-native/Bold'
+} from "@/lib/solar-icons/Outline";
+import { Heart } from '@/lib/solar-icons/Bold'
 import { ReviewWithAlbum } from "@/lib/types";
 
 export default function LikeBtn({ review }: { review: ReviewWithAlbum }) {

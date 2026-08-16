@@ -6,7 +6,7 @@ import AlbumHeader from "@/components/reviews/display/header";
 import { Album, Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { useReviewSession } from "@/store/reviewSessionStore";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";

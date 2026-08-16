@@ -11,7 +11,7 @@ import {
 import { useCallback, useState, useEffect } from "react";
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
 import axios from "axios";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { getColors } from "react-native-image-colors";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";

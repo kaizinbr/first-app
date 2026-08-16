@@ -1,51 +1,35 @@
-import { useState, useRef } from "react";
-import { Pressable } from "react-native";
+import { useState, useEffect } from "react";
 import { authClient } from "@/lib/auth-client";
 import { useLocalSearchParams } from "expo-router";
 import TextDefault from "@/components/core/text-core";
 import Button from "@/components/button";
-import Input from "@/components/input";
 import {
-    Text,
-    View,
     StyleSheet,
     ScrollView,
     KeyboardAvoidingView,
-    TextInput,
     Platform,
-    ActivityIndicator,
+    View
 } from "react-native";
 import OTPInput from "@/components/auth/otp-input";
 
-import { Link, useRouter } from "expo-router";
-
-interface OTPInputProps {
-    length?: number;
-    onComplete: (code: string) => void;
-}
+import { Link } from "expo-router";
 
 export default function VerifyToken() {
     const { email } = useLocalSearchParams();
-    console.log("Email recebido nos params:", email);
-    const [name, setName] = useState("");
-    const [password, setPassword] = useState("");
     const [otp, setOtp] = useState("");
 
     const [errorMessage, setErrorMessage] = useState("");
     const [isLoading, setIsLoading] = useState(false);
 
-    const router = useRouter();
-
-    const handleSignUp = async () => {
+    const handleSignUp = async (code: string) => {
         setIsLoading(true);
         setErrorMessage("");
-        console.log("Iniciando verificação do OTP para email:", otp);
+
         const { data, error } = await authClient.signIn.emailOtp({
             email: email as string,
-            otp: otp,
+            otp: code,
         });
 
-        console.log("Resposta da verificação do OTP:", { data, error });
         if (error?.status === 403) {
             setErrorMessage(
                 "Limite de tentativas excedido. Por favor, solicite um novo código.",
@@ -65,7 +49,16 @@ export default function VerifyToken() {
             setIsLoading(false);
             return;
         }
+
+        setIsLoading(false);
     };
+
+    // Dispara o submit automaticamente assim que o código estiver completo
+    useEffect(() => {
+        if (otp.length === 6 && !isLoading) {
+            handleSignUp(otp);
+        }
+    }, [otp]);
 
     return (
         <KeyboardAvoidingView
@@ -94,7 +87,13 @@ export default function VerifyToken() {
                                 {errorMessage}
                             </TextDefault>
                         ) : null}
-                        <Button onPress={handleSignUp}>Entrar</Button>
+                        <Button
+                            onPress={() => handleSignUp(otp)}
+                            disabled={otp.length !== 6 || isLoading}
+                            loading={isLoading}
+                        >
+                            Entrar
+                        </Button>
                         <Link
                             href={{
                                 pathname: "/(auth)/password/[email]",
@@ -107,21 +106,6 @@ export default function VerifyToken() {
                     </View>
                 </View>
             </ScrollView>
-            {isLoading && (
-                <View
-                    style={[
-                        StyleSheet.absoluteFill,
-                        {
-                            justifyContent: "center",
-                            alignItems: "center",
-                            backgroundColor: "rgba(0,0,0,0.5)",
-                            zIndex: 999,
-                        },
-                    ]}
-                >
-                    <ActivityIndicator size="large" color="#8065ef" />
-                </View>
-            )}
         </KeyboardAvoidingView>
     );
 }
@@ -138,23 +122,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         gap: 16,
-        // backgroundColor: "#161718",
         alignItems: "center",
         width: "100%",
         marginTop: 20,
-        paddingHorizontal: 16,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginTop: 20,
         color: "#eeeeee",
-    },
-    image: {
-        width: "100%",
-        height: 300,
-        marginTop: 20,
-        resizeMode: "contain",
     },
     error: {
         color: "#ff4d4d",

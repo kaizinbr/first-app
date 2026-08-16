@@ -1,0 +1,15 @@
+diff --git a/node_modules/@solar-icons/react-native/package.json b/node_modules/@solar-icons/react-native/package.json
+index 34cf9bf..04c49c4 100644
+--- a/node_modules/@solar-icons/react-native/package.json
++++ b/node_modules/@solar-icons/react-native/package.json
+@@ -28,6 +28,10 @@
+       "types": "./dist/lib/*.d.mts",
+       "import": "./dist/lib/*.mjs"
+     },
++    "./icon/*": {
++      "types": "./dist/icons/*.d.mts",
++      "import": "./dist/icons/*.mjs"
++    },
+     "./*": {
+       "types": "./dist/icons/style/*.d.mts",
+       "import": "./dist/icons/style/*.mjs"

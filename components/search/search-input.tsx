@@ -6,7 +6,7 @@ import api from "@/lib/api";
 import { useEffect, useState } from "react";
 
 import { SearchResponse } from "@/lib/types";
-import { MinimalisticMagnifier } from "@solar-icons/react-native/Outline";
+import { MinimalisticMagnifier } from "@/lib/solar-icons/Outline";
 
 export default function SearchInput({
     results,

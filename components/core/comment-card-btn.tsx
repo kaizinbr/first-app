@@ -14,8 +14,8 @@ import {
     ChatRound,
     ChatSquare,
     Share,
-} from "@solar-icons/react-native/Outline";
-import { HeartBold, HeartOutline } from "@solar-icons/react-native";
+} from "@/lib/solar-icons/Outline";
+import { HeartBold, HeartOutline } from "@/lib/solar-icons";
 import TextDefault from "@/components/core/text-core";
 
 export function CommentButton({

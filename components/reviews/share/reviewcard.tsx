@@ -2,7 +2,7 @@ import TextDefault from "@/components/core/text-core";
 import { Album, Review } from "@/lib/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image, StyleSheet, View } from "react-native";
-import { Stars } from "@solar-icons/react-native/Bold";
+import { Stars } from "@/lib/solar-icons/Bold";
 
 type ReviewCardProps = {
     reviewData: Review;

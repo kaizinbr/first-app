@@ -12,8 +12,8 @@ import {
     AltArrowLeft,
     Settings,
     Share as ShareIcon,
-} from "@solar-icons/react-native/Outline";
-import { SettingsMinimalistic } from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Outline";
+import { SettingsMinimalistic } from "@/lib/solar-icons/Bold";
 import { LinearGradient } from "expo-linear-gradient";
 import { darkenColor } from "@/lib/util/workWithColors";
 import ShareBtn from "@/components/core/share-btn";

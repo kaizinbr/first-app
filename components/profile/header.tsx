@@ -27,8 +27,8 @@ import {
     AltArrowLeft,
     Settings,
     Share,
-} from "@solar-icons/react-native/Outline";
-import { SettingsMinimalistic } from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Outline";
+import { SettingsMinimalistic } from "@/lib/solar-icons/Bold";
 import ProfileHeader from "@/components/profile/profile-header";
 import ShareBtn from "@/components/core/share-btn";
 

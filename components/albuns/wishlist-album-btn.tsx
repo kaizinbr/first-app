@@ -6,9 +6,9 @@ import { apiAuth, apiAuthPost, apiAuthDELETE } from "@/lib/api";
 import { Album, Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft, Star } from "@solar-icons/react-native/Outline";
-import { Star as StarBold } from "@solar-icons/react-native/Bold";
-import { Playlist2 } from "@solar-icons/react-native/Bold";
+import { AltArrowLeft, Star } from "@/lib/solar-icons/Outline";
+import { Star as StarBold } from "@/lib/solar-icons/Bold";
+import { Playlist2 } from "@/lib/solar-icons/Bold";
 
 export default function WishlistAlbumBtn({
     albumData,

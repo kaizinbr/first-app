@@ -13,7 +13,7 @@ import chroma from "chroma-js";
 import type { ColorThiefColorData } from "expo-color-thief-native";
 
 import PlayingOnLastFM from "@/components/profile/last-fm-card";
-import { VerifiedCheck } from "@solar-icons/react-native/Bold";
+import { VerifiedCheck } from "@/lib/solar-icons/Bold";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import ProfileHeaderBG from "@/components/profile/profile-header-bg";
 

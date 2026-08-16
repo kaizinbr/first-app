@@ -20,7 +20,7 @@ import { Palette } from "@/lib/types";
 import { SkeletonProfile } from "@/components/core/skeletons";
 import Menu from "@/components/settings/menu-main";
 import { useRouter } from "expo-router";
-import { AltArrowRight, AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { AltArrowRight, AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Animated from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";

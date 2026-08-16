@@ -1,16 +1,21 @@
-import { useRouter, Href } from 'expo-router';
-import TextDefault from '@/components/core/text-core';
-import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
+import { useRouter, Href } from "expo-router";
+import TextDefault from "@/components/core/text-core";
+import { Pressable, PressableProps, StyleSheet, Text, ActivityIndicator } from "react-native";
 
 type ButtonProps = PressableProps & {
     children: string;
     route?: Href;
+    loading?: boolean;
 };
 
-export default function Button({ children, route, style, ...props }: ButtonProps) {
+export default function Button({
+    children,
+    route,
+    style,
+    loading,
+    ...props
+}: ButtonProps) {
     const router = useRouter();
-
-    
 
     const handlePress = () => {
         if (route) {
@@ -20,11 +25,20 @@ export default function Button({ children, route, style, ...props }: ButtonProps
 
     return (
         <Pressable
-            style={({ pressed }) => [styles.button, pressed && styles.pressed, style]}
+            style={({ pressed }) => [
+                styles.button,
+                pressed && styles.pressed,
+                style,
+            ]}
             onPress={handlePress}
+            disabled={loading}
             {...props}
         >
-            <TextDefault style={styles.text}>{children}</TextDefault>
+            {loading ? (
+                <ActivityIndicator size="small" color="#fff" />
+            ) : (
+                <TextDefault style={styles.text}>{children}</TextDefault>
+            )}
         </Pressable>
     );
 }

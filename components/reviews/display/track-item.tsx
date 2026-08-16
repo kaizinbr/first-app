@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import TextDefault from "@/components/core/text-core";
 import { Track, Rating } from "@/lib/types";
-import { Stars, ChatRoundLine  } from "@solar-icons/react-native/Bold";
+import { Stars, ChatRoundLine  } from "@/lib/solar-icons/Bold";
 
 export default function TrackItem({
     track,

@@ -10,7 +10,7 @@ import {
     View,
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
-import { SkipNext, SkipPrevious, Stars } from "@solar-icons/react-native/Bold";
+import { SkipNext, SkipPrevious, Stars } from "@/lib/solar-icons/Bold";
 import { useReviewSession } from "@/store/reviewSessionStore";
 
 function TrackRating({

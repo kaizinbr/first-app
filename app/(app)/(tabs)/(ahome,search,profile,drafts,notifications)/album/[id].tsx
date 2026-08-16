@@ -50,6 +50,7 @@ export default function AlbumPage() {
                     
                     const palette = await getPalette(imageUrl, { quality: 10 });
                     setPalette(palette);
+                    console.log("Palette fetched successfully:", palette);
                 }
             } catch (error) {
                 console.error("Error fetching album data:", error);

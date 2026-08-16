@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
 import TextDefault from "@/components/core/text-core";
 import { getColors } from "react-native-image-colors";
+import { getPalette, getColor } from "expo-color-thief-native";
 
 import { Palette } from "@/lib/types";
 
@@ -19,14 +20,14 @@ export default function ReviewPage() {
     const [notfound, setNotFound] = useState(false);
 
     const [colors, setColors] = useState<Palette | any>(null);
+    const [palette, setPalette] = useState<Palette | any>(null);
 
     useEffect(() => {
         const fetchReviewData = async () => {
             setReviewData(null);
             // console.log("Fetching album data for id:", id, albumData);
-                const reviewDataRes = await apiAuth(`/reviews/${id}`);
+            const reviewDataRes = await apiAuth(`/reviews/${id}`);
             try {
-
                 if (!reviewDataRes || reviewDataRes.length === 0) {
                     console.error("No review data found for id:", id);
                     setNotFound(true);
@@ -34,28 +35,21 @@ export default function ReviewPage() {
                 }
 
                 console.log(
-                    "Album data fetched successfully:",
-                    reviewDataRes[0].album_id,
+                    "Review data fetched successfully:",
+                    reviewDataRes[0].id,
                 );
                 setReviewData(reviewDataRes[0]);
 
-                const albumDataRes = await api(
-                    `/albuns/${reviewDataRes[0].album_id}`,
-                );
-                setAlbumData(albumDataRes.data);
+                setAlbumData(reviewDataRes[0].album);
 
                 if (
-                    albumDataRes.data.images &&
-                    albumDataRes.data.images.length > 0
+                    reviewDataRes[0].album.images &&
+                    reviewDataRes[0].album.images.length > 0
                 ) {
-                    const imageUrl = albumDataRes.data.images[0].url;
-                    const colors = await getColors(imageUrl, {
-                        fallback: "#000",
-                        cache: true,
-                        key: imageUrl,
-                    });
-                    setColors(colors);
-                    // console.log("Colors fetched for album image:", colors);
+                    const imageUrl = reviewDataRes[0].album.images[0].url;
+
+                    const palette = await getPalette(imageUrl, { quality: 10, });
+                    setPalette(palette);
                 }
             } catch (error) {
                 console.error("Error fetching review data:", error);
@@ -63,7 +57,6 @@ export default function ReviewPage() {
                 console.log("Error details:", {
                     reviewDataRes,
                 });
-
             }
         };
         fetchReviewData();
@@ -71,24 +64,26 @@ export default function ReviewPage() {
 
     return (
         <>
-            {reviewData && albumData ? (
+            {reviewData && palette && albumData ? (
                 <ShareReview
                     reviewData={reviewData}
                     albumData={albumData}
-                    colors={colors}
+                    palette={palette}
                 />
             ) : notfound ? (
                 <View style={styles.container}>
-                    
                     <View style={{ alignItems: "center", gap: 16 }}>
-                        <TextDefault style={styles.title}>Review não encontrada</TextDefault>
+                        <TextDefault style={styles.title}>
+                            Review não encontrada
+                        </TextDefault>
                         <TextDefault style={styles.textDefault}>
                             Parece que essa review não está mais disponível...
-                            Que tal explorar outras reviews ou voltar para a página inicial?
+                            Que tal explorar outras reviews ou voltar para a
+                            página inicial?
                         </TextDefault>
                     </View>
                 </View>
-            ) :  (
+            ) : (
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#8065ef" />
                 </View>

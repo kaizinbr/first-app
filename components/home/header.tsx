@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Banner from "@/components/home/banner";
 import TextDefault from "@/components/core/text-core";
-import { Settings } from "@solar-icons/react-native/Outline";
+import { Settings } from "@/lib/solar-icons/Outline";
 import { Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import {
@@ -71,7 +71,7 @@ export default function FeedHeader({
     const [mainColor, setMainColor] = useState<string>("#8065ef");
 
     const [currentBannerUrl, setCurrentBannerUrl] = useState<string>(
-        "https://i.scdn.co/image/ab67616d0000b273b3825534bf62f2bcc2d23e30",
+        "https://i.scdn.co/image/ab67616d0000b27326110f06ccf587b0a465f873",
     );
 
     const Header_Min_Height = insets.top;

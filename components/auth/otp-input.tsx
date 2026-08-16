@@ -1,74 +1,66 @@
 import React, { useRef, useState } from "react";
 import { View, Text, TextInput, StyleSheet, Pressable } from "react-native";
 
-import { OtpInput } from "react-native-otp-entry";
-
 interface OTPInputProps {
     length?: number;
+    placeholder?: string;
     onComplete: (code: string) => void;
 }
 
-export default function OTPInput({ length = 6, onComplete }: OTPInputProps) {
+export default function OTPInput({ length = 6, placeholder = "*", onComplete }: OTPInputProps) {
     const [code, setCode] = useState("");
+    const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<TextInput>(null);
 
-    // Quando o usuário clica em qualquer quadrado, nós focamos o input invisível
     const handlePress = () => {
         inputRef.current?.focus();
     };
 
     const handleChange = (text: string) => {
-        // Aceita apenas números
-        const numericText = text.replace(/[^0-9]/g, "");
+        const numericText = text.replace(/[^0-9]/g, "").slice(0, length);
         setCode(numericText);
 
-        // Se chegou no tamanho máximo, avisa a tela principal
         if (numericText.length === length) {
             onComplete(numericText);
         }
     };
 
     return (
-        <View style={styles.container}>
-            <OtpInput
-                numberOfDigits={6}
-                focusColor="#8065ef"
-                onTextChange={(text) => onComplete(text)}
-                onFilled={(text) => onComplete(text)}
-                placeholder="******"
-                type="numeric"
-                textProps={{
-                    accessibilityRole: "text",
-                    accessibilityLabel: "OTP digit",
-                    allowFontScaling: false,
-                }}
-                theme={{
-                    containerStyle: {
-                        gap: 8,
-                    },
-                    pinCodeContainerStyle: {
-                        width: 50,
-                        height: 60,
-                        borderWidth: 2,
-                        borderColor: "#333",
-                        borderRadius: 12,
-                        backgroundColor: "#1e1e1e",
-                        justifyContent: "center",
-                        alignItems: "center",
-                    },
-                    pinCodeTextStyle: {
-                        fontSize: 24,
-                        fontWeight: "bold",
-                        color: "#eee",
-                    },
-                    placeholderTextStyle: {
-                        fontSize: 24,
-                        fontWeight: "bold",
-                        color: "#eee",
-                    },
-                }}
+        <Pressable onPress={handlePress} style={styles.container}>
+            <TextInput
+                ref={inputRef}
+                style={styles.hiddenInput}
+                value={code}
+                onChangeText={handleChange}
+                onFocus={() => setIsFocused(true)}
+                onBlur={() => setIsFocused(false)}
+                keyboardType="numeric"
+                maxLength={length}
+                autoFocus
             />
-        </View>
+
+            <View style={styles.boxContainer}>
+                {Array.from({ length }).map((_, index) => {
+                    const digit = code[index];
+                    const isCurrent = isFocused && index === code.length;
+
+                    return (
+                        <View
+                            key={index}
+                            style={[
+                                styles.box,
+                                isCurrent && styles.boxFocused,
+                                digit && styles.boxFilled,
+                            ]}
+                        >
+                            <Text style={[styles.boxText, !digit && styles.placeholderText]}>
+                                {digit ?? placeholder}
+                            </Text>
+                        </View>
+                    );
+                })}
+            </View>
+        </Pressable>
     );
 }
 
@@ -82,26 +74,27 @@ const styles = StyleSheet.create({
         position: "absolute",
         width: 1,
         height: 1,
-        opacity: 0, // Esconde o input original completamente
+        opacity: 0,
     },
     boxContainer: {
+        width: "100%",
         flexDirection: "row",
         justifyContent: "space-between",
-        width: "100%",
-        gap: 8, // Espaço entre os quadrados
+        alignItems: "center",
+        gap: 8,
     },
     box: {
         width: 50,
         height: 60,
         borderWidth: 2,
-        borderColor: "#333", // Cor da borda inativa
+        borderColor: "#333",
         borderRadius: 12,
         backgroundColor: "#1e1e1e",
         justifyContent: "center",
         alignItems: "center",
     },
     boxFocused: {
-        borderColor: "#00a8ff", // Cor da borda quando está digitando (mude para a cor do seu app)
+        borderColor: "#8065ef",
         backgroundColor: "#161718",
     },
     boxFilled: {
@@ -111,5 +104,8 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: "bold",
         color: "#eee",
+    },
+    placeholderText: {
+        color: "#555",
     },
 });

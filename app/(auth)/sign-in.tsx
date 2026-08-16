@@ -15,6 +15,8 @@ import {
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
 
+import { Image } from "expo-image";
+
 import { Link, useRouter } from "expo-router";
 
 export default function Index() {
@@ -94,6 +96,10 @@ export default function Index() {
                 showsVerticalScrollIndicator={false}
             >
                 <View style={styles.main}>
+                    <Image
+                        source={require("@/assets/images/start.png")}
+                        style={{ width: "70%", height: "auto", marginBottom: 20, aspectRatio: 1 }}
+                    />
                     <TextDefault style={styles.title}>
                         Olá, insira seu e-mail
                     </TextDefault>
@@ -178,7 +184,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         width: "100%",
         marginTop: 20,
-        paddingHorizontal: 16,
+        // paddingHorizontal: 16,
     },
     title: {
         fontSize: 24,

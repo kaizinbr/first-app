@@ -1,0 +1,16 @@
+export { AltArrowLeft } from "@solar-icons/react-native/icon/arrows/Outline/AltArrowLeft";
+export { AltArrowRight } from "@solar-icons/react-native/icon/arrows/Outline/AltArrowRight";
+export { ChatRound } from "@solar-icons/react-native/icon/messages/Outline/ChatRound";
+export { ChatSquare } from "@solar-icons/react-native/icon/messages/Outline/ChatSquare";
+export { CloseSquare } from "@solar-icons/react-native/icon/ui/Outline/CloseSquare";
+export { Heart } from "@solar-icons/react-native/icon/like/Outline/Heart";
+export { LinkMinimalistic2 } from "@solar-icons/react-native/icon/text-formatting/Outline/LinkMinimalistic2";
+export { LockPassword } from "@solar-icons/react-native/icon/security/Outline/LockPassword";
+export { MinimalisticMagnifier } from "@solar-icons/react-native/icon/search/Outline/MinimalisticMagnifier";
+export { Password } from "@solar-icons/react-native/icon/security/Outline/Password";
+export { Settings } from "@solar-icons/react-native/icon/settings/Outline/Settings";
+export { Share } from "@solar-icons/react-native/icon/ui/Outline/Share";
+export { SquareShareLine } from "@solar-icons/react-native/icon/messages/Outline/SquareShareLine";
+export { Star } from "@solar-icons/react-native/icon/like/Outline/Star";
+export { TrashBinTrash } from "@solar-icons/react-native/icon/ui/Outline/TrashBinTrash";
+export { Unread } from "@solar-icons/react-native/icon/messages/Outline/Unread";

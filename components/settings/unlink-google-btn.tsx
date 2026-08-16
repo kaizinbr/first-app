@@ -28,8 +28,8 @@ import {
     TrashBinTrash,
     Password,
     LockPassword,
-} from "@solar-icons/react-native/Outline";
-import { LockPasswordBold, PasswordBold } from "@solar-icons/react-native";
+} from "@/lib/solar-icons/Outline";
+import { LockPasswordBold, PasswordBold } from "@/lib/solar-icons";
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";

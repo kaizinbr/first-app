@@ -1,8 +1,8 @@
 import PostEditor from "@/components/reviews/create/rich-text";
 import { apiAuth, apiAuthPost } from "@/lib/api";
 import { DraftStorage, useReviewSession } from "@/store/reviewSessionStore";
-import { CheckCircle } from "@solar-icons/react-native/Bold";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { CheckCircle } from "@/lib/solar-icons/Bold";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {

@@ -16,7 +16,7 @@ import {
     TextCross,
     TextItalic,
     TextUnderline,
-} from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Bold";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,

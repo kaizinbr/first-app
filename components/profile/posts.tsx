@@ -16,7 +16,7 @@ import { Tabs } from "react-native-collapsible-tab-view";
 import { ActivityIndicator } from "react-native";
 import FeedCard from "@/components/home/feed-card";
 import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
-import { SortFromTopToBottom, SortFromBottomToTop  } from '@solar-icons/react-native/Bold'
+import { SortFromTopToBottom, SortFromBottomToTop  } from '@/lib/solar-icons/Bold'
 
 export default function PostsRoute({ data }: { data: UserProfile }) {
     const [sort, setSort] = useState<"asc" | "desc">("desc");

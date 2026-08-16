@@ -15,7 +15,7 @@ import {
     HomeSmileAngleOutline,
     UserOutline,
     LibraryOutline,
-} from "@solar-icons/react-native";
+} from "@/lib/solar-icons";
 import { apiAuth } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
 import NotificationObserver from "@/lib/util/notification-observer";

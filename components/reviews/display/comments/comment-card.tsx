@@ -23,7 +23,7 @@ import {
     MenuDots,
     TrashBinTrash,
     User
-} from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Bold";
 
 import {
     BottomSheetBackdrop,

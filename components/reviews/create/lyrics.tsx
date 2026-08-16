@@ -31,7 +31,7 @@ import {
     SkipNext,
     SkipPrevious,
     MusicNote,
-} from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Bold";
 
 export default function Lyrics({
     reviewData,

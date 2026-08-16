@@ -183,7 +183,7 @@ export default function RatingBarChart({
                                     fontWeight: "bold",
                                 }}
                             >
-                                {buckets[9]?.count || 0}
+                                {buckets[10]?.count || 0}
                             </TextDefault>
                             <TextDefault
                                 style={{ color: "#8a8a90", fontSize: 12 }}

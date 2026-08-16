@@ -11,7 +11,7 @@ import {
 import TextDefault from "@/components/core/text-core";
 import { UserProfile, Review } from "@/lib/types";
 import { Tabs } from "react-native-collapsible-tab-view";
-import { ArrowRightUp } from "@solar-icons/react-native/Linear";
+import { ArrowRightUp } from "@/lib/solar-icons/Linear";
 import { Image } from "expo-image";
 import LyricsCard from "@/components/profile/lyrics-card";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";

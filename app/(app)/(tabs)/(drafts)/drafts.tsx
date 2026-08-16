@@ -20,7 +20,7 @@ import DraftCard from "@/components/drafts/draft-card";
 import {
     MenuDots,
     TrashBinTrash,
-} from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Bold";
 
 import {
     BottomSheetBackdrop,

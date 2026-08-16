@@ -16,7 +16,7 @@ import api from "@/lib/api";
 import { Image } from "expo-image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { TrashBinTrash } from "@solar-icons/react-native/Outline";
+import { TrashBinTrash } from "@/lib/solar-icons/Outline";
 
 import ConfirmModal from "@/components/core/confirm-modal";
 

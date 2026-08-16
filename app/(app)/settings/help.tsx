@@ -1,5 +1,5 @@
 import TextDefault from "@/components/core/text-core";
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";

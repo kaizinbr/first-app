@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { AddCircle } from "@solar-icons/react-native/Bold";
+import { AddCircle } from "@/lib/solar-icons/Bold";
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
 
 import Ionicons from "@expo/vector-icons/Ionicons";

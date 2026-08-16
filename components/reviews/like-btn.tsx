@@ -10,7 +10,7 @@ import Animated, {
 import { useLike } from "@/lib/util/useLike";
 
 // Solar Icons
-import { HeartBold, HeartOutline } from "@solar-icons/react-native";
+import { HeartBold, HeartOutline } from "@/lib/solar-icons";
 import TextDefault from "@/components/core/text-core";
 
 

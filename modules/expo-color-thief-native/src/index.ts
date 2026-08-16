@@ -6,6 +6,9 @@ import type {
   RGB,
 } from './ExpoColorThief.types';
 
+/** Indica se o binário instalado contém a implementação nativa. */
+export const isNativeModuleAvailable = NativeModule !== null;
+
 export type {
   ColorSpace,
   ColorThiefOptions,
@@ -26,7 +29,7 @@ export async function getColor(
   imageUri: string,
   options?: ColorThiefOptions
 ): Promise<ColorThiefColorData | null> {
-  return NativeModule.getColor(imageUri, options ?? {});
+  return NativeModule?.getColor(imageUri, options ?? {}) ?? null;
 }
 
 /** Paleta de N cores. Equivalente a getPalette()/getPaletteSync(). */
@@ -34,7 +37,7 @@ export async function getPalette(
   imageUri: string,
   options?: ColorThiefOptions
 ): Promise<ColorThiefColorData[]> {
-  return NativeModule.getPalette(imageUri, options ?? {});
+  return NativeModule?.getPalette(imageUri, options ?? {}) ?? [];
 }
 
 /**
@@ -47,7 +50,7 @@ export async function getSwatches(
   imageUri: string,
   options?: ColorThiefOptions
 ): Promise<SwatchesResult> {
-  return NativeModule.getSwatches(imageUri, options ?? {});
+  return NativeModule?.getSwatches(imageUri, options ?? {}) ?? {};
 }
 
 /** Utilitário puro em JS, sem custo de bridge — igual ao do colorthief. */

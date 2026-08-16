@@ -15,7 +15,7 @@ import { Album, Track, Review, Palette } from "@/lib/types";
 import PostEditor from "@/components/reviews/rich-text";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AltArrowLeft } from "@solar-icons/react-native/Outline";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 
 export default function ReviewStep({
     reviewData,

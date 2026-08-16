@@ -15,13 +15,13 @@ import {
     Letter,
     QuestionSquare,
     Logout2,
-} from "@solar-icons/react-native/Bold";
+} from "@/lib/solar-icons/Bold";
 import {
     AltArrowRight,
     AltArrowLeft,
     Unread,
     CloseSquare,
-} from "@solar-icons/react-native/Outline";
+} from "@/lib/solar-icons/Outline";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AvatarNoPress } from "@/components/core/avatar";
 import { useRouter } from "expo-router";

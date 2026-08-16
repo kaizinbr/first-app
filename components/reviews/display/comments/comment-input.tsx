@@ -27,7 +27,7 @@ import {
     TextBoldSquareOutline,
     TextItalicSquareBold,
     TextItalicSquareLinear,
-} from "@solar-icons/react-native";
+} from "@/lib/solar-icons";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { apiAuth, apiAuthPost } from "@/lib/api";
