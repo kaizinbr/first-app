@@ -1,12 +1,11 @@
-import Input from "@/components/input";
-import { StyleSheet, View, TextInput } from "react-native";
+import { StyleSheet, TextInput, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import api from "@/lib/api";
 import { useEffect, useState } from "react";
 
-import { SearchResponse } from "@/lib/types";
 import { MinimalisticMagnifier } from "@/lib/solar-icons/Outline";
+import { SearchResponse } from "@/lib/types";
 
 export default function SearchInput({
     results,

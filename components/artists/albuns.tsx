@@ -1,33 +1,20 @@
-import {
-    Text,
-    Image,
-    View,
-    StyleSheet,
-    ScrollView,
-    Platform,
-    Pressable,
-    StatusBar as RNStatusBar,
-    Dimensions,
-    FlatList,
-    ActivityIndicator,
-} from "react-native";
 import TextDefault from "@/components/core/text-core";
-import Animated, {
-    useAnimatedStyle,
-    useAnimatedScrollHandler,
-    useSharedValue,
-    interpolate,
-    Extrapolation,
-} from "react-native-reanimated";
-import { useRouter } from "expo-router";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
 import api from "@/lib/api";
 import { Palette } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
-import { darkenColor } from "@/lib/util/workWithColors";
 import { selectRightColor } from "@/lib/util/selectRightColor";
+import { darkenColor } from "@/lib/util/workWithColors";
 import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    Image,
+    Pressable,
+    StyleSheet,
+    View,
+} from "react-native";
+import { getColors } from "react-native-image-colors";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function AlbumCard({ album }: { album: any }) {
     const router = useRouter();
@@ -77,11 +64,12 @@ function AlbumCard({ album }: { album: any }) {
                             right: 0,
                             padding: 12,
                             zIndex: 10,
-
                         }}
                     >
                         {/* <TextDefault style={styles.albumType}>{album.album_type}</TextDefault> */}
-                        <TextDefault style={styles.albumTitle}>{album.name}</TextDefault>
+                        <TextDefault style={styles.albumTitle}>
+                            {album.name}
+                        </TextDefault>
                         <TextDefault style={styles.albumArtist}>
                             {album.artists[0]?.name}
                         </TextDefault>

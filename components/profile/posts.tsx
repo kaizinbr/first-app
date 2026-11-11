@@ -11,7 +11,7 @@ import {
 import TextDefault from "@/components/core/text-core";
 import { UserProfile, ReviewWithAlbum } from "@/lib/types";
 import { useEffect, useState, useCallback } from "react";
-import api, { apiAuth } from "@/lib/api";
+import api from "@/lib/api";
 import { Tabs } from "react-native-collapsible-tab-view";
 import { ActivityIndicator } from "react-native";
 import FeedCard from "@/components/home/feed-card";
@@ -144,7 +144,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                         color="#00a8ff"
                         style={{ marginTop: 20 }}
                     />
-                ) : !hasMore && reviews.length > 0 ? (
+                ) :  (
                     <TextDefault
                         style={{
                             color: "#777",
@@ -154,7 +154,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                     >
                         Fim!
                     </TextDefault>
-                ) : null
+                )
             }
             ListEmptyComponent={
                 loadingInitial ? (

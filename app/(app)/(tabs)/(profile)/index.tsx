@@ -1,18 +1,10 @@
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import { Image } from "expo-image";
-import Button from "@/components/button";
-import { authClient } from "@/lib/auth-client";
-import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState } from "react";
 import ProfileTabs from "@/components/profile/profile-tabs";
-import { UserProfile } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
+import api from "@/lib/api";
+import { Palette, UserProfile } from "@/lib/types";
+import { selectBackgroundColor } from "@/lib/util/selectRightColor";
 import { getPalette } from "expo-color-thief-native";
-import type { ColorThiefColorData } from "expo-color-thief-native";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { selectRightColor, selectBackgroundColor } from "@/lib/util/selectRightColor";
-import { Palette } from "@/lib/types";
-import { SkeletonProfile } from "@/components/core/skeletons";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 export default function Index() {
     const [loading, setLoading] = useState(true);
@@ -23,17 +15,18 @@ export default function Index() {
     const [reload, setReload] = useState(false);
     const fetchProfileData = async () => {
         try {
-            const response = await apiAuth("/me");
+            const response = await api.get("/me");
             // console.log("Profile data fetched successfully:", response);
-            setProfileData(response);
+            setProfileData(response.data);
 
-            getPalette(response.avatar_url, {
+            getPalette(response.data.avatar_url, {
                 colorCount: 6,
                 quality: 10,
             })
                 .then((fetchedColors) => {
-                    
-                    setDominantColor(selectBackgroundColor(fetchedColors).background);
+                    setDominantColor(
+                        selectBackgroundColor(fetchedColors).background,
+                    );
                     setColors(fetchedColors);
 
                     setTimeout(() => {
@@ -53,7 +46,6 @@ export default function Index() {
 
     return (
         <View style={styles.container}>
-            
             {loading ? (
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#8065ef" />

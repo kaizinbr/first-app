@@ -1,37 +1,13 @@
 // import { Host, Slider } from "@expo/ui/jetpack-compose";
-import { Album, Palette, Rating, Review, Track } from "@/lib/types";
 import TextDefault from "@/components/core/text-core";
+import { Album, Palette, Review, Track } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
-import React, { useEffect, useState } from "react";
-import {
-    KeyboardAvoidingView,
-    Platform,
-    Pressable,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
-    ScrollView,
-    FlatList,
-} from "react-native";
-import Animated, {
-    Extrapolation,
-    interpolate,
-    runOnJS,
-    useAnimatedScrollHandler,
-    useAnimatedStyle,
-    useSharedValue,
-    withTiming,
-} from "react-native-reanimated";
 import axios from "axios";
+import { useEffect, useState } from "react";
+import { ScrollView, StyleSheet, View } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
-import {
-    SkipNext,
-    SkipPrevious,
-    MusicNote,
-} from "@/lib/solar-icons/Bold";
 
 export default function Lyrics({
     reviewData,

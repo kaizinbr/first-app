@@ -1,28 +1,22 @@
-import * as React from "react";
-import {
-    View,
-    StyleSheet,
-    RefreshControl,
-    Text,
-    Pressable,
-} from "react-native";
 import ConfirmModal from "@/components/core/confirm-modal";
+import * as React from "react";
+import { Pressable, StyleSheet, View } from "react-native";
 
-import { UserProfile, Palette } from "@/lib/types";
+import { AvatarNoPress } from "@/components/core/avatar";
 import {
-    User,
-    LockPassword,
-    Letter,
-    QuestionSquare,
-    Logout2,
     CodeSquare,
     InfoSquare,
+    Letter,
+    LockPassword,
+    Logout2,
+    QuestionSquare,
     ShieldCheck,
+    User,
 } from "@/lib/solar-icons/Bold";
-import { AltArrowRight, AltArrowLeft } from "@/lib/solar-icons/Outline";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AvatarNoPress } from "@/components/core/avatar";
+import { AltArrowLeft, AltArrowRight } from "@/lib/solar-icons/Outline";
+import { UserProfile } from "@/lib/types";
 import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { authClient } from "@/lib/auth-client";
 
@@ -45,7 +39,7 @@ export default function Menu({
     const handleLogOut = async () => {
         try {
             setIsLoading(true);
-            // await apiAuthDELETE(`/reviews/${reviewData.id}`, {
+            // await api.delete(`/reviews/${reviewData.id}`, {
             //     method: "DELETE",
             // });
             await authClient.signOut();
@@ -238,7 +232,9 @@ export default function Menu({
                     }}
                 >
                     <QuestionSquare size={24} color="#eee" />
-                    <TextDefault style={styles.textDefault}>Área de teste</TextDefault>
+                    <TextDefault style={styles.textDefault}>
+                        Área de teste
+                    </TextDefault>
                 </Pressable>
             </View>
             <View style={styles.section}>

@@ -9,16 +9,6 @@ import ReviewContent from "@/components/reviews/display/review-content";
 import ReviewScore from "@/components/reviews/display/score";
 import Tracklist from "@/components/reviews/display/tracklist";
 import { LikeButton } from "@/components/reviews/like-btn";
-import { apiAuth, apiAuthDELETE } from "@/lib/api";
-import { Album, Palette, Review } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import {
-    BottomSheetBackdrop,
-    BottomSheetModal,
-    BottomSheetView,
-    useBottomSheetModal,
-    BottomSheetScrollView 
-} from "@gorhom/bottom-sheet";
 import {
     Flag,
     ForbiddenCircle,
@@ -29,9 +19,17 @@ import {
     Vinyl,
 } from "@/lib/solar-icons/Bold";
 import { AltArrowLeft } from "@/lib/solar-icons/Linear";
+import { Album, Review } from "@/lib/types";
+import {
+    BottomSheetBackdrop,
+    BottomSheetModal,
+    BottomSheetScrollView,
+    BottomSheetView,
+    useBottomSheetModal,
+} from "@gorhom/bottom-sheet";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React, {
+import {
     useCallback,
     useEffect,
     useMemo,
@@ -40,11 +38,9 @@ import React, {
 } from "react";
 import {
     ActivityIndicator,
-    KeyboardAvoidingView,
-    Platform,
     Pressable,
     StyleSheet,
-    View,
+    View
 } from "react-native";
 import Animated, {
     Extrapolation,
@@ -55,6 +51,7 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommentsSection from "./comments/comments-section";
+import api from "@/lib/api";
 
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -67,7 +64,7 @@ export default function ReviewAlbumScreen({
     reviewData,
     albumData,
     mainColor,
-    accentColor
+    accentColor,
 }: {
     reviewData: Review;
     albumData: Album;
@@ -144,8 +141,8 @@ export default function ReviewAlbumScreen({
     useEffect(() => {
         const checkOwnership = async () => {
             try {
-                const myProfile = await apiAuth("/me");
-                setItsMine(reviewData.Profile.id === myProfile.id);
+                const myProfile = await api.get("/me");
+                setItsMine(reviewData.Profile.id === myProfile.data.id);
                 // console.log(
                 //     "Review ownership:",
                 //     reviewData.Profile.id,
@@ -163,7 +160,7 @@ export default function ReviewAlbumScreen({
     const handleDelete = async () => {
         try {
             setIsLoading(true);
-            await apiAuthDELETE(`/reviews/${reviewData.id}`, {
+            await api.delete(`/reviews/${reviewData.id}`, {
                 method: "DELETE",
             });
             router.back();
@@ -174,9 +171,7 @@ export default function ReviewAlbumScreen({
     };
 
     return (
-        <View
-            style={styles.container}
-        >
+        <View style={styles.container}>
             <View style={styles.container}>
                 <Animated.View
                     style={[
@@ -300,7 +295,9 @@ export default function ReviewAlbumScreen({
                     )}
                 >
                     <BottomSheetView>
-                        <BottomSheetScrollView contentContainerStyle={styles.sheetView}>
+                        <BottomSheetScrollView
+                            contentContainerStyle={styles.sheetView}
+                        >
                             {itsMine && (
                                 <>
                                     <Pressable

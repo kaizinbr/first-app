@@ -1,5 +1,5 @@
 import TextDefault from "@/components/core/text-core";
-import api, { apiAuth, apiAuthPost } from "@/lib/api";
+import api from "@/lib/api";
 import { Palette, UserProfile } from "@/lib/types";
 import { selectBackgroundColor } from "@/lib/util/selectRightColor";
 import { getPalette } from "expo-color-thief-native";

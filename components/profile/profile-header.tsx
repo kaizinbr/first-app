@@ -1,21 +1,18 @@
 import TextDefault from "@/components/core/text-core";
-import api, { apiAuth, apiAuthPost } from "@/lib/api";
+import api from "@/lib/api";
 import { Palette, UserProfile } from "@/lib/types";
 import { selectBackgroundColor } from "@/lib/util/selectRightColor";
 import { getPalette } from "expo-color-thief-native";
 import { Image } from "expo-image";
-import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { getColors } from "react-native-image-colors";
 
-import chroma from "chroma-js";
 import type { ColorThiefColorData } from "expo-color-thief-native";
 
 import PlayingOnLastFM from "@/components/profile/last-fm-card";
+import ProfileHeaderBG from "@/components/profile/profile-header-bg";
 import { VerifiedCheck } from "@/lib/solar-icons/Bold";
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import ProfileHeaderBG from "@/components/profile/profile-header-bg";
 
 export default function ProfileHeader({
     data,
@@ -121,11 +118,11 @@ export default function ProfileHeader({
 
         const checkIfFollowing = async () => {
             try {
-                const response = await apiAuth(
+                const response = await api.get(
                     `/users/${data.username}/follow-check`,
                 );
-                setIsFollowing(response.isFollowing);
-                console.log(response);
+                setIsFollowing(response.data.isFollowing);
+                console.log(response.data);
             } catch (error) {
                 console.error("Error checking following status:", error);
             }
@@ -139,13 +136,13 @@ export default function ProfileHeader({
     function handleFollowToggle() {
         // Lógica para seguir ou deixar de seguir o usuário
         if (isFollowing) {
-            const response = apiAuthPost(`/users/${data.username}/relation`, {
+            const response = api.post(`/users/${data.username}/relation`, {
                 ACTION: "UNFOLLOW",
             });
             console.log("Deixar de seguir", response);
         } else {
             // Lógica para seguir
-            const response = apiAuthPost(`/users/${data.username}/relation`, {
+            const response = api.post(`/users/${data.username}/relation`, {
                 ACTION: "FOLLOW",
             });
             console.log("Seguir", response);

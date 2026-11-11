@@ -1,17 +1,13 @@
-import { Text, View, StyleSheet, ScrollView, Pressable } from "react-native";
 import * as Linking from "expo-linking";
+import { Pressable, StyleSheet, View } from "react-native";
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
-import { truncateMarkdown } from "@/lib/util/truncate";
 
-import { Review } from "@/lib/types";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { authClient } from "@/lib/auth-client";
-import { useRouter, Href, Link } from "expo-router";
-import api from "@/lib/api";
-import { Image } from "expo-image";
-import { useEffect, useState } from "react";
-import TextDefault from "@/components/core/text-core";
 import Avatar from "@/components/core/avatar";
+import TextDefault from "@/components/core/text-core";
+import api from "@/lib/api";
+import { Review } from "@/lib/types";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 
 export default function ReviewContent({ review }: { review: Review }) {
     const router = useRouter();

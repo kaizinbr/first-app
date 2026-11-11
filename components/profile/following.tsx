@@ -1,19 +1,11 @@
-import {
-    View,
-    Text,
-    Image,
-    Button,
-    StyleSheet,
-    ScrollView,
-    ActivityIndicator,
-} from "react-native";
-import { UserProfile, Review } from "@/lib/types";
+import api from "@/lib/api";
+import { UserProfile } from "@/lib/types";
 import { useEffect, useState } from "react";
-import api, { apiAuth } from "@/lib/api";
+import { ActivityIndicator, StyleSheet, Text } from "react-native";
 import { Tabs } from "react-native-collapsible-tab-view";
 
-import UserCards from "@/components/core/user-cards";
 import { ItemSeparator } from "@/components/core/separator";
+import UserCards from "@/components/core/user-cards";
 
 export default function FollowingRoute({ data }: { data: UserProfile }) {
     const [userFollowings, setUserFollowings] = useState<{

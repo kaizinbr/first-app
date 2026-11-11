@@ -1,15 +1,15 @@
-import React, { useState, useEffect } from "react";
-import { View, Pressable, StyleSheet, ActivityIndicator } from "react-native";
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    withSpring,
-    Easing,
-} from "react-native-reanimated";
 import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
 import { UserProfile } from "@/lib/types";
+import React, { useEffect, useState } from "react";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import Animated, {
+    Easing,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring,
+    withTiming,
+} from "react-native-reanimated";
 
 type RatingDatum = {
     rate: number; // 1 a 5

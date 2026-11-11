@@ -1,25 +1,10 @@
-import Button from "@/components/button";
-import Input from "@/components/input";
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    Image,
-    Platform,
-    Pressable,
-    ActivityIndicator,
-} from "react-native";
+import api from "@/lib/api";
+import { Album } from "@/lib/types";
 import { useLocalSearchParams } from "expo-router";
-import api, { apiAuth } from "@/lib/api";
 import { useEffect, useState } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { authClient } from "@/lib/auth-client";
-import { Album, UserProfile } from "@/lib/types";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-import { getColors } from "react-native-image-colors";
-import { getPalette, getColor } from "expo-color-thief-native";
+import { getPalette } from "expo-color-thief-native";
 
 import { Palette } from "@/lib/types";
 
@@ -40,14 +25,14 @@ export default function AlbumPage() {
             setAlbumData(null);
             // console.log("Fetching album data for id:", id, albumData);
             try {
-                const response = await apiAuth(`/albuns/${id}`);
-                const user = await apiAuth("/me");
+                const response = await api.get(`/albuns/${id}`);
+                const user = await api.get("/me");
                 setUserData(user);
                 // console.log("Album data fetched successfully:", response);
-                setAlbumData(response);
-                if (response.images && response.images.length > 0) {
-                    const imageUrl = response.images[0].url;
-                    
+                setAlbumData(response.data);
+                if (response.data.images && response.data.images.length > 0) {
+                    const imageUrl = response.data.images[0].url;
+
                     const palette = await getPalette(imageUrl, { quality: 10 });
                     setPalette(palette);
                     console.log("Palette fetched successfully:", palette);

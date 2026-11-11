@@ -1,7 +1,7 @@
 import { View, StyleSheet } from "react-native";
 import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
-import api, { apiAuth } from "@/lib/api";
+import api from "@/lib/api";
 
 import { getColors } from "react-native-image-colors";
 import { useState, useEffect, use } from "react";
@@ -252,16 +252,88 @@ export function SkeletonProfile() {
     );
 }
 
+export function SkeletonFeedCard() {
+    return (
+        <View style={styles.container}>
+            <View style={styles.cardImage} />
+            <View style={{ flexDirection: "column", gap: 12, flex: 1 }}>
+                <View style={{ flexDirection: "row", gap: 8, alignItems: "center", justifyContent: "space-between" }}>
+                    <View
+                        style={{
+                            width: "30%",
+                            height: 14,
+                            borderRadius: 9999,
+                            backgroundColor: "#36383A",
+                        }}
+                    />
+                    <View
+                        style={{
+                            width: "15%",
+                            height: 14,
+                            borderRadius: 9999,
+                            backgroundColor: "#36383A",
+                        }}
+                    />
+                </View>
+                <View
+                    style={{
+                        width: "100%",
+                        height: 14,
+                        borderRadius: 9999,
+                        backgroundColor: "#36383A",
+                    }}  
+                />
+                <View
+                    style={{
+                        width: "100%",
+                        height: 14,
+                        borderRadius: 9999,
+                        backgroundColor: "#36383A",
+                    }}  
+                />
+                <View
+                    style={{
+                        width: "100%",
+                        height: 14,
+                        borderRadius: 9999,
+                        backgroundColor: "#36383A",
+                    }}  
+                />
+                <View
+                    style={{
+                        width: "100%",
+                        height: 144,
+                        borderRadius: 14,
+                        backgroundColor: "#36383A",
+                    }}
+                />
+            </View>
+        </View>
+    );
+}
+
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        backgroundColor: "#161718",
-        alignItems: "flex-start",
-        justifyContent: "flex-start",
+        
         width: "100%",
+        backgroundColor: "transparent",
+        color: "#eee",
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 12,
+        borderRadius: 8,
+        flexDirection: "row",
+        gap: 8,
     },
     skeleton: {
         backgroundColor: "#ccc",
         borderRadius: 8,
+    },
+     cardImage: {
+        width: 40,
+        height: 40,
+        backgroundColor: "#36383A",
+        borderRadius: 40 * 0.306,
+        marginBottom: 8,
     },
 });

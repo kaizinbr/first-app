@@ -1,27 +1,16 @@
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    Pressable,
-    ActivityIndicator,
-} from "react-native";
-import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 import { truncateMarkdown } from "@/lib/util/truncate";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 
-import * as Linking from "expo-linking";
-import TextDefault from "@/components/core/text-core";
 import Avatar from "@/components/core/avatar";
-import { useRouter, Href, Link } from "expo-router";
-import api, { apiAuth, apiAuthDELETE } from "@/lib/api";
-import { Image } from "expo-image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-    displayPastRelativeTime,
-    getPastShortRelativeTime,
-} from "@/lib/util/time";
+import TextDefault from "@/components/core/text-core";
 import { AlbumCard } from "@/components/home/album-section";
-import { ReviewWithAlbum, SpotifyAlbum } from "@/lib/types";
+import api from "@/lib/api";
+import { ReviewWithAlbum } from "@/lib/types";
+import { getPastShortRelativeTime } from "@/lib/util/time";
+import * as Linking from "expo-linking";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import {
     Flag,
@@ -32,36 +21,33 @@ import {
     User,
     Vinyl,
 } from "@/lib/solar-icons/Bold";
-import {
-    ChatRound,
-    ChatSquare,
-    Share,
-} from "@/lib/solar-icons/Outline";
 
 import {
     BottomSheetBackdrop,
     BottomSheetModal,
+    BottomSheetScrollView,
     BottomSheetView,
     useBottomSheetModal,
-    BottomSheetScrollView,
-    
 } from "@gorhom/bottom-sheet";
 
 import ConfirmModal from "@/components/core/confirm-modal";
 import { ShareLargeBtn, ShareSmBtn } from "@/components/core/share-btn";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { LikeButton } from "@/components/reviews/like-btn";
 import { CommentButton } from "@/components/core/comment-card-btn";
+import { LikeButton } from "@/components/reviews/like-btn";
+import { SkeletonFeedCard } from "@/components/core/skeletons";
 
 const MAX_PREVIEW_CHARS = 500;
 
 export default function FeedCard({
     review,
     onRefresh,
+    refreshing
 }: {
     review: ReviewWithAlbum;
     onRefresh: () => void;
+    refreshing: boolean;
 }) {
     const router = useRouter();
 
@@ -112,8 +98,8 @@ export default function FeedCard({
         };
         const checkOwnership = async () => {
             try {
-                const myProfile = await apiAuth("/me");
-                setItsMine(review.Profile.id === myProfile.id);
+                const myProfile = await api.get("/me");
+                setItsMine(review.Profile.id === myProfile.data.id);
             } catch (error) {
                 console.error("Error checking review ownership:", error);
             }
@@ -136,7 +122,7 @@ export default function FeedCard({
     const handleDelete = async () => {
         try {
             setIsLoading(true);
-            await apiAuthDELETE(`/reviews/${review.id}`);
+            await api.delete(`/reviews/${review.id}`);
             onRefresh();
             setIsLoading(false);
         } catch (error) {
@@ -146,7 +132,10 @@ export default function FeedCard({
 
     return (
         <>
-            <Pressable
+            {refreshing ? (
+                <SkeletonFeedCard />
+            ) : (
+                <Pressable
                 onPress={() => router.push(`/review/${review.id}`)}
                 style={({ pressed }) => [
                     styles.main,
@@ -158,7 +147,6 @@ export default function FeedCard({
                     <Avatar
                         data={review.Profile}
                         size={40}
-                        // style={styles.cardImage}
                     />
                     {review.album ? (
                         <View style={styles.cardContent}>
@@ -328,6 +316,7 @@ export default function FeedCard({
                     ) : null}
                 </View>
             </Pressable>
+            )}
 
             <BottomSheetModal
                 ref={bottomSheetRef}

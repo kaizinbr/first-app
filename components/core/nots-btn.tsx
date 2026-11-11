@@ -1,11 +1,17 @@
-import { apiAuth } from "@/lib/api";
+import api from "@/lib/api";
 import { BellBold, BellOutline } from "@/lib/solar-icons";
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
 
 const POLL_INTERVAL = 30_000;
 
-export default function NotsBtn({ color, focused }: { color: string; focused: boolean }) {
+export default function NotsBtn({
+    color,
+    focused,
+}: {
+    color: string;
+    focused: boolean;
+}) {
     const [hasUnread, setHasUnread] = useState(false);
     const isFetchingRef = useRef(false);
     const appStateRef = useRef(AppState.currentState);
@@ -16,8 +22,8 @@ export default function NotsBtn({ color, focused }: { color: string; focused: bo
 
         isFetchingRef.current = true;
         try {
-            const response = await apiAuth("/notifications/unread");
-            setHasUnread(Boolean(response.hasUnread));
+            const response = await api.get("/notifications/unread");
+            setHasUnread(Boolean(response.data.hasUnread));
         } catch (error) {
             console.error("Erro ao verificar notificações:", error);
         } finally {
@@ -26,7 +32,7 @@ export default function NotsBtn({ color, focused }: { color: string; focused: bo
     }
 
     useEffect(() => {
-        checkNotifications();
+        // checkNotifications();
 
         const subscription = AppState.addEventListener(
             "change",

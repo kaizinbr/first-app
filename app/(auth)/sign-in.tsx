@@ -1,23 +1,21 @@
-import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { useState } from "react";
 
 import Button from "@/components/button";
+import TextDefault from "@/components/core/text-core";
 import Input from "@/components/input";
 import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    KeyboardAvoidingView,
-    TextInput,
-    Platform,
     ActivityIndicator,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+    StyleSheet,
+    View,
 } from "react-native";
-import TextDefault from "@/components/core/text-core";
 
 import { Image } from "expo-image";
 
-import { Link, useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function Index() {
     const [email, setEmail] = useState("");
@@ -98,7 +96,12 @@ export default function Index() {
                 <View style={styles.main}>
                     <Image
                         source={require("@/assets/images/start.png")}
-                        style={{ width: "70%", height: "auto", marginBottom: 20, aspectRatio: 1 }}
+                        style={{
+                            width: "70%",
+                            height: "auto",
+                            marginBottom: 20,
+                            aspectRatio: 1,
+                        }}
                     />
                     <TextDefault style={styles.title}>
                         Olá, insira seu e-mail

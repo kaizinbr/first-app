@@ -6,12 +6,15 @@ import {
     Text,
     View,
     RefreshControl,
+    Platform,
 } from "react-native";
 import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
 import TextDefault from "@/components/core/text-core";
 import FeedHeader from "@/components/home/header";
 import Animated from "react-native-reanimated";
 import type { SharedValue } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { SkeletonFeedCard } from "@/components/core/skeletons";
 
 interface FeedProps {
     onScrollAnimado: any;
@@ -32,6 +35,9 @@ export default function HomePage({
         onMomentumScrollBegin,
     } = usePaginatedReviews({ endpoint: "/reviews" });
 
+    // const reviews = [];
+    const insets = useSafeAreaInsets();
+
     const [refreshing, setRefreshing] = useState(false);
 
     const onRefresh = useCallback(async () => {
@@ -40,28 +46,33 @@ export default function HomePage({
         setRefreshing(false);
     }, []);
 
-    if (loadingInitial) {
-        return (
-            <View
-                style={[
-                    styles.container,
-                    { justifyContent: "center", alignItems: "center" },
-                ]}
-            >
-                <ActivityIndicator size="large" color="#8065ef" />
-            </View>
-        );
-    }
+    // if (loadingInitial) {
+    //     return (
+    //         <View
+    //             style={[
+    //                 styles.container,
+    //                 { justifyContent: "center", alignItems: "center" },
+    //             ]}
+    //         >
+    //             <ActivityIndicator size="large" color="#8065ef" />
+    //         </View>
+    //     );
+    // }
 
     return (
         <Animated.FlatList
             style={styles.container}
             contentContainerStyle={styles.feed}
             showsVerticalScrollIndicator={false}
+            overScrollMode="never"
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-                <FeedCard review={item} onRefresh={onRefresh} />
+                <FeedCard
+                    review={item}
+                    onRefresh={onRefresh}
+                    refreshing={refreshing}
+                />
             )}
             onEndReached={loadMore}
             onEndReachedThreshold={0.2}
@@ -90,7 +101,19 @@ export default function HomePage({
                 </View>
             )}
             refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={onRefresh}
+                    progressViewOffset={
+                        Platform.OS === "android" ? 24 + insets.top : 0
+                    }
+                    progressBackgroundColor="#282828"
+                    colors={["#8065ef", "#8065ef"]}
+                    style={{
+                        borderWidth: 0.5,
+                        borderColor: "#56595D",
+                    }}
+                />
             }
             ListFooterComponent={
                 loadingMore ? (
@@ -99,7 +122,7 @@ export default function HomePage({
                         color="#8065ef"
                         style={{ marginTop: 20 }}
                     />
-                ) : !hasMore && reviews.length > 0 ? (
+                ) : (
                     <TextDefault
                         style={{
                             color: "#777",
@@ -109,12 +132,15 @@ export default function HomePage({
                     >
                         Você chegou ao fim!
                     </TextDefault>
-                ) : null
+                )
             }
             ListEmptyComponent={
-                <TextDefault style={{ color: "#eee", textAlign: "center" }}>
-                    Nenhuma avaliação encontrada.
-                </TextDefault>
+                <>
+                    <TextDefault style={{ color: "#eee", textAlign: "center" }}>
+                        Nenhuma avaliação encontrada.
+                    </TextDefault>
+                    {/* <SkeletonFeedCard /> */}
+                </>
             }
         />
     );

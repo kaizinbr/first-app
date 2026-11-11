@@ -1,14 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet } from "react-native";
 
-import { apiAuth, apiAuthPost, apiAuthDELETE } from "@/lib/api";
-import { Album, Palette, UserProfile } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft, Star } from "@/lib/solar-icons/Outline";
-import { Star as StarBold } from "@/lib/solar-icons/Bold";
+import api from "@/lib/api";
 import { Playlist2 } from "@/lib/solar-icons/Bold";
+import { Album } from "@/lib/types";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function WishlistAlbumBtn({
     albumData,
@@ -21,15 +17,17 @@ export default function WishlistAlbumBtn({
 }) {
     const [isWishlisted, setIsWishlisted] = useState(false);
 
+    const insets = useSafeAreaInsets();
+
     useEffect(() => {
         // Verificar se o álbum é favorito do usuário
         async function checkIfFavorite() {
             try {
-                const response = await apiAuth(
+                const response = await api.get(
                     `/albuns/${albumData.id}/wishlist`,
                 );
                 console.log("Resposta do favorito:", response);
-                setIsWishlisted(response.isWishlisted);
+                setIsWishlisted(response.data.isWishlisted);
             } catch (error) {
                 console.error("Erro ao verificar favorito:", error);
             }
@@ -41,11 +39,11 @@ export default function WishlistAlbumBtn({
     const toggleWishlist = async () => {
         try {
             if (isWishlisted) {
-                await apiAuthDELETE(`/albuns/${albumData.id}/wishlist`, {
+                await api.delete(`/albuns/${albumData.id}/wishlist`, {
                     id: albumData.id,
                 });
             } else {
-                await apiAuthPost(`/albuns/${albumData.id}/wishlist`, {
+                await api.post(`/albuns/${albumData.id}/wishlist`, {
                     albumID: albumData.id,
                     albumName: albumData.name,
                     artistName: albumData.artists[0].name,
@@ -64,13 +62,10 @@ export default function WishlistAlbumBtn({
             style={({ pressed }) => [
                 styles.fav,
                 {
-                    backgroundColor: pressed
-                        ? "#7051ED"
-                            : "#8065ef",
+                    backgroundColor: pressed ? "#7051ED" : "#8065ef",
+                    bottom: insets.bottom,
                 },
-                isWishlisted
-                    ? {backgroundColor: "#5E3BEA"}
-                    : {},
+                isWishlisted ? { backgroundColor: "#5E3BEA" } : {},
             ]}
         >
             <Playlist2 size={size} color="#eee" />
@@ -83,7 +78,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         // left: 16,
         right: 16,
-        bottom: 64,
         zIndex: 11,
         height: 46,
         width: 46,

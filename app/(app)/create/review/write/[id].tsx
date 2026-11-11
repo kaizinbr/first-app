@@ -1,13 +1,10 @@
-import TextDefault from "@/components/core/text-core";
-import ReviewCreateMain from "@/components/reviews/create/main-tracks";
 import WriteReviewPage from "@/components/reviews/create/main-write";
-import { apiAuth } from "@/lib/api";
 import type { Palette } from "@/lib/types";
 import { Album } from "@/lib/types";
-import { useReviewSession, DraftStorage } from "@/store/reviewSessionStore";
+import { DraftStorage, useReviewSession } from "@/store/reviewSessionStore";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, ScrollView, StyleSheet, View } from "react-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 import { getColors } from "react-native-image-colors";
 
 export default function TracksPage() {
@@ -35,11 +32,11 @@ export default function TracksPage() {
     useEffect(() => {
         const fetchReviewData = async () => {
             try {
-                const response = await apiAuth(`/albuns/${id}`);
+                const response = await api.get(`/albuns/${id}`);
 
-                setAlbum(response);
+                setAlbum(response.data);
 
-                const palette = await getColors(response.images[0].url);
+                const palette = await getColors(response.data.images[0].url);
                 setColors(palette as Palette);
             } catch (error) {
                 console.error("Error fetching album data:", error);
@@ -59,10 +56,7 @@ export default function TracksPage() {
 
     return (
         <View style={{ flex: 1, backgroundColor: "transparent" }}>
-            <WriteReviewPage
-                album={album}
-                colors={colors}
-            />
+            <WriteReviewPage album={album} colors={colors} />
         </View>
     );
 }

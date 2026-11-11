@@ -1,3 +1,13 @@
+import { AvatarNoPress } from "@/components/core/avatar";
+import TextDefault from "@/components/core/text-core";
+import { AlbumCard } from "@/components/home/album-section";
+import {
+    TextBold,
+    TextCross,
+    TextItalic,
+    TextUnderline,
+} from "@/lib/solar-icons/Bold";
+import { Album, ReviewWithAlbum } from "@/lib/types";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, Pressable, StyleSheet, View } from "react-native";
 import {
@@ -5,23 +15,12 @@ import {
     type EnrichedMarkdownTextInputInstance,
     type StyleState,
 } from "react-native-enriched-markdown";
-import { AvatarNoPress } from "@/components/core/avatar";
-import TextDefault from "@/components/core/text-core";
-import { AlbumCard } from "@/components/home/album-section";
-import { apiAuth } from "@/lib/api";
-import { Album, ReviewWithAlbum } from "@/lib/types";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import {
-    TextBold,
-    TextCross,
-    TextItalic,
-    TextUnderline,
-} from "@/lib/solar-icons/Bold";
+import { useKeyboardHandler } from "react-native-keyboard-controller";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
 } from "react-native-reanimated";
-import { useKeyboardHandler } from "react-native-keyboard-controller";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Suggestion {
     id: string;
@@ -151,7 +150,7 @@ export default function PostEditor({
                     return;
                 }
                 try {
-                    const result = await apiAuth(`/users?q=${query}&limit=5`);
+                    const result = await api.get(`/users?q=${query}&limit=5`);
                     setSuggestions(result.profiles);
                 } catch {
                     setSuggestions([]);

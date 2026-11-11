@@ -1,7 +1,7 @@
-import { fetch } from "expo/fetch";
-import { File } from "expo-file-system";
 import { authClient } from "@/lib/auth-client";
+import { File } from "expo-file-system";
 import { ImagePickerAsset } from "expo-image-picker";
+import { fetch } from "expo/fetch";
 
 export default async function uploadImageToVercel(asset: ImagePickerAsset) {
     const filename = asset.fileName || "avatar.jpg";
@@ -26,8 +26,8 @@ export default async function uploadImageToVercel(asset: ImagePickerAsset) {
         },
     );
 
-    if (!response.ok) throw new Error("Falha ao subir a imagem");
+    if (!response.data.ok) throw new Error("Falha ao subir a imagem");
 
-    const data = await response.json();
+    const data = await response.data.json();
     return data.url;
 }

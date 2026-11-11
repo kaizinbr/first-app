@@ -6,7 +6,6 @@ import {
     Pressable,
     StyleSheet,
     View,
-    Platform,
 } from "react-native";
 import {
     EnrichedMarkdownTextInput,
@@ -15,11 +14,11 @@ import {
 } from "react-native-enriched-markdown";
 
 // 1. Imports ajustados para o padrão da nova biblioteca
+import { useKeyboardHandler } from "react-native-keyboard-controller";
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
 } from "react-native-reanimated";
-import { useKeyboardHandler } from "react-native-keyboard-controller";
 
 import {
     Plain2Bold,
@@ -29,10 +28,10 @@ import {
     TextItalicSquareLinear,
 } from "@/lib/solar-icons";
 
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { apiAuth, apiAuthPost } from "@/lib/api";
 import { AvatarNoPress } from "@/components/core/avatar";
 import TextDefault from "@/components/core/text-core";
+import api from "@/lib/api";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 interface Suggestion {
     id: string;
@@ -54,7 +53,7 @@ export function CommentInput({
 }) {
     const ref = useRef<EnrichedMarkdownTextInputInstance>(null);
     const insets = useSafeAreaInsets();
-    
+
     const [styleState, setStyleState] = useState<StyleState | null>(null);
     const [markdown, setMarkdown] = useState("");
     const [submitting, setSubmitting] = useState(false);
@@ -68,15 +67,15 @@ export function CommentInput({
     useKeyboardHandler(
         {
             onMove: (event) => {
-                'worklet';
+                "worklet";
                 keyboardHeight.value = Math.abs(event.height);
             },
             onEnd: (event) => {
-                'worklet';
+                "worklet";
                 keyboardHeight.value = Math.abs(event.height);
             },
         },
-        []
+        [],
     );
 
     const containerStyle = useAnimatedStyle(() => {
@@ -84,18 +83,20 @@ export function CommentInput({
         const isKeyboardOpen = kbHeight > 0;
 
         // A Mágica: Subtraímos a altura do TabBar/Offset (56px) do teclado.
-        // Se a sua barra fechar/abrir em uma altura ligeiramente diferente, você pode 
+        // Se a sua barra fechar/abrir em uma altura ligeiramente diferente, você pode
         // ajustar o número 56 (ex: para 60 ou usar o insets.bottom).
         return {
-            bottom: isKeyboardOpen ? kbHeight - insets.bottom : Math.max(insets.bottom, 54), 
+            bottom: isKeyboardOpen
+                ? kbHeight - insets.bottom
+                : insets.bottom,
         };
     });
 
     const sheetStyle = useAnimatedStyle(() => {
         const kbHeight = keyboardHeight.value;
         const isKeyboardOpen = kbHeight > 0;
-        // Como agora usamos os 56px de bottom fixos quando fechado, o input já está 
-        // protegido das bordas arredondadas/linha do iPhone/Android. 
+        // Como agora usamos os 56px de bottom fixos quando fechado, o input já está
+        // protegido das bordas arredondadas/linha do iPhone/Android.
         // Não precisamos mais de paddingBottom dinâmico, apenas 0 limpo.
         return {
             paddingBottom: isKeyboardOpen ? 0 : 8,
@@ -117,8 +118,8 @@ export function CommentInput({
                     return;
                 }
                 try {
-                    const result = await apiAuth(`/users?q=${query}&limit=5`);
-                    setSuggestions(result.profiles);
+                    const result = await api.get(`/users?q=${query}&limit=5`);
+                    setSuggestions(result.data.profiles);
                 } catch {
                     setSuggestions([]);
                 }
@@ -149,7 +150,7 @@ export function CommentInput({
 
         setSubmitting(true);
         try {
-            await apiAuthPost(`/reviews/${reviewId}/comment`, {
+            await api.post(`/reviews/${reviewId}/comment`, {
                 body,
                 ...(parentId && { parentId }),
             });
@@ -172,7 +173,6 @@ export function CommentInput({
         >
             {/* Animamos a sheet para lidar com o Safe Area Insets dinamicamente */}
             <Animated.View style={[styles.sheet, sheetStyle]}>
-                
                 {suggestions.length > 0 && (
                     <View style={styles.suggestions}>
                         <FlatList
@@ -185,8 +185,15 @@ export function CommentInput({
                                     onPress={() => handleSelectMention(item)}
                                 >
                                     <AvatarNoPress data={item} size={28} />
-                                    <View style={{ flexDirection: "column", gap: 2 }}>
-                                        <TextDefault style={styles.suggestionText}>
+                                    <View
+                                        style={{
+                                            flexDirection: "column",
+                                            gap: 2,
+                                        }}
+                                    >
+                                        <TextDefault
+                                            style={styles.suggestionText}
+                                        >
                                             {item.name}
                                         </TextDefault>
                                         <TextDefault
@@ -203,7 +210,7 @@ export function CommentInput({
                         />
                     </View>
                 )}
-                
+
                 <View style={styles.row}>
                     <Pressable
                         onPress={() => ref.current?.toggleBold()}
@@ -216,7 +223,7 @@ export function CommentInput({
                             <TextBoldSquareOutline size={22} color="#888" />
                         )}
                     </Pressable>
-                    
+
                     <Pressable
                         onPress={() => ref.current?.toggleItalic()}
                         hitSlop={8}
@@ -228,7 +235,7 @@ export function CommentInput({
                             <TextItalicSquareLinear size={22} color="#888" />
                         )}
                     </Pressable>
-                    
+
                     <EnrichedMarkdownTextInput
                         ref={ref}
                         placeholder="Adicione um comentário..."
@@ -244,14 +251,18 @@ export function CommentInput({
                         multiline
                         scrollEnabled={true}
                     />
-                    
+
                     <Pressable
                         onPress={handleSubmit}
                         disabled={!markdown.trim() || submitting}
                         hitSlop={8}
                         style={[
                             styles.toolbarSendBtn,
-                            { backgroundColor: markdown.trim() ? "#8065ef" : "#333" },
+                            {
+                                backgroundColor: markdown.trim()
+                                    ? "#8065ef"
+                                    : "#333",
+                            },
                         ]}
                     >
                         {submitting ? (

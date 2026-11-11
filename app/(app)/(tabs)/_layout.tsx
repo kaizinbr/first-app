@@ -1,27 +1,22 @@
-import Icon from "@/components/core/Icon";
+import api from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
-import { useState, useEffect, useRef, useCallback } from "react";
-import { Tabs, Redirect, Stack } from "expo-router";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import { StyleSheet, View, ActivityIndicator, Text } from "react-native";
+import { Redirect, Tabs } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
+import { AvatarNoPress } from "@/components/core/avatar";
+import NotsBtn from "@/components/core/nots-btn";
 import {
     HomeSmileAngleBold,
-    MinimalisticMagnifierBold,
-    UserBold,
-    LibraryBold,
-    BellBold,
-    MinimalisticMagnifierOutline,
     HomeSmileAngleOutline,
-    UserOutline,
+    LibraryBold,
     LibraryOutline,
+    MinimalisticMagnifierBold,
+    MinimalisticMagnifierOutline,
+    UserBold,
 } from "@/lib/solar-icons";
-import { apiAuth } from "@/lib/api";
-import { AvatarNoPress } from "@/components/core/avatar";
 import NotificationObserver from "@/lib/util/notification-observer";
 import { useRouter } from "expo-router";
-import NotsBtn from "@/components/core/nots-btn";
-
 
 export default function TabsDynamicLayout() {
     const router = useRouter();
@@ -44,10 +39,10 @@ export default function TabsDynamicLayout() {
 
         async function checkProfile() {
             try {
-                const response = await apiAuth("/me");
-                setIsProfilePublic(response.public);
-                setProfile(response);
-                console.log("Perfil do usuário:", response.public);
+                const response = await api.get("/me");
+                setIsProfilePublic(response.data.public);
+                setProfile(response.data);
+                console.log("Perfil do usuário:", response.data.public);
             } catch (error) {
                 console.error("Erro ao buscar perfil:", error);
                 router.push("/(app)/offline");
@@ -86,11 +81,11 @@ export default function TabsDynamicLayout() {
         <>
             <NotificationObserver />
             <Tabs
-                initialRouteName="(ahome)"
+                // 'initialRouteName'="(ahome)"
                 screenOptions={{
                     headerShown: false,
+                    tabBarShowLabel: false,
                     tabBarStyle: styles.tabBar,
-                    tabBarItemStyle: styles.tabBarItem,
                     tabBarIconStyle: styles.tabBarIcon,
                     tabBarActiveTintColor: "#8065ef",
                 }}
@@ -103,13 +98,13 @@ export default function TabsDynamicLayout() {
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
                                 <HomeSmileAngleBold
-                                    size={28}
+                                    size={26}
                                     color={color as string}
                                     strokeWidth={2}
                                 />
                             ) : (
                                 <HomeSmileAngleOutline
-                                    size={26}
+                                    size={24}
                                     color={color as string}
                                     strokeWidth={2}
                                 />
@@ -124,13 +119,13 @@ export default function TabsDynamicLayout() {
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
                                 <MinimalisticMagnifierBold
-                                    size={28}
+                                    size={26}
                                     color={color as string}
                                     strokeWidth={2}
                                 />
                             ) : (
                                 <MinimalisticMagnifierOutline
-                                    size={26}
+                                    size={24}
                                     color={color as string}
                                     strokeWidth={2}
                                 />
@@ -145,13 +140,13 @@ export default function TabsDynamicLayout() {
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
                                 <LibraryBold
-                                    size={28}
+                                    size={26}
                                     color={color as string}
                                     strokeWidth={2}
                                 />
                             ) : (
                                 <LibraryOutline
-                                    size={26}
+                                    size={24}
                                     color={color as string}
                                     strokeWidth={2}
                                 />
@@ -161,10 +156,14 @@ export default function TabsDynamicLayout() {
                 <Tabs.Screen
                     name="(notifications)"
                     options={{
+                        href: null,
                         headerShown: false,
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) => (
-                            <NotsBtn color={color as string} focused={focused} />
+                            <NotsBtn
+                                color={color as string}
+                                focused={focused}
+                            />
                         ),
                     }}
                 />
@@ -175,9 +174,13 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) =>
                             profile ? (
-                                <AvatarNoPress data={profile} size={26} focused={focused} />
+                                <AvatarNoPress
+                                    data={profile}
+                                    size={24}
+                                    // focused={focused}
+                                />
                             ) : (
-                                <UserBold size={26} color={color as string} />
+                                <UserBold size={24} color={color as string} />
                             ),
                     }}
                 />
@@ -188,12 +191,15 @@ export default function TabsDynamicLayout() {
 
 const styles = StyleSheet.create({
     tabBar: {
-        height: 56,
-        position: "absolute",
+        // height: 56,
+        // position: "absolute",
         backgroundColor: "#161718",
-        elevation: 0,
-        shadowOpacity: 0,
-        borderTopWidth: 0,
+        paddingVertical: 16,
+        minHeight: 64,
+        bottom: 0,
+        // elevation: 0,
+        // shadowOpacity: 0,
+        // borderTopWidth: 0,
     },
     tabBarBlur: {
         position: "absolute",
@@ -215,6 +221,7 @@ const styles = StyleSheet.create({
     tabBarIcon: {
         // height: 50,
         // width: 24,
+        height: "100%",
         flex: 1,
     },
 });

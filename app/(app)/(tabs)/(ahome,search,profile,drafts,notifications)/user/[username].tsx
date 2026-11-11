@@ -1,17 +1,13 @@
-import Button from "@/components/button";
-import Input from "@/components/input";
-import { Text, View, StyleSheet, ActivityIndicator } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState } from "react";
 import ProfileTabs from "@/components/profile/profile-tabs";
+import api from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
-import { UserProfile } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
-import { darkenColor } from "@/lib/util/workWithColors";
+import { Palette, UserProfile } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
-import { Palette } from "@/lib/types";
-import { SkeletonProfile } from "@/components/core/skeletons";
+import { darkenColor } from "@/lib/util/workWithColors";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
+import { getColors } from "react-native-image-colors";
 
 export default function UserProfilePage() {
     const { username } = useLocalSearchParams();
@@ -27,19 +23,19 @@ export default function UserProfilePage() {
     console.log("Current session username:", session);
     const fetchProfileData = async () => {
         try {
-            const response = await apiAuth(`/users/${username}`);
+            const response = await api.get(`/users/${username}`);
             console.log("Profile data fetched successfully:", response);
-            setProfileData(response);
+            setProfileData(response.data);
             console.log("Updated profileData state:", profileData);
 
-            if (response.id === session?.user?.id) {
+            if (response.data.id === session?.user?.id) {
                 setItsMe(true);
             }
 
-            getColors(response.avatar_url, {
+            getColors(response.data.avatar_url, {
                 fallback: "#000",
                 cache: true,
-                key: response.avatar_url,
+                key: response.data.avatar_url,
             })
                 .then((colors) => {
                     const newColor = darkenColor(

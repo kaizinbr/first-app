@@ -1,38 +1,19 @@
-import { useState, useEffect, use } from "react";
-import {
-    View,
-    StyleSheet,
-    RefreshControl,
-    Text,
-    Pressable,
-    KeyboardAvoidingView,
-} from "react-native";
-import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
-import { UserProfile, Palette } from "@/lib/types";
-import {
-    User,
-    LockPassword,
-    Letter,
-    QuestionSquare,
-    Logout2,
-} from "@/lib/solar-icons/Bold";
-import {
-    AltArrowRight,
-    AltArrowLeft,
-    Unread,
-    CloseSquare,
-} from "@/lib/solar-icons/Outline";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { AvatarNoPress } from "@/components/core/avatar";
+import { AltArrowLeft, Unread } from "@/lib/solar-icons/Outline";
+import { UserProfile } from "@/lib/types";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+    KeyboardAvoidingView,
+    Pressable,
+    StyleSheet,
+    View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { apiAuthPost } from "@/lib/api";
-
-import TextDefault from "@/components/core/text-core";
 import { PasswordInput } from "@/components/core/input-password";
+import TextDefault from "@/components/core/text-core";
 
 import { authClient } from "@/lib/auth-client";
-import VerifyToken from "@/components/settings/verify-token";
 
 export default function Password({
     data,
@@ -111,7 +92,7 @@ export default function Password({
         }
 
         try {
-            const setPasswordResponse = await apiAuthPost(
+            const setPasswordResponse = await api.post(
                 "/me/account/set-password",
                 {
                     // current_password: currentPassword,
@@ -120,10 +101,10 @@ export default function Password({
                 },
             );
 
-            if (setPasswordResponse.error) {
+            if (setPasswordresponse.data.error) {
                 console.error(
                     "Error changing password:",
-                    setPasswordResponse.error,
+                    setPasswordresponse.data.error,
                 );
                 setMessage(
                     "Ocorreu um erro ao alterar a senha. Tente novamente.",

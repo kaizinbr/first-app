@@ -1,15 +1,14 @@
-import { Text, View, StyleSheet, Image, ActivityIndicator } from "react-native";
-import { useLocalSearchParams } from "expo-router";
-import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState } from "react";
-import { ArtistResponse, Palette } from "@/lib/types";
 import ArtistScreen from "@/components/artists/main";
-import { getColors } from "react-native-image-colors";
-import { getPalette, getColor } from "expo-color-thief-native";
+import api from "@/lib/api";
+import { ArtistResponse, Palette } from "@/lib/types";
 import {
     selectBackgroundColor,
     selectBackgroundGradient,
 } from "@/lib/util/selectRightColor";
+import { getPalette } from "expo-color-thief-native";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 export default function ArtistPage() {
     const { id } = useLocalSearchParams();
@@ -25,12 +24,12 @@ export default function ArtistPage() {
         const fetchArtistData = async () => {
             setArtistData(null);
             try {
-                const response = await apiAuth(`/artists/${id}`);
+                const response = await api.get(`/artists/${id}`);
                 // console.log("Artist data fetched successfully:", response);
-                setArtistData(response);
+                setArtistData(response.data);
 
-                if (response.images && response.images.length > 0) {
-                    const imageUrl = response.images[0].url;
+                if (response.data.images && response.data.images.length > 0) {
+                    const imageUrl = response.data.images[0].url;
                     const palette = await getPalette(imageUrl, { quality: 10 });
                     setPalette(palette);
                     const main = selectBackgroundColor(palette);

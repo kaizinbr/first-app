@@ -1,20 +1,26 @@
 import { AvatarNoPress } from "@/components/core/avatar";
 import NotsBtn from "@/components/core/nots-btn";
-import { apiAuth } from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
-import NotificationObserver from "@/lib/util/notification-observer";
 import {
     HomeSmileAngleBold,
-    MinimalisticMagnifierBold,
-    UserBold,
-    LibraryBold,
-    MinimalisticMagnifierOutline,
     HomeSmileAngleOutline,
+    LibraryBold,
     LibraryOutline,
+    MinimalisticMagnifierBold,
+    MinimalisticMagnifierOutline,
+    UserBold,
 } from "@/lib/solar-icons";
+import NotificationObserver from "@/lib/util/notification-observer";
 // IMPORTANTE: Adicionamos o useFocusEffect diretamente do expo-router
-import { Redirect, Tabs, useRouter, useFocusEffect } from "expo-router";
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
+import { Redirect, Tabs, useFocusEffect, useRouter } from "expo-router";
+import {
+    createContext,
+    useCallback,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { BlurTargetView, BlurView } from "expo-blur";
@@ -26,7 +32,7 @@ const ActiveBlurRefContext = createContext<((ref: any) => void) | null>(null);
 function TabScreenWrapper({ children }: { children: React.ReactNode }) {
     const localRef = useRef<View | null>(null);
     const setActiveRef = useContext(ActiveBlurRefContext);
-    
+
     // Rastreamos o foco da tela usando o hook nativo do expo-router
     const [isFocused, setIsFocused] = useState(false);
 
@@ -34,16 +40,19 @@ function TabScreenWrapper({ children }: { children: React.ReactNode }) {
         useCallback(() => {
             setIsFocused(true);
             return () => setIsFocused(false);
-        }, [])
+        }, []),
     );
 
     // Garantimos que a Tab Bar receba a referência tanto na montagem da view quanto no ganho de foco
-    const handleRef = useCallback((view: View | null) => {
-        localRef.current = view;
-        if (view && isFocused && setActiveRef) {
-            setActiveRef(localRef);
-        }
-    }, [isFocused, setActiveRef]);
+    const handleRef = useCallback(
+        (view: View | null) => {
+            localRef.current = view;
+            if (view && isFocused && setActiveRef) {
+                setActiveRef(localRef);
+            }
+        },
+        [isFocused, setActiveRef],
+    );
 
     useEffect(() => {
         if (isFocused && localRef.current && setActiveRef) {
@@ -52,7 +61,10 @@ function TabScreenWrapper({ children }: { children: React.ReactNode }) {
     }, [isFocused, setActiveRef]);
 
     return (
-        <BlurTargetView style={{ flex: 1, backgroundColor: "#161718" }} ref={handleRef}>
+        <BlurTargetView
+            style={{ flex: 1, backgroundColor: "#161718" }}
+            ref={handleRef}
+        >
             {children}
         </BlurTargetView>
     );
@@ -66,7 +78,9 @@ export default function TabsDynamicLayout() {
 
     const { data: session, isPending } = authClient.useSession();
     const [profile, setProfile] = useState<any>(null);
-    const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(null);
+    const [isProfilePublic, setIsProfilePublic] = useState<boolean | null>(
+        null,
+    );
     const [isProfileLoading, setIsProfileLoading] = useState(true);
 
     useEffect(() => {
@@ -77,9 +91,9 @@ export default function TabsDynamicLayout() {
 
         async function checkProfile() {
             try {
-                const response = await apiAuth("/me");
-                setIsProfilePublic(response.public);
-                setProfile(response);
+                const response = await api.get("/me");
+                setIsProfilePublic(response.data.public);
+                setProfile(response.data);
             } catch (error) {
                 router.push("/(app)/offline");
             } finally {
@@ -112,7 +126,7 @@ export default function TabsDynamicLayout() {
         <ActiveBlurRefContext.Provider value={setActiveBlurRef}>
             <NotificationObserver />
             <Tabs
-                initialRouteName="(ahome)"
+                // initialRouteName="(ahome)"
                 screenLayout={({ children }) => (
                     <TabScreenWrapper>{children}</TabScreenWrapper>
                 )}
@@ -122,7 +136,7 @@ export default function TabsDynamicLayout() {
                     tabBarItemStyle: styles.tabBarItem,
                     tabBarIconStyle: styles.tabBarIcon,
                     tabBarActiveTintColor: "#8065ef",
-                    tabBarBackground: () => (
+                    tabBarBackground: () =>
                         activeBlurRef ? (
                             <BlurView
                                 intensity={100}
@@ -135,9 +149,16 @@ export default function TabsDynamicLayout() {
                                 ]}
                             />
                         ) : (
-                            <View style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(22, 23, 24, 0.85)" }]} />
-                        )
-                    ),
+                            <View
+                                style={[
+                                    StyleSheet.absoluteFill,
+                                    {
+                                        backgroundColor:
+                                            "rgba(22, 23, 24, 0.85)",
+                                    },
+                                ]}
+                            />
+                        ),
                 }}
             >
                 <Tabs.Screen
@@ -146,9 +167,17 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
-                                <HomeSmileAngleBold size={28} color={color as string} strokeWidth={2} />
+                                <HomeSmileAngleBold
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
                             ) : (
-                                <HomeSmileAngleOutline size={28} color={color as string} strokeWidth={2} />
+                                <HomeSmileAngleOutline
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
                             ),
                     }}
                 />
@@ -158,9 +187,17 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
-                                <MinimalisticMagnifierBold size={28} color={color as string} strokeWidth={2} />
+                                <MinimalisticMagnifierBold
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
                             ) : (
-                                <MinimalisticMagnifierOutline size={28} color={color as string} strokeWidth={2} />
+                                <MinimalisticMagnifierOutline
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
                             ),
                     }}
                 />
@@ -170,9 +207,17 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
-                                <LibraryBold size={28} color={color as string} strokeWidth={2} />
+                                <LibraryBold
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
                             ) : (
-                                <LibraryOutline size={28} color={color as string} strokeWidth={2} />
+                                <LibraryOutline
+                                    size={28}
+                                    color={color as string}
+                                    strokeWidth={2}
+                                />
                             ),
                     }}
                 />
@@ -181,7 +226,10 @@ export default function TabsDynamicLayout() {
                     options={{
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) => (
-                            <NotsBtn color={color as string} focused={focused} />
+                            <NotsBtn
+                                color={color as string}
+                                focused={focused}
+                            />
                         ),
                     }}
                 />

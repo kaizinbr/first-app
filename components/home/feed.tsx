@@ -1,17 +1,13 @@
 import FeedCard from "@/components/home/feed-card";
-import api from "@/lib/api";
-import { ReviewWithAlbum } from "@/lib/types";
-import { useEffect, useRef, useState, useCallback } from "react";
+import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
+import { useCallback, useState } from "react";
 import {
     ActivityIndicator,
-    FlatList,
-    StyleSheet,
-    Text,
-    View,
     Animated,
-    RefreshControl
+    RefreshControl,
+    StyleSheet,
+    View,
 } from "react-native";
-import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
 
 import TextDefault from "@/components/core/text-core";
 
@@ -57,7 +53,6 @@ export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
         );
     }
 
-
     return (
         <Animated.FlatList
             style={styles.container}
@@ -65,7 +60,9 @@ export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
             showsVerticalScrollIndicator={false}
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
-            renderItem={({ item }) => <FeedCard review={item} onRefresh={onRefresh} />}
+            renderItem={({ item }) => (
+                <FeedCard review={item} onRefresh={onRefresh} />
+            )}
             onEndReached={loadMore}
             onEndReachedThreshold={0.2}
             onMomentumScrollBegin={onMomentumScrollBegin}
@@ -82,10 +79,7 @@ export default function Feed({ onScrollAnimado, scrollOffsetY }: FeedProps) {
                 />
             )}
             refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={onRefresh}
-                />
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             ListFooterComponent={
                 loadingMore ? (

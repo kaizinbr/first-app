@@ -1,12 +1,15 @@
-import api, { apiAuth } from "@/lib/api";
+import TextDefault from "@/components/core/text-core";
+import api from "@/lib/api";
 import { Album, Review } from "@/lib/types";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
-import TextDefault from "@/components/core/text-core";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
-import { getPalette, getColor } from "expo-color-thief-native";
-import { selectBackgroundColor, selectBackgroundGradient } from "@/lib/util/selectRightColor";
+import {
+    selectBackgroundColor,
+    selectBackgroundGradient,
+} from "@/lib/util/selectRightColor";
+import { getPalette } from "expo-color-thief-native";
 
 import { Palette } from "@/lib/types";
 
@@ -27,9 +30,9 @@ export default function ReviewPage() {
         const fetchReviewData = async () => {
             setReviewData(null);
             // console.log("Fetching album data for id:", id, albumData);
-            const reviewDataRes = await apiAuth(`/reviews/${id}`);
+            const response = await api.get(`/reviews/${id}`);
             try {
-                if (!reviewDataRes || reviewDataRes.length === 0) {
+                if (!response || response.data.length === 0) {
                     console.error("No review data found for id:", id);
                     setNotFound(true);
                     return;
@@ -37,12 +40,12 @@ export default function ReviewPage() {
 
                 console.log(
                     "Album data fetched successfully:",
-                    reviewDataRes[0].album_id,
+                    response.data[0].album_id,
                 );
-                setReviewData(reviewDataRes[0]);
+                setReviewData(response.data[0]);
 
                 const albumDataRes = await api(
-                    `/albuns/${reviewDataRes[0].album_id}`,
+                    `/albuns/${response.data[0].album_id}`,
                 );
                 setAlbumData(albumDataRes.data);
 
@@ -58,7 +61,7 @@ export default function ReviewPage() {
                 console.error("Error fetching review data:", error);
                 setNotFound(true);
                 console.log("Error details:", {
-                    reviewDataRes,
+                    reviewDataRes: response,
                 });
             }
         };

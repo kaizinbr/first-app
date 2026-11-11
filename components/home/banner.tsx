@@ -1,11 +1,7 @@
 import { renderItem } from "@/components/home/banner/render-item";
 import api from "@/lib/api";
 import { useEffect, useRef, useState } from "react";
-import {
-    StyleSheet,
-    useWindowDimensions,
-    View
-} from "react-native";
+import { StyleSheet, useWindowDimensions, View } from "react-native";
 import { useSharedValue } from "react-native-reanimated";
 import Carousel, { ICarouselInstance } from "react-native-reanimated-carousel";
 
@@ -13,7 +9,6 @@ import { Palette } from "@/lib/types";
 import { getBannerColors } from "@/lib/util/workWithColors";
 import { useIsFocused } from "expo-router/react-navigation";
 import { getColors } from "react-native-image-colors";
-
 
 type SpotifyAlbum = {
     album_type: string;
@@ -95,6 +90,10 @@ export default function Banner({
                 setLoading(true);
                 const response = await api.get(`/banner`);
                 setBannerData(response.data);
+                setCurrentBannerUrl(
+                    response.data[0]?.src ||
+                        "https://i.scdn.co/image/ab67616d0000b273efe09b635b15763133198101",
+                );
 
                 const result = await getColors(response.data[0]?.src, {
                     fallback: "#000",
@@ -190,7 +189,7 @@ const styles = StyleSheet.create({
     bannerCard: {
         height: 180,
         width: "100%",
-        backgroundColor: "#1e1e1e",
+        backgroundColor: "#36383A",
         borderRadius: 24,
         padding: 16,
         justifyContent: "flex-end",

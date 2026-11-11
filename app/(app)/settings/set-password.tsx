@@ -1,26 +1,15 @@
+import Password from "@/components/settings/set-password";
+import api from "@/lib/api";
+import { Palette, UserProfile } from "@/lib/types";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
-    View,
-    Text,
     ActivityIndicator,
-    StyleSheet,
     KeyboardAvoidingView,
     Platform,
+    StyleSheet,
+    View,
 } from "react-native";
-import { Image } from "expo-image";
-import Button from "@/components/button";
-import { authClient } from "@/lib/auth-client";
-import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { UserProfile } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { Palette } from "@/lib/types";
-import { SkeletonProfile } from "@/components/core/skeletons";
-import Menu from "@/components/settings/menu-main";
-import { useRouter } from "expo-router";
-import Password from "@/components/settings/set-password";
 
 export default function PasswordSettings() {
     const router = useRouter();
@@ -34,14 +23,14 @@ export default function PasswordSettings() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await apiAuth("/me");
-                setProfileData(response);
+                const response = await api.get("/me");
+                setProfileData(response.data);
 
-                const userResponse = await apiAuth("/me/user");
+                const userResponse = await api.get("/me/user");
                 console.log("User data fetched successfully:", userResponse);
                 setUserData(userResponse);
 
-                const accountResponse = await apiAuth("/me/account");
+                const accountResponse = await api.get("/me/account");
                 console.log(
                     "Account data fetched successfully:",
                     accountResponse,

@@ -18,28 +18,30 @@ import { BlurTargetProvider } from "@/lib/blur-target-context";
 
 WebBrowser.maybeCompleteAuthSession();
 
+import { AuthProvider } from "@/components/core/auth-provider";
+
 export default function Layout() {
-    const { data: session } = authClient.useSession();
-    console.log("Session data in layout:", session);
-    const isLoggedIn = !!session;
-    console.log("Is user logged in?", isLoggedIn);
+    // const { data: session } = authClient.useSession();
+    // console.log("Session data in layout:", session);
+    // const isLoggedIn = !!session;
+    // console.log("Is user logged in?", isLoggedIn);
     const colorScheme = useColorScheme();
 
-    // Registrar para notificações push quando o usuário fizer login
-    useEffect(() => {
-        if (isLoggedIn) {
-            registerForPushNotifications()
-                .then((token) => {
-                    console.log("Push notification token registered:", token);
-                })
-                .catch((error) => {
-                    console.error(
-                        "Error registering for push notifications:",
-                        error,
-                    );
-                });
-        }
-    }, [isLoggedIn]);
+    // // Registrar para notificações push quando o usuário fizer login
+    // useEffect(() => {
+    //     if (isLoggedIn) {
+    //         registerForPushNotifications()
+    //             .then((token) => {
+    //                 console.log("Push notification token registered:", token);
+    //             })
+    //             .catch((error) => {
+    //                 console.error(
+    //                     "Error registering for push notifications:",
+    //                     error,
+    //                 );
+    //             });
+    //     }
+    // }, [isLoggedIn]);
 
     const MyTheme = {
         ...(colorScheme === "dark" ? DarkTheme : DefaultTheme),
@@ -56,25 +58,30 @@ export default function Layout() {
     return (
         <ThemeProvider value={MyTheme}>
             <SafeAreaProvider>
-                <KeyboardProvider>
-                    <GestureHandlerRootView style={{ flex: 1 }}>
-                        <BottomSheetModalProvider>
-                            <SafeAreaView
-                                edges={["bottom", "left", "right"]}
-                                style={{
-                                    flex: 1,
-                                    backgroundColor: MyTheme.colors.background,
-                                }}
-                            >
-                                <StatusBar style="auto" />
-                                <Stack screenOptions={{ headerShown: false }}>
-                                    <Stack.Screen name="(auth)" />
-                                    <Stack.Screen name="(app)" />
-                                </Stack>
-                            </SafeAreaView>
-                        </BottomSheetModalProvider>
-                    </GestureHandlerRootView>
-                </KeyboardProvider>
+                <AuthProvider>
+                    <KeyboardProvider>
+                        <GestureHandlerRootView style={{ flex: 1 }}>
+                            <BottomSheetModalProvider>
+                                <SafeAreaView
+                                    edges={["left", "right"]}
+                                    style={{
+                                        flex: 1,
+                                        backgroundColor:
+                                            MyTheme.colors.background,
+                                    }}
+                                >
+                                    <StatusBar style="auto" />
+                                    <Stack
+                                        screenOptions={{ headerShown: false }}
+                                    >
+                                        <Stack.Screen name="(auth)" />
+                                        <Stack.Screen name="(app)" />
+                                    </Stack>
+                                </SafeAreaView>
+                            </BottomSheetModalProvider>
+                        </GestureHandlerRootView>
+                    </KeyboardProvider>
+                </AuthProvider>
             </SafeAreaProvider>
         </ThemeProvider>
     );

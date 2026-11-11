@@ -71,7 +71,7 @@ export default function FeedHeader({
     const [mainColor, setMainColor] = useState<string>("#8065ef");
 
     const [currentBannerUrl, setCurrentBannerUrl] = useState<string>(
-        "https://i.scdn.co/image/ab67616d0000b27326110f06ccf587b0a465f873",
+        "https://i.scdn.co/image/ab67616d0000b273efe09b635b15763133198101",
     );
 
     const Header_Min_Height = insets.top;
@@ -100,9 +100,6 @@ export default function FeedHeader({
     }));
 
     const blob1Style = useColorTransition(mainColor);
-    const blob2Style = useColorTransition(lightenColor(mainColor, 1));
-    const blob3Style = useColorTransition(lightenColor(mainColor, 0.7));
-    const blob4Style = useColorTransition(lightenColor(mainColor, 0.8));
 
     useEffect(() => {
         // console.log("Cores do banner:", currentBannerUrl);
@@ -154,48 +151,6 @@ export default function FeedHeader({
                             },
                         ]}
                     />
-
-                    {/* <Animated.View
-                        style={[
-                            styles.blob,
-                            blob2Style,
-                            {
-                                width: 260,
-                                height: 260,
-                                bottom: 170,
-                                right: -80,
-                                // filter: [{ blur: 70 }],
-                            },
-                        ]}
-                    />
-                    <Animated.View
-                        style={[
-                            styles.blob,
-                            blob3Style,
-                            {
-                                width: 160,
-                                height: 160,
-                                bottom: 80,
-                                right: 80,
-                                // filter: [{ blur: 70 }],
-                            },
-                        ]}
-                    />
-                    <Animated.View
-                        style={[
-                            styles.blob,
-                            blob4Style,
-                            {
-                                width: 160,
-                                height: 160,
-                                top: 130,
-                                left: 80,
-                                // filter: [{ blur: 70 }],
-                            },
-                        ]}
-                    /> */}
-
-                    {/* vinheta no topo pra escurecer onde fica o header */}
                     <LinearGradient
                         colors={["rgba(0,0,0,0.6)", "transparent"]}
                         style={[StyleSheet.absoluteFill, { height: 180 }]}
@@ -243,7 +198,7 @@ export default function FeedHeader({
                         HEADER_MAX_HEIGHT={HEADER_MAX_HEIGHT}
                     />
                 </Animated.View>
-                <FindUsers />
+                {/* <FindUsers /> */}
             </View>
         </View>
     );

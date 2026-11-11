@@ -1,42 +1,32 @@
 import { DraftStorage, ReviewDraft } from "@/store/reviewSessionStore";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
+    ActivityIndicator,
+    FlatList,
     KeyboardAvoidingView,
     Platform,
-    RefreshControl,
-    ScrollView,
+    Pressable,
     StyleSheet,
     View,
-    FlatList,
-    ActivityIndicator,
-    Pressable,
 } from "react-native";
 
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import TextDefault from "@/components/core/text-core";
-import { useRouter } from "expo-router";
 import NotsCard from "@/components/notifications/nots-card";
+import { useRouter } from "expo-router";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import {
-    Flag,
-    ForbiddenCircle,
-    MenuDots,
-    Pen,
-    TrashBinTrash,
-    Eye,
-} from "@/lib/solar-icons/Bold";
+import { Eye, MenuDots, TrashBinTrash } from "@/lib/solar-icons/Bold";
 
+import ConfirmModal from "@/components/core/confirm-modal";
 import {
     BottomSheetBackdrop,
     BottomSheetModal,
-    BottomSheetView,
     BottomSheetScrollView,
+    BottomSheetView,
     useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import ConfirmModal from "@/components/core/confirm-modal";
-import { ShareLargeBtn } from "@/components/core/share-btn";
 
-import { apiAuth, apiAuthPost, apiAuthDELETE } from "@/lib/api";
+import api from "@/lib/api";
 
 export default function Drafts() {
     const insets = useSafeAreaInsets();
@@ -48,9 +38,9 @@ export default function Drafts() {
 
     const checkNotifications = async () => {
         try {
-            const response = await apiAuth("/notifications");
-            setNotifications(response.notifications);
-            // console.log("Notificações:", response.notifications);
+            const response = await api.get("/notifications");
+            setNotifications(response.data.notifications);
+            // console.log("Notificações:", response.data.notifications);
         } catch (error) {
             console.error("Erro ao buscar notificações:", error);
         }
@@ -89,7 +79,7 @@ export default function Drafts() {
     const handleDelete = async () => {
         try {
             setIsLoading(true);
-            await apiAuthDELETE(`/notifications/all`);
+            await api.delete(`/notifications/all`);
             setIsLoading(false);
             onRefresh();
         } catch (error) {
@@ -99,7 +89,7 @@ export default function Drafts() {
 
     const setAllSeen = async () => {
         try {
-            await apiAuthPost(`/notifications/all`);
+            await api.post(`/notifications/all`);
             onRefresh();
         } catch (error) {
             console.error("Error setting notification as seen:", error);

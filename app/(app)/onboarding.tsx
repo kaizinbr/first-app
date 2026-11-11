@@ -1,6 +1,6 @@
 import Button from "@/components/button";
 import TextDefault from "@/components/core/text-core";
-import { apiAuth, apiAuthPUT } from "@/lib/api";
+import api from "@/lib/api";
 import { UserProfile } from "@/lib/types";
 import { useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
@@ -76,18 +76,18 @@ export default function Onboarding() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await apiAuth("/me");
+                const response = await api.get("/me");
                 // console.log("Profile data fetched successfully:", response);
-                setProfileData(response);
-                setName(response.name);
-                setUsername(response.username);
-                setPronouns(response.pronouns || "");
-                setAvatar(response.avatar_url);
+                setProfileData(response.data);
+                setName(response.data.name);
+                setUsername(response.data.username);
+                setPronouns(response.data.pronouns || "");
+                setAvatar(response.data.avatar_url);
 
-                const tempColors = await getColors(response.avatar_url, {
+                const tempColors = await getColors(response.data.avatar_url, {
                     fallback: "#000",
                     cache: true,
-                    key: response.avatar_url,
+                    key: response.data.avatar_url,
                 });
                 setColors(tempColors);
             } catch (error) {
@@ -103,9 +103,9 @@ export default function Onboarding() {
                 setIsLoadingUsernames(true);
                 setUsernameLookupError(null);
 
-                const response = await apiAuth("/users/usernames");
+                const response = await api.get("/users/usernames");
                 // console.log("Usernames fetched successfully:", response);
-                const usernames = response?.usernames ?? [];
+                const usernames = response.data?.usernames ?? [];
                 const normalizedUsernames = usernames
                     .map(
                         (item: { lowername?: string; username?: string }) =>
@@ -260,14 +260,14 @@ export default function Onboarding() {
                 setAvatar(uploadedUrl);
             }
 
-            const response = await apiAuthPUT("/me", {
+            const response = await api.put("/me", {
                 name,
                 username,
                 pronouns,
                 avatar: uploadedUrl,
             });
 
-            if (response) {
+            if (response.data) {
                 // console.log("Profile updated successfully:", response);
                 Alert.alert(
                     "Perfil atualizado",

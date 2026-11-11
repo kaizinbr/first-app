@@ -1,6 +1,6 @@
 // hooks/useLike.ts
-import { useState, useCallback, useEffect } from "react";
-import { apiAuth, apiAuthPost } from "@/lib/api";
+import api from "@/lib/api";
+import { useCallback, useEffect, useState } from "react";
 
 interface UseLikeProps {
     id: string;
@@ -17,10 +17,10 @@ export function useLike({ id, initialCount, type }: UseLikeProps) {
     useEffect(() => {
         async function fetchLikeStatus() {
             try {
-                const response = await apiAuth(`/${type}s/${id}/like`);
+                const response = await api.get(`/${type}s/${id}/like`);
                 // console.log("Like status response:", response);
-                setLiked(response.liked);
-                setAuthenticated(response.authenticated);
+                setLiked(response.data.liked);
+                setAuthenticated(response.data.authenticated);
             } catch (error) {
                 console.error("Error fetching like status:", error);
             }
@@ -38,9 +38,9 @@ export function useLike({ id, initialCount, type }: UseLikeProps) {
 
         try {
             setLoading(true);
-            const response = await apiAuthPost(`/${type}s/${id}/like`);
-            if (response.liked !== !wasLiked) {
-                setLiked(response.liked);
+            const response = await api.post(`/${type}s/${id}/like`);
+            if (response.data.liked !== !wasLiked) {
+                setLiked(response.data.liked);
             }
         } catch {
             setLiked(wasLiked);

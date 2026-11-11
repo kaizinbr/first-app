@@ -1,14 +1,5 @@
 import { Stack } from "expo-router";
 
-export const unstable_settings = {
-    initialRouteName: "home",
-    search: {
-        initialRouteName: "search",
-    },
-    profile: {
-        initialRouteName: "profile",
-    },
-};
 
 export default function SharedLayout({ segment }: { segment: string }) {
     // A documentação oficial usa o segment para distinguir entre as rotas.

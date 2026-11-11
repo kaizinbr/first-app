@@ -1,18 +1,9 @@
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import { Image } from "expo-image";
-import Button from "@/components/button";
-import { authClient } from "@/lib/auth-client";
-import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { UserProfile } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { Palette } from "@/lib/types";
-import { SkeletonProfile } from "@/components/core/skeletons";
 import Menu from "@/components/settings/menu-main";
+import api from "@/lib/api";
+import { Palette, UserProfile } from "@/lib/types";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 export default function IndexSettings() {
     const router = useRouter();
@@ -26,10 +17,10 @@ export default function IndexSettings() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await apiAuth("/me");
+                const response = await api.get("/me");
                 // console.log("Profile data fetched successfully:", response);
-                setProfileData(response);
-                const accountResponse = await apiAuth("/me/account");
+                setProfileData(response.data);
+                const accountResponse = await api.get("/me/account");
                 setAccountData(accountResponse);
                 setLoading(false);
             } catch (error) {

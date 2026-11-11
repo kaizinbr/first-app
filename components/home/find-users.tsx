@@ -1,46 +1,9 @@
-import FeedCard from "@/components/home/feed-card";
-import api, { apiAuth } from "@/lib/api";
-import { Review } from "@/lib/types";
-import { useEffect, useRef, useState } from "react";
-import { useRoute } from "expo-router";
-import {
-    StyleSheet,
-    View,
-    useWindowDimensions,
-    Pressable,
-    ScrollView,
-} from "react-native";
 import { AvatarNoPress } from "@/components/core/avatar";
-import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { authClient } from "@/lib/auth-client";
-import Banner from "@/components/home/banner";
 import TextDefault from "@/components/core/text-core";
-import { Settings } from "@/lib/solar-icons/Outline";
-import { Palette } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import {
-    lightenColor,
-    darkenColor,
-    getBannerColors,
-} from "@/lib/util/workWithColors";
-import { getColors } from "react-native-image-colors";
-
-import { getPalette } from "expo-color-thief-native";
-import { selectBackgroundColor } from "@/lib/util/selectRightColor";
-
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    interpolateColor,
-    interpolate,
-    Extrapolation,
-} from "react-native-reanimated";
-import type { SharedValue } from "react-native-reanimated";
-
-import { Image } from "expo-image";
+import api from "@/lib/api";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { Pressable, ScrollView, StyleSheet, View } from "react-native";
 
 function UserCard({ data }: { data: any }) {
     const router = useRouter();
@@ -136,9 +99,9 @@ export default function FindUsers() {
     useEffect(() => {
         async function fetchUsers() {
             try {
-                const response = await apiAuth("/users");
-                // console.log(response.profiles)
-                setUsers(response.profiles);
+                const response = await api.get("/users");
+                // console.log(response.data.profiles)
+                setUsers(response.data.profiles);
             } catch (error) {
                 console.error("Erro ao buscar usuários:", error);
             }

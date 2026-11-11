@@ -1,20 +1,19 @@
-import { useEffect, useRef, useCallback, useState } from "react";
-import { View, StyleSheet, ActivityIndicator, Pressable } from "react-native";
-import { Image } from "react-native";
-import Animated, {
-    useSharedValue,
-    useAnimatedStyle,
-    withTiming,
-    interpolateColor,
-    runOnJS,
-} from "react-native-reanimated";
-import { useIsFocused } from "expo-router/react-navigation";
 import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
-import { UserProfile, Palette } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
+import { UserProfile } from "@/lib/types";
 import { selectRightColorLastFm } from "@/lib/util/selectRightColor";
 import { useRouter } from "expo-router";
+import { useIsFocused } from "expo-router/react-navigation";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { getColors } from "react-native-image-colors";
+import Animated, {
+    interpolateColor,
+    runOnJS,
+    useAnimatedStyle,
+    useSharedValue,
+    withTiming,
+} from "react-native-reanimated";
 
 const POLL_INTERVAL = 10_000;
 const FADE_MS = 400;

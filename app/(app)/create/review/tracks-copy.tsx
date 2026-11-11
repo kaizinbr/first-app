@@ -1,5 +1,4 @@
-import ReviewCreateMain from "@/components/reviews/create/main-tracks";
-import { apiAuth, apiAuthPost } from "@/lib/api";
+import api from "@/lib/api";
 import { Album, Palette, Review } from "@/lib/types";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -70,7 +69,7 @@ export default function Page() {
 
         // const reviewHTMLContent = await editorRef.current?.getHTML();
 
-        const response = await apiAuthPost(`/reviews/upsert`, {
+        const response = await api.post(`/reviews/upsert`, {
             albumId: id,
             ratings,
             review: rawText,
@@ -81,7 +80,7 @@ export default function Page() {
 
         console.log("Response from saving review:", response);
 
-        if (!response.saved) {
+        if (!response.data.saved) {
             console.error("Error saving ratings", response.data);
             Alert.alert(
                 "Erro",
@@ -108,16 +107,16 @@ export default function Page() {
             setReviewData(null);
             // console.log("Fetching review data for id:", id, reviewData);
             try {
-                const response = await apiAuth(`/me/reviewed/${id}`);
+                const response = await api.get(`/me/reviewed/${id}`);
                 console.log("Album data fetched successfully:", response);
 
-                if (response.reviewed && response.rating) {
-                    setRatings(response.rating.ratings);
-                    setTotal(Number(response.rating.total));
+                if (response.data.reviewed && response.data.rating) {
+                    setRatings(response.data.rating.ratings);
+                    setTotal(Number(response.data.rating.total));
                     console.log("avaliou", ratings);
                 } else {
                     setRatings(
-                        response.album.tracks.items.map((track: any) => ({
+                        response.data.album.tracks.items.map((track: any) => ({
                             id: track.id,
                             value: 0,
                             favorite: false,
@@ -130,8 +129,10 @@ export default function Page() {
                 }
 
                 // console.log("Ratings state initialized:", ratings);
-                setReviewData(response);
-                const palette = await getColors(response.album.images[0].url);
+                setReviewData(response.data);
+                const palette = await getColors(
+                    response.data.album.images[0].url,
+                );
                 setColors(palette);
             } catch (error) {
                 console.error("Error fetching album data:", error);
@@ -182,8 +183,8 @@ export default function Page() {
                 </View>
             )} */}
             <View style={styles.overlay}>
-                    <ActivityIndicator size="large" color="#8065ef" />
-                </View>
+                <ActivityIndicator size="large" color="#8065ef" />
+            </View>
         </>
     );
 }

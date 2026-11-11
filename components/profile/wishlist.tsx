@@ -1,21 +1,14 @@
-import {
-    View,
-    Text,
-    Button,
-    StyleSheet,
-    ScrollView,
-    Pressable,
-    FlatList,
-    useWindowDimensions,
-} from "react-native";
-import { useState, useEffect } from "react";
-import { apiAuth } from "@/lib/api";
-import { UserProfile, Review } from "@/lib/types";
-import { Tabs } from "react-native-collapsible-tab-view";
-import { ArrowRightUp } from "@/lib/solar-icons/Linear";
+import { UserProfile } from "@/lib/types";
 import { Image } from "expo-image";
-import LyricsCard from "@/components/profile/lyrics-card";
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+    Pressable,
+    StyleSheet,
+    useWindowDimensions,
+    View
+} from "react-native";
+import { Tabs } from "react-native-collapsible-tab-view";
 
 import { SimpleGrid } from "react-native-super-grid";
 
@@ -33,7 +26,9 @@ export default function WishlistRoute({ data }: { data: UserProfile }) {
     useEffect(() => {
         async function fetchWishlist() {
             try {
-                const response = await apiAuth(`/users/${data.username}/wishlist`);
+                const response = await api.get(
+                    `/users/${data.username}/wishlist`,
+                );
                 setWishlistAlbums(response || []);
                 console.log("Álbuns na wishlist:", response);
             } catch (error) {

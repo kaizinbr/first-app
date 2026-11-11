@@ -1,7 +1,7 @@
 // hooks/usePaginatedReviews.ts
-import { useEffect, useRef, useState } from "react";
 import api from "@/lib/api";
 import { ReviewWithAlbum } from "@/lib/types";
+import { useEffect, useRef, useState } from "react";
 
 interface UsePaginatedReviewsOptions {
     endpoint: string;

@@ -10,7 +10,7 @@ import {
 import { Image } from "expo-image";
 import Button from "@/components/button";
 import { authClient } from "@/lib/auth-client";
-import api, { apiAuth, apiAuthPost } from "@/lib/api";
+import api from "@/lib/api";
 import { useEffect, useState } from "react";
 import ProfileTabs from "@/components/profile/profile-tabs";
 import { UserProfile } from "@/lib/types";
@@ -56,11 +56,20 @@ export default function UnlinkGoogleBtn({
 
     const confirmUnlinkGoogle = async () => {
         try {
+            const accounts = await authClient.listAccounts();
+
+            const googleAccount = accounts?.data?.find(
+                (account) => account.providerId === "google",
+            );
+
+            if (!googleAccount) {
+                return;
+            }
+            
             await authClient.unlinkAccount({
-                providerId: "google",
+                accountId: googleAccount.id,
             });
 
-            const accounts = await authClient.listAccounts();
             setAccounts(accounts);
         } catch (error) {
             console.error("Error unlinking Google account:", error);

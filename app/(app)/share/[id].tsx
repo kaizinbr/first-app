@@ -1,11 +1,10 @@
-import api, { apiAuth } from "@/lib/api";
+import TextDefault from "@/components/core/text-core";
+import api from "@/lib/api";
 import { Album, Review } from "@/lib/types";
+import { getPalette } from "expo-color-thief-native";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, View, Text } from "react-native";
-import TextDefault from "@/components/core/text-core";
-import { getColors } from "react-native-image-colors";
-import { getPalette, getColor } from "expo-color-thief-native";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { Palette } from "@/lib/types";
 
@@ -26,9 +25,9 @@ export default function ReviewPage() {
         const fetchReviewData = async () => {
             setReviewData(null);
             // console.log("Fetching album data for id:", id, albumData);
-            const reviewDataRes = await apiAuth(`/reviews/${id}`);
+            const response = await api.get(`/reviews/${id}`);
             try {
-                if (!reviewDataRes || reviewDataRes.length === 0) {
+                if (!response || response.data.length === 0) {
                     console.error("No review data found for id:", id);
                     setNotFound(true);
                     return;
@@ -36,26 +35,26 @@ export default function ReviewPage() {
 
                 console.log(
                     "Review data fetched successfully:",
-                    reviewDataRes[0].id,
+                    response.data[0].id,
                 );
-                setReviewData(reviewDataRes[0]);
+                setReviewData(response.data[0]);
 
-                setAlbumData(reviewDataRes[0].album);
+                setAlbumData(response.data[0].album);
 
                 if (
-                    reviewDataRes[0].album.images &&
-                    reviewDataRes[0].album.images.length > 0
+                    response.data[0].album.images &&
+                    response.data[0].album.images.length > 0
                 ) {
-                    const imageUrl = reviewDataRes[0].album.images[0].url;
+                    const imageUrl = response.data[0].album.images[0].url;
 
-                    const palette = await getPalette(imageUrl, { quality: 10, });
+                    const palette = await getPalette(imageUrl, { quality: 10 });
                     setPalette(palette);
                 }
             } catch (error) {
                 console.error("Error fetching review data:", error);
                 setNotFound(true);
                 console.log("Error details:", {
-                    reviewDataRes,
+                    reviewDataRes: response,
                 });
             }
         };

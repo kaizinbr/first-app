@@ -1,18 +1,13 @@
-import EditArtistsModal from "@/components/profile/edit/edit-artists-modal";
 import LyricsModal from "@/components/profile/edit/lyrics-modal";
-import { apiAuth, apiAuthPUT } from "@/lib/api";
+import api from "@/lib/api";
+import { GalleryMinimalistic } from "@/lib/solar-icons/Bold";
+import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { Palette, UserProfile } from "@/lib/types";
 import {
     BottomSheetBackdrop,
     BottomSheetModal,
     useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
-import {
-    Pen,
-    GalleryWide,
-    GalleryMinimalistic,
-} from "@/lib/solar-icons/Bold";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -178,29 +173,29 @@ export default function EditProfile() {
         const fetchProfileData = async () => {
             setIsLoading(true);
             try {
-                const response = await apiAuth("/me");
+                const response = await api.get("/me");
                 // console.log("Profile data fetched successfully:", response);
-                setProfileData(response);
-                setName(response.name);
-                setUsername(response.username);
-                setPronouns(response.pronouns || "");
-                setBio(response.bio || "");
-                setAvatar(response.avatar_url);
-                setSite(response.site || "");
-                setLastFM(response.lastfm_username || "");
-                setFollowersCount(response.followers_count || 0);
-                setFollowingCount(response.following_count || 0);
-                setReviewsCount(response.reviews_count || 0);
-                setAlbuns(response.albuns || []);
-                setArtists(response.artists || []);
+                setProfileData(response.data);
+                setName(response.data.name);
+                setUsername(response.data.username);
+                setPronouns(response.data.pronouns || "");
+                setBio(response.data.bio || "");
+                setAvatar(response.data.avatar_url);
+                setSite(response.data.site || "");
+                setLastFM(response.data.lastfm_username || "");
+                setFollowersCount(response.data.followers_count || 0);
+                setFollowingCount(response.data.following_count || 0);
+                setReviewsCount(response.data.reviews_count || 0);
+                setAlbuns(response.data.albuns || []);
+                setArtists(response.data.artists || []);
 
-                setLyrics(response.lyrics);
-                console.log(response.lyrics);
+                setLyrics(response.data.lyrics);
+                console.log(response.data.lyrics);
 
-                const colorsResult = await getColors(response.avatar_url, {
+                const colorsResult = await getColors(response.data.avatar_url, {
                     fallback: "#000",
                     cache: true,
-                    key: response.avatar_url,
+                    key: response.data.avatar_url,
                 });
                 const bannerColors = getBannerColors(colorsResult);
                 setColors(bannerColors);
@@ -209,10 +204,10 @@ export default function EditProfile() {
                 console.log("Colors extracted from avatar:", bannerColors);
                 setIsLoading(false);
 
-                // const tempColors = await getColors(response.avatar_url, {
+                // const tempColors = await getColors(response.data.avatar_url, {
                 //     fallback: "#000",
                 //     cache: true,
-                //     key: response.avatar_url,
+                //     key: response.data.avatar_url,
                 // });
                 // setColors(tempColors);
             } catch (error) {
@@ -229,9 +224,9 @@ export default function EditProfile() {
                 setIsLoadingUsernames(true);
                 setUsernameLookupError(null);
 
-                const response = await apiAuth("/users/usernames");
+                const response = await api.get("/users/usernames");
                 // console.log("Usernames fetched successfully:", response);
-                const usernames = response?.usernames ?? [];
+                const usernames = response.data?.usernames ?? [];
                 const normalizedUsernames = usernames
                     .map(
                         (item: { lowername?: string; username?: string }) =>
@@ -478,7 +473,7 @@ export default function EditProfile() {
                 setAvatar(uploadedUrl);
             }
 
-            const response = await apiAuthPUT("/me", {
+            const response = await api.put("/me", {
                 name,
                 username,
                 pronouns,

@@ -1,27 +1,21 @@
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    Pressable,
-    ActivityIndicator,
-} from "react-native";
-import { EnrichedMarkdownText } from "react-native-enriched-markdown";
-import { truncateMarkdown } from "@/lib/util/truncate";
-import { Notification, ReviewWithAlbum } from "@/lib/types";
 import TextDefault from "@/components/core/text-core";
+import api from "@/lib/api";
 import { authClient } from "@/lib/auth-client";
-import { useRouter, Href, Link } from "expo-router";
-import api, { apiAuthPost } from "@/lib/api";
+import { Notification, ReviewWithAlbum } from "@/lib/types";
 import { Image } from "expo-image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import {
+    Pressable,
+    StyleSheet,
+    View
+} from "react-native";
 
-import { TrashBinTrash } from "@/lib/solar-icons/Outline";
 
 import ConfirmModal from "@/components/core/confirm-modal";
 
+import { ChatLine, Hearts, SirenRounded } from "@/lib/solar-icons/Bold";
 import { getShortPastRelativeTime } from "@/lib/util/time";
-import { Hearts, ChatLine, SirenRounded  } from "@/lib/solar-icons/Bold";
 
 const MAX_PREVIEW_CHARS = 500;
 
@@ -48,10 +42,10 @@ export default function NotsCard({
                     setReviewData(response.data[0]);
                     // console.log("Review data fetched successfully:", reviewData);
 
-                    // if (response.albumId) {
+                    // if (response.data.albumId) {
                     //     const albumResponse = await api.get(`/albums/${response.data.albumId}`);
-                    //     setAlbumData(albumResponse.data);
-                    //     console.log("Album data fetched successfully:", albumResponse.data);
+                    //     setAlbumData(albumresponse.data);
+                    //     console.log("Album data fetched successfully:", albumresponse.data);
                     // }
                     setLoading(false);
                 }
@@ -67,7 +61,7 @@ export default function NotsCard({
 
     const setSeen = async () => {
         try {
-            await apiAuthPost(`/notifications/${nots.id}/seen`);
+            await api.post(`/notifications/${nots.id}/seen`);
             onRefresh();
         } catch (error) {
             console.error("Error setting notification as seen:", error);
@@ -151,7 +145,8 @@ export default function NotsCard({
                                     </TextDefault>
                                 </View>
                             </>
-                        ) : <>
+                        ) : (
+                            <>
                                 <View
                                     style={{
                                         height: 36,
@@ -165,30 +160,40 @@ export default function NotsCard({
                                     <SirenRounded size={24} color="#8065ef" />
                                 </View>
                                 <View style={styles.cardContent}>
-                                    <View style={{
+                                    <View
+                                        style={{
                                             padding: 8,
                                             backgroundColor: "#202020",
                                             borderRadius: 4,
-                                    }} />
-                                    <View style={{
+                                        }}
+                                    />
+                                    <View
+                                        style={{
                                             marginTop: 8,
                                             padding: 6,
                                             backgroundColor: "#202020",
                                             borderRadius: 4,
-                                    }} />
+                                        }}
+                                    />
                                 </View>
-                            </>}
+                            </>
+                        )}
                     </View>
                 </Pressable>
             )}
             {nots.type === "follow" && (
                 <Pressable
-                    onPress={() =>{
+                    onPress={() => {
                         setSeen();
                         router.push({
-                            pathname: "/(app)/(tabs)/(notifications)/user/[username]",
-                            params: { username: nots.Profile_Notification_sender_idToProfile.username },
-                        })
+                            pathname:
+                                "/(app)/(tabs)/(notifications)/user/[username]",
+                            params: {
+                                username:
+                                    nots.Profile_Notification_sender_idToProfile
+                                        .username,
+                            },
+                        });
                     }}
                     style={({ pressed }) => [
                         styles.main,
@@ -226,7 +231,7 @@ export default function NotsCard({
                     </View>
                 </Pressable>
             )}
-            
+
             {nots.type === "comment" && (
                 <Pressable
                     onPress={() => {
@@ -281,7 +286,8 @@ export default function NotsCard({
                                     </TextDefault>
                                 </View>
                             </>
-                        ) : <>
+                        ) : (
+                            <>
                                 <View
                                     style={{
                                         height: 36,
@@ -295,19 +301,24 @@ export default function NotsCard({
                                     <SirenRounded size={24} color="#8065ef" />
                                 </View>
                                 <View style={styles.cardContent}>
-                                    <View style={{
+                                    <View
+                                        style={{
                                             padding: 8,
                                             backgroundColor: "#202020",
                                             borderRadius: 4,
-                                    }} />
-                                    <View style={{
+                                        }}
+                                    />
+                                    <View
+                                        style={{
                                             marginTop: 8,
                                             padding: 6,
                                             backgroundColor: "#202020",
                                             borderRadius: 4,
-                                    }} />
+                                        }}
+                                    />
                                 </View>
-                            </>}
+                            </>
+                        )}
                     </View>
                 </Pressable>
             )}

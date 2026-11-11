@@ -7,7 +7,8 @@ export default function NotificationObserver() {
         const subscription =
             Notifications.addNotificationResponseReceivedListener(
                 (response) => {
-                    const data = response.notification.request.content.data;
+                    const data =
+                        response.notification.request.content.data;
 
                     console.log("Notification data:", data);
 

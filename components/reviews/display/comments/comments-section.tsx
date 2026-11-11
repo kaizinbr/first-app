@@ -1,6 +1,5 @@
 import TextDefault from "@/components/core/text-core";
 import CommentCard from "@/components/reviews/display/comments/comment-card";
-import { apiAuth, apiAuthDELETE } from "@/lib/api";
 import { Comment, Review } from "@/lib/types";
 import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
@@ -27,7 +26,7 @@ export default function CommentsSection({
         const fetchComments = async () => {
             setIsLoading(true);
             try {
-                const coms = await apiAuth(`/reviews/${reviewData.id}/comment`);
+                const coms = await api.get(`/reviews/${reviewData.id}/comment`);
                 setComments(coms.comments);
             } catch (error) {
                 console.error("Error checking review ownership:", error);
@@ -40,7 +39,7 @@ export default function CommentsSection({
     const handleDelete = async () => {
         try {
             setIsLoading(true);
-            await apiAuthDELETE(`/reviews/${reviewData.id}`, {
+            await api.delete(`/reviews/${reviewData.id}`, {
                 method: "DELETE",
             });
             router.back();

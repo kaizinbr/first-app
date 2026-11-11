@@ -16,7 +16,6 @@ import {
 import { AvatarNoPress } from "@/components/core/avatar";
 import TextDefault from "@/components/core/text-core";
 import { AlbumCard } from "@/components/home/album-section";
-import { apiAuth } from "@/lib/api";
 import { Album, ReviewWithAlbum } from "@/lib/types";
 
 import {
@@ -57,15 +56,15 @@ const ToolbarButton = React.memo(
 
 const normalizeNewlines = (text: string) => {
     if (!text) return "";
-    
+
     // 1. Trata possíveis quebras escapadas (literais "\\n") que vêm de JSON/Bancos de Dados
-    let parsedText = text.replace(/\\n/g, '\n');
-    
+    let parsedText = text.replace(/\\n/g, "\n");
+
     // 2. Garante que cada linha termine com 2 espaços (Hard Break do Markdown)
     return parsedText
-        .split('\n')
-        .map(line => line.trimEnd() + '  ')
-        .join('\n')
+        .split("\n")
+        .map((line) => line.trimEnd() + "  ")
+        .join("\n")
         .trimEnd(); // Removemos o excesso do final do texto
 };
 
@@ -84,10 +83,10 @@ export default function PostEditor({
 }) {
     const ref = useRef<EnrichedMarkdownTextInputInstance>(null);
     const searchTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
-    
+
     // 1. Inicia o valor já formatado para o Markdown
     const normalizedInitial = normalizeNewlines(initialValue);
-    
+
     const markdownRef = useRef(normalizedInitial);
     const dirtyRef = useRef(false);
     const [styleState, setStyleState] = useState<StyleState | null>(null);
@@ -97,7 +96,7 @@ export default function PostEditor({
     useEffect(() => {
         // 2. Normaliza todo o texto novo que chegar de fora (Server/Draft)
         const normalizedIncoming = normalizeNewlines(initialValue);
-        
+
         if (normalizedIncoming === markdownRef.current) {
             dirtyRef.current = false;
             return;
@@ -110,12 +109,11 @@ export default function PostEditor({
         setMarkdown(normalizedIncoming);
         markdownRef.current = normalizedIncoming;
         dirtyRef.current = false;
-        
+
         // 3. Pequeno delay garante que a ref foi injetada corretamente no component interno nativo
         setTimeout(() => {
             ref.current?.setValue?.(normalizedIncoming);
         }, 50);
-        
     }, [initialValue]);
 
     useEffect(() => {
@@ -161,7 +159,7 @@ export default function PostEditor({
                 }
 
                 try {
-                    const result = await apiAuth(`/users?q=${query}&limit=5`);
+                    const result = await api.get(`/users?q=${query}&limit=5`);
                     setSuggestions(result.profiles);
                 } catch {
                     setSuggestions([]);
@@ -189,7 +187,7 @@ export default function PostEditor({
         },
         [onDraftChange],
     );
-    
+
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}

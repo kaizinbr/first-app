@@ -1,6 +1,5 @@
 // app/(app)/create/review/tracks/[id].tsx
 import ReviewCreateMain from "@/components/reviews/create/main-tracks";
-import { apiAuth } from "@/lib/api";
 import type { Palette } from "@/lib/types";
 import { Album } from "@/lib/types";
 import { useReviewSession } from "@/store/reviewSessionStore";
@@ -20,35 +19,39 @@ export default function TracksPage() {
     useEffect(() => {
         const fetchReviewData = async () => {
             try {
-                const response = await apiAuth(`/me/reviewed/${id}`);
-                // console.log(response)
+                const response = await api.get(`/me/reviewed/${id}`);
+                // console.log(response.data)
 
                 const initialRatings =
-                    response.reviewed && response.rating
-                        ? response.rating.ratings
-                        : response.album.tracks.items.map((track: any) => ({
-                              id: track.id,
-                              value: 0,
-                              favorite: false,
-                              comment: "",
-                              skip: false,
-                          }));
+                    response.data.reviewed && response.data.rating
+                        ? response.data.rating.ratings
+                        : response.data.album.tracks.items.map(
+                              (track: any) => ({
+                                  id: track.id,
+                                  value: 0,
+                                  favorite: false,
+                                  comment: "",
+                                  skip: false,
+                              }),
+                          );
 
-                if (response.reviewed) {
+                if (response.data.reviewed) {
                     initSession(
                         id,
                         initialRatings,
-                        response.rating.review,
-                        parseFloat(response.rating.total),
-                        response.rating.manual,
+                        response.data.rating.review,
+                        parseFloat(response.data.rating.total),
+                        response.data.rating.manual,
                     );
                 } else {
                     initSession(id, initialRatings, "");
                 }
 
-                setAlbum(response.album);
+                setAlbum(response.data.album);
 
-                const palette = await getColors(response.album.images[0].url);
+                const palette = await getColors(
+                    response.data.album.images[0].url,
+                );
                 setColors(palette as Palette);
             } catch (error) {
                 console.error("Error fetching album data:", error);

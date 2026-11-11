@@ -1,7 +1,5 @@
 import * as Notifications from "expo-notifications";
-import * as Device from "expo-device";
 import { Platform } from "react-native";
-import { apiAuthPost } from "@/lib/api";
 
 // Como o handler processa notificações quando o app está aberto
 Notifications.setNotificationHandler({
@@ -15,7 +13,6 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotifications(): Promise<string | null> {
-    
     // if (!Device.isDevice) return null; // emulador não funciona
 
     const { status: existingStatus } =
@@ -40,7 +37,7 @@ export async function registerForPushNotifications(): Promise<string | null> {
         projectId: "a1236a00-ff58-44a6-b648-34ca61371df0",
     });
 
-    const response = await apiAuthPost("/push-tokens", {
+    const response = await api.post("/push-tokens", {
         token: token.data,
     });
 

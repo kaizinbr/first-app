@@ -1,13 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet } from "react-native";
 
-import { apiAuth, apiAuthPost, apiAuthDELETE } from "@/lib/api";
-import { Artist, Palette, UserProfile } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft, Star } from "@/lib/solar-icons/Outline";
+import api from "@/lib/api";
 import { Star as StarBold } from "@/lib/solar-icons/Bold";
+import { Star } from "@/lib/solar-icons/Outline";
+import { Artist } from "@/lib/types";
 
 export default function FavoriteArtistBtn({
     artistData,
@@ -22,11 +19,11 @@ export default function FavoriteArtistBtn({
         // Verificar se o álbum é favorito do usuário
         async function checkIfFavorite() {
             try {
-                const response = await apiAuth(
+                const response = await api.get(
                     `/artists/${artistData.id}/favorite`,
                 );
                 console.log("Resposta do favorito:", response);
-                setIsFavorite(response.isFavorite);
+                setIsFavorite(response.data.isFavorite);
             } catch (error) {
                 console.error("Erro ao verificar favorito:", error);
             }
@@ -38,11 +35,11 @@ export default function FavoriteArtistBtn({
     const toggleFavorite = async () => {
         try {
             if (isFavorite) {
-                await apiAuthDELETE(`/artists/${artistData.id}/favorite`, {
+                await api.delete(`/artists/${artistData.id}/favorite`, {
                     id: artistData.id,
                 });
             } else {
-                await apiAuthPost(`/artists/${artistData.id}/favorite`, {
+                await api.post(`/artists/${artistData.id}/favorite`, {
                     artists: {
                         id: artistData.id,
                         src: artistData.images[0].url,

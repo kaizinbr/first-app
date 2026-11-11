@@ -1,20 +1,13 @@
-import {
-    Text,
-    View,
-    StyleSheet,
-    ScrollView,
-    Pressable,
-    ActivityIndicator,
-} from "react-native";
-import { EnrichedMarkdownText } from "react-native-enriched-markdown";
-import { truncateMarkdown } from "@/lib/util/truncate";
-import { SpotifyAlbum } from "@/lib/types";
 import TextDefault from "@/components/core/text-core";
-import { authClient } from "@/lib/auth-client";
-import { useRouter, Href, Link } from "expo-router";
 import api from "@/lib/api";
+import { authClient } from "@/lib/auth-client";
+import { SpotifyAlbum } from "@/lib/types";
+import { truncateMarkdown } from "@/lib/util/truncate";
 import { Image } from "expo-image";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 
 import { TrashBinTrash } from "@/lib/solar-icons/Outline";
 
@@ -24,7 +17,13 @@ import { DraftStorage, ReviewDraft } from "@/store/reviewSessionStore";
 
 const MAX_PREVIEW_CHARS = 500;
 
-export default function DraftCard({ draft, onRefresh }: { draft: ReviewDraft; onRefresh: () => void }) {
+export default function DraftCard({
+    draft,
+    onRefresh,
+}: {
+    draft: ReviewDraft;
+    onRefresh: () => void;
+}) {
     const router = useRouter();
     const { data: session } = authClient.useSession();
     // console.log("DraftCard renderizado com draft:", draft);
@@ -287,5 +286,4 @@ const styles = StyleSheet.create({
         color: "#777",
         fontSize: 13,
     },
-    
 });

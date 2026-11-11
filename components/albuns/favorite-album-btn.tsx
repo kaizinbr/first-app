@@ -1,13 +1,10 @@
-import React from "react";
-import { View, Text, StyleSheet, Image, Pressable } from "react-native";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Pressable, StyleSheet } from "react-native";
 
-import { apiAuth, apiAuthPost, apiAuthDELETE } from "@/lib/api";
-import { Album, Palette, UserProfile } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { lightenColor, darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft, Star } from "@/lib/solar-icons/Outline";
+import api from "@/lib/api";
 import { Star as StarBold } from "@/lib/solar-icons/Bold";
+import { Star } from "@/lib/solar-icons/Outline";
+import { Album } from "@/lib/types";
 
 export default function FavoriteAlbumBtn({
     albumData,
@@ -22,11 +19,11 @@ export default function FavoriteAlbumBtn({
         // Verificar se o álbum é favorito do usuário
         async function checkIfFavorite() {
             try {
-                const response = await apiAuth(
+                const response = await api.get(
                     `/albuns/${albumData.id}/favorite`,
                 );
                 console.log("Resposta do favorito:", response);
-                setIsFavorite(response.isFavorite);
+                setIsFavorite(response.data.isFavorite);
             } catch (error) {
                 console.error("Erro ao verificar favorito:", error);
             }
@@ -38,11 +35,11 @@ export default function FavoriteAlbumBtn({
     const toggleFavorite = async () => {
         try {
             if (isFavorite) {
-                await apiAuthDELETE(`/albuns/${albumData.id}/favorite`, {
+                await api.delete(`/albuns/${albumData.id}/favorite`, {
                     id: albumData.id,
                 });
             } else {
-                await apiAuthPost(`/albuns/${albumData.id}/favorite`, {
+                await api.post(`/albuns/${albumData.id}/favorite`, {
                     albuns: {
                         id: albumData.id,
                         src: albumData.images[0].url,

@@ -1,25 +1,15 @@
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
-import { Image } from "expo-image";
-import Button from "@/components/button";
-import { authClient } from "@/lib/auth-client";
-import api, { apiAuth } from "@/lib/api";
-import { useEffect, useState } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { UserProfile } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { Palette } from "@/lib/types";
-import { SkeletonProfile } from "@/components/core/skeletons";
-import Menu from "@/components/settings/menu-main";
-import { useRouter } from "expo-router";
 import Account from "@/components/settings/account";
+import api from "@/lib/api";
+import { Palette, UserProfile } from "@/lib/types";
+import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
+import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 export default function IndexSettings() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [profileData, setProfileData] = useState<UserProfile | null>(null);
-    const [userData, setUserData] = useState<any>(null);    
+    const [userData, setUserData] = useState<any>(null);
     const [accountData, setAccountData] = useState<any>(null);
     const [colors, setColors] = useState<Palette | any>(null);
     const [dominantColor, setDominantColor] = useState<string | null>(null);
@@ -27,16 +17,15 @@ export default function IndexSettings() {
     useEffect(() => {
         const fetchProfileData = async () => {
             try {
-                const response = await apiAuth("/me");
-                setProfileData(response);
+                const response = await api.get("/me");
+                setProfileData(response.data);
 
-                const userResponse = await apiAuth("/me/user");
+                const userResponse = await api.get("/me/user");
                 setUserData(userResponse);
-                const accountResponse = await apiAuth("/me/account");
+                const accountResponse = await api.get("/me/account");
                 setAccountData(accountResponse);
 
                 setLoading(false);
-
             } catch (error) {
                 console.error("Error fetching profile data:", error);
                 setLoading(false);
@@ -53,7 +42,11 @@ export default function IndexSettings() {
                 </View>
             ) : null}
             {profileData && userData && accountData && (
-                <Account data={profileData} userData={userData} accountData={accountData} />
+                <Account
+                    data={profileData}
+                    userData={userData}
+                    accountData={accountData}
+                />
             )}
         </View>
     );

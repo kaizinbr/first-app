@@ -1,8 +1,4 @@
-import {
-    Pressable,
-    StyleSheet,
-    View
-} from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 
 import { authClient } from "@/lib/auth-client";
@@ -11,7 +7,6 @@ import TextDefault from "@/components/core/text-core";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 
-import { apiAuthDELETE } from "@/lib/api";
 import { Image } from "expo-image";
 
 import { Comment } from "@/lib/types";
@@ -22,7 +17,7 @@ import {
     ForbiddenCircle,
     MenuDots,
     TrashBinTrash,
-    User
+    User,
 } from "@/lib/solar-icons/Bold";
 
 import {
@@ -71,7 +66,7 @@ export default function CommentCard({
     const handleDelete = async () => {
         try {
             setIsLoading(true);
-            await apiAuthDELETE(`/comments/${commentData.id}`);
+            await api.delete(`/comments/${commentData.id}`);
             refreshComments();
             setIsLoading(false);
         } catch (error) {

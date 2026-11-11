@@ -303,7 +303,7 @@ export default function AlbumScreen({
                         position: "absolute",
                         left: 16,
                         right: 70,
-                        bottom: 64,
+                        bottom: insets.bottom,
                         zIndex: 11,
                         height: 46,
                     },

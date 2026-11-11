@@ -11,7 +11,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
 
-
 import FeedHeader from "@/components/home/header";
 
 export default function Index() {
@@ -35,28 +34,27 @@ export default function Index() {
 
     return (
         <View style={styles.container}>
-                <Animated.View
-                    style={[
-                        styles.statusBarBg,
-                        {
-                            height: insets.top + 24,
-                        },
-                        statusBarOpacityStyle,
-                    ]}
-                    pointerEvents="none"
-                >
-                    <LinearGradient
-                        colors={["#161718", "transparent"]}
-                        style={StyleSheet.absoluteFill}
-                    />
-                </Animated.View>
-
-                
-                <HomePage
-                    onScrollAnimado={handleScroll}
-                    scrollOffsetY={scrollOffsetY}
+            <Animated.View
+                style={[
+                    styles.statusBarBg,
+                    {
+                        height: insets.top + 24,
+                    },
+                    statusBarOpacityStyle,
+                ]}
+                pointerEvents="none"
+            >
+                <LinearGradient
+                    colors={["#161718", "transparent"]}
+                    style={StyleSheet.absoluteFill}
                 />
-            </View>
+            </Animated.View>
+
+            <HomePage
+                onScrollAnimado={handleScroll}
+                scrollOffsetY={scrollOffsetY}
+            />
+        </View>
     );
 }
 

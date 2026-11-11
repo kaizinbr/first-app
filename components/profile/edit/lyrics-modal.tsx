@@ -1,21 +1,21 @@
-import {
-    Modal,
-    View,
-    Text,
-    Pressable,
-    StyleSheet,
-    ScrollView,
-    Image,
-    ActivityIndicator,
-} from "react-native";
-import { useCallback, useState, useEffect } from "react";
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
-import axios from "axios";
 import { AltArrowLeft } from "@/lib/solar-icons/Outline";
-import { getColors } from "react-native-image-colors";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
+import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
+import { useCallback, useEffect, useState } from "react";
+import {
+    ActivityIndicator,
+    Image,
+    Modal,
+    Pressable,
+    ScrollView,
+    StyleSheet,
+    Text,
+    View,
+} from "react-native";
+import { getColors } from "react-native-image-colors";
 
 export interface SavedLyrics {
     trackId: string;
@@ -43,7 +43,9 @@ export default function LyricsModal({
     const [step, setStep] = useState(0);
     const [track, setTrack] = useState<any>(null);
     const [results, setResults] = useState<any>(null);
-    const [lines, setLines] = useState<{ startTimeMs: string; words: string }[]>([]);
+    const [lines, setLines] = useState<
+        { startTimeMs: string; words: string }[]
+    >([]);
     const [color, setColor] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [selectedLines, setSelectedLines] = useState<Set<number>>(new Set());
@@ -56,7 +58,9 @@ export default function LyricsModal({
             setTrack({
                 id: savedLyrics.trackId,
                 name: savedLyrics.trackName,
-                artists: savedLyrics.artistNames.split(", ").map((name) => ({ name })),
+                artists: savedLyrics.artistNames
+                    .split(", ")
+                    .map((name) => ({ name })),
                 album: { images: [{ url: savedLyrics.albumArt }] },
             });
             setLines(savedLyrics.lines);
@@ -82,12 +86,17 @@ export default function LyricsModal({
 
         const fetchColors = async () => {
             try {
-                const resultColors = await getColors(track.album.images[0]?.url, {
-                    fallback: "#000",
-                    cache: true,
-                    key: track.album.images[0]?.url,
-                });
-                setColor(darkenColor(selectRightColor(resultColors as any), 1.3));
+                const resultColors = await getColors(
+                    track.album.images[0]?.url,
+                    {
+                        fallback: "#000",
+                        cache: true,
+                        key: track.album.images[0]?.url,
+                    },
+                );
+                setColor(
+                    darkenColor(selectRightColor(resultColors as any), 1.3),
+                );
             } catch (error) {
                 console.error("Error fetching colors:", error);
             }
@@ -162,7 +171,10 @@ export default function LyricsModal({
             trackName: track.name,
             artistNames: track.artists.map((a: any) => a.name).join(", "),
             albumArt: track.album.images[0]?.url,
-            lines: lines.map((l) => ({ startTimeMs: l.startTimeMs, words: l.words })),
+            lines: lines.map((l) => ({
+                startTimeMs: l.startTimeMs,
+                words: l.words,
+            })),
             selectedIndexes: Array.from(selectedLines).sort((a, b) => a - b),
             color,
         });
@@ -178,7 +190,10 @@ export default function LyricsModal({
             onRequestClose={onCancel}
         >
             <Pressable style={styles.overlay} onPress={onCancel}>
-                <View style={styles.card} onStartShouldSetResponder={() => true}>
+                <View
+                    style={styles.card}
+                    onStartShouldSetResponder={() => true}
+                >
                     {step === 0 && (
                         <View style={{ flex: 1, padding: 24 }}>
                             <Text style={styles.title}>Letras</Text>
@@ -188,8 +203,10 @@ export default function LyricsModal({
                                 type="tracks"
                                 setLoading={() => {}}
                             />
-                            <ScrollView style={{ marginTop: 16 }}
-                    showsVerticalScrollIndicator={false}>
+                            <ScrollView
+                                style={{ marginTop: 16 }}
+                                showsVerticalScrollIndicator={false}
+                            >
                                 {results?.tracks.items.map((item: any) => (
                                     <Pressable
                                         key={item.id}
@@ -200,7 +217,9 @@ export default function LyricsModal({
                                         style={styles.trackRow}
                                     >
                                         <Image
-                                            source={{ uri: item.album.images[0]?.url }}
+                                            source={{
+                                                uri: item.album.images[0]?.url,
+                                            }}
                                             style={styles.trackThumb}
                                         />
                                         <View style={{ flex: 1 }}>
@@ -222,9 +241,17 @@ export default function LyricsModal({
                     {step === 1 && (
                         <View style={styles.stepContainer}>
                             {loading || !color ? (
-                                <ActivityIndicator size="large" color="#8065ef" />
+                                <ActivityIndicator
+                                    size="large"
+                                    color="#8065ef"
+                                />
                             ) : (
-                                <View style={[styles.container, { backgroundColor: color }]}>
+                                <View
+                                    style={[
+                                        styles.container,
+                                        { backgroundColor: color },
+                                    ]}
+                                >
                                     <Pressable
                                         onPress={() => {
                                             setTrack(null);
@@ -238,7 +265,12 @@ export default function LyricsModal({
                                         <AltArrowLeft size={32} color="#eee" />
                                     </Pressable>
 
-                                    <Text style={[styles.textDefault, { zIndex: 10 }]}>
+                                    <Text
+                                        style={[
+                                            styles.textDefault,
+                                            { zIndex: 10 },
+                                        ]}
+                                    >
                                         Letras de {track?.name}
                                     </Text>
 
@@ -259,22 +291,35 @@ export default function LyricsModal({
                                         >
                                             {lines.length > 0 ? (
                                                 lines.map((line, index) => {
-                                                    const state = getLineState(index);
+                                                    const state =
+                                                        getLineState(index);
                                                     return (
                                                         <Pressable
                                                             key={index}
-                                                            onPress={() => toggleLine(index)}
+                                                            onPress={() =>
+                                                                toggleLine(
+                                                                    index,
+                                                                )
+                                                            }
                                                             style={[
                                                                 styles.line,
-                                                                state === "selected" && styles.lineSelected,
-                                                                state === "adjacent" && styles.lineAdjacent,
-                                                                state === "blocked" && styles.lineBlocked,
+                                                                state ===
+                                                                    "selected" &&
+                                                                    styles.lineSelected,
+                                                                state ===
+                                                                    "adjacent" &&
+                                                                    styles.lineAdjacent,
+                                                                state ===
+                                                                    "blocked" &&
+                                                                    styles.lineBlocked,
                                                             ]}
                                                         >
                                                             <Text
                                                                 style={[
                                                                     styles.lineText,
-                                                                    state === "selected" && styles.lineTextSelected,
+                                                                    state ===
+                                                                        "selected" &&
+                                                                        styles.lineTextSelected,
                                                                 ]}
                                                             >
                                                                 {line.words}
@@ -284,7 +329,8 @@ export default function LyricsModal({
                                                 })
                                             ) : (
                                                 <Text style={styles.textSec}>
-                                                    Letras não encontradas para esta faixa.
+                                                    Letras não encontradas para
+                                                    esta faixa.
                                                 </Text>
                                             )}
                                         </ScrollView>
@@ -292,7 +338,10 @@ export default function LyricsModal({
 
                                     <LinearGradient
                                         colors={["transparent", color]}
-                                        style={[styles.gradient, { bottom: 44 }]}
+                                        style={[
+                                            styles.gradient,
+                                            { bottom: 44 },
+                                        ]}
                                     />
                                     <View
                                         style={[
@@ -304,7 +353,8 @@ export default function LyricsModal({
                                     <Pressable
                                         style={[
                                             styles.btn,
-                                            selectedLines.size === 0 && styles.btnDisabled,
+                                            selectedLines.size === 0 &&
+                                                styles.btnDisabled,
                                         ]}
                                         onPress={handleConfirm}
                                         disabled={selectedLines.size === 0}

@@ -1,8 +1,10 @@
+import TextDefault from "@/components/core/text-core";
 import PostEditor from "@/components/reviews/create/rich-text";
-import { apiAuth, apiAuthPost } from "@/lib/api";
-import { DraftStorage, useReviewSession } from "@/store/reviewSessionStore";
+import api from "@/lib/api";
 import { CheckCircle } from "@/lib/solar-icons/Bold";
 import { AltArrowLeft } from "@/lib/solar-icons/Outline";
+import { Album, Palette } from "@/lib/types";
+import { DraftStorage, useReviewSession } from "@/store/reviewSessionStore";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -13,8 +15,6 @@ import {
     View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import TextDefault from "@/components/core/text-core";
-import { Album, Palette } from "@/lib/types";
 
 export default function WriteReviewPage({
     album,
@@ -55,10 +55,10 @@ export default function WriteReviewPage({
             }
 
             try {
-                const response = await apiAuth(`/me/reviewed/${album.id}`);
-                if (response.reviewed && response.rating?.review) {
-                    setReviewText(response.rating.review);
-                    latestTextRef.current = response.rating.review;
+                const response = await api.get(`/me/reviewed/${album.id}`);
+                if (response.data.reviewed && response.data.rating?.review) {
+                    setReviewText(response.data.rating.review);
+                    latestTextRef.current = response.data.rating.review;
                 }
             } catch (e) {
                 console.error("Erro ao buscar review existente:", e);
@@ -102,7 +102,7 @@ export default function WriteReviewPage({
         setPublishing(true);
         const currentText = latestTextRef.current;
 
-        const response = await apiAuthPost(`/reviews/upsert`, {
+        const response = await api.post(`/reviews/upsert`, {
             albumId: album.id,
             ratings,
             review: currentText,
@@ -112,7 +112,7 @@ export default function WriteReviewPage({
             manual: !useMedia,
         });
 
-        if (!response.saved) {
+        if (!response.data.saved) {
             Alert.alert(
                 "Erro",
                 "Não foi possível salvar sua avaliação. Tente novamente.",
