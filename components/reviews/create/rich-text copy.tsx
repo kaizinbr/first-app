@@ -17,13 +17,12 @@ import { AvatarNoPress } from "@/components/core/avatar";
 import TextDefault from "@/components/core/text-core";
 import { AlbumCard } from "@/components/home/album-section";
 import { Album, ReviewWithAlbum } from "@/lib/types";
+import api from "@/lib/api";
 
-import {
-    TextBold,
-    TextCross,
-    TextItalic,
-    TextUnderline,
-} from "@/lib/solar-icons/Bold";
+import { TextBoldIcon } from '@solar-icons/react-native/bold/text-bold'
+import { TextCrossIcon } from '@solar-icons/react-native/bold/text-cross'
+import { TextItalicIcon } from '@solar-icons/react-native/bold/text-italic'
+import { TextUnderlineIcon } from '@solar-icons/react-native/bold/text-underline'
 
 interface Suggestion {
     id: string;
@@ -160,7 +159,7 @@ export default function PostEditor({
 
                 try {
                     const result = await api.get(`/users?q=${query}&limit=5`);
-                    setSuggestions(result.profiles);
+                    setSuggestions(result.data.profiles);
                 } catch {
                     setSuggestions([]);
                 }
@@ -259,7 +258,7 @@ export default function PostEditor({
                     <View style={styles.toolbar}>
                         <ToolbarButton
                             icon={
-                                <TextBold
+                                <TextBoldIcon
                                     size={16}
                                     color={
                                         styleState?.bold?.isActive
@@ -273,7 +272,7 @@ export default function PostEditor({
                         />
                         <ToolbarButton
                             icon={
-                                <TextItalic
+                                <TextItalicIcon
                                     size={16}
                                     color={
                                         styleState?.italic?.isActive
@@ -287,7 +286,7 @@ export default function PostEditor({
                         />
                         <ToolbarButton
                             icon={
-                                <TextUnderline
+                                <TextUnderlineIcon
                                     size={16}
                                     color={
                                         styleState?.underline?.isActive
@@ -301,7 +300,7 @@ export default function PostEditor({
                         />
                         <ToolbarButton
                             icon={
-                                <TextCross
+                                <TextCrossIcon
                                     size={16}
                                     color={
                                         styleState?.strikethrough?.isActive

@@ -3,8 +3,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import api from "@/lib/api";
 import { useEffect, useState } from "react";
-
-import { MinimalisticMagnifier } from "@/lib/solar-icons/Outline";
+import { MinimalisticMagnifierIcon } from '@solar-icons/react-native/linear/minimalistic-magnifier'
 import { SearchResponse } from "@/lib/types";
 
 export default function SearchInput({
@@ -64,7 +63,7 @@ export default function SearchInput({
     return (
         <View style={[styles.main, { paddingTop: insets.top + 16 }]}>
             <View style={styles.searchWrapper}>
-                <MinimalisticMagnifier
+                <MinimalisticMagnifierIcon
                     color="#9c9c9c"
                     size={20}
                     style={{ marginRight: 8 }}

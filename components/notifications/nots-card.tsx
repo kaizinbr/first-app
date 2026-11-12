@@ -14,7 +14,11 @@ import {
 
 import ConfirmModal from "@/components/core/confirm-modal";
 
-import { ChatLine, Hearts, SirenRounded } from "@/lib/solar-icons/Bold";
+
+import { ChatRoundLineIcon } from '@solar-icons/react-native/bold/chat-round-line'
+import { HeartsIcon } from '@solar-icons/react-native/bold/hearts'
+import { SirenRoundedIcon } from '@solar-icons/react-native/bold/siren-rounded'
+
 import { getShortPastRelativeTime } from "@/lib/util/time";
 
 const MAX_PREVIEW_CHARS = 500;
@@ -120,7 +124,7 @@ export default function NotsCard({
                                         borderRadius: 36 * 0.306,
                                     }}
                                 >
-                                    <Hearts size={24} color="#8065ef" />
+                                    <HeartsIcon size={24} color="#8065ef" />
                                 </View>
                                 <View style={styles.cardContent}>
                                     <TextDefault style={styles.cardTitle}>
@@ -157,7 +161,7 @@ export default function NotsCard({
                                         borderRadius: 36 * 0.306,
                                     }}
                                 >
-                                    <SirenRounded size={24} color="#8065ef" />
+                                    <SirenRoundedIcon size={24} color="#8065ef" />
                                 </View>
                                 <View style={styles.cardContent}>
                                     <View
@@ -265,7 +269,7 @@ export default function NotsCard({
                                         borderRadius: 36 * 0.306,
                                     }}
                                 >
-                                    <ChatLine size={24} color="#8065ef" />
+                                    <ChatRoundLineIcon size={24} color="#8065ef" />
                                 </View>
                                 <View style={styles.cardContent}>
                                     <TextDefault style={styles.cardTitle}>
@@ -298,7 +302,7 @@ export default function NotsCard({
                                         borderRadius: 36 * 0.306,
                                     }}
                                 >
-                                    <SirenRounded size={24} color="#8065ef" />
+                                    <SirenRoundedIcon size={24} color="#8065ef" />
                                 </View>
                                 <View style={styles.cardContent}>
                                     <View

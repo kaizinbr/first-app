@@ -1,11 +1,11 @@
 import TextDefault from "@/components/core/text-core";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
+import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function IndexSettings() {
     const router = useRouter();
@@ -37,10 +37,10 @@ export default function IndexSettings() {
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
             <ScrollView
-                    showsVerticalScrollIndicator={false}
+                showsVerticalScrollIndicator={false}
                 style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}
             >
                 <View style={[styles.section, { padding: 16 }]}>
@@ -191,29 +191,29 @@ export default function IndexSettings() {
                         políticas de privacidade descritas acima.
                     </TextDefault>
                     <TextDefault style={[styles.textDefault, styles.paragraph]}>
-                        O usuário é responsável por manter a confidencialidade de
-                        sua senha e por todas as atividades que ocorram em sua
-                        conta. O usuário concorda em notificar imediatamente a
-                        Pitchforkd sobre qualquer uso não autorizado de sua conta ou
-                        qualquer outra violação de segurança.
+                        O usuário é responsável por manter a confidencialidade
+                        de sua senha e por todas as atividades que ocorram em
+                        sua conta. O usuário concorda em notificar imediatamente
+                        a Pitchforkd sobre qualquer uso não autorizado de sua
+                        conta ou qualquer outra violação de segurança.
                     </TextDefault>
                     <TextDefault style={[styles.textDefault, styles.paragraph]}>
-                        A Pitchforkd se reserva o direito de modificar ou encerrar
-                        a plataforma a qualquer momento, sem aviso prévio. A
-                        Pitchforkd não será responsável por qualquer modificação,
-                        suspensão ou encerramento da plataforma.
+                        A Pitchforkd se reserva o direito de modificar ou
+                        encerrar a plataforma a qualquer momento, sem aviso
+                        prévio. A Pitchforkd não será responsável por qualquer
+                        modificação, suspensão ou encerramento da plataforma.
                     </TextDefault>
                     <TextDefault style={[styles.textDefault, styles.paragraph]}>
                         A Pitchforkd não se responsabiliza por quaisquer danos
-                        diretos, indiretos, incidentais, especiais ou consequenciais
-                        decorrentes do uso ou da incapacidade de usar a plataforma,
-                        mesmo que a Pitchforkd tenha sido avisada da possibilidade
-                        de tais danos.
+                        diretos, indiretos, incidentais, especiais ou
+                        consequenciais decorrentes do uso ou da incapacidade de
+                        usar a plataforma, mesmo que a Pitchforkd tenha sido
+                        avisada da possibilidade de tais danos.
                     </TextDefault>
                     <TextDefault style={[styles.textDefault, styles.paragraph]}>
-                        Estes termos de uso são regidos pelas leis do Brasil. Qualquer
-                        disputa relacionada a estes termos de uso será resolvida
-                        exclusivamente nos tribunais do Brasil.
+                        Estes termos de uso são regidos pelas leis do Brasil.
+                        Qualquer disputa relacionada a estes termos de uso será
+                        resolvida exclusivamente nos tribunais do Brasil.
                     </TextDefault>
                 </View>
                 <View style={[styles.section, { padding: 16 }]}>
@@ -221,19 +221,20 @@ export default function IndexSettings() {
                         Atualizações
                     </TextDefault>
                     <TextDefault style={[styles.textDefault, styles.paragraph]}>
-                        A Pitchforkd pode atualizar suas políticas de privacidade e
-                        termos de uso a qualquer momento. As atualizações serão
-                        publicadas nesta página, e o uso continuado da plataforma
-                        após a publicação das atualizações constitui aceitação das
-                        mudanças.
+                        A Pitchforkd pode atualizar suas políticas de
+                        privacidade e termos de uso a qualquer momento. As
+                        atualizações serão publicadas nesta página, e o uso
+                        continuado da plataforma após a publicação das
+                        atualizações constitui aceitação das mudanças.
                     </TextDefault>
                     <TextDefault style={[styles.textDefault, styles.paragraph]}>
-                        Recomendamos que os usuários revisem esta página regularmente
-                        para se manterem informados sobre quaisquer mudanças nas
-                        políticas de privacidade e termos de uso da Pitchforkd.
+                        Recomendamos que os usuários revisem esta página
+                        regularmente para se manterem informados sobre quaisquer
+                        mudanças nas políticas de privacidade e termos de uso da
+                        Pitchforkd.
                     </TextDefault>
                 </View>
-                <View style={[{ height: 160 }]}/>
+                <View style={[{ height: 160 }]} />
             </ScrollView>
         </>
     );

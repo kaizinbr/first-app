@@ -1,13 +1,13 @@
 import LyricsModal from "@/components/profile/edit/lyrics-modal";
 import api from "@/lib/api";
-import { GalleryMinimalistic } from "@/lib/solar-icons/Bold";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { Palette, UserProfile } from "@/lib/types";
 import {
     BottomSheetBackdrop,
     BottomSheetModal,
     useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
+import { GalleryMinimalisticIcon as GalleryMinimalistic } from "@solar-icons/react-native/bold/gallery-minimalistic";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
@@ -577,7 +577,7 @@ export default function EditProfile() {
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
             <Pressable
                 onPress={saveProfile}

@@ -6,15 +6,16 @@ import { ActivityIndicator, StyleSheet, View } from "react-native";
 
 import { AvatarNoPress } from "@/components/core/avatar";
 import NotsBtn from "@/components/core/nots-btn";
-import {
-    HomeSmileAngleBold,
-    HomeSmileAngleOutline,
-    LibraryBold,
-    LibraryOutline,
-    MinimalisticMagnifierBold,
-    MinimalisticMagnifierOutline,
-    UserBold,
-} from "@/lib/solar-icons";
+
+import { HomeSmileAngleIcon } from '@solar-icons/react-native/bold/home-smile-angle'
+import { HomeSmileAngleIcon as HomeSmileAngleOutline } from '@solar-icons/react-native/outline/home-smile-angle'
+import { LibraryIcon } from '@solar-icons/react-native/bold/library'
+import { LibraryIcon as LibraryOutline } from '@solar-icons/react-native/outline/library'
+import { MinimalisticMagnifierIcon } from '@solar-icons/react-native/bold/minimalistic-magnifier'
+import { MinimalisticMagnifierIcon as MinimalisticMagnifierOutline } from '@solar-icons/react-native/outline/minimalistic-magnifier'
+import { UserIcon } from '@solar-icons/react-native/bold/user'
+
+
 import NotificationObserver from "@/lib/util/notification-observer";
 import { useRouter } from "expo-router";
 
@@ -97,7 +98,7 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
-                                <HomeSmileAngleBold
+                                <HomeSmileAngleIcon
                                     size={26}
                                     color={color as string}
                                     strokeWidth={2}
@@ -118,7 +119,7 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
-                                <MinimalisticMagnifierBold
+                                <MinimalisticMagnifierIcon
                                     size={26}
                                     color={color as string}
                                     strokeWidth={2}
@@ -139,7 +140,7 @@ export default function TabsDynamicLayout() {
                         tabBarLabel: () => null,
                         tabBarIcon: ({ color, focused }) =>
                             focused ? (
-                                <LibraryBold
+                                <LibraryIcon
                                     size={26}
                                     color={color as string}
                                     strokeWidth={2}
@@ -180,7 +181,7 @@ export default function TabsDynamicLayout() {
                                     // focused={focused}
                                 />
                             ) : (
-                                <UserBold size={24} color={color as string} />
+                                <UserIcon size={24} color={color as string} />
                             ),
                     }}
                 />

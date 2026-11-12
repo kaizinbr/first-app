@@ -1,10 +1,10 @@
 import TextDefault from "@/components/core/text-core";
 import PostEditor from "@/components/reviews/create/rich-text";
 import api from "@/lib/api";
-import { CheckCircle } from "@/lib/solar-icons/Bold";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { Album, Palette } from "@/lib/types";
 import { DraftStorage, useReviewSession } from "@/store/reviewSessionStore";
+import { CheckCircleIcon as CheckCircle } from "@solar-icons/react-native/bold/check-circle";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
@@ -145,7 +145,7 @@ export default function WriteReviewPage({
             <View style={[styles.container, { paddingTop: insets.top }]}>
                 <View style={styles.header}>
                     <Pressable onPress={() => router.back()}>
-                        <AltArrowLeft size={32} color="#eee" />
+                        <AltArrowLeftIcon size={32} color="#eee" />
                     </Pressable>
                     <View style={styles.centeredStatusContainer}>
                         <View

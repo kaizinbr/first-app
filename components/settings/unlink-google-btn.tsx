@@ -12,24 +12,9 @@ import Button from "@/components/button";
 import { authClient } from "@/lib/auth-client";
 import api from "@/lib/api";
 import { useEffect, useState } from "react";
-import ProfileTabs from "@/components/profile/profile-tabs";
-import { UserProfile } from "@/lib/types";
-import { getColors } from "react-native-image-colors";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import { Palette } from "@/lib/types";
-import { SkeletonProfile } from "@/components/core/skeletons";
-import Menu from "@/components/settings/menu-main";
-import { useRouter } from "expo-router";
-import SetPassword from "@/components/settings/set-password";
 
-import {
-    AltArrowLeft,
-    TrashBinTrash,
-    Password,
-    LockPassword,
-} from "@/lib/solar-icons/Outline";
-import { LockPasswordBold, PasswordBold } from "@/lib/solar-icons";
+
+import { TrashBinMinimalisticIcon } from '@solar-icons/react-native/linear/trash-bin-minimalistic'
 import AntDesign from "@expo/vector-icons/AntDesign";
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
@@ -97,7 +82,7 @@ export default function UnlinkGoogleBtn({
                     (account: any) => account.providerId === "credential",
                 ) ? (
                     <Pressable onPress={handleUnlinkGoogle}>
-                        <TrashBinTrash size={24} color="#eee" />
+                        <TrashBinMinimalisticIcon size={24} color="#eee" />
                     </Pressable>
                 ) : null}
             </View>

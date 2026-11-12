@@ -1,6 +1,6 @@
 import { Text, View, StyleSheet, Pressable } from "react-native";
 import { Review } from "@/lib/types";
-import { Share } from "@/lib/solar-icons/Bold";
+import { ShareIcon } from '@solar-icons/react-native/bold/share'
 import { useRouter } from "expo-router";
 
 import TextDefault from "@/components/core/text-core";
@@ -27,7 +27,7 @@ export default function ReviewScore({ review }: { review: Review }) {
                 <Pressable
                     onPress={() => router.navigate(`/share/${review.id}`)}
                 >
-                    <Share color="#eee" />
+                    <ShareIcon color="#eee" />
                 </Pressable>
             </View>
             <TextDefault style={styles.date}>

@@ -2,7 +2,7 @@ import TextDefault from "@/components/core/text-core";
 import { Album, Review } from "@/lib/types";
 import { LinearGradient } from "expo-linear-gradient";
 import { Image, StyleSheet, View } from "react-native";
-import { Stars } from "@/lib/solar-icons/Bold";
+import { StarsIcon } from '@solar-icons/react-native/bold/stars'
 
 type ReviewCardProps = {
     reviewData: Review;
@@ -180,7 +180,7 @@ export default function ReviewCard({
                             },
                         ]}
                     >
-                        <Stars size={s(24)} color="#8065ef" />
+                        <StarsIcon size={s(24)} color="#8065ef" />
                         <View>
                             <TextDefault
                                 style={{

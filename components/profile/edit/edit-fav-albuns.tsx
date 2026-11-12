@@ -1,6 +1,6 @@
 import { UserProfile } from "@/lib/types";
 import { BottomSheetScrollView, BottomSheetView } from "@gorhom/bottom-sheet";
-import { AddCircle } from "@/lib/solar-icons/Bold";
+import { AddCircleIcon } from '@solar-icons/react-native/bold/add-circle'
 
 import { useRouter } from "expo-router";
 import { useState } from "react";
@@ -80,7 +80,7 @@ export default function EditFavAlbuns({
                             alignItems: "center",
                         }}
                     >
-                        <AddCircle size={32} color="#8065ef" />
+                        <AddCircleIcon size={32} color="#8065ef" />
                     </View>
                 </ScrollView>
             </View>

@@ -9,16 +9,17 @@ import ReviewContent from "@/components/reviews/display/review-content";
 import ReviewScore from "@/components/reviews/display/score";
 import Tracklist from "@/components/reviews/display/tracklist";
 import { LikeButton } from "@/components/reviews/like-btn";
-import {
-    Flag,
-    ForbiddenCircle,
-    MenuDots,
-    Pen,
-    TrashBinTrash,
-    User,
-    Vinyl,
-} from "@/lib/solar-icons/Bold";
-import { AltArrowLeft } from "@/lib/solar-icons/Linear";
+
+import { FlagIcon } from "@solar-icons/react-native/bold/flag";
+import { ForbiddenCircleIcon } from "@solar-icons/react-native/bold/forbidden-circle";
+import { PenIcon } from "@solar-icons/react-native/bold/pen";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react-native/bold/trash-bin-minimalistic";
+import { UserIcon } from "@solar-icons/react-native/bold/user";
+import { VinylRecordIcon } from "@solar-icons/react-native/bold/vinyl-record";
+
+import { MenuDotsVerticalIcon } from "@solar-icons/react-native/bold/menu-dots-vertical";
+
+import api from "@/lib/api";
 import { Album, Review } from "@/lib/types";
 import {
     BottomSheetBackdrop,
@@ -27,21 +28,11 @@ import {
     BottomSheetView,
     useBottomSheetModal,
 } from "@gorhom/bottom-sheet";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/linear/alt-arrow-left";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import {
-    useCallback,
-    useEffect,
-    useMemo,
-    useRef,
-    useState,
-} from "react";
-import {
-    ActivityIndicator,
-    Pressable,
-    StyleSheet,
-    View
-} from "react-native";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -51,7 +42,6 @@ import Animated, {
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommentsSection from "./comments/comments-section";
-import api from "@/lib/api";
 
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -210,14 +200,14 @@ export default function ReviewAlbumScreen({
                     onPress={() => router.back()}
                     style={[styles.backButton, { top: insets.top + 4 }]}
                 >
-                    <AltArrowLeft size={32} color="#eee" />
+                    <AltArrowLeftIcon size={32} color="#eee" />
                 </Pressable>
 
                 <Pressable
                     style={[styles.dotsBtn, { top: insets.top + 4 }]}
                     onPress={openSheet}
                 >
-                    <MenuDots
+                    <MenuDotsVerticalIcon
                         size={26}
                         color="#eee"
                         style={{ transform: [{ rotate: "90deg" }] }}
@@ -314,7 +304,10 @@ export default function ReviewAlbumScreen({
                                             setShowDeleteModal(true);
                                         }}
                                     >
-                                        <TrashBinTrash size={24} color="#eee" />
+                                        <TrashBinMinimalisticIcon
+                                            size={24}
+                                            color="#eee"
+                                        />
                                         <TextDefault style={styles.optText}>
                                             Excluir
                                         </TextDefault>
@@ -339,7 +332,7 @@ export default function ReviewAlbumScreen({
                                             dismiss();
                                         }}
                                     >
-                                        <Pen size={24} color="#eee" />
+                                        <PenIcon size={24} color="#eee" />
                                         <TextDefault style={styles.optText}>
                                             Editar
                                         </TextDefault>
@@ -362,7 +355,7 @@ export default function ReviewAlbumScreen({
                                 ]}
                                 onPress={() => {}}
                             >
-                                <Flag size={24} color="#eee" />
+                                <FlagIcon size={24} color="#eee" />
                                 <TextDefault style={styles.optText}>
                                     Denunciar
                                 </TextDefault>
@@ -385,7 +378,7 @@ export default function ReviewAlbumScreen({
                                     dismiss();
                                 }}
                             >
-                                <Vinyl size={24} color="#eee" />
+                                <VinylRecordIcon size={24} color="#eee" />
                                 <TextDefault style={styles.optText}>
                                     Ver álbum
                                 </TextDefault>
@@ -411,7 +404,7 @@ export default function ReviewAlbumScreen({
                                     dismiss();
                                 }}
                             >
-                                <User size={24} color="#eee" />
+                                <UserIcon size={24} color="#eee" />
                                 <TextDefault style={styles.optText}>
                                     Ver usuário
                                 </TextDefault>
@@ -427,7 +420,7 @@ export default function ReviewAlbumScreen({
                                 ]}
                                 onPress={() => {}}
                             >
-                                <ForbiddenCircle size={24} color="#eee" />
+                                <ForbiddenCircleIcon size={24} color="#eee" />
                                 <TextDefault style={styles.optText}>
                                     Bloquear usuário
                                 </TextDefault>

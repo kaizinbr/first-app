@@ -14,7 +14,7 @@ import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
 
-import { AddCircle } from "@/lib/solar-icons/Bold";
+import { AddCircleIcon } from '@solar-icons/react-native/bold/add-circle'
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 
@@ -132,7 +132,7 @@ export default function EditArtistsModal({
                                     alignItems: "center",
                                 }}
                             >
-                                <AddCircle size={32} color="#8065ef" />
+                                <AddCircleIcon size={32} color="#8065ef" />
                             </View>
                         }
                     />

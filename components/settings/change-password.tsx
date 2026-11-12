@@ -1,5 +1,6 @@
-import { AltArrowLeft, Unread } from "@/lib/solar-icons/Outline";
 import { UserProfile } from "@/lib/types";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
+import { UnreadIcon as Unread } from "@solar-icons/react-native/outline/unread";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -167,7 +168,7 @@ export default function Password({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
             <View style={[styles.section, { padding: 16 }]}>
                 <TextDefault style={[styles.textDefault, styles.title]}>

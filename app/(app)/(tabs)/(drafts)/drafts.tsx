@@ -17,10 +17,8 @@ import TextDefault from "@/components/core/text-core";
 import { useRouter } from "expo-router";
 import DraftCard from "@/components/drafts/draft-card";
 
-import {
-    MenuDots,
-    TrashBinTrash,
-} from "@/lib/solar-icons/Bold";
+import { TrashBinMinimalisticIcon } from '@solar-icons/react-native/bold/trash-bin-minimalistic'
+import { MenuDotsVerticalIcon } from '@solar-icons/react-native/bold/menu-dots-vertical'
 
 import {
     BottomSheetBackdrop,
@@ -100,7 +98,7 @@ export default function Drafts() {
                     <Pressable
                         onPress={openSheet}
                     >
-                        <MenuDots color="#eee" />
+                        <MenuDotsVerticalIcon color="#eee" />
                     </Pressable>
                 </View>
 
@@ -156,7 +154,7 @@ export default function Drafts() {
                                 setShowDeleteModal(true);
                             }}
                         >
-                            <TrashBinTrash size={24} color="#eee" />
+                            <TrashBinMinimalisticIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Excluir todos
                             </TextDefault>

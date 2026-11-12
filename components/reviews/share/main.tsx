@@ -1,9 +1,10 @@
 import TextDefault from "@/components/core/text-core";
 import ReviewCard from "@/components/reviews/share/reviewcard"; // ajuste o path conforme seu projeto
-import { Album, Palette, Review } from "@/lib/types";
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import { Album, Review } from "@/lib/types";
 import Feather from "@expo/vector-icons/Feather";
-import { AltArrowLeft } from "@/lib/solar-icons/Linear";
-import { LinkMinimalistic2, SquareShareLine } from "@/lib/solar-icons/Outline";
+import { LinkMinimalistic2Icon as LinkMinimalistic2 } from "@solar-icons/react-native/outline/link-minimalistic-2";
+import { SquareShareLineIcon as SquareShareLine } from "@solar-icons/react-native/outline/square-share-line";
 
 import * as Clipboard from "expo-clipboard";
 import { LinearGradient } from "expo-linear-gradient";
@@ -23,15 +24,12 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { captureRef } from "react-native-view-shot";
 
 import {
-    getPalette,
-    getColor,
     ColorThiefColorData,
+    getPalette
 } from "expo-color-thief-native";
 
 import {
-    selectBackgroundColor,
-    selectGradientBackgroundColor,
-    selectBackgroundGradient,
+    selectBackgroundColor
 } from "@/lib/util/selectRightColor";
 
 const CARD_WIDTH = 1080;
@@ -227,7 +225,7 @@ Comentário: ${reviewData.review}`;
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
 
             <ScrollView

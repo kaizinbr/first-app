@@ -9,7 +9,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { authClient } from "@/lib/auth-client";
 import Banner from "@/components/home/banner";
 import TextDefault from "@/components/core/text-core";
-import { Settings } from "@/lib/solar-icons/Outline";
+import { SettingsIcon } from '@solar-icons/react-native/linear/settings'
 import { Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import {
@@ -178,7 +178,7 @@ export default function FeedHeader({
                         Whistle
                     </Animated.Text>
                     <Pressable onPress={() => router.push("/settings/menu")}>
-                        <Settings size={28} color="#eeeeee" />
+                        <SettingsIcon size={28} color="#eeeeee" />
                     </Pressable>
                 </Animated.View>
 

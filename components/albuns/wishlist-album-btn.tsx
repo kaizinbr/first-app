@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
 import api from "@/lib/api";
-import { Playlist2 } from "@/lib/solar-icons/Bold";
+import { Playlist2Icon } from '@solar-icons/react-native/bold/playlist-2'
 import { Album } from "@/lib/types";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -68,7 +68,7 @@ export default function WishlistAlbumBtn({
                 isWishlisted ? { backgroundColor: "#5E3BEA" } : {},
             ]}
         >
-            <Playlist2 size={size} color="#eee" />
+            <Playlist2Icon size={size} color="#eee" />
         </Pressable>
     );
 }

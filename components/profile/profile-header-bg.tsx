@@ -13,7 +13,7 @@ import chroma from "chroma-js";
 import type { ColorThiefColorData } from "expo-color-thief-native";
 
 import PlayingOnLastFM from "@/components/profile/last-fm-card";
-import { VerifiedCheck } from "@/lib/solar-icons/Bold";
+import { VerifiedCheckIcon } from '@solar-icons/react-native/bold/verified-check'
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function ProfileHeaderBG({ avatar_url }: { avatar_url: string  }) {

@@ -9,8 +9,8 @@ import Animated, {
 } from "react-native-reanimated";
 import { useLike } from "@/lib/util/useLike";
 
-// Solar Icons
-import { HeartBold, HeartOutline } from "@/lib/solar-icons";
+import { HeartIcon } from '@solar-icons/react-native/linear/heart'
+import { HeartIcon as HeartBold } from '@solar-icons/react-native/bold/heart'
 import TextDefault from "@/components/core/text-core";
 
 
@@ -69,7 +69,7 @@ export function LikeButton({
                 {liked ? (
                     <HeartBold size={iconSize} color="#e53935" />
                 ) : (
-                    <HeartOutline size={iconSize} color="#888" />
+                    <HeartIcon size={iconSize} color="#888" />
                 )}
             </Animated.View>
             <TextDefault style={[textStyle, liked && styles.countActive]}>
@@ -134,7 +134,7 @@ export function LikeCommentButton({
                 {liked ? (
                     <HeartBold size={iconSize} color="#e53935" />
                 ) : (
-                    <HeartOutline size={iconSize} color="#888" />
+                    <HeartIcon size={iconSize} color="#888" />
                 )}
             </Animated.View>
             <TextDefault style={[textStyle, liked && styles.countActive]}>

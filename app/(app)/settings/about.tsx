@@ -1,11 +1,11 @@
 import TextDefault from "@/components/core/text-core";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
+import { LinearGradient } from "expo-linear-gradient";
 import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View, ScrollView } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
 import Animated from "react-native-reanimated";
-import { LinearGradient } from "expo-linear-gradient";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export default function IndexSettings() {
     const router = useRouter();
@@ -33,18 +33,17 @@ export default function IndexSettings() {
                     style={StyleSheet.absoluteFill}
                 />
             </Animated.View>
-                <Pressable
-                    onPress={() => router.back()}
-                    style={[styles.backButton, { top: insets.top + 4 }]}
-                >
-                    <AltArrowLeft size={32} color="#eee" />
-                </Pressable>
+            <Pressable
+                onPress={() => router.back()}
+                style={[styles.backButton, { top: insets.top + 4 }]}
+            >
+                <AltArrowLeftIcon size={32} color="#eee" />
+            </Pressable>
             <ScrollView
                 style={[styles.container, { paddingTop: FIXED_BAR_HEIGHT }]}
-                
-                    showsVerticalScrollIndicator={false}
-            >
 
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={[styles.section, { padding: 16 }]}>
                     <TextDefault style={[styles.textDefault, styles.title]}>
                         Sobre

@@ -12,7 +12,7 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { useCallback, useMemo, useRef, useState } from "react";
-import { AddCircle } from "@/lib/solar-icons/Bold";
+import { AddCircleIcon } from '@solar-icons/react-native/bold/add-circle'
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -129,7 +129,7 @@ export default function EditAlbunsModal({
                                     alignItems: "center",
                                 }}
                             >
-                                <AddCircle size={32} color="#8065ef" />
+                                <AddCircleIcon size={32} color="#8065ef" />
                             </View>
                         }
                     />

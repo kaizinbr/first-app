@@ -11,7 +11,7 @@ import {
 import TextDefault from "@/components/core/text-core";
 import { UserProfile, Review } from "@/lib/types";
 import { Tabs } from "react-native-collapsible-tab-view";
-import { ArrowRightUp } from "@/lib/solar-icons/Linear";
+import { ArrowRightUpIcon } from '@solar-icons/react-native/linear/arrow-right-up'
 import { Image } from "expo-image";
 import LyricsCard from "@/components/profile/lyrics-card";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
@@ -176,7 +176,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                         <TextDefault style={styles.textDefault}>
                             {data.lastfm_username}
                         </TextDefault>
-                        <ArrowRightUp size={18} color="#eee" />
+                        <ArrowRightUpIcon size={18} color="#eee" />
                     </Pressable>
                 )}
                 {data.site && (
@@ -196,7 +196,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                         <TextDefault style={styles.textDefault}>
                             {data.site}
                         </TextDefault>
-                        <ArrowRightUp size={18} color="#eee" />
+                        <ArrowRightUpIcon size={18} color="#eee" />
                     </Pressable>
                 )}
             </View>

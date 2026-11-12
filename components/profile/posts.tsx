@@ -16,7 +16,9 @@ import { Tabs } from "react-native-collapsible-tab-view";
 import { ActivityIndicator } from "react-native";
 import FeedCard from "@/components/home/feed-card";
 import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
-import { SortFromTopToBottom, SortFromBottomToTop  } from '@/lib/solar-icons/Bold'
+
+import { SortFromTopToBottomIcon } from '@solar-icons/react-native/bold/sort-from-top-to-bottom'
+import { SortFromBottomToTopIcon } from '@solar-icons/react-native/bold/sort-from-bottom-to-top'
 
 export default function PostsRoute({ data }: { data: UserProfile }) {
     const [sort, setSort] = useState<"asc" | "desc">("desc");
@@ -80,7 +82,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-                <FeedCard review={item} onRefresh={onRefresh} />
+                <FeedCard review={item} onRefresh={onRefresh} refreshing={refreshing} />
             )}
             ItemSeparatorComponent={() => (
                 <View
@@ -118,7 +120,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                         ]}
                         onPress={() => setSort("desc")}
                     >
-                        <SortFromBottomToTop size={16} color={sort === "desc" ? "#8065ef" : "#777"} />
+                        <SortFromBottomToTopIcon size={16} color={sort === "desc" ? "#8065ef" : "#777"} />
                         <TextDefault style={styles.sortText}>
                             Recentes
                         </TextDefault>
@@ -130,7 +132,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                         ]}
                         onPress={() => setSort("asc")}
                     >
-                        <SortFromTopToBottom size={16} color={sort === "asc" ? "#8065ef" : "#777"} />
+                        <SortFromTopToBottomIcon size={16} color={sort === "asc" ? "#8065ef" : "#777"} />
                         <TextDefault style={styles.sortText}>
                             Antigas
                         </TextDefault>

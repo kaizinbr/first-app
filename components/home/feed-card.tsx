@@ -12,15 +12,13 @@ import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import {
-    Flag,
-    ForbiddenCircle,
-    MenuDots,
-    Pen,
-    TrashBinTrash,
-    User,
-    Vinyl,
-} from "@/lib/solar-icons/Bold";
+import { FlagIcon } from '@solar-icons/react-native/bold/flag'
+import { ForbiddenCircleIcon } from '@solar-icons/react-native/bold/forbidden-circle'
+import { PenIcon } from '@solar-icons/react-native/bold/pen'
+import { TrashBinMinimalisticIcon } from '@solar-icons/react-native/bold/trash-bin-minimalistic'
+import { UserIcon } from '@solar-icons/react-native/bold/user'
+import { VinylRecordIcon } from '@solar-icons/react-native/bold/vinyl-record'
+import { MenuDotsVerticalIcon } from '@solar-icons/react-native/bold/menu-dots-vertical'
 
 import {
     BottomSheetBackdrop,
@@ -309,7 +307,7 @@ export default function FeedCard({
                                         openSheet();
                                     }}
                                 >
-                                    <MenuDots color="#aaa" size={20} />
+                                    <MenuDotsVerticalIcon color="#aaa" size={20} />
                                 </Pressable>
                             </View>
                         </View>
@@ -358,7 +356,7 @@ export default function FeedCard({
                                         setShowDeleteModal(true);
                                     }}
                                 >
-                                    <TrashBinTrash size={24} color="#eee" />
+                                    <TrashBinMinimalisticIcon size={24} color="#eee" />
                                     <TextDefault style={styles.optText}>
                                         Excluir
                                     </TextDefault>
@@ -381,7 +379,7 @@ export default function FeedCard({
                                         dismiss();
                                     }}
                                 >
-                                    <Pen size={24} color="#eee" />
+                                    <PenIcon size={24} color="#eee" />
                                     <TextDefault style={styles.optText}>
                                         Editar
                                     </TextDefault>
@@ -404,7 +402,7 @@ export default function FeedCard({
                             ]}
                             onPress={() => {}}
                         >
-                            <Flag size={24} color="#eee" />
+                            <FlagIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Denunciar
                             </TextDefault>
@@ -427,7 +425,7 @@ export default function FeedCard({
                                 dismiss();
                             }}
                         >
-                            <Vinyl size={24} color="#eee" />
+                            <VinylRecordIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Ver álbum
                             </TextDefault>
@@ -452,7 +450,7 @@ export default function FeedCard({
                                 dismiss();
                             }}
                         >
-                            <User size={24} color="#eee" />
+                            <UserIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Ver usuário
                             </TextDefault>
@@ -468,7 +466,7 @@ export default function FeedCard({
                             ]}
                             onPress={() => {}}
                         >
-                            <ForbiddenCircle size={24} color="#eee" />
+                            <ForbiddenCircleIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Bloquear usuário
                             </TextDefault>

@@ -15,7 +15,9 @@ import NotsCard from "@/components/notifications/nots-card";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { Eye, MenuDots, TrashBinTrash } from "@/lib/solar-icons/Bold";
+import { EyeIcon } from '@solar-icons/react-native/bold/eye';
+import { MenuDotsVerticalIcon } from '@solar-icons/react-native/bold/menu-dots-vertical'
+import { TrashBinMinimalisticIcon } from '@solar-icons/react-native/bold/trash-bin-minimalistic'
 
 import ConfirmModal from "@/components/core/confirm-modal";
 import {
@@ -114,7 +116,7 @@ export default function Drafts() {
                 >
                     <TextDefault style={styles.title}>Notificações</TextDefault>
                     <Pressable onPress={openSheet}>
-                        <MenuDots color="#eee" />
+                        <MenuDotsVerticalIcon color="#eee" />
                     </Pressable>
                 </View>
 
@@ -180,7 +182,7 @@ export default function Drafts() {
                                 setAllSeen();
                             }}
                         >
-                            <Eye size={24} color="#eee" />
+                            <EyeIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Marcar todas como lidas
                             </TextDefault>
@@ -200,7 +202,7 @@ export default function Drafts() {
                             }}
                             disabled={notifications.length === 0}
                         >
-                            <TrashBinTrash size={24} color="#eee" />
+                            <TrashBinMinimalisticIcon  size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Excluir todos
                             </TextDefault>

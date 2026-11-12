@@ -1,5 +1,6 @@
 import api from "@/lib/api";
-import { BellBold, BellOutline } from "@/lib/solar-icons";
+import { BellIcon } from '@solar-icons/react-native/linear/bell'
+import { BellIcon as BellBold } from '@solar-icons/react-native/bold/bell'
 import { useEffect, useRef, useState } from "react";
 import { AppState, View } from "react-native";
 
@@ -60,7 +61,7 @@ export default function NotsBtn({
             {focused ? (
                 <BellBold size={28} color={color as string} />
             ) : (
-                <BellOutline size={26} color={color as string} />
+                <BellIcon size={26} color={color as string} />
             )}
             {hasUnread && (
                 <View

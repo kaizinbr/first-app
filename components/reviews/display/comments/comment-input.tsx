@@ -20,13 +20,13 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 
-import {
-    Plain2Bold,
-    TextBoldSquareBold,
-    TextBoldSquareOutline,
-    TextItalicSquareBold,
-    TextItalicSquareLinear,
-} from "@/lib/solar-icons";
+import { Plane2Icon } from '@solar-icons/react-native/bold/plane-2'
+import { TextBoldSquareIcon } from '@solar-icons/react-native/bold/text-bold-square'
+import { TextBoldSquareIcon as TextBoldSquareOutline } from '@solar-icons/react-native/linear/text-bold-square'
+import { TextItalicSquareIcon } from '@solar-icons/react-native/bold/text-italic-square'
+import { TextItalicSquareIcon as TextItalicSquareOutline } from '@solar-icons/react-native/linear/text-italic-square'
+
+
 
 import { AvatarNoPress } from "@/components/core/avatar";
 import TextDefault from "@/components/core/text-core";
@@ -218,7 +218,7 @@ export function CommentInput({
                         style={styles.toolbarBtn}
                     >
                         {styleState?.bold.isActive ? (
-                            <TextBoldSquareBold size={22} color="#fff" />
+                            <TextBoldSquareIcon size={22} color="#fff" />
                         ) : (
                             <TextBoldSquareOutline size={22} color="#888" />
                         )}
@@ -230,9 +230,9 @@ export function CommentInput({
                         style={styles.toolbarBtn}
                     >
                         {styleState?.italic.isActive ? (
-                            <TextItalicSquareBold size={22} color="#fff" />
+                            <TextItalicSquareIcon size={22} color="#fff" />
                         ) : (
-                            <TextItalicSquareLinear size={22} color="#888" />
+                            <TextItalicSquareOutline size={22} color="#888" />
                         )}
                     </Pressable>
 
@@ -268,7 +268,7 @@ export function CommentInput({
                         {submitting ? (
                             <ActivityIndicator size="small" color="#fff" />
                         ) : (
-                            <Plain2Bold
+                            <Plane2Icon
                                 size={20}
                                 color={markdown.trim() ? "#fff" : "#999"}
                             />

@@ -1,10 +1,7 @@
 import * as React from "react";
 import { View, Text, StyleSheet, Pressable, Share, Alert } from "react-native";
-import {
-    Heart as HeartOutline,
-} from "@/lib/solar-icons/Outline";
-import { Heart } from '@/lib/solar-icons/Bold'
-import { ReviewWithAlbum } from "@/lib/types";
+import { HeartIcon } from '@solar-icons/react-native/linear/heart'
+import { HeartIcon as Heart } from "@solar-icons/react-native/bold/heart";import { ReviewWithAlbum } from "@/lib/types";
 
 export default function LikeBtn({ review }: { review: ReviewWithAlbum }) {
     // const onShare = async () => {
@@ -29,7 +26,7 @@ export default function LikeBtn({ review }: { review: ReviewWithAlbum }) {
 
     return (
         <Pressable style={styles.confBtn} onPress={() => {}}>
-            <HeartOutline size={24} color="#eee" />
+            <HeartIcon size={24} color="#eee" />
         </Pressable>
     );
 }

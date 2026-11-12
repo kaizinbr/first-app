@@ -11,7 +11,7 @@ import type { ColorThiefColorData } from "expo-color-thief-native";
 
 import PlayingOnLastFM from "@/components/profile/last-fm-card";
 import ProfileHeaderBG from "@/components/profile/profile-header-bg";
-import { VerifiedCheck } from "@/lib/solar-icons/Bold";
+import { VerifiedCheckIcon } from '@solar-icons/react-native/bold/verified-check'
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 export default function ProfileHeader({
@@ -191,7 +191,7 @@ export default function ProfileHeader({
                     <TextDefault style={styles.name}>{data.name}</TextDefault>
                     {data.verified && (
                         <TextDefault>
-                            <VerifiedCheck size={18} color="#8065ef" />
+                            <VerifiedCheckIcon size={18} color="#8065ef" />
                         </TextDefault>
                     )}
                 </View>

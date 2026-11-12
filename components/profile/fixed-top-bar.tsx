@@ -1,22 +1,17 @@
-import * as React from "react";
-import { View, Text, StyleSheet, Pressable, Share, Alert } from "react-native";
-import Animated, {
-    useAnimatedStyle,
-    interpolate,
-    Extrapolation,
-} from "react-native-reanimated";
-import { useHeaderMeasurements } from "react-native-collapsible-tab-view";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useRouter } from "expo-router";
-import {
-    AltArrowLeft,
-    Settings,
-    Share as ShareIcon,
-} from "@/lib/solar-icons/Outline";
-import { SettingsMinimalistic } from "@/lib/solar-icons/Bold";
-import { LinearGradient } from "expo-linear-gradient";
-import { darkenColor } from "@/lib/util/workWithColors";
 import ShareBtn from "@/components/core/share-btn";
+import { SettingsIcon } from '@solar-icons/react-native/linear/settings'
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import { darkenColor } from "@/lib/util/workWithColors";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import { Alert, Pressable, Share, StyleSheet, View } from "react-native";
+import { useHeaderMeasurements } from "react-native-collapsible-tab-view";
+import Animated, {
+    Extrapolation,
+    interpolate,
+    useAnimatedStyle,
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -112,7 +107,7 @@ export default function FixedTopBar({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: 0 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
 
             <Animated.Text style={[styles.title, titleStyle]}>
@@ -120,19 +115,23 @@ export default function FixedTopBar({
             </Animated.Text>
 
             {itsUser ? (
-                <View style={{ flexDirection: "row", gap: 8, width: 40, justifyContent: "flex-end" }}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        gap: 8,
+                        width: 40,
+                        justifyContent: "flex-end",
+                    }}
+                >
                     <ShareBtn
                         type="profile"
                         url={`https://whistle.kaizin.work/${username}`}
                     />
                     <Pressable
-                        style={[
-                            styles.confBtn,
-                            { width: 30 },
-                        ]}
+                        style={[styles.confBtn, { width: 30 }]}
                         onPress={() => router.push("/settings/menu")}
                     >
-                        <Settings size={28} color="#eee" />
+                        <SettingsIcon size={28} color="#eee" />
                     </Pressable>
                 </View>
             ) : (
@@ -187,6 +186,6 @@ const styles = StyleSheet.create({
         color: "#eee",
         fontSize: 14,
         fontWeight: "bold",
-        fontFamily: "Walsheim"
+        fontFamily: "Walsheim",
     },
 });

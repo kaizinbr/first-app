@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
 import api from "@/lib/api";
-import { Star as StarBold } from "@/lib/solar-icons/Bold";
-import { Star } from "@/lib/solar-icons/Outline";
+import { StarIcon } from '@solar-icons/react-native/bold/star'
+import { StarIcon as Star } from "@solar-icons/react-native/outline/star";
 import { Artist } from "@/lib/types";
 
 export default function FavoriteArtistBtn({
@@ -59,7 +59,7 @@ export default function FavoriteArtistBtn({
             // style={}
         >
             {isFavorite ? (
-                <StarBold color="#FFD700" size={size} />
+                <StarIcon color="#FFD700" size={size} />
             ) : (
                 <Star size={size} color="#eee" />
             )}

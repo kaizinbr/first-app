@@ -1,7 +1,7 @@
 import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { Palette, UserProfile } from "@/lib/types";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -63,7 +63,7 @@ export default function IndexSettings() {
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
 
             <View style={[styles.section, { padding: 16 }]}>

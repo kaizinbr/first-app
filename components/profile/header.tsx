@@ -1,36 +1,26 @@
-import { Image } from "expo-image";
 import { UserProfile } from "@/lib/types";
 
 import { useRouter } from "expo-router";
 
-import * as React from "react";
 import {
-    View,
-    Text,
-    useWindowDimensions,
-    StyleSheet,
     Pressable,
+    StyleSheet,
+    View
 } from "react-native";
 import {
-    Tabs,
-    MaterialTabBar,
-    useHeaderMeasurements,
+    useHeaderMeasurements
 } from "react-native-collapsible-tab-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import Animated, {
-    useAnimatedStyle,
-    interpolate,
-    Extrapolation,
-} from "react-native-reanimated";
-import {
-    AltArrowLeft,
-    Settings,
-    Share,
-} from "@/lib/solar-icons/Outline";
-import { SettingsMinimalistic } from "@/lib/solar-icons/Bold";
-import ProfileHeader from "@/components/profile/profile-header";
 import ShareBtn from "@/components/core/share-btn";
+import ProfileHeader from "@/components/profile/profile-header";
+import { SettingsIcon } from '@solar-icons/react-native/linear/settings'
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import Animated, {
+    Extrapolation,
+    interpolate,
+    useAnimatedStyle,
+} from "react-native-reanimated";
 
 export default function Header({
     data,
@@ -77,10 +67,7 @@ export default function Header({
 
     return (
         <View style={styles.headerWrapper}>
-            <ProfileHeader
-                data={data}
-                itsUser={itsUser}
-            />
+            <ProfileHeader data={data} itsUser={itsUser} />
 
             <Animated.View
                 style={[
@@ -108,7 +95,7 @@ export default function Header({
                         style={styles.backButton}
                         onPress={() => router.back()}
                     >
-                        <AltArrowLeft size={32} color="#eee" />
+                        <AltArrowLeftIcon size={32} color="#eee" />
                     </Pressable>
 
                     {/* <Animated.Text
@@ -133,7 +120,7 @@ export default function Header({
                                 style={[styles.confBtn, { width: 30 }]}
                                 onPress={() => router.push("/settings/menu")}
                             >
-                                <Settings size={28} color="#eee" />
+                                <SettingsIcon size={28} color="#eee" />
                             </Pressable>
                         </View>
                     ) : (
@@ -158,7 +145,7 @@ const styles = StyleSheet.create({
         padding: 16,
         width: "100%",
         borderRadius: 8,
-        backgroundColor: "transparent"
+        backgroundColor: "transparent",
     },
     textDefault: {
         color: "#eee", // A cor clara para o seu modo escuro

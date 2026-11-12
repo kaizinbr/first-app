@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
 import api from "@/lib/api";
-import { Star as StarBold } from "@/lib/solar-icons/Bold";
-import { Star } from "@/lib/solar-icons/Outline";
+import { StarIcon } from '@solar-icons/react-native/bold/star'
+import { StarIcon as Star } from "@solar-icons/react-native/outline/star";
 import { Album } from "@/lib/types";
 
 export default function FavoriteAlbumBtn({
@@ -36,7 +36,9 @@ export default function FavoriteAlbumBtn({
         try {
             if (isFavorite) {
                 await api.delete(`/albuns/${albumData.id}/favorite`, {
-                    id: albumData.id,
+                    data: {
+                        id: albumData.id,
+                    },
                 });
             } else {
                 await api.post(`/albuns/${albumData.id}/favorite`, {
@@ -59,7 +61,7 @@ export default function FavoriteAlbumBtn({
             // style={}
         >
             {isFavorite ? (
-                <StarBold color="#FFD700" size={size} />
+                <StarIcon color="#FFD700" size={size} />
             ) : (
                 <Star size={size} color="#eee" />
             )}

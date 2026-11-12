@@ -1,7 +1,7 @@
 import SearchAlbunsInput from "@/components/profile/edit/search-favs-input";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
 import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import { useCallback, useEffect, useState } from "react";
@@ -262,7 +262,10 @@ export default function LyricsModal({
                                         }}
                                         style={styles.backButton}
                                     >
-                                        <AltArrowLeft size={32} color="#eee" />
+                                        <AltArrowLeftIcon
+                                            size={32}
+                                            color="#eee"
+                                        />
                                     </Pressable>
 
                                     <Text

@@ -2,7 +2,8 @@ import { View, Text, StyleSheet, Pressable } from "react-native";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import TextDefault from "@/components/core/text-core";
 import { Track, Rating } from "@/lib/types";
-import { Stars, ChatRoundLine  } from "@/lib/solar-icons/Bold";
+import { StarsIcon } from '@solar-icons/react-native/bold/stars'
+import { ChatRoundLineIcon } from '@solar-icons/react-native/bold/chat-round-line'
 
 export default function TrackItem({
     track,
@@ -50,12 +51,12 @@ export default function TrackItem({
             </View>
             {track.comment ? (
                 <View style={styles.actionColumn}>
-                    <ChatRoundLine size={24} color="#8065ef" />
+                    <ChatRoundLineIcon size={24} color="#8065ef" />
                 </View>
             ) : null}
             {track.favorite ? (
                 <View style={styles.actionColumn}>
-                        <Stars size={24} color="#8065ef" />
+                        <StarsIcon size={24} color="#8065ef" />
                 </View>
             ) : null}
             <View style={styles.actionColumn}>

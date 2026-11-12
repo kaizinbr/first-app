@@ -1,11 +1,6 @@
 import * as React from "react";
 import { View, Text, StyleSheet, Pressable, Share, Alert } from "react-native";
-import {
-    AltArrowLeft,
-    Settings,
-    Share as ShareIcon,
-    SquareShareLine 
-} from "@/lib/solar-icons/Outline";
+import { ShareIcon } from '@solar-icons/react-native/linear/share';
 
 export default function ShareBtn({ type, url }: { type: string; url: string }) {
     const onShare = async () => {

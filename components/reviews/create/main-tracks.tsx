@@ -3,10 +3,10 @@ import Lyrics from "@/components/reviews/create/lyrics";
 import TrackRater from "@/components/reviews/create/track-rating";
 import AlbumData from "@/components/reviews/display/data";
 import AlbumHeader from "@/components/reviews/display/header";
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
 import { Album, Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { useReviewSession } from "@/store/reviewSessionStore";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -205,7 +205,7 @@ export default function ReviewCreateMain({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
 
             <Animated.ScrollView

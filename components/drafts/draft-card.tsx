@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
 
-import { TrashBinTrash } from "@/lib/solar-icons/Outline";
+import { TrashBinMinimalisticIcon } from '@solar-icons/react-native/linear/trash-bin-minimalistic'
 
 import ConfirmModal from "@/components/core/confirm-modal";
 
@@ -177,7 +177,7 @@ export default function DraftCard({
                         }}
                         onPress={() => setShowDeleteModal(true)}
                     >
-                        <TrashBinTrash color="#eee" />
+                        <TrashBinMinimalisticIcon color="#eee" />
                     </Pressable>
                 </View>
             </Pressable>

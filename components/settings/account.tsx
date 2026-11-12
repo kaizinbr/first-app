@@ -1,24 +1,13 @@
-import * as React from "react";
-import {
-    View,
-    StyleSheet,
-    RefreshControl,
-    Text,
-    Pressable,
-} from "react-native";
-import { Tabs, MaterialTabBar } from "react-native-collapsible-tab-view";
-import { UserProfile, Palette } from "@/lib/types";
-import {
-    User,
-    LockPassword,
-    Letter,
-    QuestionSquare,
-    Logout2,
-} from "@/lib/solar-icons/Bold";
-import { AltArrowRight, AltArrowLeft } from "@/lib/solar-icons/Outline";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { AvatarNoPress } from "@/components/core/avatar";
+import { UserProfile } from "@/lib/types";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
 import { useRouter } from "expo-router";
+import {
+    Pressable,
+    StyleSheet,
+    View
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import TextDefault from "@/components/core/text-core";
 
@@ -42,7 +31,7 @@ export default function Account({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
 
             <View style={styles.section}>

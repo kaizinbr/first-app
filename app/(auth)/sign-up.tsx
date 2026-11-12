@@ -6,9 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useEffect, useState } from "react";
 
 import { PasswordInput } from "@/components/core/input-password";
-import {
-    Unread
-} from "@/lib/solar-icons/Outline";
+import { UnreadIcon } from '@solar-icons/react-native/linear/unread'
 import {
     ActivityIndicator,
     KeyboardAvoidingView,
@@ -225,7 +223,7 @@ export default function Password() {
                                     marginBottom: 4,
                                 }}
                             >
-                                <Unread
+                                <UnreadIcon
                                     size={20}
                                     color={isLengthOk ? "#4caf50" : "#eee"}
                                 />
@@ -251,7 +249,7 @@ export default function Password() {
                                     marginBottom: 4,
                                 }}
                             >
-                                <Unread
+                                <UnreadIcon
                                     size={20}
                                     color={isCharOk ? "#4caf50" : "#eee"}
                                 />
@@ -277,7 +275,7 @@ export default function Password() {
                                     marginBottom: 4,
                                 }}
                             >
-                                <Unread
+                                <UnreadIcon
                                     size={20}
                                     color={isSpecialCharOk ? "#4caf50" : "#eee"}
                                 />
@@ -303,7 +301,7 @@ export default function Password() {
                                     marginBottom: 16,
                                 }}
                             >
-                                <Unread
+                                <UnreadIcon
                                     size={20}
                                     color={isEqual ? "#4caf50" : "#eee"}
                                 />

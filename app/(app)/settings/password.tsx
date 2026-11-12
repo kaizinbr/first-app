@@ -12,8 +12,9 @@ import {
     View,
 } from "react-native";
 
-import { LockPasswordBold, PasswordBold } from "@/lib/solar-icons";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
+import { LockPasswordIcon } from '@solar-icons/react-native/bold/lock-password'
+import { PasswordIcon } from '@solar-icons/react-native/bold/password'
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
 
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -84,7 +85,7 @@ export default function PasswordSettings() {
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
             {loading ? (
                 <View style={styles.overlay}>
@@ -124,7 +125,7 @@ export default function PasswordSettings() {
                                     }
                                     style={[styles.btnBg]}
                                 >
-                                    <LockPasswordBold size={24} color="#eee" />
+                                    <LockPasswordIcon size={24} color="#eee" />
                                     <TextDefault style={styles.btnText}>
                                         Alterar minha senha
                                     </TextDefault>
@@ -137,7 +138,7 @@ export default function PasswordSettings() {
                                     }
                                     style={[styles.btnBg]}
                                 >
-                                    <LockPasswordBold size={24} color="#eee" />
+                                    <LockPasswordIcon size={24} color="#eee" />
                                     <TextDefault style={styles.btnText}>
                                         Esqueci minha senha
                                     </TextDefault>
@@ -150,7 +151,7 @@ export default function PasswordSettings() {
                                 }
                                 style={[styles.btnBg]}
                             >
-                                <PasswordBold size={24} color="#eee" />
+                                <PasswordIcon size={24} color="#eee" />
                                 <TextDefault style={styles.btnText}>
                                     Definir senha
                                 </TextDefault>

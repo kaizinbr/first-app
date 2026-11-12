@@ -10,12 +10,8 @@ import Animated, {
 import { useLike } from "@/lib/util/useLike";
 
 // Solar Icons
-import {
-    ChatRound,
-    ChatSquare,
-    Share,
-} from "@/lib/solar-icons/Outline";
-import { HeartBold, HeartOutline } from "@/lib/solar-icons";
+import { ChatSquareIcon } from '@solar-icons/react-native/linear/chat-square'
+;
 import TextDefault from "@/components/core/text-core";
 
 export function CommentButton({
@@ -44,7 +40,7 @@ export function CommentButton({
                 gap: 4,
             }}
         >
-            <ChatSquare size={20} color="#888" />
+            <ChatSquareIcon size={20} color="#888" />
             <TextDefault style={textStyle}>{initialCount}</TextDefault>
         </Pressable>
     );

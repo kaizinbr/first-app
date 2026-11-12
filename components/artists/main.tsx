@@ -1,8 +1,7 @@
+import TextDefault from "@/components/core/text-core";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import React from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
-import TextDefault from "@/components/core/text-core";
+import { Pressable, StyleSheet, View } from "react-native";
 import Animated, {
     Extrapolation,
     interpolate,
@@ -13,13 +12,11 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ArtistAlbuns from "@/components/artists/albuns";
-import Header from "@/components/artists/header";
-import { ArtistResponse, Palette } from "@/lib/types";
-import { selectBackgroundGradient, selectRightColor } from "@/lib/util/selectRightColor";
-import { darkenColor } from "@/lib/util/workWithColors";
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
 import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
+import Header from "@/components/artists/header";
 import FixedHeader from "@/components/core/fixed-header";
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import { ArtistResponse } from "@/lib/types";
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -121,7 +118,7 @@ export default function ArtistScreen({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
 
             <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
@@ -142,7 +139,9 @@ export default function ArtistScreen({
                 <View style={{ padding: 16, gap: 16 }}>
                     {data.description && (
                         <View style={styles.sec}>
-                            <TextDefault style={styles.title}>Biografia</TextDefault>
+                            <TextDefault style={styles.title}>
+                                Biografia
+                            </TextDefault>
                             <TextDefault style={styles.textDefault}>
                                 {data.description}
                             </TextDefault>

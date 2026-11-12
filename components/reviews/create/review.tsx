@@ -1,21 +1,15 @@
 // import { Host, Slider } from "@expo/ui/jetpack-compose";
-import Slider from "@react-native-community/slider";
-import React, { useRef, useState, useEffect, use } from "react";
-import {
-    KeyboardAvoidingView,
-    Platform,
-    StyleSheet,
-    View,
-    Button,
-    Pressable,
-    Text,
-    TextInput,
-} from "react-native";
-import { Album, Track, Review, Palette } from "@/lib/types";
 import PostEditor from "@/components/reviews/rich-text";
+import { Album, Palette, Review } from "@/lib/types";
+import {
+    Pressable,
+    StyleSheet,
+    Text,
+    View
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import { AltArrowLeft } from "@/lib/solar-icons/Outline";
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
 
 export default function ReviewStep({
     reviewData,
@@ -44,7 +38,7 @@ export default function ReviewStep({
         <View style={[styles.container, { paddingTop: insets.top }]}>
             <View style={styles.header}>
                 <Pressable onPress={goBack} style={[{ top: 5 }]}>
-                    <AltArrowLeft size={32} color="#eee" />
+                    <AltArrowLeftIcon size={32} color="#eee" />
                 </Pressable>
                 {/* <Text style={styles.textDefault}>{reviewData.album.name}</Text> */}
 
@@ -54,12 +48,12 @@ export default function ReviewStep({
             </View>
             {/* Rich text editor */}
             {/* <View style={styles.editorContainer}> */}
-                <PostEditor
-                    onChange={setText}
-                    reviewData={reviewData}
-                    initialValue={reviewData.rating ? reviewData.rating.review : ""}
-                    total={total}
-                />
+            <PostEditor
+                onChange={setText}
+                reviewData={reviewData}
+                initialValue={reviewData.rating ? reviewData.rating.review : ""}
+                total={total}
+            />
             {/* </View> */}
         </View>
     );

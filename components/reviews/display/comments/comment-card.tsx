@@ -12,13 +12,14 @@ import { Image } from "expo-image";
 import { Comment } from "@/lib/types";
 import { getPastRelativeTime } from "@/lib/util/time";
 
-import {
-    Flag,
-    ForbiddenCircle,
-    MenuDots,
-    TrashBinTrash,
-    User,
-} from "@/lib/solar-icons/Bold";
+import api from "@/lib/api";
+
+import { FlagIcon } from '@solar-icons/react-native/bold/flag'
+import { ForbiddenCircleIcon } from '@solar-icons/react-native/bold/forbidden-circle'
+import { PenIcon } from '@solar-icons/react-native/bold/pen'
+import { TrashBinMinimalisticIcon } from '@solar-icons/react-native/bold/trash-bin-minimalistic'
+import { UserIcon } from '@solar-icons/react-native/bold/user'
+import { MenuDotsVerticalIcon } from '@solar-icons/react-native/bold/menu-dots-vertical'
 
 import {
     BottomSheetBackdrop,
@@ -273,7 +274,7 @@ export default function CommentCard({
                                     openSheet();
                                 }}
                             >
-                                <MenuDots color="#aaa" size={20} />
+                                <MenuDotsVerticalIcon color="#aaa" size={20} />
                             </Pressable>
                         </View>
                     </View>
@@ -315,7 +316,7 @@ export default function CommentCard({
                                         setShowDeleteModal(true);
                                     }}
                                 >
-                                    <TrashBinTrash size={24} color="#eee" />
+                                    <TrashBinMinimalisticIcon size={24} color="#eee" />
                                     <TextDefault style={styles.optText}>
                                         Excluir
                                     </TextDefault>
@@ -361,7 +362,7 @@ export default function CommentCard({
                             ]}
                             onPress={() => {}}
                         >
-                            <Flag size={24} color="#eee" />
+                            <FlagIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Denunciar
                             </TextDefault>
@@ -408,7 +409,7 @@ export default function CommentCard({
                                 dismiss();
                             }}
                         >
-                            <User size={24} color="#eee" />
+                            <UserIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Ver usuário
                             </TextDefault>
@@ -424,7 +425,7 @@ export default function CommentCard({
                             ]}
                             onPress={() => {}}
                         >
-                            <ForbiddenCircle size={24} color="#eee" />
+                            <ForbiddenCircleIcon size={24} color="#eee" />
                             <TextDefault style={styles.optText}>
                                 Bloquear usuário
                             </TextDefault>

@@ -1,48 +1,38 @@
-import React from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
-import { Pressable } from "react-native-gesture-handler";
 import TextDefault from "@/components/core/text-core";
-import Animated, {
-    useAnimatedStyle,
-    useAnimatedScrollHandler,
-    useSharedValue,
-    interpolate,
-    Extrapolation,
-    withSpring,
-    withSequence,
-} from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { StyleSheet, View } from "react-native";
+import { Pressable } from "react-native-gesture-handler";
+import Animated, {
+    Extrapolation,
+    interpolate,
+    useAnimatedScrollHandler,
+    useAnimatedStyle,
+    useSharedValue,
+    withSpring
+} from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import {
-    getPalette,
-    getColor,
-    ColorThiefColorData,
+    ColorThiefColorData
 } from "expo-color-thief-native";
 
 import {
-    selectBackgroundColor,
-    selectGradientBackgroundColor,
-    selectBackgroundGradient,
+    selectBackgroundColor
 } from "@/lib/util/selectRightColor";
-
-import { Album, Palette, UserProfile } from "@/lib/types";
-import { selectRightColor } from "@/lib/util/selectRightColor";
-import {
-    lightenColor,
-    darkenColor,
-    getBannerColors,
-    saturateColor,
-} from "@/lib/util/workWithColors";
-import AlbumHeader from "@/components/albuns/header";
+import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
-import Tracklist from "@/components/albuns/tracklist";
-import { AltArrowLeft, Star } from "@/lib/solar-icons/Outline";
-import { Playlist2 } from "@/lib/solar-icons/Bold";
 import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
+import AlbumHeader from "@/components/albuns/header";
+import Tracklist from "@/components/albuns/tracklist";
 import WishlistAlbumBtn from "@/components/albuns/wishlist-album-btn";
 import FixedHeader from "@/components/core/fixed-header";
+import { Album, UserProfile } from "@/lib/types";
+import {
+    darkenColor,
+    lightenColor,
+    saturateColor
+} from "@/lib/util/workWithColors";
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
     const g = parseInt(hex.slice(3, 5), 16);
@@ -279,7 +269,11 @@ export default function AlbumScreen({
                 />
             </Animated.View> */}
 
-            <FixedHeader data={albumData} mainColor={mainColor} scrollY={scrollY} />
+            <FixedHeader
+                data={albumData}
+                mainColor={mainColor}
+                scrollY={scrollY}
+            />
 
             {/* BOTÃO VOLTAR */}
 
@@ -287,14 +281,14 @@ export default function AlbumScreen({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
             {/* BOTÃO FAVORITAR */}
             {albumData && palette ? (
                 <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
                     <FavoriteAlbumBtn albumData={albumData} size={30} />
                 </View>
-            ): null}
+            ) : null}
 
             <Animated.View
                 style={[
@@ -336,7 +330,11 @@ export default function AlbumScreen({
                 </Pressable>
             </Animated.View>
 
-            <WishlistAlbumBtn albumData={albumData} size={30} mainColor={mainColor} />
+            <WishlistAlbumBtn
+                albumData={albumData}
+                size={30}
+                mainColor={mainColor}
+            />
 
             <Animated.ScrollView
                 onScroll={onScroll}

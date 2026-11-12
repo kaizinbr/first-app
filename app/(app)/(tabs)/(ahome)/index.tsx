@@ -10,7 +10,7 @@ import Animated, {
     Extrapolation,
 } from "react-native-reanimated";
 import { LinearGradient } from "expo-linear-gradient";
-
+import { AltArrowUpIcon } from '@solar-icons/react-native/linear/alt-arrow-up'
 import FeedHeader from "@/components/home/header";
 
 export default function Index() {

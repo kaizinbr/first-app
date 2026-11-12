@@ -3,18 +3,19 @@ import * as React from "react";
 import { Pressable, StyleSheet, View } from "react-native";
 
 import { AvatarNoPress } from "@/components/core/avatar";
-import {
-    CodeSquare,
-    InfoSquare,
-    Letter,
-    LockPassword,
-    Logout2,
-    QuestionSquare,
-    ShieldCheck,
-    User,
-} from "@/lib/solar-icons/Bold";
-import { AltArrowLeft, AltArrowRight } from "@/lib/solar-icons/Outline";
+
+import { CodeSquareIcon } from "@solar-icons/react-native/bold/code-square";
+import { InfoSquareIcon } from "@solar-icons/react-native/bold/info-square";
+import { LetterIcon } from "@solar-icons/react-native/bold/letter";
+import { LockPasswordIcon } from "@solar-icons/react-native/bold/lock-password";
+import { Logout2Icon } from "@solar-icons/react-native/bold/logout-2";
+import { QuestionSquareIcon } from "@solar-icons/react-native/bold/question-square";
+import { ShieldCheckIcon } from "@solar-icons/react-native/bold/shield-check";
+import { UserIcon } from "@solar-icons/react-native/bold/user";
+
 import { UserProfile } from "@/lib/types";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
+import { AltArrowRightIcon as AltArrowRight } from "@solar-icons/react-native/outline/alt-arrow-right";
 import { useRouter } from "expo-router";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -56,7 +57,7 @@ export default function Menu({
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeft size={32} color="#eee" />
+                <AltArrowLeftIcon size={32} color="#eee" />
             </Pressable>
             {/* <Text style={styles.title}>Conta</Text> */}
             <View style={styles.section}>
@@ -96,7 +97,7 @@ export default function Menu({
                         router.push("/(app)/settings/account");
                     }}
                 >
-                    <User size={24} color="#eee" />
+                    <UserIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
                         Informações da conta
                     </TextDefault>
@@ -115,7 +116,7 @@ export default function Menu({
                         router.push("/(app)/settings/password");
                     }}
                 >
-                    <LockPassword size={24} color="#eee" />
+                    <LockPasswordIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
                         Configurações de senha
                     </TextDefault>
@@ -134,7 +135,7 @@ export default function Menu({
                         },
                     ]}
                 >
-                    <Letter size={24} color="#eee" />
+                    <LetterIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
                         Alterar e-mail
                     </TextDefault>
@@ -154,7 +155,7 @@ export default function Menu({
                         router.push("/(app)/settings/help");
                     }}
                 >
-                    <QuestionSquare size={24} color="#eee" />
+                    <QuestionSquareIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>Ajuda</TextDefault>
                 </Pressable>
 
@@ -172,7 +173,7 @@ export default function Menu({
                         router.push("/(app)/settings/about");
                     }}
                 >
-                    <InfoSquare size={24} color="#eee" />
+                    <InfoSquareIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>Sobre</TextDefault>
                 </Pressable>
 
@@ -190,7 +191,7 @@ export default function Menu({
                         router.push("/(app)/settings/policy");
                     }}
                 >
-                    <ShieldCheck size={24} color="#eee" />
+                    <ShieldCheckIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
                         Privacidade
                     </TextDefault>
@@ -211,7 +212,7 @@ export default function Menu({
                         router.push("/(app)/settings/app-infos");
                     }}
                 >
-                    <CodeSquare size={24} color="#eee" />
+                    <CodeSquareIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
                         Nerdices do App
                     </TextDefault>
@@ -231,7 +232,7 @@ export default function Menu({
                         router.push("/(app)/settings/teste");
                     }}
                 >
-                    <QuestionSquare size={24} color="#eee" />
+                    <QuestionSquareIcon size={24} color="#eee" />
                     <TextDefault style={styles.textDefault}>
                         Área de teste
                     </TextDefault>
@@ -249,7 +250,7 @@ export default function Menu({
                     ]}
                     onPress={() => setShowDeleteModal(true)}
                 >
-                    <Logout2 size={24} color="#fa5252" />
+                    <Logout2Icon size={24} color="#fa5252" />
                     <TextDefault
                         style={[styles.textDefault, { color: "#fa5252" }]}
                     >

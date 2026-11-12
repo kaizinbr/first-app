@@ -10,7 +10,9 @@ import {
     View,
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
-import { SkipNext, SkipPrevious, Stars } from "@/lib/solar-icons/Bold";
+import { SkipNextIcon } from '@solar-icons/react-native/bold/skip-next'
+import { SkipPreviousIcon } from '@solar-icons/react-native/bold/skip-previous'
+import { StarIcon } from '@solar-icons/react-native/bold/star'
 import { useReviewSession } from "@/store/reviewSessionStore";
 
 function TrackRating({
@@ -139,7 +141,7 @@ export default function TrackRater({
                     ]}
                     onPress={() => setTrackFavorite(track.id, !favorite)}
                 >
-                    <Stars size={12} color="#eee" />
+                    <StarIcon size={12} color="#eee" />
                     <TextDefault
                         style={[
                             styles.toggleText,
@@ -209,7 +211,7 @@ export default function TrackRater({
                     }
                     style={styles.navBtn}
                 >
-                    <SkipPrevious size={24} color={"#8065ef"} />
+                    <SkipPreviousIcon size={24} color={"#8065ef"} />
                 </Pressable>
 
                 <TextDefault style={styles.trackCount}>
@@ -224,7 +226,7 @@ export default function TrackRater({
                     }
                     style={styles.navBtn}
                 >
-                    <SkipNext size={24} color={"#8065ef"} />
+                    <SkipNextIcon size={24} color={"#8065ef"} />
                 </Pressable>
             </View>
         </View>
