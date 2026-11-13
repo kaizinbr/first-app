@@ -9,40 +9,47 @@ import { getPalette } from "expo-color-thief-native";
 import { Palette } from "@/lib/types";
 
 import AlbumScreen from "@/components/albuns/main";
+import usePalette from "@/lib/util/usePalette";
+import { useAlbum } from "@/lib/queries/album";
 
 export default function AlbumPage() {
     const { id } = useLocalSearchParams();
     console.log("id from params:", id);
 
     const [userData, setUserData] = useState<any>(null);
-    const [albumData, setAlbumData] = useState<Album | null>(null);
+    // const [albumData, setAlbumData] = useState<Album | null>(null);
 
     const [colors, setColors] = useState<Palette | any>(null);
-    const [palette, setPalette] = useState<Palette | any>(null);
+    // const [palette, setPalette] = useState<Palette | any>(null);
 
-    useEffect(() => {
-        const fetchAlbumData = async () => {
-            setAlbumData(null);
-            // console.log("Fetching album data for id:", id, albumData);
-            try {
-                const response = await api.get(`/albuns/${id}`);
-                const user = await api.get("/me");
-                setUserData(user);
-                // console.log("Album data fetched successfully:", response);
-                setAlbumData(response.data);
-                if (response.data.images && response.data.images.length > 0) {
-                    const imageUrl = response.data.images[0].url;
+    const { data: albumData, isPending, isError } = useAlbum(id as string);
+    const { data: palette } = usePalette(albumData?.images[0].url);
+    // console.log("albumData:", albumData);
+    // console.log("palette:", palette);
 
-                    const palette = await getPalette(imageUrl, { quality: 10 });
-                    setPalette(palette);
-                    console.log("Palette fetched successfully:", palette);
-                }
-            } catch (error) {
-                console.error("Error fetching album data:", error);
-            }
-        };
-        fetchAlbumData();
-    }, [id]);
+    // useEffect(() => {
+    //     const fetchAlbumData = async () => {
+    //         setAlbumData(null);
+    //         // console.log("Fetching album data for id:", id, albumData);
+    //         try {
+    //             const response = await api.get(`/albuns/${id}`);
+    //             const user = await api.get("/me");
+    //             setUserData(user);
+    //             // console.log("Album data fetched successfully:", response);
+    //             setAlbumData(response.data);
+    //             if (response.data.images && response.data.images.length > 0) {
+    //                 const imageUrl = response.data.images[0].url;
+
+    //                 const palette = await getPalette(imageUrl, { quality: 10 });
+    //                 setPalette(palette);
+    //                 console.log("Palette fetched successfully:", palette);
+    //             }
+    //         } catch (error) {
+    //             console.error("Error fetching album data:", error);
+    //         }
+    //     };
+    //     fetchAlbumData();
+    // }, [id]);
 
     return (
         <>

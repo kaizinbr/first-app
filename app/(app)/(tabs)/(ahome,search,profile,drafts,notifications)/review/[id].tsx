@@ -15,69 +15,34 @@ import { Palette } from "@/lib/types";
 
 import ReviewAlbumScreen from "@/components/reviews/display/main";
 
+import { useReview } from "@/lib/queries/review";
+import usePalette from "@/lib/util/usePalette";
+
 export default function ReviewPage() {
     const { id } = useLocalSearchParams();
     console.log("id from params:", id);
 
-    const [reviewData, setReviewData] = useState<Review | null>(null);
+    // const [reviewData, setReviewData] = useState<Review | null>(null);
     const [albumData, setAlbumData] = useState<Album | null>(null);
     const [notfound, setNotFound] = useState(false);
 
     const [colors, setColors] = useState<Palette | any>(null);
-    const [palette, setPalette] = useState<Palette | any>(null);
+    // const [palette, setPalette] = useState<Palette | any>(null);
 
-    useEffect(() => {
-        const fetchReviewData = async () => {
-            setReviewData(null);
-            // console.log("Fetching album data for id:", id, albumData);
-            const response = await api.get(`/reviews/${id}`);
-            try {
-                if (!response || response.data.length === 0) {
-                    console.error("No review data found for id:", id);
-                    setNotFound(true);
-                    return;
-                }
+    const { data: reviewData, isPending, isError } = useReview(id as string);
+    const { data: palette } = usePalette(reviewData?.album.images[0].url);
 
-                console.log(
-                    "Album data fetched successfully:",
-                    response.data[0].album_id,
-                );
-                setReviewData(response.data[0]);
-
-                const albumDataRes = await api(
-                    `/albuns/${response.data[0].album_id}`,
-                );
-                setAlbumData(albumDataRes.data);
-
-                if (
-                    albumDataRes.data.images &&
-                    albumDataRes.data.images.length > 0
-                ) {
-                    const imageUrl = albumDataRes.data.images[0].url;
-                    const palette = await getPalette(imageUrl, { quality: 10 });
-                    setPalette(palette);
-                }
-            } catch (error) {
-                console.error("Error fetching review data:", error);
-                setNotFound(true);
-                console.log("Error details:", {
-                    reviewDataRes: response,
-                });
-            }
-        };
-        fetchReviewData();
-    }, [id]);
+    const notFound = isError || reviewData === null;
 
     return (
         <>
-            {reviewData && albumData ? (
+            {reviewData && palette ? (
                 <ReviewAlbumScreen
                     reviewData={reviewData}
-                    albumData={albumData}
                     mainColor={selectBackgroundColor(palette).background}
                     accentColor={selectBackgroundGradient(palette).accent}
                 />
-            ) : notfound ? (
+            ) : notFound ? (
                 <View style={styles.container}>
                     <View style={{ alignItems: "center", gap: 16 }}>
                         <TextDefault style={styles.title}>
@@ -90,11 +55,11 @@ export default function ReviewPage() {
                         </TextDefault>
                     </View>
                 </View>
-            ) : (
+            ) : isPending ? (
                 <View style={styles.overlay}>
                     <ActivityIndicator size="large" color="#8065ef" />
                 </View>
-            )}
+            ) : null}
         </>
     );
 }

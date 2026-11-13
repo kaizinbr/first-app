@@ -5,6 +5,7 @@ import { useBottomSheetModal } from "@gorhom/bottom-sheet";
 import { useRouter } from "expo-router";
 import React, { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, View } from "react-native";
+import api from "@/lib/api";
 
 export default function CommentsSection({
     refreshKey,
@@ -27,7 +28,7 @@ export default function CommentsSection({
             setIsLoading(true);
             try {
                 const coms = await api.get(`/reviews/${reviewData.id}/comment`);
-                setComments(coms.comments);
+                setComments(coms.data.comments);
             } catch (error) {
                 console.error("Error checking review ownership:", error);
             }

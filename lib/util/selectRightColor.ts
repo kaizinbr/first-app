@@ -352,7 +352,7 @@ export function selectBackgroundColor(
 
         const score =
             0.35 * dominanceScore +
-            0.35 * lightnessScore +
+            0.4 * lightnessScore +
             0.3 * saturationScore;
 
         if (score > bestScore) {

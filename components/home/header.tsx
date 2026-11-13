@@ -19,7 +19,7 @@ import {
 } from "@/lib/util/workWithColors";
 import { getColors } from "react-native-image-colors";
 
-import { getPalette } from "expo-color-thief-native";
+import { getPalette, getColor } from "expo-color-thief-native";
 import { selectBackgroundColor } from "@/lib/util/selectRightColor";
 
 import Animated, {
@@ -115,8 +115,7 @@ export default function FeedHeader({
     return (
         // Este View tem a altura exata do header — o gradiente fica atrás de tudo
         <View>
-            {colors && (
-                <Animated.View
+            <Animated.View
                     style={[
                         styles.gradientContainer,
                         { height: HEADER_MAX_HEIGHT },
@@ -156,7 +155,6 @@ export default function FeedHeader({
                         style={[StyleSheet.absoluteFill, { height: 180 }]}
                     />
                 </Animated.View>
-            )}
 
             {/* Conteúdo do header */}
             <View style={[styles.headerContent, { paddingTop: insets.top }]}>
@@ -193,7 +191,6 @@ export default function FeedHeader({
                     ]}
                 >
                     <Banner
-                        onColorChange={setColors}
                         setCurrentBannerUrl={setCurrentBannerUrl}
                         HEADER_MAX_HEIGHT={HEADER_MAX_HEIGHT}
                     />

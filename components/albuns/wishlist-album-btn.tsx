@@ -26,7 +26,7 @@ export default function WishlistAlbumBtn({
                 const response = await api.get(
                     `/albuns/${albumData.id}/wishlist`,
                 );
-                console.log("Resposta do favorito:", response);
+                // console.log("Resposta do favorito:", response);
                 setIsWishlisted(response.data.isWishlisted);
             } catch (error) {
                 console.error("Erro ao verificar favorito:", error);
@@ -40,7 +40,9 @@ export default function WishlistAlbumBtn({
         try {
             if (isWishlisted) {
                 await api.delete(`/albuns/${albumData.id}/wishlist`, {
-                    id: albumData.id,
+                    data: {
+                        id: albumData.id,
+                    },
                 });
             } else {
                 await api.post(`/albuns/${albumData.id}/wishlist`, {

@@ -22,7 +22,7 @@ export default function FavoriteAlbumBtn({
                 const response = await api.get(
                     `/albuns/${albumData.id}/favorite`,
                 );
-                console.log("Resposta do favorito:", response);
+                // console.log("Resposta do favorito:", response);
                 setIsFavorite(response.data.isFavorite);
             } catch (error) {
                 console.error("Erro ao verificar favorito:", error);

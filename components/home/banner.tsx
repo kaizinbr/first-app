@@ -43,16 +43,12 @@ type SpotifyAlbum = {
     popularity: number;
 };
 
-interface BannerProps {
-    onColorChange: any;
-}
+import { useBanner } from "@/lib/queries/banner";
 
 export default function Banner({
-    onColorChange,
     setCurrentBannerUrl,
     HEADER_MAX_HEIGHT,
 }: {
-    onColorChange: any;
     setCurrentBannerUrl: (url: string) => void;
     HEADER_MAX_HEIGHT: number;
 }) {
@@ -64,65 +60,20 @@ export default function Banner({
     const carouselRef = useRef<ICarouselInstance>(null);
 
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [currentColor, setCurrentColor] = useState("#161718");
-
-    const [reviewAlbum, setReviewAlbum] = useState<SpotifyAlbum | any>(null);
-    const [bannerData, setBannerData] = useState<
-        | {
-              title: string;
-              artist: string;
-              src: string;
-              dominant: string;
-              darkVibrant: string;
-              lightVibrant: string;
-              textColor: string;
-              album_id: string;
-          }[]
-        | null
-    >(null);
-    const [colors, setColors] = useState<Palette | any>(null);
-    const [palette, setPalette] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    useEffect(() => {
-        const fecthContent = async () => {
-            try {
-                setLoading(true);
-                const response = await api.get(`/banner`);
-                setBannerData(response.data);
-                setCurrentBannerUrl(
-                    response.data[0]?.src ||
-                        "https://i.scdn.co/image/ab67616d0000b273efe09b635b15763133198101",
-                );
-
-                const result = await getColors(response.data[0]?.src, {
-                    fallback: "#000",
-                    cache: true,
-                    key: response.data[0]?.src,
-                });
-                // setPalette(result);
-
-                const [bannerColor1, bannerColor2] = getBannerColors(result);
-                onColorChange([bannerColor1, bannerColor2]);
-
-                setLoading(false);
-                // console.log("Content fetched successfully:", content.html);
-            } catch (error) {
-                console.error("Error fetching content:", error);
-            }
-        };
-
-        fecthContent();
-    }, []);
+    const { data: bannerData, isLoading } = useBanner();
 
     useEffect(() => {
-        // console.log("Current index:", currentIndex);
-        // setCurrentIndex(currentIndex);
-    }, [currentIndex, bannerData]);
+        setCurrentBannerUrl(
+            bannerData?.[0]?.src ||
+                "https://i.scdn.co/image/ab67616d0000b273efe09b635b15763133198101",
+        );
+    }, [bannerData]);
 
     return (
         <>
-            {loading ? (
+            {isLoading ? (
                 <View style={[styles.banner, { width }]}>
                     <View style={styles.bannerCard} />
                 </View>

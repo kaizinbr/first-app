@@ -19,11 +19,13 @@ import { SkeletonFeedCard } from "@/components/core/skeletons";
 interface FeedProps {
     onScrollAnimado: any;
     scrollOffsetY: SharedValue<number>;
+    animatedRef: any;
 }
 
 export default function HomePage({
     onScrollAnimado,
     scrollOffsetY,
+    animatedRef,
 }: FeedProps) {
     const {
         reviews,
@@ -34,6 +36,8 @@ export default function HomePage({
         loadMore,
         onMomentumScrollBegin,
     } = usePaginatedReviews({ endpoint: "/reviews" });
+
+    
 
     // const reviews = [];
     const insets = useSafeAreaInsets();
@@ -61,6 +65,7 @@ export default function HomePage({
 
     return (
         <Animated.FlatList
+            ref={animatedRef}
             style={styles.container}
             contentContainerStyle={styles.feed}
             showsVerticalScrollIndicator={false}

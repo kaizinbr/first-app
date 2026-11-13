@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Pressable, StyleSheet } from "react-native";
 
 import api from "@/lib/api";
-import { StarIcon } from '@solar-icons/react-native/bold/star'
+import { StarIcon } from "@solar-icons/react-native/bold/star";
 import { StarIcon as Star } from "@solar-icons/react-native/outline/star";
 import { Artist } from "@/lib/types";
 
@@ -22,7 +22,7 @@ export default function FavoriteArtistBtn({
                 const response = await api.get(
                     `/artists/${artistData.id}/favorite`,
                 );
-                console.log("Resposta do favorito:", response);
+                // console.log("Resposta do favorito:", response);
                 setIsFavorite(response.data.isFavorite);
             } catch (error) {
                 console.error("Erro ao verificar favorito:", error);
@@ -36,7 +36,9 @@ export default function FavoriteArtistBtn({
         try {
             if (isFavorite) {
                 await api.delete(`/artists/${artistData.id}/favorite`, {
-                    id: artistData.id,
+                    data: {
+                        id: artistData.id,
+                    },
                 });
             } else {
                 await api.post(`/artists/${artistData.id}/favorite`, {

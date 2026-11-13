@@ -43,21 +43,14 @@ import Animated, {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommentsSection from "./comments/comments-section";
 
-function hexToRgb(hex: string) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-}
+
 
 export default function ReviewAlbumScreen({
     reviewData,
-    albumData,
     mainColor,
     accentColor,
 }: {
     reviewData: Review;
-    albumData: Album;
     mainColor: string;
     accentColor: string;
 }) {
@@ -191,7 +184,7 @@ export default function ReviewAlbumScreen({
                 </Animated.View>
 
                 <FixedHeader
-                    data={albumData}
+                    data={reviewData.album!}
                     mainColor={mainColor}
                     scrollY={scrollY}
                 />
@@ -230,11 +223,11 @@ export default function ReviewAlbumScreen({
                     >
                         <AlbumHeader
                             maxHeight={HEADER_MAX_HEIGHT}
-                            data={albumData}
+                            data={reviewData.album!}
                             headerContentStyle={headerContentStyle}
                         />
                         <AlbumData
-                            data={albumData}
+                            data={reviewData.album!}
                             headerContentStyle={headerContentStyle}
                         />
                     </View>
@@ -250,9 +243,9 @@ export default function ReviewAlbumScreen({
                     />
                     <Tracklist
                         review={reviewData}
-                        albumTracks={albumData.tracks.items}
+                        albumTracks={reviewData.album!.tracks.items}
                     />
-                    <AlbumExtraData data={albumData} />
+                    <AlbumExtraData data={reviewData.album!} />
                     <CommentsSection
                         reviewData={reviewData}
                         refreshKey={commentsRefreshKey}
