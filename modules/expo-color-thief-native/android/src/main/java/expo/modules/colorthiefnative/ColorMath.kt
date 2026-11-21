@@ -143,7 +143,7 @@ class ColorThiefColorRecord(
     private val contrastWhite = ColorMath.contrastRatio(luminance, 1.0)
     private val contrastBlack = ColorMath.contrastRatio(luminance, 0.0)
 
-    @Field val isDark: Boolean = luminance < 0.5
+    @Field val isDark: Boolean = contrastWhite >= contrastBlack
     @Field val isLight: Boolean = !isDark
     @Field val textColor: String = if (contrastWhite >= contrastBlack) "#ffffff" else "#000000"
 

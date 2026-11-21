@@ -6,11 +6,18 @@ export function lightenColor(color: string, amount: number) {
 }
 
 export function darkenColor(color: string, amount: number) {
+    console.log("Darkening color:", color, "by amount:", chroma(color).luminance());
+
+    
+    if (chroma(color).luminance() < 0.3) {
+        return color;
+    }
+
+
     if (chroma(color).luminance() > 0.5) {
         color = chroma(color).darken(1.5).hex();
     }
 
-    // console.log("Darkening color:", color, "by amount:", amount);
 
     return chroma(color).darken(amount).hex();
 }

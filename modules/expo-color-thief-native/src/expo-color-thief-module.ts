@@ -1,5 +1,5 @@
 import { requireOptionalNativeModule } from 'expo-modules-core';
-import type { NativeExpoColorThiefModule } from './ExpoColorThief.types';
+import type { NativeExpoColorThiefModule } from './expo-color-thief.types';
 
 // O nome precisa bater com o registrado em Kotlin: Name("ExpoColorThiefNative")
 // O carregamento precisa ser opcional: um update JS pode chegar a um dev build/APK

@@ -3,12 +3,15 @@ import {
     Image,
     View,
     StyleSheet,
-    ScrollView,
+    Modal,
     Platform,
     Pressable,
     StatusBar as RNStatusBar,
     Dimensions,
 } from "react-native";
+
+import { useCallback, useEffect, useState } from "react";
+
 import Animated, {
     useAnimatedStyle,
     useAnimatedScrollHandler,
@@ -22,41 +25,64 @@ export default function AlbumHeader({
     data,
     headerContentStyle,
 }: any) {
+    const [showModal, setShowModal] = useState(false);
+
     return (
-        <Animated.View
-            style={[
-                styles.container,
-                {
-                    minHeight: 300,
-                    justifyContent: "flex-end",
-                    paddingBottom: 24,
-                },
-            ]}
-        >
-            <Animated.View style={headerContentStyle}>
-                <Image
-                    source={{ uri: data.images[0].url }}
-                    style={styles.albumArt}
-                />
+        <>
+            <Animated.View
+                style={[
+                    styles.container,
+                    {
+                        minHeight: 300,
+                        justifyContent: "flex-end",
+                        // paddingBottom: 24,
+                    },
+                ]}
+            >
+                <Animated.View style={headerContentStyle}>
+                    <Pressable onPress={() => setShowModal(true)}>
+                        <Image
+                            source={{ uri: data.images[0].url }}
+                            style={styles.albumArt}
+                        />
+                    </Pressable>
+                </Animated.View>
             </Animated.View>
-        </Animated.View>
+
+            <Modal
+                visible={showModal}
+                animationType="fade"
+                transparent={true}
+                onRequestClose={() => setShowModal(false)}
+            >
+                <Pressable
+                    style={styles.modalBackground}
+                    onPress={() => setShowModal(false)}
+                >
+                    <Image
+                        source={{ uri: data.images[0].url }}
+                        style={styles.modalImage}
+                    />
+                </Pressable>
+            </Modal>
+        </>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 16,
+        // paddingHorizontal: 16,
         backgroundColor: "transparent",
     },
     albumArt: {
-        width: "60%",
+        width: "100%",
         height: "auto",
         aspectRatio: 1,
         minHeight: 200,
         minWidth: 200,
-        borderRadius: 12,
-        marginTop: 100,
+        // borderRadius: 12,
+        // marginTop: 100,
         marginBottom: 32,
         alignSelf: "center",
         shadowColor: "#000",
@@ -77,5 +103,23 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         marginTop: 4,
+    },
+    modalBackground: {
+        flex: 1,
+        backgroundColor: "rgba(22,23,24,0.7)",
+        justifyContent: "center",
+        alignItems: "center",
+        padding: 16,
+    },
+    modalImage: {
+        width: "100%",
+        height: "auto",
+        aspectRatio: 1,
+        borderRadius: 12,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 10 },
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
+        elevation: 10,
     },
 });

@@ -388,6 +388,53 @@ export function selectBackgroundColor(
     };
 }
 
+export function selectAlbumColor(
+    colors: ColorThiefColorData[],
+) {
+    if (!colors || colors.length === 0) {
+        return { background: FALLBACK_COLOR, hex: FALLBACK_COLOR, textColor: "#ffffff" };
+    }
+
+    // console.log("Colors received for album color selection:", colors);
+
+    if (colors[0].hex === "#071525") {
+        return { background: "#071525", hex: "#071525", textColor: "#ffffff" };
+    }
+
+    const vibrant = colors.filter(
+        (c) => c.hsl.s >= MIN_SATURATION_TO_TRUST_HUE,
+    );
+    // console.log("Vibrant colors:", vibrant);
+    const pool = vibrant.length > 0 ? vibrant : colors;
+
+    let best: ColorThiefColorData | null = null;
+    let bestScore = -Infinity;
+
+    for (const color of pool) {
+        const { s, l } = color.hsl;
+        const dominanceScore = color.proportion;
+        const lightnessScore = tentScore(l, TARGET_LIGHTNESS, LIGHTNESS_SPREAD);
+        const saturationScore = Math.min(s / SATURATION_TARGET, 1);
+        // console.log("SCORES:", dominanceScore, lightnessScore, saturationScore);
+
+        const score =
+            0.35 * dominanceScore +
+            0.4 * lightnessScore +
+            0.3 * saturationScore;
+
+        if (score > bestScore) {
+            bestScore = score;
+            best = color;
+        }
+    }
+
+    if (!best) {
+        return { background: FALLBACK_COLOR, hex: FALLBACK_COLOR, textColor: "#ffffff" };
+    }
+
+    return best
+}
+
 export function selectBackgroundGradient(
     colors: ColorThiefColorData[],
 ): GradientBackgroundColorResult {

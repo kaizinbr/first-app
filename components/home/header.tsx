@@ -196,6 +196,9 @@ export default function FeedHeader({
                     />
                 </Animated.View>
                 {/* <FindUsers /> */}
+                {/* <Pressable
+                    onPress={() => router.push("/color-thief-test")}
+                >   <TextDefault>Search</TextDefault></Pressable> */}
             </View>
         </View>
     );

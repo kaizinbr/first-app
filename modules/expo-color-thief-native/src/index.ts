@@ -1,10 +1,12 @@
-import NativeModule from './ExpoColorThiefModule';
+import { buildColor } from './build-color';
+import NativeModule from './expo-color-thief-module';
 import type {
-  ColorThiefOptions,
   ColorThiefColorData,
-  SwatchesResult,
+  ColorThiefOptions,
   RGB,
-} from './ExpoColorThief.types';
+  SwatchesResult,
+} from './expo-color-thief.types';
+import { callNative, progressivePalette, resolveOptions } from './native-calls';
 
 /** Indica se o binário instalado contém a implementação nativa. */
 export const isNativeModuleAvailable = NativeModule !== null;
@@ -13,31 +15,38 @@ export type {
   ColorSpace,
   ColorThiefOptions,
   ColorThiefColorData,
-  SwatchesResult,
-  SwatchName,
-  RGB,
+  ContrastInfo,
   HSL,
   OKLCH,
-  ContrastInfo,
-} from './ExpoColorThief.types';
+  Region,
+  RGB,
+  SwatchesResult,
+  SwatchName,
+} from './expo-color-thief.types';
 
 /**
- * Cor dominante da imagem. Equivalente a getColor()/getColorSync() do colorthief.
- * `quality` afeta o cálculo do dominante mesmo sem colorCount.
+ * Cor dominante da imagem. Equivalente a getColor() do colorthief.
+ * Internamente usa uma paleta de 5 cores (`colorCount` é ignorado).
  */
 export async function getColor(
   imageUri: string,
   options?: ColorThiefOptions
 ): Promise<ColorThiefColorData | null> {
-  return NativeModule?.getColor(imageUri, options ?? {}) ?? null;
+  const native = NativeModule;
+  if (!native) return null;
+  const resolved = resolveOptions(options);
+  return callNative(options?.signal, (requestId) => native.getColor(imageUri, resolved, requestId));
 }
 
-/** Paleta de N cores. Equivalente a getPalette()/getPaletteSync(). */
+/** Paleta de N cores. Equivalente a getPalette(). */
 export async function getPalette(
   imageUri: string,
   options?: ColorThiefOptions
 ): Promise<ColorThiefColorData[]> {
-  return NativeModule?.getPalette(imageUri, options ?? {}) ?? [];
+  const native = NativeModule;
+  if (!native) return [];
+  const resolved = resolveOptions(options);
+  return callNative(options?.signal, (requestId) => native.getPalette(imageUri, resolved, requestId));
 }
 
 /**
@@ -50,7 +59,29 @@ export async function getSwatches(
   imageUri: string,
   options?: ColorThiefOptions
 ): Promise<SwatchesResult> {
-  return NativeModule?.getSwatches(imageUri, options ?? {}) ?? {};
+  const native = NativeModule;
+  if (!native) return {};
+  const resolved = resolveOptions(options);
+  return callNative(options?.signal, (requestId) => native.getSwatches(imageUri, resolved, requestId));
+}
+
+/**
+ * Paleta em 3 passes (grosso -> médio -> final) sobre uma única decodificação
+ * da imagem: dá pra pintar a UI com o primeiro passe e refinar nos seguintes.
+ * O último passe é equivalente ao getPalette().
+ */
+export async function* getPaletteProgressive(
+  imageUri: string,
+  options?: ColorThiefOptions
+): AsyncGenerator<ColorThiefColorData[]> {
+  const resolved = resolveOptions(options);
+  yield* progressivePalette(imageUri, resolved, options?.signal);
+}
+
+/** Cria um objeto de cor completo a partir de r, g, b (0–255), sem passar pelo nativo. */
+export function createColor(r: number, g: number, b: number, population = 0): ColorThiefColorData {
+  const clamp = (value: number) => Math.min(255, Math.max(0, Math.round(value)));
+  return buildColor(clamp(r), clamp(g), clamp(b), population, 0);
 }
 
 /** Utilitário puro em JS, sem custo de bridge — igual ao do colorthief. */

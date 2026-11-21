@@ -1,214 +1,241 @@
 package expo.modules.colorthiefnative
 
-import java.util.PriorityQueue
-import kotlin.math.max
-import kotlin.math.min
-
 /**
- * Port em Kotlin do MMCQ usado pelo color-thief (lokesh) e color-thief-java
- * (SvenWoltmann), generalizado para rodar tanto no cubo RGB clássico quanto
- * num cubo perceptual (OKLab) — usado quando `colorSpace = "oklch"`.
+ * Median cut (MMCQ) do color-thief, rodando sobre um histograma em array
+ * (32x32x32 = 32768 células, 5 bits por eixo) em vez de HashMap com boxing.
  *
- * Ideia: cada pixel amostrado entra com (a) coordenadas de "bucket" de 5 bits
- * (0-31) por canal — usadas só para construir o histograma e cortar caixas —
- * e (b) sua cor sRGB original, que é o que de fato é somado/mediado dentro
- * de cada caixa final. Isso mantém a mesma implementação de median-cut para
- * os dois espaços, e garante que a cor de saída seja sempre um sRGB válido.
+ * O mesmo cubo serve para os dois espaços: em "rgb" os eixos são R, G, B; em
+ * "oklch" os eixos são L, a, b do OKLab (coordenadas retangulares do OKLCH,
+ * porque o matiz é circular e quebraria o corte pela mediana). Em ambos os
+ * casos cada célula guarda a soma do sRGB original dos pixels que caíram
+ * nela, então a cor final de cada caixa é a média real dos pixels.
  */
 object MMCQ {
 
-    private const val SIGBITS = 5
-    private const val RSHIFT = 8 - SIGBITS
-    private const val MAX_ITERATIONS = 1000
-    private const val FRACT_BY_POPULATIONS = 0.75
+    class Histogram {
+        val counts = IntArray(32768)
+        val sumR = IntArray(32768)
+        val sumG = IntArray(32768)
+        val sumB = IntArray(32768)
 
-    data class Sample(
-        val bucketA: Int,
-        val bucketB: Int,
-        val bucketC: Int,
-        val srcR: Int,
-        val srcG: Int,
-        val srcB: Int
-    )
+        /** Pixels contabilizados (já sem os transparentes/brancos ignorados). */
+        var total = 0
+
+        /** Pixels quase brancos descartados por `ignoreWhite`. */
+        var whiteSkipped = 0
+    }
 
     class VBox(
-        var a1: Int, var a2: Int,
-        var b1: Int, var b2: Int,
-        var c1: Int, var c2: Int,
-        private val histo: HashMap<Long, Int>,
-        private val sumR: HashMap<Long, Long>,
-        private val sumG: HashMap<Long, Long>,
-        private val sumB: HashMap<Long, Long>
+        private val histogram: Histogram,
+        val a1: Int, val a2: Int,
+        val b1: Int, val b2: Int,
+        val c1: Int, val c2: Int
     ) {
-        private var populationCache: Int = -1
+        private val population: Int
 
-        private fun key(a: Int, b: Int, c: Int): Long =
-            (a.toLong() shl 20) or (b.toLong() shl 10) or c.toLong()
+        init {
+            var sum = 0
+            for (a in a1..a2) {
+                for (b in b1..b2) {
+                    for (c in c1..c2) {
+                        sum += histogram.counts[(a shl 10) or (b shl 5) or c]
+                    }
+                }
+            }
+            population = sum
+        }
+
+        fun population(): Int = population
 
         fun volume(): Int = (a2 - a1 + 1) * (b2 - b1 + 1) * (c2 - c1 + 1)
 
-        fun population(): Int {
-            if (populationCache >= 0) return populationCache
-            var count = 0
-            for (a in a1..a2) for (b in b1..b2) for (c in c1..c2) {
-                count += histo[key(a, b, c)] ?: 0
-            }
-            populationCache = count
-            return count
-        }
-
-        /** Cor média (sRGB real, não a coordenada de bucket) dos pixels na caixa. */
+        /** Cor média (sRGB real, não a coordenada da célula) dos pixels na caixa. */
         fun avgRgb(): IntArray {
-            var r = 0L; var g = 0L; var b = 0L; var n = 0L
-            for (a in a1..a2) for (bb in b1..b2) for (c in c1..c2) {
-                val k = key(a, bb, c)
-                val cnt = histo[k] ?: 0
-                if (cnt == 0) continue
-                r += sumR[k] ?: 0L
-                g += sumG[k] ?: 0L
-                b += sumB[k] ?: 0L
-                n += cnt
+            var r = 0L
+            var g = 0L
+            var b = 0L
+            var n = 0L
+            for (x in a1..a2) {
+                for (y in b1..b2) {
+                    for (z in c1..c2) {
+                        val index = (x shl 10) or (y shl 5) or z
+                        val count = histogram.counts[index]
+                        if (count == 0) continue
+                        r += histogram.sumR[index]
+                        g += histogram.sumG[index]
+                        b += histogram.sumB[index]
+                        n += count
+                    }
+                }
             }
             if (n == 0L) return intArrayOf(0, 0, 0)
-            return intArrayOf((r / n).toInt(), (g / n).toInt(), (b / n).toInt())
+            return intArrayOf(
+                Math.round(r.toDouble() / n).toInt(),
+                Math.round(g.toDouble() / n).toInt(),
+                Math.round(b.toDouble() / n).toInt()
+            )
         }
-
-        fun copy() = VBox(a1, a2, b1, b2, c1, c2, histo, sumR, sumG, sumB)
     }
 
     /**
-     * @param samples pixels já convertidos para o espaço de bucket desejado
      * @param maxColors número alvo de cores (colorCount)
-     * @return lista de VBox, uma por cor final, ordenada por população desc.
+     * @return caixas finais, ordenadas por população decrescente
      */
-    fun quantize(samples: List<Sample>, maxColors: Int): List<VBox> {
-        if (samples.isEmpty() || maxColors < 2) return emptyList()
+    fun quantize(histogram: Histogram, maxColors: Int): List<VBox> {
+        if (histogram.total == 0 || maxColors < 2) return emptyList()
 
-        val histo = HashMap<Long, Int>()
-        val sumR = HashMap<Long, Long>()
-        val sumG = HashMap<Long, Long>()
-        val sumB = HashMap<Long, Long>()
+        var a1 = 31
+        var a2 = 0
+        var b1 = 31
+        var b2 = 0
+        var c1 = 31
+        var c2 = 0
+        var found = false
 
-        var a1 = Int.MAX_VALUE; var a2 = Int.MIN_VALUE
-        var b1 = Int.MAX_VALUE; var b2 = Int.MIN_VALUE
-        var c1 = Int.MAX_VALUE; var c2 = Int.MIN_VALUE
-
-        for (s in samples) {
-            val k = (s.bucketA.toLong() shl 20) or (s.bucketB.toLong() shl 10) or s.bucketC.toLong()
-            histo[k] = (histo[k] ?: 0) + 1
-            sumR[k] = (sumR[k] ?: 0L) + s.srcR
-            sumG[k] = (sumG[k] ?: 0L) + s.srcG
-            sumB[k] = (sumB[k] ?: 0L) + s.srcB
-
-            if (s.bucketA < a1) a1 = s.bucketA
-            if (s.bucketA > a2) a2 = s.bucketA
-            if (s.bucketB < b1) b1 = s.bucketB
-            if (s.bucketB > b2) b2 = s.bucketB
-            if (s.bucketC < c1) c1 = s.bucketC
-            if (s.bucketC > c2) c2 = s.bucketC
+        for (index in 0 until 32768) {
+            if (histogram.counts[index] == 0) continue
+            found = true
+            val a = index shr 10
+            val b = (index shr 5) and 31
+            val c = index and 31
+            if (a < a1) a1 = a
+            if (a > a2) a2 = a
+            if (b < b1) b1 = b
+            if (b > b2) b2 = b
+            if (c < c1) c1 = c
+            if (c > c2) c2 = c
         }
+        if (!found) return emptyList()
 
-        val rootBox = VBox(a1, a2, b1, b2, c1, c2, histo, sumR, sumG, sumB)
+        val open = mutableListOf(VBox(histogram, a1, a2, b1, b2, c1, c2))
+        val locked = mutableListOf<VBox>()
 
-        // fila 1: corta priorizando as maiores caixas por população
-        val pq1 = PriorityQueue<VBox>(compareBy { it.population() })
-        pq1.add(rootBox)
+        // 1ª fase: corta sempre a caixa mais populosa (75% das cores)
+        iterate(histogram, open, locked, maxColors * 0.75, false)
+        // 2ª fase: passa a priorizar população * volume
+        iterate(histogram, open, locked, maxColors.toDouble(), true)
 
-        iterate(pq1, FRACT_BY_POPULATIONS * maxColors, histo)
-
-        // fila 2: agora prioriza população * volume (caixas "densas e grandes")
-        val pq2 = PriorityQueue<VBox>(compareBy { it.population() * it.volume() })
-        pq2.addAll(pq1)
-
-        iterate(pq2, maxColors.toDouble() - pq1.size, histo)
-
-        val result = ArrayList<VBox>(pq2)
+        val result = ArrayList<VBox>(open.size + locked.size)
+        result.addAll(open)
+        result.addAll(locked)
         result.sortByDescending { it.population() }
         return result
     }
 
-    private fun iterate(queue: PriorityQueue<VBox>, target: Double, histo: HashMap<Long, Int>) {
-        var iterations = 0
-        var lastSize = queue.size
-        while (queue.size < target && iterations < MAX_ITERATIONS) {
-            iterations++
-            val vbox = queue.poll() ?: return
-            if (vbox.population() == 0) {
-                if (vbox.volume() > 0) queue.add(vbox)
-                continue
+    private fun iterate(
+        histogram: Histogram,
+        open: MutableList<VBox>,
+        locked: MutableList<VBox>,
+        target: Double,
+        byVolume: Boolean
+    ) {
+        while (open.isNotEmpty() && open.size + locked.size < target) {
+            var best = 0
+            var bestKey = -1L
+            for (i in open.indices) {
+                val box = open[i]
+                val key = if (byVolume) box.population().toLong() * box.volume() else box.population().toLong()
+                if (key > bestKey) {
+                    bestKey = key
+                    best = i
+                }
             }
-            val split = medianCutApply(vbox, histo)
+
+            val box = open.removeAt(best)
+            val split = medianCut(histogram, box)
             if (split == null) {
-                queue.add(vbox)
+                // caixa indivisível (1 pixel ou 1 célula): sai da fila de cortes
+                locked.add(box)
                 continue
             }
-            queue.add(split.first)
-            split.second?.let { queue.add(it) }
-            if (queue.size == lastSize) {
-                // não conseguiu mais dividir nada -> evita loop infinito
-                break
-            }
-            lastSize = queue.size
+            open.add(split.first)
+            open.add(split.second)
         }
     }
 
-    private fun medianCutApply(vbox: VBox, histo: HashMap<Long, Int>): Pair<VBox, VBox?>? {
-        if (vbox.population() == 0) return null
+    private fun medianCut(histogram: Histogram, box: VBox): Pair<VBox, VBox>? {
+        if (box.population() <= 1) return null
 
-        val rw = vbox.a2 - vbox.a1 + 1
-        val gw = vbox.b2 - vbox.b1 + 1
-        val bw = vbox.c2 - vbox.c1 + 1
-        val maxW = max(rw, max(gw, bw))
-        if (vbox.a2 == vbox.a1 && vbox.b2 == vbox.b1 && vbox.c2 == vbox.c1) return null
+        val widths = intArrayOf(box.a2 - box.a1 + 1, box.b2 - box.b1 + 1, box.c2 - box.c1 + 1)
 
-        // eixo de corte = maior dimensão
-        val axis = when (maxW) {
-            rw -> 'a'
-            gw -> 'b'
-            else -> 'c'
+        // Tenta primeiro o eixo mais largo (igual ao MMCQ original); se todos os
+        // pixels estiverem numa única fatia dele, tenta os outros eixos.
+        val axes = listOf(0, 1, 2).sortedByDescending { widths[it] }
+        for (axis in axes) {
+            if (widths[axis] < 2) continue
+            val split = cutAlongAxis(histogram, box, axis)
+            if (split != null) return split
+        }
+        return null
+    }
+
+    private fun cutAlongAxis(histogram: Histogram, box: VBox, axis: Int): Pair<VBox, VBox>? {
+        val lo = when (axis) {
+            0 -> box.a1
+            1 -> box.b1
+            else -> box.c1
+        }
+        val hi = when (axis) {
+            0 -> box.a2
+            1 -> box.b2
+            else -> box.c2
         }
 
-        // soma acumulada de população ao longo do eixo, pra achar o ponto médio
-        val partialSum = HashMap<Int, Int>()
+        val partial = IntArray(32)
+        val lookahead = IntArray(32)
         var total = 0
-        val (lo, hi) = when (axis) {
-            'a' -> vbox.a1 to vbox.a2
-            'b' -> vbox.b1 to vbox.b2
-            else -> vbox.c1 to vbox.c2
-        }
 
         for (i in lo..hi) {
             var sum = 0
             when (axis) {
-                'a' -> for (bb in vbox.b1..vbox.b2) for (c in vbox.c1..vbox.c2) {
-                    sum += histo[(i.toLong() shl 20) or (bb.toLong() shl 10) or c.toLong()] ?: 0
-                }
-                'b' -> for (a in vbox.a1..vbox.a2) for (c in vbox.c1..vbox.c2) {
-                    sum += histo[(a.toLong() shl 20) or (i.toLong() shl 10) or c.toLong()] ?: 0
-                }
-                else -> for (a in vbox.a1..vbox.a2) for (bb in vbox.b1..vbox.b2) {
-                    sum += histo[(a.toLong() shl 20) or (bb.toLong() shl 10) or i.toLong()] ?: 0
-                }
+                0 -> for (b in box.b1..box.b2) for (c in box.c1..box.c2) sum += histogram.counts[(i shl 10) or (b shl 5) or c]
+                1 -> for (a in box.a1..box.a2) for (c in box.c1..box.c2) sum += histogram.counts[(a shl 10) or (i shl 5) or c]
+                else -> for (a in box.a1..box.a2) for (b in box.b1..box.b2) sum += histogram.counts[(a shl 10) or (b shl 5) or i]
             }
             total += sum
-            partialSum[i] = total
+            partial[i] = total
         }
-        if (total == 0) return null
+        for (i in lo..hi) lookahead[i] = total - partial[i]
 
-        var cutPoint = lo
-        val half = total / 2
         for (i in lo..hi) {
-            if ((partialSum[i] ?: 0) > half) { cutPoint = i; break }
-        }
+            if (partial[i] * 2 <= total) continue
 
-        val box1 = vbox.copy()
-        val box2 = vbox.copy()
-        when (axis) {
-            'a' -> { box1.a2 = cutPoint; box2.a1 = min(cutPoint + 1, vbox.a2) }
-            'b' -> { box1.b2 = cutPoint; box2.b1 = min(cutPoint + 1, vbox.b2) }
-            else -> { box1.c2 = cutPoint; box2.c1 = min(cutPoint + 1, vbox.c2) }
+            val left = i - lo
+            val right = hi - i
+            var cut = if (left <= right) {
+                minOf(hi - 1, (i + right / 2.0).toInt())
+            } else {
+                maxOf(lo, (i - 1 - left / 2.0).toInt())
+            }
+
+            // evita caixas vazias
+            while (partial[cut] == 0 && cut < hi) cut++
+            var rest = lookahead[cut]
+            while (rest == 0 && cut > lo && partial[cut - 1] != 0) {
+                cut--
+                rest = lookahead[cut]
+            }
+            if (cut >= hi) return null
+
+            val first: VBox
+            val second: VBox
+            when (axis) {
+                0 -> {
+                    first = VBox(histogram, box.a1, cut, box.b1, box.b2, box.c1, box.c2)
+                    second = VBox(histogram, cut + 1, box.a2, box.b1, box.b2, box.c1, box.c2)
+                }
+                1 -> {
+                    first = VBox(histogram, box.a1, box.a2, box.b1, cut, box.c1, box.c2)
+                    second = VBox(histogram, box.a1, box.a2, cut + 1, box.b2, box.c1, box.c2)
+                }
+                else -> {
+                    first = VBox(histogram, box.a1, box.a2, box.b1, box.b2, box.c1, cut)
+                    second = VBox(histogram, box.a1, box.a2, box.b1, box.b2, cut + 1, box.c2)
+                }
+            }
+            if (first.population() == 0 || second.population() == 0) return null
+            return Pair(first, second)
         }
-        if (box1.population() == 0 || box2.population() == 0) return null
-        return box1 to box2
+        return null
     }
 }

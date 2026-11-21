@@ -187,6 +187,7 @@ export default function ReviewAlbumScreen({
                     data={reviewData.album!}
                     mainColor={mainColor}
                     scrollY={scrollY}
+                    type={"review"}
                 />
 
                 <Pressable

@@ -9,9 +9,11 @@ import { Album } from "@/lib/types";
 export default function FavoriteAlbumBtn({
     albumData,
     size,
+    strokeWidth,
 }: {
     albumData: Album;
     size: number;
+    strokeWidth?: number;
 }) {
     const [isFavorite, setIsFavorite] = useState(false);
 
@@ -63,7 +65,7 @@ export default function FavoriteAlbumBtn({
             {isFavorite ? (
                 <StarIcon color="#FFD700" size={size} />
             ) : (
-                <Star size={size} color="#eee" />
+                <Star size={size} color="#eee" strokeWidth={3} />
             )}
         </Pressable>
     );

@@ -9,18 +9,14 @@ import Animated, {
     useAnimatedScrollHandler,
     useAnimatedStyle,
     useSharedValue,
-    withSpring
+    withSpring,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import {
-    ColorThiefColorData
-} from "expo-color-thief-native";
+import { ColorThiefColorData } from "expo-color-thief-native";
 
-import {
-    selectBackgroundColor
-} from "@/lib/util/selectRightColor";
-import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import { selectBackgroundColor, selectAlbumColor } from "@/lib/util/selectRightColor";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/linear/alt-arrow-left";
 import AlbumData, { AlbumExtraData } from "@/components/albuns/data";
 import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
 import AlbumHeader from "@/components/albuns/header";
@@ -31,14 +27,11 @@ import { Album, UserProfile } from "@/lib/types";
 import {
     darkenColor,
     lightenColor,
-    saturateColor
+    saturateColor,
 } from "@/lib/util/workWithColors";
-function hexToRgb(hex: string) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-}
+
+
+
 export default function AlbumScreen({
     albumData,
     userData,
@@ -57,7 +50,7 @@ export default function AlbumScreen({
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
-    const mainColor = selectBackgroundColor(palette).background;
+    const mainColor = selectAlbumColor(palette).hex;
 
     const onScroll = useAnimatedScrollHandler((event) => {
         scrollY.value = event.contentOffset.y;
@@ -93,19 +86,19 @@ export default function AlbumScreen({
 
     // 3. Animação da Capa e Título sumindo
     const headerContentStyle = useAnimatedStyle(() => {
-        const opacity = interpolate(
-            scrollY.value,
-            [0, SCROLL_DISTANCE / 1.5], // Some um pouco antes da metade do caminho
-            [1, 0],
-            Extrapolation.CLAMP,
-        );
+        // const opacity = interpolate(
+        //     scrollY.value,
+        //     [0, SCROLL_DISTANCE / 1.5], // Some um pouco antes da metade do caminho
+        //     [1, 0],
+        //     Extrapolation.CLAMP,
+        // );
         const scale = interpolate(
             scrollY.value,
             [-100, 0, SCROLL_DISTANCE],
             [1.1, 1, 0.8],
             Extrapolation.CLAMP,
         );
-        return { opacity, transform: [{ scale }] };
+        return { transform: [{ scale }] };
     });
 
     const scale = useSharedValue(1);
@@ -114,181 +107,30 @@ export default function AlbumScreen({
         transform: [{ scale: scale.value }],
     }));
 
+    // console.log(selectAlbumColor(palette));
+
     return (
         <View style={styles.container}>
-            {/* FUNDO */}
-            <Animated.View
-                style={[
-                    styles.gradientContainer,
-                    { height: HEADER_MAX_HEIGHT },
-                    backgroundStyle,
-                ]}
-            >
-                <LinearGradient
-                    colors={[darkenColor(mainColor, 1.5), "#161718"]}
-                    style={StyleSheet.absoluteFill}
-                />
-
-                <View
-                    style={[
-                        styles.blob,
-                        {
-                            backgroundColor: mainColor,
-                            width: 320,
-                            height: 320,
-                            top: -80,
-                            left: -60,
-                            filter: [{ blur: 90 }],
-                        },
-                    ]}
-                />
-
-                <View
-                    style={[
-                        styles.blob,
-                        {
-                            backgroundColor: mainColor,
-                            width: 120,
-                            height: 120,
-                            top: -20,
-                            left: "50%",
-                            filter: [{ blur: 90 }],
-                        },
-                    ]}
-                />
-
-                <View
-                    style={[
-                        styles.blob,
-                        {
-                            backgroundColor: saturateColor(mainColor, 1),
-                            width: 260,
-                            height: 260,
-                            bottom: 170,
-                            right: -80,
-                            filter: [{ blur: 70 }],
-                        },
-                    ]}
-                />
-
-                <View
-                    style={[
-                        styles.blob,
-                        {
-                            backgroundColor: lightenColor(mainColor, 0.7),
-                            width: 160,
-                            height: 160,
-                            bottom: 80,
-                            right: 80,
-                            filter: [{ blur: 70 }],
-                        },
-                    ]}
-                />
-                <View
-                    style={[
-                        styles.blob,
-                        {
-                            backgroundColor: saturateColor(mainColor, 0.7),
-                            width: 80,
-                            height: 80,
-                            bottom: 140,
-                            right: 40,
-                            filter: [{ blur: 70 }],
-                        },
-                    ]}
-                />
-                <View
-                    style={[
-                        styles.blob,
-                        {
-                            backgroundColor: saturateColor(mainColor, 0.7),
-                            width: 80,
-                            height: 80,
-                            bottom: 140,
-                            left: 40,
-                            filter: [{ blur: 70 }],
-                        },
-                    ]}
-                />
-                <View
-                    style={[
-                        styles.blob,
-                        {
-                            backgroundColor: saturateColor(mainColor, 0.8),
-                            width: 160,
-                            height: 160,
-                            bottom: 80,
-                            left: 80,
-                            filter: [{ blur: 70 }],
-                        },
-                    ]}
-                />
-
-                {/* vinheta no topo pra escurecer onde fica o header */}
-                <LinearGradient
-                    colors={["rgba(0,0,0,0.6)", "transparent"]}
-                    style={[StyleSheet.absoluteFill, { height: 180 }]}
-                />
-            </Animated.View>
-
-            {/* A BARRINHA FIXA QUE APARECE */}
-            {/* <Animated.View
-                style={[
-                    styles.fixedTopBar,
-                    {
-                        height: HEADER_MIN_HEIGHT,
-                        paddingTop: insets.top,
-                        backgroundColor: darkenColor(
-                            selectRightColor(colors),
-                            0.3,
-                        ),
-                    },
-                    topBarStyle,
-                ]}
-                pointerEvents="none" // Para não bloquear o clique de voltar
-            >
-                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
-                    {albumData.name.length > 36
-                        ? albumData.name.substring(0, 36) + "..."
-                        : albumData.name}
-                </TextDefault>
-
-                <LinearGradient
-                    colors={[
-                        `rgba(${hexToRgb(selectRightColor(colors))}, 0)`,
-                        darkenColor(selectRightColor(colors), 1.2),
-                    ]}
-                    style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: HEADER_MIN_HEIGHT,
-                        zIndex: -1,
-                    }}
-                />
-            </Animated.View> */}
 
             <FixedHeader
                 data={albumData}
                 mainColor={mainColor}
                 scrollY={scrollY}
+                type="album"
             />
 
-            {/* BOTÃO VOLTAR */}
-
-            <Pressable
+            {/* <Pressable
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeftIcon size={32} color="#eee" />
-            </Pressable>
-            {/* BOTÃO FAVORITAR */}
-            {albumData && palette ? (
+                <AltArrowLeftIcon style={{left: -2}} size={24} strokeWidth={3} color="#eee" />
+            </Pressable> */}
+
+            {/* {albumData && palette ? (
                 <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
-                    <FavoriteAlbumBtn albumData={albumData} size={30} />
+                    <FavoriteAlbumBtn albumData={albumData} size={24} strokeWidth={3} />
                 </View>
-            ) : null}
+            ) : null} */}
 
             <Animated.View
                 style={[
@@ -340,14 +182,67 @@ export default function AlbumScreen({
                 onScroll={onScroll}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
+                // style={{ backgroundColor: palette[0].hex }}
             >
                 <AlbumHeader
                     maxHeight={HEADER_MAX_HEIGHT}
                     data={albumData}
-                    headerContentStyle={headerContentStyle}
+                    // headerContentStyle={headerContentStyle}
                 />
 
-                <AlbumData data={albumData} />
+                <View
+                    style={{
+                        position: "absolute",
+                        top: HEADER_MAX_HEIGHT - 180,
+                        height: 330,
+                        zIndex: 1,
+                        width: "100%",
+                        
+                    }}
+                >
+                    <LinearGradient
+                        colors={["transparent", selectAlbumColor(palette).hex]}
+                        style={{
+                            height: 162,
+                            width: "100%",
+                        }}
+                    />
+                    <View style={{ height: 16, width: "100%", backgroundColor: selectAlbumColor(palette).hex }} />
+                    <LinearGradient
+                        colors={[selectAlbumColor(palette).hex, "transparent"]}
+                        style={{
+                            height: 162,
+                            width: "100%",
+                        }}
+                    />
+                </View>
+
+                <AlbumData data={albumData}  />
+
+                {/* <View
+                    style={{
+                        paddingHorizontal: 16,
+                        marginTop: 24,
+                        marginBottom: 8,
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 8,
+                    }}
+                >
+                    <TextDefault>cores</TextDefault>
+                    {palette.map((color, index) => (
+                        <View
+                            key={index}
+                            style={{
+                                width: 30,
+                                height: 30,
+                                backgroundColor: color.hex,
+                                borderRadius: 15,
+                            }}
+                        />
+                    ))}
+                </View> */}
+
                 <Tracklist albumTracks={albumData.tracks.items} />
                 <AlbumExtraData data={albumData} />
 
@@ -388,6 +283,10 @@ const styles = StyleSheet.create({
         zIndex: 11,
         width: 40,
         height: 40,
+        borderRadius: 999,
+        
+        backgroundColor: "rgba(22,23,24,0.7)",
+        alignItems: "center",
         justifyContent: "center",
     },
     favoriteBtn: {
@@ -396,7 +295,10 @@ const styles = StyleSheet.create({
         zIndex: 11,
         width: 40,
         height: 40,
+                backgroundColor: "rgba(22,23,24,0.7)",
+        alignItems: "center",
         justifyContent: "center",
+        borderRadius: 999,
     },
     reviewButton: {
         height: 46,

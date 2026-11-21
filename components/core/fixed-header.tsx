@@ -14,8 +14,11 @@ import {
     darkenColor,
     getBannerColors,
 } from "@/lib/util/workWithColors";
+import FavoriteAlbumBtn from "@/components/albuns/favorite-album-btn";
 import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useRouter } from "expo-router";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
 
 function hexToRgb(hex: string) {
     const r = parseInt(hex.slice(1, 3), 16);
@@ -28,11 +31,14 @@ export default function FixedHeader({
     mainColor,
     data,
     scrollY,
+    type
 }: {
     mainColor: string;
     data: Album | ArtistResponse;
     scrollY: any;
+    type?: "album" | "artist" | "review";
 }) {
+    const router = useRouter();
     const insets = useSafeAreaInsets();
 
     const HEADER_MAX_HEIGHT = 264; // Tamanho total da área do gradiente
@@ -46,46 +52,111 @@ export default function FixedHeader({
     const topBarStyle = useAnimatedStyle(() => {
         const opacity = interpolate(
             scrollY.value,
-            [SCROLL_DISTANCE - 40, SCROLL_DISTANCE], // Começa a aparecer 40px antes de bater no topo
+            [SCROLL_DISTANCE - 40, SCROLL_DISTANCE],
             [0, 1],
             Extrapolation.CLAMP,
         );
-        return { opacity };
+        const transform = [
+            {
+                translateY: interpolate(
+                    scrollY.value,
+                    [SCROLL_DISTANCE - 40, SCROLL_DISTANCE],
+                    [-32, 0],
+                    Extrapolation.CLAMP,
+                ),
+            },
+        ];
+        return { opacity, transform };
     });
-    return (
-        <Animated.View
-            style={[
-                styles.fixedTopBar,
-                {
-                    height: HEADER_MIN_HEIGHT,
-                    paddingTop: insets.top,
-                    backgroundColor: darkenColor(mainColor, 0.3),
-                },
-                topBarStyle,
-            ]}
-            pointerEvents="none" // Para não bloquear o clique de voltar
-        >
-            <TextDefault style={styles.fixedTitle} numberOfLines={1}>
-                {data.name.length > 36
-                    ? data.name.substring(0, 36) + "..."
-                    : data.name}
-            </TextDefault>
 
-            <LinearGradient
-                colors={[
-                    `rgba(${hexToRgb(mainColor)}, 0)`,
-                    darkenColor(mainColor, 1.2),
+    const statusBarOpacityStyle = useAnimatedStyle(() => ({
+        opacity: interpolate(
+            scrollY.value,
+            [SCROLL_DISTANCE - 40, SCROLL_DISTANCE],
+            [0, 1],
+            Extrapolation.CLAMP,
+        ),
+    }));
+
+    // const backBtnStyle = useAnimatedStyle(() => ({
+    //     backgroundColor: interpolate(
+    //         scrollY.value,
+    //         [SCROLL_DISTANCE - 40, SCROLL_DISTANCE],
+    //         [0.3, 0.7],
+    //         Extrapolation.CLAMP,
+    //     ),
+    // }));
+
+    return (
+        <>
+            <Animated.View
+                style={[
+                    styles.statusBarBg,
+                    { height: insets.top + 24 },
+                    statusBarOpacityStyle,
                 ]}
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: HEADER_MIN_HEIGHT,
-                    zIndex: -1,
-                }}
-            />
-        </Animated.View>
+                pointerEvents="none"
+            >
+                <LinearGradient
+                    colors={["#161718", "transparent"]}
+                    style={StyleSheet.absoluteFill}
+                />
+            </Animated.View>
+
+            <Pressable
+                onPress={() => router.back()}
+                style={[
+                    styles.backButton,
+                    {
+                        top: insets.top + 4,
+                        backgroundColor: darkenColor(mainColor, 0.3),
+                    },
+                ]}
+            >
+                <AltArrowLeftIcon
+                    style={{ left: -2 }}
+                    size={24}
+                    strokeWidth={3}
+                    color="#eee"
+                />
+            </Pressable>
+
+            {data && type === "album" ? (
+                <View style={[styles.favoriteBtn, { top: insets.top + 4, backgroundColor: darkenColor(mainColor, 0.3) }]}>
+                    <FavoriteAlbumBtn
+                        albumData={data as Album}
+                        size={24}
+                        strokeWidth={3}
+                    />
+                </View>
+            ) : null}
+
+            <Animated.View
+                style={[
+                    styles.fixedTopBar,
+                    {
+                        height: HEADER_MIN_HEIGHT,
+                        paddingTop: insets.top,
+                        // backgroundColor: darkenColor(mainColor, 0.3),
+                    },
+                    topBarStyle,
+                ]}
+                pointerEvents="none" // Para não bloquear o clique de voltar
+            >
+                <View
+                    style={[
+                        styles.fixedTitleContainer,
+                        { backgroundColor: darkenColor(mainColor, 0.3) },
+                    ]}
+                >
+                    <TextDefault style={styles.fixedTitle} numberOfLines={1}>
+                        {data.name.length > 32
+                            ? data.name.substring(0, 32) + "..."
+                            : data.name}
+                    </TextDefault>
+                </View>
+            </Animated.View>
+        </>
     );
 }
 
@@ -93,6 +164,15 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#161718", // Cor de fundo do resto do app
+    },
+
+    statusBarBg: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        backgroundColor: "transparent",
+        zIndex: 10,
     },
     gradientContainer: {
         position: "absolute",
@@ -106,14 +186,28 @@ const styles = StyleSheet.create({
         top: 0,
         left: 0,
         right: 0,
-        backgroundColor: "#1c494f", // Cor final da barrinha
+        // backgroundColor: "#1c494f", // Cor final da barrinha
         zIndex: 10,
         alignItems: "center",
         justifyContent: "center",
-        borderBottomWidth: 1,
-        borderBottomColor: "rgba(255,255,255,0.05)",
+        // borderBottomWidth: 1,
+        // borderBottomColor: "rgba(255,255,255,0.05)",
     },
-    fixedTitle: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+    fixedTitleContainer: {
+        borderRadius: 9999,
+        height: 40,
+        maxWidth: "70%",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(22,23,24,0.7)",
+    },
+    fixedTitle: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
     backButton: {
         position: "absolute",
         left: 16,
@@ -121,6 +215,9 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         justifyContent: "center",
+        backgroundColor: "rgba(22,23,24,0.7)",
+        alignItems: "center",
+        borderRadius: 999,
     },
     favoriteBtn: {
         position: "absolute",
@@ -128,7 +225,10 @@ const styles = StyleSheet.create({
         zIndex: 11,
         width: 40,
         height: 40,
+        backgroundColor: "rgba(22,23,24,0.7)",
+        alignItems: "center",
         justifyContent: "center",
+        borderRadius: 999,
     },
     reviewButton: {
         position: "absolute",

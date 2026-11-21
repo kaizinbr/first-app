@@ -23,7 +23,7 @@ export default function AlbumPage() {
     // const [palette, setPalette] = useState<Palette | any>(null);
 
     const { data: albumData, isPending, isError } = useAlbum(id as string);
-    const { data: palette } = usePalette(albumData?.images[0].url);
+    const { data: palette } = usePalette(albumData?.images[0].url, { quality: 10 });
     // console.log("albumData:", albumData);
     // console.log("palette:", palette);
 
