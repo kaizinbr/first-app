@@ -41,6 +41,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { CommentButton } from "@/components/core/comment-card-btn";
 import { LikeButton } from "@/components/reviews/like-btn";
 import { SkeletonFeedCard } from "@/components/core/skeletons";
+import { authClient } from "@/lib/auth-client";
 
 const MAX_PREVIEW_CHARS = 500;
 
@@ -55,6 +56,7 @@ export default function FeedCard({
     refreshing: boolean;
     type?: "list" | "grid";
 }) {
+    const { data: session } = authClient.useSession();
     const router = useRouter();
 
     const insets = useSafeAreaInsets();
@@ -94,22 +96,13 @@ export default function FeedCard({
                 review.content.content[0].content.length === 0 ||
                 review.content.content[0].content[0].text === ""
             ) {
-                // console.warn("Review content is empty");
+                setContent(null);
                 return;
-            }
-
-            try {
-                const response = await api.get(`/reviews/${review.id}/content`);
-                setContent(response.data);
-                // console.log("Content fetched successfully:", content.html);
-            } catch (error) {
-                console.error("Error fetching content:", error);
             }
         };
         const checkOwnership = async () => {
             try {
-                const myProfile = await api.get("/me");
-                setItsMine(review.Profile.id === myProfile.data.id);
+                setItsMine(review.Profile.id === session?.user?.id);
             } catch (error) {
                 console.error("Error checking review ownership:", error);
             }
@@ -235,7 +228,7 @@ export default function FeedCard({
                                         </TextDefault>
                                     </View>
                                 </View>
-                                {content ? (
+                                {previewContent ? (
                                     <>
                                         <EnrichedMarkdownText
                                             markdown={
@@ -309,7 +302,8 @@ export default function FeedCard({
                                 <View style={styles.buttonSection}>
                                     <LikeButton
                                         ratingId={review.id}
-                                        initialCount={review.likesCount} // vem da query pública
+                                        initialCount={review.likesCount} 
+                                        data={review}
                                         size="md"
                                     />
                                     <CommentButton

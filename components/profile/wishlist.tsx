@@ -6,11 +6,14 @@ import {
     Pressable,
     StyleSheet,
     useWindowDimensions,
-    View
+    View,
+    ActivityIndicator,
 } from "react-native";
 import { Tabs } from "react-native-collapsible-tab-view";
 import api from "@/lib/api";
 import { SimpleGrid } from "react-native-super-grid";
+import { useUserWishlist } from "@/lib/queries/user";
+import TextDefault from "@/components/core/text-core";
 
 export default function WishlistRoute({ data }: { data: UserProfile }) {
     const GAP = 8;
@@ -21,23 +24,7 @@ export default function WishlistRoute({ data }: { data: UserProfile }) {
     const { width } = useWindowDimensions();
     const itemSize = (width - 48 - GAP * (COLUMNS + 1)) / COLUMNS;
 
-    const [wishlistAlbums, setWishlistAlbums] = useState<any[]>([]);
-
-    useEffect(() => {
-        async function fetchWishlist() {
-            try {
-                const response = await api.get(
-                    `/users/${data.username}/wishlist`,
-                );
-                setWishlistAlbums(response.data || []);
-                console.log("Álbuns na wishlist:", response);
-            } catch (error) {
-                console.error("Erro ao buscar wishlist:", error);
-            }
-        }
-
-        fetchWishlist();
-    }, [data]);
+    const { data: wishlistData, isLoading } = useUserWishlist(data.username);
 
     return (
         <Tabs.ScrollView
@@ -49,11 +36,50 @@ export default function WishlistRoute({ data }: { data: UserProfile }) {
             showsVerticalScrollIndicator={false}
         >
             <View style={styles.scene}>
-                {wishlistAlbums.length > 0 && (
+                {isLoading && (
+                    <View
+                        style={{
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: 16,
+                        }}
+                    >
+                        <SimpleGrid
+                            itemDimension={88}
+                            data={Array.from({ length: 8 }, (_, i) => (i))}
+                            renderItem={({ item }) => (
+                                <View
+                                    style={{
+                                        width: "100%",
+                                        aspectRatio: 1,
+                                        flex: 1,
+                                        borderRadius: 8,
+                                    }}
+                                >
+                                    <View
+                                        style={{
+                                            width: "100%",
+                                            aspectRatio: 1,
+                                            flex: 1,
+                                            borderRadius: 8,
+                                            backgroundColor: "#333",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                        }}
+                                    />
+                                </View>
+                            )}
+                            style={{ padding: 0 }}
+                            listKey="albuns-wishlisted"
+                        />
+                    </View>
+                )}
+                {wishlistData && wishlistData.length > 0 && (
                     <>
                         <SimpleGrid
                             itemDimension={88}
-                            data={wishlistAlbums}
+                            data={wishlistData}
                             renderItem={({ item }) => (
                                 <Pressable
                                     style={{
@@ -81,6 +107,20 @@ export default function WishlistRoute({ data }: { data: UserProfile }) {
                             listKey="albuns-wishlisted"
                         />
                     </>
+                )}
+                {wishlistData && wishlistData.length === 0 && (
+                    <View
+                        style={{
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",   
+                            padding: 16,
+                        }}
+                    >
+                        <TextDefault style={styles.textDefault}>
+                            Nenhum álbum aqui ainda
+                        </TextDefault>
+                    </View>
                 )}
             </View>
         </Tabs.ScrollView>

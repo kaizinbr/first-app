@@ -44,6 +44,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import CommentsSection from "./comments/comments-section";
 
 
+import { authClient } from "@/lib/auth-client";
 
 export default function ReviewAlbumScreen({
     reviewData,
@@ -54,6 +55,7 @@ export default function ReviewAlbumScreen({
     mainColor: string;
     accentColor: string;
 }) {
+    const { data: session } = authClient.useSession();
     const insets = useSafeAreaInsets();
     const router = useRouter();
 
@@ -124,14 +126,7 @@ export default function ReviewAlbumScreen({
     useEffect(() => {
         const checkOwnership = async () => {
             try {
-                const myProfile = await api.get("/me");
-                setItsMine(reviewData.Profile.id === myProfile.data.id);
-                // console.log(
-                //     "Review ownership:",
-                //     reviewData.Profile.id,
-                //     myProfile.id,
-                //     reviewData.Profile.id === myProfile.id,
-                // );
+                setItsMine(reviewData.Profile.id === session?.user?.id);
             } catch (error) {
                 console.error("Error checking review ownership:", error);
             }

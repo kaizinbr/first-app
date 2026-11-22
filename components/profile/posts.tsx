@@ -31,7 +31,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
         hasNextPage,
         isFetchingNextPage,
         isRefetching,
-        refetch,
+        refresh,
     } = useReviews({
         endpoint: `/users/${data.username}/reviews`,
         sort,
@@ -58,7 +58,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
             renderItem={({ item }) => (
                 <FeedCard
                     review={item}
-                    onRefresh={() => refetch()}
+                    onRefresh={() => refresh()}
                     refreshing={refreshing}
                     type={type}
                 />
@@ -94,11 +94,8 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={() => {
-                        void refetch();
+                        void refresh();
                     }}
-                    progressViewOffset={
-                        Platform.OS === "android" ? 24 + insets.top : 0
-                    }
                     progressBackgroundColor="#282828"
                     colors={["#8065ef", "#8065ef"]}
                     style={{
@@ -169,23 +166,48 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
             )}
             ListFooterComponent={
                 isFetchingNextPage ? (
-                    <ActivityIndicator
-                        size="small"
-                        color="#00a8ff"
-                        style={{ marginTop: 20 }}
-                    />
-                ) : (
-                    <TextDefault
+                    <View
                         style={{
-                            color: "#777",
-                            textAlign: "center",
-                            marginTop: 20,
+                            width: "100%",
+                            flexGrow: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
                         }}
                     >
-                        Fim!
-                    </TextDefault>
+                        <ActivityIndicator
+                            size="small"
+                            color="#8065ef"
+                            style={{ marginTop: 20 }}
+                        />
+                    </View>
+                ) : (
+                    <View
+                        style={{
+                            width: "100%",
+                            flexGrow: 1,
+                            flex: 1,
+                            alignItems: "center",
+                            justifyContent: "center",
+                        }}
+                    >
+                        <TextDefault
+                            style={{
+                                color: "#777",
+                                textAlign: "center",
+                                marginTop: 20,
+                            }}
+                        >
+                            Fim!
+                        </TextDefault>
+                    </View>
                 )
             }
+            ListFooterComponentStyle={{
+                width: "100%",
+                flexGrow: 1,
+                alignItems: "center",
+                justifyContent: "center",
+            }}
             ListEmptyComponent={
                 isLoading ? (
                     <ActivityIndicator

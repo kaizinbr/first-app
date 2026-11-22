@@ -1,5 +1,11 @@
 import * as React from "react";
-import { View, StyleSheet, RefreshControl, ScrollView, Platform } from "react-native";
+import {
+    View,
+    StyleSheet,
+    RefreshControl,
+    ScrollView,
+    Platform,
+} from "react-native";
 import { Tabs } from "react-native-collapsible-tab-view";
 import { UserProfile, Palette } from "@/lib/types";
 
@@ -15,7 +21,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ColorThiefColorData } from "expo-color-thief-native";
 
-import { useUser } from "@/lib/queries/user";
+import { useUser, useUserWishlist, useUserFollowers, useUserFollowings } from "@/lib/queries/user";
 import usePalette from "@/lib/util/usePalette";
 
 export default function ProfileTabs({
@@ -31,10 +37,15 @@ export default function ProfileTabs({
 
     const {
         data: userData,
-        isLoading,
-        isError,
         refetch,
     } = useUser(data.username);
+
+    const { data: userFollowersData, refetch: refetchFollowers } = useUserFollowers(data.username);
+
+    const { data: userFollowingsData, refetch: refetchFollowings } = useUserFollowings(data.username);
+
+    const { refetch: refetchWishlist } = useUserWishlist(data.username);
+
     const { data: palette } = usePalette(data?.avatar_url, {
         quality: 10,
     });
@@ -44,8 +55,11 @@ export default function ProfileTabs({
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
         await refetch();
+        await refetchFollowers();
+        await refetchFollowings();
+        await refetchWishlist();
         setRefreshing(false);
-    }, [refetch]);
+    }, [refetch, refetchWishlist]);
 
     const renderHeader = React.useCallback(() => {
         return (
@@ -55,29 +69,27 @@ export default function ProfileTabs({
                     { backgroundColor: "transparent" },
                 ]}
                 refreshControl={
-                    
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={() => {
-                        void refetch();
-                    }}
-                    progressViewOffset={
-                        Platform.OS === "android" ? 24 + insets.top : 0
-                    }
-                    progressBackgroundColor="#282828"
-                    colors={["#8065ef", "#8065ef"]}
-                    style={{
-                        borderWidth: 0.5,
-                        borderColor: "#56595D",
-                    }}
-                />
+                    <RefreshControl
+                        refreshing={refreshing}
+                        onRefresh={() => {
+                            void refetch();
+                            void refetchWishlist();
+                            void refetchFollowers();
+                            void refetchFollowings();
+                        }}
+                        progressViewOffset={
+                            Platform.OS === "android" ? 24 + insets.top : 0
+                        }
+                        progressBackgroundColor="#282828"
+                        colors={["#8065ef", "#8065ef"]}
+                        style={{
+                            borderWidth: 0.5,
+                            borderColor: "#56595D",
+                        }}
+                    />
                 }
             >
-                <Header
-                    data={data}
-                    palette={palette}
-                    itsUser={itsUser}
-                />
+                <Header data={data} palette={palette} itsUser={itsUser} />
                 <FixedTopBar
                     title={data.name || "Perfil"}
                     height={FIXED_BAR_HEIGHT}
@@ -91,7 +103,11 @@ export default function ProfileTabs({
 
     const renderTabBar = React.useCallback(
         (props: any) => (
-            <ProfileTabBar {...props} collapsedOffset={FIXED_BAR_HEIGHT} palette={palette} />
+            <ProfileTabBar
+                {...props}
+                collapsedOffset={FIXED_BAR_HEIGHT}
+                palette={palette}
+            />
         ),
         [FIXED_BAR_HEIGHT],
     );

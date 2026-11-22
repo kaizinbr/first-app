@@ -190,6 +190,13 @@ export interface Review {
     likesCount: number; // campo adicional para contagem de likes
     commentsCount: number; // campo adicional para contagem de comentários
     album?: Album; // campo adicional para armazenar os dados do álbum
+    Like?: {
+        id: string;
+        user_profile: string;
+        ratingId: string;
+        inserted_at: string;
+        updated_at: string;
+    }[]; // campo adicional para armazenar os likes do review
 }
 
 export interface ReviewWithAlbum extends Review {
@@ -336,38 +343,37 @@ export interface Notification {
     Rating: Review | null;
 }
 
-
 interface HSL {
-  h: number;
-  l: number;
-  s: number;
+    h: number;
+    l: number;
+    s: number;
 }
 
 interface OKLCH {
-  c: number;
-  h: number;
-  l: number;
+    c: number;
+    h: number;
+    l: number;
 }
 
 interface Contrast {
-  black: number;
-  foreground: string;
-  white: number;
+    black: number;
+    foreground: string;
+    white: number;
 }
 
 interface ColorData {
-  b: number;
-  contrast: Contrast;
-  g: number;
-  hex: string;
-  hsl: HSL;
-  isDark: boolean;
-  isLight: boolean;
-  oklch: OKLCH;
-  population: number;
-  proportion: number;
-  r: number;
-  textColor: string;
+    b: number;
+    contrast: Contrast;
+    g: number;
+    hex: string;
+    hsl: HSL;
+    isDark: boolean;
+    isLight: boolean;
+    oklch: OKLCH;
+    population: number;
+    proportion: number;
+    r: number;
+    textColor: string;
 }
 
 export type ColorPalette = ColorData[];

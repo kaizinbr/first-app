@@ -2,35 +2,19 @@
 import api from "@/lib/api";
 import { useCallback, useEffect, useState } from "react";
 
-interface UseLikeProps {
+export function useLike({ id, initialCount, type, initialLiked }: {
     id: string;
     initialCount: number;
     type: "review" | "comment";
-}
-
-export function useLike({ id, initialCount, type }: UseLikeProps) {
-    const [liked, setLiked] = useState(false);
+    initialLiked?: boolean;
+}) {
+    const [liked, setLiked] = useState(initialLiked);
     const [count, setCount] = useState(initialCount);
     const [loading, setLoading] = useState(false);
-    const [authenticated, setAuthenticated] = useState(false);
-
-    useEffect(() => {
-        async function fetchLikeStatus() {
-            try {
-                const response = await api.get(`/${type}s/${id}/like`);
-                // console.log("Like status response:", response);
-                setLiked(response.data.liked);
-                setAuthenticated(response.data.authenticated);
-            } catch (error) {
-                console.error("Error fetching like status:", error);
-            }
-        }
-        fetchLikeStatus();
-    }, [id]);
 
     const toggle = useCallback(async () => {
-        console.log("Toggling like for id:", authenticated);
-        if (loading || !authenticated) return;
+        console.log("Toggling like for id:", id, "Type:", type, "Current liked state:", liked);
+        if (loading) return;
 
         const wasLiked = liked;
         setLiked(!wasLiked);
@@ -48,11 +32,11 @@ export function useLike({ id, initialCount, type }: UseLikeProps) {
         } finally {
             setLoading(false);
         }
-    }, [liked, loading, authenticated, id, type]);
+    }, [liked, loading, id, type]);
 
     if (count < 0) {
         setCount(0);
     }
 
-    return { liked, count, toggle, loading, authenticated };
+    return { liked, count, toggle, loading };
 }

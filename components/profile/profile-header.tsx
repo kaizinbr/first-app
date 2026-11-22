@@ -19,6 +19,10 @@ import { VerifiedCheckIcon } from '@solar-icons/react-native/bold/verified-check
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import ProfileImage from "@/components/profile/profile-image";
 
+import { useUser, useUserWishlist, useUserFollowers, useUserFollowings } from "@/lib/queries/user";
+
+import { authClient } from "@/lib/auth-client";
+
 export default function ProfileHeader({
     data,
     itsUser,
@@ -30,6 +34,8 @@ export default function ProfileHeader({
     style?: any;
     palette?: ColorThiefColorData[];
 }) {
+    
+    const { data: session } = authClient.useSession();
     const router = useRouter();
     const [folowersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
@@ -75,11 +81,16 @@ export default function ProfileHeader({
                 console.error("Error checking following status:", error);
             }
         };
-        checkIfFollowing();
+        if (!itsUser && session?.user) {
+            checkIfFollowing();
+        }
         fetchFollowersCount();
         fetchFollowingCount();
         fetchReviewsCount();
     }, [data.username, data]);
+
+    const { refetch: refetchFollowers } = useUserFollowers(data.username);
+    const { refetch: refetchFollowings } = useUserFollowings(data.username);
 
     function handleFollowToggle() {
         // Lógica para seguir ou deixar de seguir o usuário
@@ -95,12 +106,17 @@ export default function ProfileHeader({
             });
             console.log("Seguir", response);
         }
+
+        // Atualiza os contadores de seguidores e seguindo
+        refetchFollowers();
+        refetchFollowings();
+
         setIsFollowing(!isFollowing);
     }
 
     return (
         <Animated.View style={[styles.scene, style]}>
-            <ProfileHeaderBG avatar_url={data.avatar_url} />
+            <ProfileHeaderBG avatar_url={data.avatar_url} palette={palette!} />
 
             <View style={styles.header}>
                 <ProfileImage data={data} />

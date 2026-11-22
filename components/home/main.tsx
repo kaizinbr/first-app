@@ -30,7 +30,7 @@ export default function HomePage({
         hasNextPage,
         isFetchingNextPage,
         isRefetching,
-        refetch,
+        refresh,
     } = useReviews({ endpoint: "/reviews" });
     console.log("Data from useReviews:", hasNextPage);
 
@@ -50,7 +50,7 @@ export default function HomePage({
             renderItem={({ item }) => (
                 <FeedCard
                     review={item}
-                    onRefresh={() => refetch()}
+                    onRefresh={() => refresh()}
                     refreshing={refreshing}
                     type="list"
                 />
@@ -86,7 +86,7 @@ export default function HomePage({
                 <RefreshControl
                     refreshing={refreshing}
                     onRefresh={() => {
-                        void refetch();
+                        void refresh();
                     }}
                     progressViewOffset={
                         Platform.OS === "android" ? 24 + insets.top : 0

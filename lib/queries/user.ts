@@ -18,38 +18,46 @@ export function useUser(username: string) {
     });
 }
 
-// export function useuserColor(username) {
-//     return useQuery({
-//         queryKey: ["artist", id, "albuns"],
-//         queryFn: async ({ signal }) => {
-//             const { data } = await api.get(`/artists/${id}/albuns`, {
-//                 params: { market: "BR", offset, limit },
-//                 signal,
-//             });
-
-//             const artistAlbuns = data;
-//             if (!artistAlbuns) return null;
-
-//             return artistAlbuns;
-//         },
-//         staleTime: 1 * 60 * 60 * 1000, // 1h
-//     });
-// }
-
-export function useArtistAlbunsRelative(id: string, offset: number = 0, limit: number = 50) {
+export function useUserWishlist(username: string) {
     return useQuery({
-        queryKey: ["artist", id, "albuns-relative"],
+        queryKey: ["user", username, "wishlist"],
         queryFn: async ({ signal }) => {
-            const { data } = await api.get(`/artists/${id}/albuns`, {
-                params: { market: "BR", offset, limit },
+            const { data } = await api.get(`/users/${username}/wishlist`, {
                 signal,
             });
 
-            const artistAlbuns = data;
-            if (!artistAlbuns) return null;
+            const userWishlist = data;
+            if (!userWishlist) return null;
 
-            return artistAlbuns;
+            return userWishlist;
         },
-        staleTime: 1 * 60 * 60 * 1000, // 1h
+    });
+}
+
+export function useUserFollowings(username: string) {
+    return useQuery({
+        queryKey: ["user", username, "followings"],
+        queryFn: async ({ signal }) => {
+            const { data } = await api.get(`/users/${username}/followings`, {
+                signal,
+            });
+            const userFollowings = data;
+            if (!userFollowings) return null;
+            return userFollowings;
+        },
+    });
+}
+
+export function useUserFollowers(username: string) {
+    return useQuery({
+        queryKey: ["user", username, "followers"],  
+        queryFn: async ({ signal }) => {
+            const { data } = await api.get(`/users/${username}/followers`, {
+                signal,
+            });
+            const userFollowers = data;
+            if (!userFollowers) return null;
+            return userFollowers;
+        }
     });
 }

@@ -7,44 +7,26 @@ import { Tabs } from "react-native-collapsible-tab-view";
 import { ItemSeparator } from "@/components/core/separator";
 import UserCards from "@/components/core/user-cards";
 
+import { useUserFollowers } from "@/lib/queries/user";
+
 export default function FollowingRoute({ data }: { data: UserProfile }) {
-    const [userFollowers, setUserFollowers] = useState<{
-        followers: {
-            id: string;
-            username: string;
-            name: string;
-            avatar_url: string;
-        }[];
-    } | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchUserFollowers = async () => {
-            try {
-                const response = await api.get(
-                    `/users/${data.username}/followers`,
-                );
-                setUserFollowers(response.data);
-                // console.log("Feed data fetched successfully:", response.data);
-                // console.log("total reviews:", UserPosts!.totalReviews);
-            } catch (error) {
-                console.error("Error fetching feed data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserFollowers();
-    }, [data]);
+    const { data: userFollowersData, isLoading } = useUserFollowers(
+        data.username,
+    );
 
     return (
         <Tabs.FlatList
-            data={userFollowers?.followers || []} // Passamos o array de dados aqui
-            keyExtractor={(item) => item.id.toString()} // Como ele identifica cada item único
+            data={userFollowersData?.followers || []} // Passamos o array de dados aqui
+            keyExtractor={(item: {
+                id: string;
+                username: string;
+                name: string;
+                avatar_url: string;
+            }) => item.id.toString()} // Como ele identifica cada item único
             renderItem={({ item }) => <UserCards data={item} />} // A função que desenha o card
             ItemSeparatorComponent={ItemSeparator}
             ListEmptyComponent={
-                loading ? (
+                isLoading ? (
                     <ActivityIndicator
                         size="large"
                         color="#8065ef"

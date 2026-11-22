@@ -7,44 +7,26 @@ import { Tabs } from "react-native-collapsible-tab-view";
 import { ItemSeparator } from "@/components/core/separator";
 import UserCards from "@/components/core/user-cards";
 
+import { useUserFollowings } from "@/lib/queries/user";
+
 export default function FollowingRoute({ data }: { data: UserProfile }) {
-    const [userFollowings, setUserFollowings] = useState<{
-        followings: {
-            id: string;
-            username: string;
-            name: string;
-            avatar_url: string;
-        }[];
-    } | null>(null);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchUserFollowings = async () => {
-            try {
-                const response = await api.get(
-                    `/users/${data.username}/followings`,
-                );
-                setUserFollowings(response.data);
-                // console.log("Feed data fetched successfully:", response.data);
-                // console.log("total reviews:", UserPosts!.totalReviews);
-            } catch (error) {
-                console.error("Error fetching feed data:", error);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUserFollowings();
-    }, [data]);
+    const { data: userFollowingsData, isLoading } = useUserFollowings(
+        data.username,
+    );
 
     return (
         <Tabs.FlatList
-            data={userFollowings?.followings || []}
-            keyExtractor={(item) => item.id.toString()}
+            data={userFollowingsData?.followings || []}
+            keyExtractor={(item: {
+                id: string;
+                username: string;
+                name: string;
+                avatar_url: string;
+            }) => item.id.toString()}
             renderItem={({ item }) => <UserCards data={item} />}
             ItemSeparatorComponent={ItemSeparator}
             ListEmptyComponent={
-                loading ? (
+                isLoading ? (
                     <ActivityIndicator
                         size="large"
                         color="#8065ef"

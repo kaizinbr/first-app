@@ -9,29 +9,41 @@ import Animated, {
 } from "react-native-reanimated";
 import { useLike } from "@/lib/util/useLike";
 
-import { HeartIcon } from '@solar-icons/react-native/linear/heart'
-import { HeartIcon as HeartBold } from '@solar-icons/react-native/bold/heart'
+import { HeartIcon } from "@solar-icons/react-native/linear/heart";
+import { HeartIcon as HeartBold } from "@solar-icons/react-native/bold/heart";
 import TextDefault from "@/components/core/text-core";
-
+import { ReviewWithAlbum } from "@/lib/types";
+import { authClient } from "@/lib/auth-client";
 
 export function LikeButton({
     ratingId,
-    initialLiked,
+    data,
     initialCount,
     size = "sm",
-    style
+    style,
 }: {
     ratingId: string;
-    initialLiked?: boolean;
+    data?: ReviewWithAlbum;
     initialCount: number;
-    size?: "sm" | "md"; 
+    size?: "sm" | "md";
     style?: any;
 }) {
+    const { data: session } = authClient.useSession();
+    const isLikedByCurrentUser = data?.Like?.some(
+        (like) => like.user_profile === session?.user?.id,
+    );
+
     const { liked, count, toggle, loading } = useLike({
         id: ratingId,
         initialCount,
         type: "review",
+        initialLiked: isLikedByCurrentUser,
     });
+
+    console.log("Session data in LikeButton:", console.log(session));
+    console.log("User data in LikeButton:", console.log(data?.Like));
+
+    console.log("Is current user liked this review:", isLikedByCurrentUser);
 
     useEffect(() => {}, [liked, count, ratingId]);
 
@@ -84,7 +96,7 @@ export function LikeCommentButton({
     initialLiked,
     initialCount,
     size = "sm",
-    style
+    style,
 }: {
     commentId: string;
     initialLiked?: boolean;

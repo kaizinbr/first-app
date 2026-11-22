@@ -15,70 +15,29 @@ import type { ColorThiefColorData } from "expo-color-thief-native";
 import PlayingOnLastFM from "@/components/profile/last-fm-card";
 import { VerifiedCheckIcon } from '@solar-icons/react-native/bold/verified-check'
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import usePalette from "@/lib/util/usePalette";
 
-export default function ProfileHeaderBG({ avatar_url }: { avatar_url: string  }) {
+export default function ProfileHeaderBG({ avatar_url, palette }: { avatar_url: string; palette: ColorThiefColorData[] }) {
     const router = useRouter();
-    const [colors, setColors] = useState<Palette | any>({
-        dominant: "#8065ef",
-        vibrant: "#8065ef",
-        darkVibrant: "#8065ef",
-        muted: "#8065ef",
+    
+    const { data: paletteData, isLoading, isError } = usePalette(avatar_url, {
+        quality: 10,
     });
-    const [pureColors, setPureColors] = useState<Palette | any>(null);
-    const [colorsA, setColorsA] = useState<ColorThiefColorData[] | any>([
-        {
-            b: 40,
-            contrast: {
-                black: 1.2356125186127032,
-                foreground: "#ffffff",
-                white: 16.995619325367446,
-            },
-            g: 23,
-            hex: "#261728",
-            hsl: {
-                h: 292.9411764705883,
-                l: 0.12352941176470589,
-                s: 0.2698412698412698,
-            },
-            isDark: true,
-            isLight: false,
-            oklch: {
-                c: 0.03857433556681822,
-                h: 322.58298061878503,
-                l: 0.2320606739879971,
-            },
-            population: 4629,
-            proportion: 0.514962732228279,
-            r: 38,
-            textColor: "#ffffff",
-        },
-    ]);
-    const [mainColor, setMainColor] = useState("#161718");
+
+    const [mainColor, setMainColor] = useState((selectBackgroundColor(palette).background) || "#8065ef");
 
     useEffect(() => {
         const fetchColors = async () => {
             try {
-                const result = await getColors(avatar_url, {
-                    fallback: "#000",
-                    cache: true,
-                    key: avatar_url,
-                    quality: "low",
-                });
-                setPureColors(result);
-
-                const fetchedColors = await getPalette(avatar_url, {
-                    colorCount: 6,
-                    quality: 10,
-                });
-                // console.log("Colors fetched successfully:", fetchedColors);
-                setColorsA(fetchedColors);
-                setMainColor(selectBackgroundColor(fetchedColors).background);
+                if (paletteData) {
+                    setMainColor(selectBackgroundColor(paletteData).background);
+                }
             } catch (error) {
                 console.error("Error fetching colors:", error);
             }
         };
         fetchColors();
-    }, [avatar_url]);
+    }, [avatar_url, palette, isLoading]);
 
     return (
         <>
