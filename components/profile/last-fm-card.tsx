@@ -1,154 +1,126 @@
 import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
 import { UserProfile } from "@/lib/types";
-import { selectAlbumColor, selectRightColorLastFm } from "@/lib/util/selectRightColor";
+import { selectAlbumColor } from "@/lib/util/selectRightColor";
+import { darkenColor } from "@/lib/util/workWithColors";
+import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { useIsFocused } from "expo-router/react-navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
-import { getColor, getPalette, ColorThiefColorData } from "expo-color-thief-native";
+import { useEffect } from "react";
+import { Pressable, StyleSheet, View } from "react-native";
+import { getPalette } from "expo-color-thief-native";
 import Animated, {
-    interpolateColor,
-    runOnJS,
+    FadeIn,
     useAnimatedStyle,
     useSharedValue,
     withTiming,
 } from "react-native-reanimated";
-import { darkenColor } from "@/lib/util/workWithColors";
 
-const POLL_INTERVAL = 10_000;
-const FADE_MS = 400;
-
-export default function PlayingOnLastFM({ data }: { data: UserProfile }) {
+export default function PlayingOnLastFM({
+    data,
+    expanded,
+}: {
+    data: UserProfile;
+    expanded?: boolean;
+}) {
     const router = useRouter();
-    const [loading, setLoading] = useState(true);
-    const [track, setTrack] = useState<any>(null);
-    const [colors, setColors] = useState<any>(null);
-    const [error, setError] = useState("");
-    const isFetchingRef = useRef(false);
-    const currentTrackName = useRef<string | null>(null);
     const isFocused = useIsFocused();
 
-    const imageOpacity = useSharedValue(1);
-    const colorProgress = useSharedValue(0);
-    const prevColor = useSharedValue("rgba(22, 23, 24, 0.8)");
-    const nextColor = useSharedValue("rgba(22, 23, 24, 0.8)");
-
-    const applyNewTrack = useCallback((newTrack: any, newColors: any) => {
-        setTrack(newTrack);
-        setColors(newColors);
-    }, []);
-
-    const animateTransition = useCallback(
-        (newTrack: any, newColors: any, newColor: string) => {
-            imageOpacity.value = withTiming(
-                0,
-                { duration: FADE_MS / 2 },
-                (finished) => {
-                    if (!finished) return;
-                    runOnJS(applyNewTrack)(newTrack, newColors);
-                    prevColor.value = nextColor.value;
-                    nextColor.value = newColor;
-                    colorProgress.value = 0;
-                    colorProgress.value = withTiming(1, { duration: FADE_MS });
-                    imageOpacity.value = withTiming(1, {
-                        duration: FADE_MS / 2,
-                    });
-                },
-            );
-        },
-        [],
-    );
-
-    const cardAnimatedStyle = useAnimatedStyle(() => ({
-        backgroundColor: interpolateColor(
-            colorProgress.value,
-            [0, 1],
-            [prevColor.value, nextColor.value],
-        ),
-    }));
-
-    const imageAnimatedStyle = useAnimatedStyle(() => ({
-        opacity: imageOpacity.value,
-    }));
-
-    const fetchNowPlaying = useCallback(async () => {
-        if (isFetchingRef.current) return;
-        isFetchingRef.current = true;
-        try {
+    const { data: playing, isError } = useQuery({
+        queryKey: ["lastfm-playing", data.username],
+        queryFn: async () => {
             const response = await api(
                 `/users/${data.username}/lastfm/playing`,
             );
-            const newTrack = response.data.recenttracks.track[0];
-            const resultColor = await getColor(newTrack.image[1]["#text"]);
-            const resultColors = await getPalette(newTrack.image[1]["#text"], {
+            return response.data.recenttracks.track[0] ?? null;
+        },
+        enabled: !!data.lastfm_username && isFocused,
+        refetchInterval: 10_000,
+        retry: false,
+    });
+
+    const track = isError ? null : playing;
+    const imageUrl = track?.image?.[1]?.["#text"];
+
+    const { data: albumColor } = useQuery({
+        queryKey: ["album-color", imageUrl],
+        queryFn: async () => {
+            const palette = await getPalette(imageUrl, {
                 colorCount: 6,
                 quality: 10,
             });
+            const color =
+                selectAlbumColor(palette as any).hex ?? "rgba(22, 23, 24, 0.8)";
+            return darkenColor(color, 0.3);
+        },
+        enabled: !!imageUrl,
+        staleTime: Infinity,
+    });
 
-            const newColor =
-                selectAlbumColor(resultColors as any).hex ??
-                "rgba(22, 23, 24, 0.8)";
-
-            if (currentTrackName.current !== newTrack?.name) {
-                currentTrackName.current = newTrack?.name ?? null;
-
-                if (currentTrackName.current === null) {
-                    prevColor.value = newColor;
-                    nextColor.value = darkenColor(newColor, 0.3);
-                    applyNewTrack(newTrack, resultColors);
-                } else {
-                    animateTransition(newTrack, resultColors, darkenColor(newColor, 0.3));
-                }
-            }
-        } catch (err) {
-            setError("Failed to fetch LastFM data");
-        } finally {
-            isFetchingRef.current = false;
-            setLoading(false);
-        }
-    }, [data.username]);
+    const background = useSharedValue("rgba(22, 23, 24, 0.8)");
 
     useEffect(() => {
-        if (!data.lastfm_username || !isFocused) return;
-        fetchNowPlaying();
-        const interval = setInterval(fetchNowPlaying, POLL_INTERVAL);
-        return () => clearInterval(interval);
-    }, [isFocused, fetchNowPlaying]);
+        if (albumColor) {
+            background.value = withTiming(albumColor, { duration: 400 });
+        }
+    }, [albumColor]);
+
+    const cardAnimatedStyle = useAnimatedStyle(() => ({
+        backgroundColor: background.value,
+    }));
 
     if (!data.lastfm_username || !track) return null;
-    if (loading)
-        return <ActivityIndicator style={{ marginTop: 12 }} color="#eee" />;
-    if (error) return null;
 
     return (
-        <Animated.View style={[styles.card, cardAnimatedStyle]}>
+        <Animated.View
+            style={[
+                cardAnimatedStyle,
+                {
+                    marginTop: expanded ? 0 : 12,
+                    borderRadius: expanded ? 18 : 12,
+                    padding: expanded ? 16 : 12,
+                    gap: 8,
+                    flexDirection: "row",
+                    alignItems: "center",
+                    maxWidth: expanded ? "100%" : 300,
+                },
+            ]}
+        >
             <Pressable
                 style={{ flexDirection: "row", gap: 12, alignItems: "center" }}
                 onPress={() =>
                     router.push(
-                        `/(app)/(tabs)/(search)?album=${track?.album["#text"]}&artist=${track.artist["#text"]}`,
+                        `/(app)/(tabs)/(search)?album=${track.album["#text"]}&artist=${track.artist["#text"]}`,
                     )
                 }
             >
                 <Animated.Image
+                    key={track.name}
+                    entering={FadeIn.duration(400)}
                     source={{
-                        uri:
-                            track?.image[1]["#text"] ||
-                            "https://via.placeholder.com/150",
+                        uri: imageUrl || "https://via.placeholder.com/150",
                     }}
-                    style={[styles.albumArt, imageAnimatedStyle]}
+                    style={[styles.albumArt, { width: expanded ? 48 : 36, height: expanded ? 48 : 36 }]}
                     resizeMode="cover"
                 />
                 <View style={{ justifyContent: "center", maxWidth: 232 }}>
                     <TextDefault style={styles.text}>Ouvindo agora</TextDefault>
                     <TextDefault
-                        style={styles.trackName}
+                        style={[styles.trackName, { fontSize: expanded ? 16 : 14, fontWeight: "700" }]}
                         numberOfLines={1}
                         ellipsizeMode="tail"
                     >
-                        {track?.name}
+                        {track.name}
                     </TextDefault>
+                    {expanded && (
+                        <TextDefault
+                            style={[styles.trackName, { fontSize: 14, fontWeight: "400" }]}
+                            numberOfLines={1}
+                            ellipsizeMode="tail"
+                        >
+                            {track.artist["#text"]}
+                        </TextDefault>
+                    )}
                 </View>
             </Pressable>
         </Animated.View>
@@ -164,6 +136,15 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         maxWidth: 300,
+    },
+    cardExpanded: {
+        marginTop: 12,
+        borderRadius: 12,
+        padding: 12,
+        gap: 8,
+        flexDirection: "row",
+        alignItems: "center",
+        width: "100%",
     },
     albumArt: { width: 36, height: 36, borderRadius: 4 },
     text: { color: "#eee", fontSize: 11, fontFamily: "Walsheim" },

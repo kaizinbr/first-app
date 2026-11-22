@@ -14,6 +14,7 @@
     "@expo/ui": "~58.0.28",
     "@expo/vector-icons": "^15.0.3",
     "@gorhom/bottom-sheet": "^5.2.14",
+    "@react-native-community/datetimepicker": "9.2.1",
     "@react-native-community/slider": "5.2.1",
     "@react-navigation/native": "^7.1.8",
     "@solar-icons/react-native": "^2.5.0",

@@ -12,6 +12,7 @@ import FeedHeader from "@/components/home/header";
 import Animated from "react-native-reanimated";
 import type { SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useBanner } from "@/lib/queries/banner";
 
 interface FeedProps {
     onScrollAnimado: any;
@@ -32,7 +33,7 @@ export default function HomePage({
         isRefetching,
         refresh,
     } = useReviews({ endpoint: "/reviews" });
-    console.log("Data from useReviews:", hasNextPage);
+    const { data: bannerData, refetch: refetchBanner } = useBanner();
 
     const reviews = data?.pages?.flatMap((page: any) => page.reviews ?? []) ?? [];
     const refreshing = isRefetching && !isFetchingNextPage;
@@ -87,6 +88,7 @@ export default function HomePage({
                     refreshing={refreshing}
                     onRefresh={() => {
                         void refresh();
+                        void refetchBanner();
                     }}
                     progressViewOffset={
                         Platform.OS === "android" ? 24 + insets.top : 0

@@ -21,8 +21,15 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ColorThiefColorData } from "expo-color-thief-native";
 
-import { useUser, useUserWishlist, useUserFollowers, useUserFollowings } from "@/lib/queries/user";
+import {
+    useUser,
+    useUserWishlist,
+    useUserFollowers,
+    useUserFollowings,
+} from "@/lib/queries/user";
+import { useLastfm } from "@/lib/queries/lastfm";
 import usePalette from "@/lib/util/usePalette";
+import LastFmRoute from "@/components/profile/lastfm/lastfm-page";
 
 export default function ProfileTabs({
     data,
@@ -35,16 +42,17 @@ export default function ProfileTabs({
 
     const FIXED_BAR_HEIGHT = insets.top + 50;
 
-    const {
-        data: userData,
-        refetch,
-    } = useUser(data.username);
+    const { data: userData, refetch } = useUser(data.username);
 
-    const { data: userFollowersData, refetch: refetchFollowers } = useUserFollowers(data.username);
+    const { data: userFollowersData, refetch: refetchFollowers } =
+        useUserFollowers(data.username);
 
-    const { data: userFollowingsData, refetch: refetchFollowings } = useUserFollowings(data.username);
+    const { data: userFollowingsData, refetch: refetchFollowings } =
+        useUserFollowings(data.username);
 
     const { refetch: refetchWishlist } = useUserWishlist(data.username);
+
+    const { data: lastfmData, refetch: refetchLastfm } = useLastfm(data.username);
 
     const { data: palette } = usePalette(data?.avatar_url, {
         quality: 10,
@@ -58,6 +66,7 @@ export default function ProfileTabs({
         await refetchFollowers();
         await refetchFollowings();
         await refetchWishlist();
+        await refetchLastfm();
         setRefreshing(false);
     }, [refetch, refetchWishlist]);
 
@@ -76,6 +85,7 @@ export default function ProfileTabs({
                             void refetchWishlist();
                             void refetchFollowers();
                             void refetchFollowings();
+                            void refetchLastfm();
                         }}
                         progressViewOffset={
                             Platform.OS === "android" ? 24 + insets.top : 0
@@ -129,6 +139,11 @@ export default function ProfileTabs({
             <Tabs.Tab name="about" label="Sobre">
                 <AboutRoute data={data} />
             </Tabs.Tab>
+            {data.lastfm_username ? (
+                <Tabs.Tab name="lastfm" label="Last.fm">
+                    <LastFmRoute data={data} />
+                </Tabs.Tab>
+            ) : null}
             <Tabs.Tab name="list" label="Quero avaliar">
                 <WishlistRoute data={data} />
             </Tabs.Tab>

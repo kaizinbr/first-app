@@ -39,6 +39,9 @@ import { LinearGradient } from "expo-linear-gradient";
 import { selectRightColorDominant } from "@/lib/util/selectRightColor";
 import { darkenColor, getBannerColors } from "@/lib/util/workWithColors";
 
+import { ColorThiefColorData, getPalette } from "expo-color-thief-native";
+import { selectBackgroundColor } from "@/lib/util/selectRightColor";
+
 import uploadImageToVercel from "@/lib/util/uploadImage";
 
 import TextDefault from "@/components/core/text-core";
@@ -108,6 +111,8 @@ export default function EditProfile() {
 
     const [shouldPickImage, setShouldPickImage] = useState(false);
 
+    const [palette, setPalette] = useState<ColorThiefColorData[] | null>(null);
+
     useEffect(() => {
         if (!shouldPickImage) return;
         setShouldPickImage(false);
@@ -174,7 +179,7 @@ export default function EditProfile() {
             setIsLoading(true);
             try {
                 const response = await api.get("/me");
-                // console.log("Profile data fetched successfully:", response);
+
                 setProfileData(response.data);
                 setName(response.data.name);
                 setUsername(response.data.username);
@@ -191,6 +196,16 @@ export default function EditProfile() {
 
                 setLyrics(response.data.lyrics);
                 console.log(response.data.lyrics);
+
+                const paletteResult = await getPalette(
+                    response.data.avatar_url,
+                    {
+                        colorCount: 6,
+                        quality: 10,
+                    },
+                );
+
+                setPalette(paletteResult);
 
                 const colorsResult = await getColors(response.data.avatar_url, {
                     fallback: "#000",
@@ -472,7 +487,7 @@ export default function EditProfile() {
                 uploadedUrl = await uploadImageToVercel(avatarAsset);
                 setAvatar(uploadedUrl);
             }
-            console.log("aqui")
+            console.log("aqui");
 
             const response = await api.put("/me", {
                 name,
@@ -498,7 +513,6 @@ export default function EditProfile() {
                 "Não foi possível salvar suas informações.",
             );
             setIsLoading(false);
-
         }
     };
 
@@ -575,12 +589,11 @@ export default function EditProfile() {
                 </View>
             )}
 
-            {/* BOTÃO VOLTAR */}
             <Pressable
                 onPress={() => router.back()}
                 style={[styles.backButton, { top: insets.top + 4 }]}
             >
-                <AltArrowLeftIcon size={32} color="#eee" />
+                <AltArrowLeftIcon style={{ left: -2 }} size={24} color="#eee" />
             </Pressable>
             <Pressable
                 onPress={saveProfile}
@@ -601,18 +614,30 @@ export default function EditProfile() {
                     {
                         height: HEADER_MIN_HEIGHT,
                         paddingTop: insets.top,
-                        backgroundColor: darkenColor(mainColor, 1),
+                        backgroundColor: "transparent",
                     },
                     topBarStyle,
                 ]}
                 pointerEvents="none" // Para não bloquear o clique de voltar
             >
-                <TextDefault style={styles.fixedTitle} numberOfLines={1}>
-                    {name.length > 24 ? name.substring(0, 24) + "..." : name}
-                </TextDefault>
+                <View
+                    style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: 40,
+                        paddingHorizontal: 16,
+                        backgroundColor: "#8065ef",
+                        borderRadius: 999,
+                        maxWidth: 240,
+                    }}
+                >
+                    <TextDefault style={styles.fixedTitle} numberOfLines={1}>
+                        Editar perfil
+                    </TextDefault>
+                </View>
                 {colors.length > 0 && (
                     <LinearGradient
-                        colors={[`rgba(0,0,0, 0)`, darkenColor(mainColor, 1.8)]}
+                        colors={[`#161718`, "transparent"]}
                         style={{
                             position: "absolute",
                             top: 0,
@@ -631,8 +656,9 @@ export default function EditProfile() {
                     onScroll={onScroll}
                     scrollEventThrottle={16}
                     showsVerticalScrollIndicator={false}
+                    contentContainerStyle={{ paddingBottom: 64 }}
                 >
-                    <ProfileHeaderBG avatar_url={avatar} />
+                    <ProfileHeaderBG avatar_url={avatar} palette={palette!} />
 
                     <Animated.View>
                         <View style={styles.header}>
@@ -973,6 +999,7 @@ export default function EditProfile() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        paddingBottom: 32,
     },
 
     sec: {
@@ -997,10 +1024,13 @@ const styles = StyleSheet.create({
         zIndex: 10,
         alignItems: "center",
         justifyContent: "center",
-        borderBottomWidth: 1,
-        borderBottomColor: "rgba(255,255,255,0.05)",
     },
-    fixedTitle: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+    fixedTitle: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "semibold",
+        textAlign: "center",
+    },
     backButton: {
         position: "absolute",
         left: 16,
@@ -1008,6 +1038,14 @@ const styles = StyleSheet.create({
         width: 40,
         height: 40,
         justifyContent: "center",
+        backgroundColor: "#8065ef",
+        alignItems: "center",
+        borderRadius: 999,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
 
     lowerContent: {
@@ -1095,6 +1133,7 @@ const styles = StyleSheet.create({
         color: "#eee",
         backgroundColor: "#2b2c2d",
         marginBottom: 12,
+        fontFamily: "Walsheim",
     },
     blob: {
         position: "absolute",
@@ -1111,6 +1150,9 @@ const styles = StyleSheet.create({
         paddingVertical: 8,
         borderRadius: 999,
         zIndex: 11,
+        height: 40,
+        justifyContent: "center",
+        alignItems: "center",
     },
     disabledSaveButton: {
         backgroundColor: "#555",

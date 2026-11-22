@@ -19,12 +19,21 @@ import Animated, {
     interpolate,
     Extrapolation,
 } from "react-native-reanimated";
+import { LinearGradient } from "expo-linear-gradient";
+import { selectAlbumColor } from "@/lib/util/selectRightColor";
+import { ColorThiefColorData } from "@/modules/expo-color-thief-native/src";
 
 export default function AlbumHeader({
     maxHeight,
     data,
     headerContentStyle,
-}: any) {
+    palette,
+}: {
+    maxHeight: number;
+    data: any;
+    headerContentStyle?: any;
+    palette: ColorThiefColorData[];
+}) {
     const [showModal, setShowModal] = useState(false);
 
     return (
@@ -33,9 +42,11 @@ export default function AlbumHeader({
                 style={[
                     styles.container,
                     {
-                        minHeight: 300,
+                        // minHeight: 300,
+                        // height: maxHeight,
                         justifyContent: "flex-end",
                         // paddingBottom: 24,
+                        backgroundColor: selectAlbumColor(palette).hex,
                     },
                 ]}
             >
@@ -47,6 +58,38 @@ export default function AlbumHeader({
                         />
                     </Pressable>
                 </Animated.View>
+
+                <View
+                    style={{
+                        position: "absolute",
+                        bottom: 0 -165,
+                        height: 330,
+                        zIndex: 1,
+                        width: "100%",
+                    }}
+                >
+                    <LinearGradient
+                        colors={["transparent", selectAlbumColor(palette).hex]}
+                        style={{
+                            height: 162,
+                            width: "100%",
+                        }}
+                    />
+                    <View
+                        style={{
+                            height: 16,
+                            width: "100%",
+                            backgroundColor: selectAlbumColor(palette).hex,
+                        }}
+                    />
+                    <LinearGradient
+                        colors={[selectAlbumColor(palette).hex, "transparent"]}
+                        style={{
+                            height: 162,
+                            width: "100%",
+                        }}
+                    />
+                </View>
             </Animated.View>
 
             <Modal
@@ -80,9 +123,6 @@ const styles = StyleSheet.create({
         aspectRatio: 1,
         minHeight: 200,
         minWidth: 200,
-        // borderRadius: 12,
-        // marginTop: 100,
-        marginBottom: 32,
         alignSelf: "center",
         shadowColor: "#000",
         shadowOffset: { width: 0, height: 10 },

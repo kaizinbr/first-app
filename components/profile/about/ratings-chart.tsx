@@ -139,7 +139,7 @@ export default function RatingBarChart({
             style={{
                 backgroundColor: "#212223",
                 padding: 16,
-                borderRadius: 12,
+                borderRadius: 18,
                 gap: 8,
             }}
         >

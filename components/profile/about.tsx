@@ -90,7 +90,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                                 paddingTop: 16,
                                 paddingBottom: 4,
                                 paddingHorizontal: 8,
-                                borderRadius: 12,
+                                borderRadius: 16,
                                 gap: 8,
                             },
                         ]}
@@ -127,7 +127,7 @@ export default function AboutRoute({ data }: { data: UserProfile }) {
                                 paddingTop: 16,
                                 paddingBottom: 4,
                                 paddingHorizontal: 8,
-                                borderRadius: 12,
+                                borderRadius: 18,
                                 gap: 8,
                             },
                         ]}
@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
     sec: {
         backgroundColor: "#212223",
         padding: 16,
-        borderRadius: 12,
+        borderRadius: 18,
         gap: 8,
     },
 });

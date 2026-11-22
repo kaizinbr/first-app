@@ -1,7 +1,7 @@
 import TextDefault from "@/components/core/text-core";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, RefreshControl, Platform } from "react-native";
 import { Pressable } from "react-native-gesture-handler";
 import Animated, {
     Extrapolation,
@@ -10,7 +10,9 @@ import Animated, {
     useAnimatedStyle,
     useSharedValue,
     withSpring,
+    
 } from "react-native-reanimated";
+import { useState } from "react";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ColorThiefColorData } from "expo-color-thief-native";
@@ -73,42 +75,13 @@ export default function AlbumScreen({
             transform: [{ translateY }, { scale }],
         };
     });
-
-    // 2. A MÁGICA DA HEADER FIXA: Nasce quando o gradiente vai embora
-    const topBarStyle = useAnimatedStyle(() => {
-        const opacity = interpolate(
-            scrollY.value,
-            [SCROLL_DISTANCE - 40, SCROLL_DISTANCE], // Começa a aparecer 40px antes de bater no topo
-            [0, 1],
-            Extrapolation.CLAMP,
-        );
-        return { opacity };
-    });
-
-    // 3. Animação da Capa e Título sumindo
-    const headerContentStyle = useAnimatedStyle(() => {
-        // const opacity = interpolate(
-        //     scrollY.value,
-        //     [0, SCROLL_DISTANCE / 1.5], // Some um pouco antes da metade do caminho
-        //     [1, 0],
-        //     Extrapolation.CLAMP,
-        // );
-        const scale = interpolate(
-            scrollY.value,
-            [-100, 0, SCROLL_DISTANCE],
-            [1.1, 1, 0.8],
-            Extrapolation.CLAMP,
-        );
-        return { transform: [{ scale }] };
-    });
-
     const scale = useSharedValue(1);
 
     const animatedStyle = useAnimatedStyle(() => ({
         transform: [{ scale: scale.value }],
     }));
-
-    // console.log(selectAlbumColor(palette));
+    
+    const [refreshing, setRefreshing] = useState(false);
 
     return (
         <View style={styles.container}>
@@ -171,64 +144,33 @@ export default function AlbumScreen({
                 onScroll={onScroll}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={() => {
+                        // void refresh();
+                    }}
+                    progressViewOffset={
+                        Platform.OS === "android" ? 24 + insets.top : 0
+                    }
+                    progressBackgroundColor="#282828"
+                    colors={["#8065ef", "#8065ef"]}
+                    style={{
+                        borderWidth: 0.5,
+                        borderColor: "#56595D",
+                    }}
+                />
+                }
+
             >
                 <AlbumHeader
                     maxHeight={HEADER_MAX_HEIGHT}
                     data={albumData}
+                    palette={palette}
                 />
                 
-                <View
-                    style={{
-                        position: "absolute",
-                        top: HEADER_MAX_HEIGHT - 180,
-                        height: 330,
-                        zIndex: 1,
-                        width: "100%",
-                        
-                    }}
-                >
-                    <LinearGradient
-                        colors={["transparent", selectAlbumColor(palette).hex]}
-                        style={{
-                            height: 162,
-                            width: "100%",
-                        }}
-                    />
-                    <View style={{ height: 16, width: "100%", backgroundColor: selectAlbumColor(palette).hex }} />
-                    <LinearGradient
-                        colors={[selectAlbumColor(palette).hex, "transparent"]}
-                        style={{
-                            height: 162,
-                            width: "100%",
-                        }}
-                    />
-                </View>
 
                 <AlbumData data={albumData}  />
-
-                {/* <View
-                    style={{
-                        paddingHorizontal: 16,
-                        marginTop: 24,
-                        marginBottom: 8,
-                        flexDirection: "row",
-                        alignItems: "center",
-                        gap: 8,
-                    }}
-                >
-                    <TextDefault>cores</TextDefault>
-                    {palette.map((color, index) => (
-                        <View
-                            key={index}
-                            style={{
-                                width: 30,
-                                height: 30,
-                                backgroundColor: color.hex,
-                                borderRadius: 15,
-                            }}
-                        />
-                    ))}
-                </View> */}
 
                 <Tracklist albumTracks={albumData.tracks.items} />
                 <AlbumExtraData data={albumData} />

@@ -65,7 +65,7 @@ export default function LyricsCard({
 const styles = StyleSheet.create({
     card: {
         // backgroundColor: "#1e1e1e",
-        borderRadius: 12,
+        borderRadius: 18,
         padding: 16,
         gap: 12,
     },
