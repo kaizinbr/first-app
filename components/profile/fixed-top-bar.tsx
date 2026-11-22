@@ -1,6 +1,6 @@
 import ShareBtn from "@/components/core/share-btn";
-import { SettingsIcon } from '@solar-icons/react-native/linear/settings'
-import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import { SettingsIcon } from "@solar-icons/react-native/linear/settings";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/linear/alt-arrow-left";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { LinearGradient } from "expo-linear-gradient";
 import { useRouter } from "expo-router";
@@ -12,33 +12,33 @@ import Animated, {
     useAnimatedStyle,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-
-function hexToRgb(hex: string) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-}
+import { selectAlbumColor } from "@/lib/util/selectRightColor";
+import TextDefault from "@/components/core/text-core";
 
 export default function FixedTopBar({
     title,
     height,
-    dominantColor = "#161718",
+    palette,
     itsUser = false,
     username,
 }: {
     title: string;
     height: number;
-    dominantColor?: string;
+    palette: any;
     itsUser?: boolean;
     username: string;
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
-    console.log(dominantColor, "cor dominante recebida no FixedTopBar");
+
+    const mainColor = selectAlbumColor(palette).hex;
 
     // Puxa a medida de rolagem de forma segura
     const measurements = useHeaderMeasurements();
+
+    const HEADER_MAX_HEIGHT = 400; // Tamanho total da área do gradiente
+    const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
+    const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
     // Animações rodando na UI Thread (zero travamentos)
     const animatedStyle = useAnimatedStyle(() => {
@@ -56,7 +56,6 @@ export default function FixedTopBar({
 
         return {
             transform: [{ translateY }],
-            backgroundColor: dominantColor, // Fundo escuro aparecendo
             opacity, // Barra ficando opaca conforme sobe
         };
     });
@@ -73,6 +72,26 @@ export default function FixedTopBar({
 
         return { opacity };
     });
+
+    //     const topBarStyle = useAnimatedStyle(() => {
+    //     const opacity = interpolate(
+    //         scrollY.value,
+    //         [SCROLL_DISTANCE - 40, SCROLL_DISTANCE],
+    //         [0, 1],
+    //         Extrapolation.CLAMP,
+    //     );
+    //     const transform = [
+    //         {
+    //             translateY: interpolate(
+    //                 scrollY.value,
+    //                 [SCROLL_DISTANCE - 40, SCROLL_DISTANCE],
+    //                 [-32, 0],
+    //                 Extrapolation.CLAMP,
+    //             ),
+    //         },
+    //     ];
+    //     return { opacity, transform };
+    // });
 
     const onShare = async () => {
         console.log("Shared successfully");
@@ -95,66 +114,112 @@ export default function FixedTopBar({
     };
 
     return (
-        <Animated.View
-            style={[
-                styles.fixedBar,
-                { height: height, paddingTop: insets.top },
-                animatedStyle,
-            ]}
-            pointerEvents="box-none"
-        >
-            <Pressable
-                onPress={() => router.back()}
-                style={[styles.backButton, { top: 0 }]}
-            >
-                <AltArrowLeftIcon size={32} color="#eee" />
-            </Pressable>
-
-            <Animated.Text style={[styles.title, titleStyle]}>
-                {title}
-            </Animated.Text>
-
-            {itsUser ? (
-                <View
-                    style={{
-                        flexDirection: "row",
-                        gap: 8,
-                        width: 40,
-                        justifyContent: "flex-end",
-                    }}
-                >
-                    <ShareBtn
-                        type="profile"
-                        url={`https://whistle.kaizin.work/${username}`}
-                    />
-                    <Pressable
-                        style={[styles.confBtn, { width: 30 }]}
-                        onPress={() => router.push("/settings/menu")}
-                    >
-                        <SettingsIcon size={28} color="#eee" />
-                    </Pressable>
-                </View>
-            ) : (
-                <ShareBtn
-                    type="profile"
-                    url={`https://whistle.kaizin.work/${username}`}
-                />
-            )}
-            <LinearGradient
-                colors={[
-                    `rgba(${hexToRgb(dominantColor)}, 0)`,
-                    darkenColor(dominantColor, 1.5),
+        <>
+            <Animated.View
+                style={[
+                    styles.fixedBar,
+                    { height: height, paddingTop: insets.top },
+                    animatedStyle,
                 ]}
-                style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    right: 0,
-                    height: height,
-                    zIndex: -1,
-                }}
-            />
-        </Animated.View>
+                pointerEvents="box-none"
+            >
+                <LinearGradient
+                    colors={["#161718", "transparent"]}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 0, y: 1 }}
+                    style={[StyleSheet.absoluteFill, { zIndex: 0 }]}
+                />
+                <Pressable
+                    style={[
+                        styles.backButton,
+                        {
+                            top: insets.top + 4,
+                            backgroundColor: darkenColor(mainColor, 0.3),
+                        },
+                    ]}
+                    onPress={() => router.back()}
+                >
+                    <AltArrowLeftIcon
+                        style={{ left: -2 }}
+                        size={24}
+                        strokeWidth={3}
+                        color="#eee"
+                    />
+                </Pressable>
+
+                <Animated.View
+                    style={[
+                        styles.title,
+                        // titleStyle,
+                        { backgroundColor: darkenColor(mainColor, 0.3) },
+                    ]}
+                >
+                    <TextDefault style={styles.titleText}>
+                        {title.length > 32
+                            ? title.substring(0, 32) + "..."
+                            : title}
+                    </TextDefault>
+                </Animated.View>
+
+                {itsUser ? (
+                    <>
+                        <View
+                            style={[
+                                styles.fixedBtn,
+                                {
+                            top: insets.top + 4,
+                                    backgroundColor: darkenColor(
+                                        mainColor,
+                                        0.3,
+                                    ),
+                                },
+                            ]}
+                        >
+                            <ShareBtn
+                                type="profile"
+                                url={`https://whistle.kaizin.work/${username}`}
+                            />
+                        </View>
+                        <View
+                            style={[
+                                styles.fixedBtn,
+                                {
+                                    right: 16,
+                            top: insets.top + 4,
+                                    backgroundColor: darkenColor(
+                                        mainColor,
+                                        0.3,
+                                    ),
+                                },
+                            ]}
+                        >
+                            <Pressable
+                                style={[styles.confBtn]}
+                                onPress={() => router.push("/settings/menu")}
+                            >
+                                <SettingsIcon size={24} color="#eee" />
+                            </Pressable>
+                        </View>
+                    </>
+                ) : (
+                    <View
+                        style={[
+                            styles.fixedBtn,
+                            {
+                                right: 16,
+                            top: insets.top + 4,
+                                backgroundColor: darkenColor(mainColor, 0.3),
+                            },
+                        ]}
+                    >
+                        <ShareBtn
+                            type="profile"
+                            url={`https://whistle.kaizin.work/${username}`}
+                        />
+                    </View>
+                )}
+            </Animated.View>
+        </>
     );
 }
 
@@ -166,26 +231,103 @@ const styles = StyleSheet.create({
         right: 0,
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "space-between",
+        justifyContent: "center",
         paddingHorizontal: 16,
-        zIndex: 999, // Fica na frente de tudo
-        backgroundColor: "red", // Cor de fundo para debug (remova depois)
+        zIndex: 999,
     },
     backButton: {
+        position: "absolute",
+        left: 16,
+        zIndex: 11,
         width: 40,
         height: 40,
         justifyContent: "center",
+        backgroundColor: "rgba(22,23,24,0.7)",
+        alignItems: "center",
+        borderRadius: 999,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     confBtn: {
         width: 40,
-        height: 30,
+        height: 40,
         justifyContent: "center",
-        alignItems: "flex-end",
+        alignItems: "center",
     },
     title: {
         color: "#eee",
-        fontSize: 14,
         fontWeight: "bold",
         fontFamily: "Walsheim",
+        borderRadius: 9999,
+        height: 40,
+        maxWidth: "70%",
+        paddingHorizontal: 16,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(22,23,24,0.7)",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
+        zIndex: 11,
+    },
+    titleText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "semibold",
+    },
+    fixedTopBar: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        // backgroundColor: "#1c494f", // Cor final da barrinha
+        zIndex: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        // borderBottomWidth: 1,
+        // borderBottomColor: "rgba(255,255,255,0.05)",
+    },
+    fixedTitleContainer: {
+        borderRadius: 9999,
+        height: 40,
+        maxWidth: "70%",
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        alignItems: "center",
+        justifyContent: "center",
+        backgroundColor: "rgba(22,23,24,0.7)",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    fixedTitle: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "semibold",
+    },
+    fixedBtn: {
+        flexDirection: "row",
+        gap: 8,
+        height: 40,
+        width: 40,
+        position: "absolute",
+        right: 64,
+        zIndex: 11,
+        justifyContent: "center",
+        alignItems: "center",
+        borderRadius: 999,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
+        backgroundColor: "rgba(22,23,24,0.7)",
     },
 });

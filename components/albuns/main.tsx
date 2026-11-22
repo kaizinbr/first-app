@@ -29,6 +29,7 @@ import {
     lightenColor,
     saturateColor,
 } from "@/lib/util/workWithColors";
+import MoreFromArtist from "@/components/albuns/aditionals/more-from-artist";
 
 
 
@@ -119,19 +120,6 @@ export default function AlbumScreen({
                 type="album"
             />
 
-            {/* <Pressable
-                onPress={() => router.back()}
-                style={[styles.backButton, { top: insets.top + 4 }]}
-            >
-                <AltArrowLeftIcon style={{left: -2}} size={24} strokeWidth={3} color="#eee" />
-            </Pressable> */}
-
-            {/* {albumData && palette ? (
-                <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
-                    <FavoriteAlbumBtn albumData={albumData} size={24} strokeWidth={3} />
-                </View>
-            ) : null} */}
-
             <Animated.View
                 style={[
                     animatedStyle,
@@ -142,6 +130,7 @@ export default function AlbumScreen({
                         bottom: insets.bottom,
                         zIndex: 11,
                         height: 46,
+                        
                     },
                 ]}
             >
@@ -182,14 +171,12 @@ export default function AlbumScreen({
                 onScroll={onScroll}
                 scrollEventThrottle={16}
                 showsVerticalScrollIndicator={false}
-                // style={{ backgroundColor: palette[0].hex }}
             >
                 <AlbumHeader
                     maxHeight={HEADER_MAX_HEIGHT}
                     data={albumData}
-                    // headerContentStyle={headerContentStyle}
                 />
-
+                
                 <View
                     style={{
                         position: "absolute",
@@ -245,6 +232,8 @@ export default function AlbumScreen({
 
                 <Tracklist albumTracks={albumData.tracks.items} />
                 <AlbumExtraData data={albumData} />
+
+                <MoreFromArtist data={albumData} />
 
                 <View style={{ height: 124 }} />
             </Animated.ScrollView>

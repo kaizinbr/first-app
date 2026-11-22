@@ -1,20 +1,17 @@
 import FeedCard from "@/components/home/feed-card";
-import { useEffect, useRef, useState, useCallback } from "react";
 import {
     ActivityIndicator,
     StyleSheet,
-    Text,
     View,
     RefreshControl,
     Platform,
 } from "react-native";
-import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
+import { useReviews } from "@/lib/queries/review";
 import TextDefault from "@/components/core/text-core";
 import FeedHeader from "@/components/home/header";
 import Animated from "react-native-reanimated";
 import type { SharedValue } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { SkeletonFeedCard } from "@/components/core/skeletons";
 
 interface FeedProps {
     onScrollAnimado: any;
@@ -28,40 +25,18 @@ export default function HomePage({
     animatedRef,
 }: FeedProps) {
     const {
-        reviews,
-        loadingInitial,
-        loadingMore,
-        hasMore,
-        reload,
-        loadMore,
-        onMomentumScrollBegin,
-    } = usePaginatedReviews({ endpoint: "/reviews" });
+        data,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isRefetching,
+        refetch,
+    } = useReviews({ endpoint: "/reviews" });
+    console.log("Data from useReviews:", hasNextPage);
 
-    
-
-    // const reviews = [];
+    const reviews = data?.pages?.flatMap((page: any) => page.reviews ?? []) ?? [];
+    const refreshing = isRefetching && !isFetchingNextPage;
     const insets = useSafeAreaInsets();
-
-    const [refreshing, setRefreshing] = useState(false);
-
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true);
-        await reload();
-        setRefreshing(false);
-    }, []);
-
-    // if (loadingInitial) {
-    //     return (
-    //         <View
-    //             style={[
-    //                 styles.container,
-    //                 { justifyContent: "center", alignItems: "center" },
-    //             ]}
-    //         >
-    //             <ActivityIndicator size="large" color="#8065ef" />
-    //         </View>
-    //     );
-    // }
 
     return (
         <Animated.FlatList
@@ -75,13 +50,15 @@ export default function HomePage({
             renderItem={({ item }) => (
                 <FeedCard
                     review={item}
-                    onRefresh={onRefresh}
+                    onRefresh={() => refetch()}
                     refreshing={refreshing}
+                    type="list"
                 />
             )}
-            onEndReached={loadMore}
+            onEndReached={() => {
+                if (hasNextPage && !isFetchingNextPage) fetchNextPage();
+            }}
             onEndReachedThreshold={0.2}
-            onMomentumScrollBegin={onMomentumScrollBegin}
             onScroll={onScrollAnimado}
             scrollEventThrottle={16}
             ListHeaderComponent={() => (
@@ -108,7 +85,9 @@ export default function HomePage({
             refreshControl={
                 <RefreshControl
                     refreshing={refreshing}
-                    onRefresh={onRefresh}
+                    onRefresh={() => {
+                        void refetch();
+                    }}
                     progressViewOffset={
                         Platform.OS === "android" ? 24 + insets.top : 0
                     }
@@ -121,7 +100,7 @@ export default function HomePage({
                 />
             }
             ListFooterComponent={
-                loadingMore ? (
+                isFetchingNextPage ? (
                     <ActivityIndicator
                         size="small"
                         color="#8065ef"
@@ -140,12 +119,9 @@ export default function HomePage({
                 )
             }
             ListEmptyComponent={
-                <>
-                    <TextDefault style={{ color: "#eee", textAlign: "center" }}>
-                        Nenhuma avaliação encontrada.
-                    </TextDefault>
-                    {/* <SkeletonFeedCard /> */}
-                </>
+                <TextDefault style={{ color: "#eee", textAlign: "center" }}>
+                    Nenhuma avaliação encontrada.
+                </TextDefault>
             }
         />
     );

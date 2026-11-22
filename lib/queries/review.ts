@@ -1,10 +1,38 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useInfiniteQuery  } from "@tanstack/react-query";
 import api from "@/lib/api";
+
+import { ReviewWithAlbum } from "@/lib/types";
 
 export function enxugarReview(review: any) {
     if (!review.Profile) return review;
     const { pushToken, ...perfil } = review.Profile;
     return { ...review, Profile: perfil };
+}
+
+export function useReviews({
+    endpoint,
+    sort,
+}: {
+    endpoint: string;
+    sort?: "asc" | "desc";
+}) {
+    return useInfiniteQuery({
+        queryKey: ["reviews", endpoint, sort],
+        queryFn: async ({ pageParam }) => {
+            const { data } = await api.get<{
+                next: number | null;
+                page: number;
+                reviews: ReviewWithAlbum[];
+                totalReviews: number;
+            }>(endpoint, {
+                params: { p: pageParam, sort },
+            });
+            return data;
+        },
+        initialPageParam: 1,
+        getNextPageParam: (lastPage) => lastPage.next ?? undefined,
+        staleTime: 1000 * 60 * 2,
+    });
 }
 
 export function useReview(id: string) {

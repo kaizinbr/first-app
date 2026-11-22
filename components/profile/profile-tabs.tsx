@@ -1,66 +1,87 @@
 import * as React from "react";
-import { View, StyleSheet, RefreshControl, ScrollView } from "react-native";
-import {
-    Tabs,
-    MaterialTabBar,
-    MaterialTabItem,
-} from "react-native-collapsible-tab-view";
+import { View, StyleSheet, RefreshControl, ScrollView, Platform } from "react-native";
+import { Tabs } from "react-native-collapsible-tab-view";
 import { UserProfile, Palette } from "@/lib/types";
 
 import PostsRoute from "@/components/profile/posts";
-import ProfileHeader from "@/components/profile/header";
+import Header from "@/components/profile/header";
 import AboutRoute from "@/components/profile/about";
 import FollowingRoute from "@/components/profile/following";
 import FollowersRoute from "@/components/profile/followers";
 import WishlistRoute from "@/components/profile/wishlist";
 import FixedTopBar from "@/components/profile/fixed-top-bar";
+import ProfileTabBar from "@/components/profile/profile-tab-bar";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { ColorThiefColorData } from "expo-color-thief-native";
+
+import { useUser } from "@/lib/queries/user";
+import usePalette from "@/lib/util/usePalette";
 
 export default function ProfileTabs({
     data,
-    dominantColor = "#161718",
-    colors,
     itsUser = false,
-    fetchProfileData,
 }: {
     data: UserProfile;
-    dominantColor: string;
-    colors: Palette;
     itsUser?: boolean;
-    fetchProfileData: () => Promise<void>;
 }) {
     const insets = useSafeAreaInsets();
 
     const FIXED_BAR_HEIGHT = insets.top + 50;
 
+    const {
+        data: userData,
+        isLoading,
+        isError,
+        refetch,
+    } = useUser(data.username);
+    const { data: palette } = usePalette(data?.avatar_url, {
+        quality: 10,
+    });
+
     const [refreshing, setRefreshing] = React.useState(false);
 
     const onRefresh = React.useCallback(async () => {
         setRefreshing(true);
-        await fetchProfileData();
+        await refetch();
         setRefreshing(false);
-    }, [fetchProfileData]);
+    }, [refetch]);
 
     const renderHeader = React.useCallback(() => {
         return (
             <ScrollView
-                style={[styles.headerWrapper, { backgroundColor: "transparent" }]}
+                style={[
+                    styles.headerWrapper,
+                    { backgroundColor: "transparent" },
+                ]}
                 refreshControl={
-                    <RefreshControl
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                    />
+                    
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={() => {
+                        void refetch();
+                    }}
+                    progressViewOffset={
+                        Platform.OS === "android" ? 24 + insets.top : 0
+                    }
+                    progressBackgroundColor="#282828"
+                    colors={["#8065ef", "#8065ef"]}
+                    style={{
+                        borderWidth: 0.5,
+                        borderColor: "#56595D",
+                    }}
+                />
                 }
             >
-                <ProfileHeader
+                <Header
                     data={data}
-                    dominantColor={dominantColor}
+                    palette={palette}
                     itsUser={itsUser}
                 />
                 <FixedTopBar
                     title={data.name || "Perfil"}
                     height={FIXED_BAR_HEIGHT}
-                    dominantColor={dominantColor}
+                    palette={palette}
                     itsUser={itsUser}
                     username={data.username}
                 />
@@ -70,21 +91,9 @@ export default function ProfileTabs({
 
     const renderTabBar = React.useCallback(
         (props: any) => (
-            <MaterialTabBar
-                {...props}
-                scrollEnabled={true}
-                indicatorStyle={{ backgroundColor: "#8065ef", height: 2 }}
-                style={{ backgroundColor: "#161718", elevation: 0, zIndex: 10 }}
-                labelStyle={{
-                    fontSize: 14,
-                    fontWeight: "600",
-                    fontFamily: "Walsheim"
-                }}
-                activeColor="#eee"
-                inactiveColor="#777"
-            />
+            <ProfileTabBar {...props} collapsedOffset={FIXED_BAR_HEIGHT} palette={palette} />
         ),
-        [],
+        [FIXED_BAR_HEIGHT],
     );
 
     return (

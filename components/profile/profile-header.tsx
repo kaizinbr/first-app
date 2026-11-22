@@ -6,87 +6,35 @@ import { getPalette } from "expo-color-thief-native";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-
+import Animated, {
+    Extrapolation,
+    interpolate,
+    useAnimatedStyle,
+} from "react-native-reanimated";
 import type { ColorThiefColorData } from "expo-color-thief-native";
 
 import PlayingOnLastFM from "@/components/profile/last-fm-card";
 import ProfileHeaderBG from "@/components/profile/profile-header-bg";
 import { VerifiedCheckIcon } from '@solar-icons/react-native/bold/verified-check'
 import { Pressable, StyleSheet, Text, View } from "react-native";
+import ProfileImage from "@/components/profile/profile-image";
 
 export default function ProfileHeader({
     data,
     itsUser,
+    style,
+    palette,
 }: {
     data: UserProfile;
     itsUser?: boolean;
+    style?: any;
+    palette?: ColorThiefColorData[];
 }) {
     const router = useRouter();
-    const [colors, setColors] = useState<Palette | any>({
-        dominant: "#8065ef",
-        vibrant: "#8065ef",
-        darkVibrant: "#8065ef",
-        muted: "#8065ef",
-    });
-    const [pureColors, setPureColors] = useState<Palette | any>(null);
-    const [colorsA, setColorsA] = useState<ColorThiefColorData[] | any>([
-        {
-            b: 40,
-            contrast: {
-                black: 1.2356125186127032,
-                foreground: "#ffffff",
-                white: 16.995619325367446,
-            },
-            g: 23,
-            hex: "#261728",
-            hsl: {
-                h: 292.9411764705883,
-                l: 0.12352941176470589,
-                s: 0.2698412698412698,
-            },
-            isDark: true,
-            isLight: false,
-            oklch: {
-                c: 0.03857433556681822,
-                h: 322.58298061878503,
-                l: 0.2320606739879971,
-            },
-            population: 4629,
-            proportion: 0.514962732228279,
-            r: 38,
-            textColor: "#ffffff",
-        },
-    ]);
-    const [mainColor, setMainColor] = useState("#161718");
     const [folowersCount, setFollowersCount] = useState(0);
     const [followingCount, setFollowingCount] = useState(0);
     const [reviewsCount, setReviewsCount] = useState(0);
     const [isFollowing, setIsFollowing] = useState(false);
-
-    useEffect(() => {
-        const fetchColors = async () => {
-            try {
-                // const result = await getColors(data.avatar_url, {
-                //     fallback: "#000",
-                //     cache: true,
-                //     key: data.avatar_url,
-                //     // quality: "low",
-                // });
-                // setPureColors(result);
-
-                const fetchedColors = await getPalette(data.avatar_url, {
-                    colorCount: 6,
-                    quality: 10,
-                });
-                // console.log("Colors fetched successfully:", fetchedColors);
-                setColorsA(fetchedColors);
-                setMainColor(selectBackgroundColor(fetchedColors).background);
-            } catch (error) {
-                console.error("Error fetching colors:", error);
-            }
-        };
-        fetchColors();
-    }, [data.avatar_url]);
 
     useEffect(() => {
         const fetchFollowersCount = async () => {
@@ -151,35 +99,11 @@ export default function ProfileHeader({
     }
 
     return (
-        <View style={styles.scene}>
+        <Animated.View style={[styles.scene, style]}>
             <ProfileHeaderBG avatar_url={data.avatar_url} />
 
             <View style={styles.header}>
-                <View style={styles.wrapper}>
-                    <Image
-                        source={{ uri: data.avatar_url }}
-                        style={[
-                            styles.avatar,
-                            {
-                                width: 112,
-                                height: 112,
-                                borderRadius: 112 * 0.306,
-                            },
-                        ]}
-                    />
-                    {data.pronouns && (
-                        <View
-                            style={[
-                                styles.pronouns,
-                                // { backgroundColor: dominantColor },
-                            ]}
-                        >
-                            <TextDefault style={styles.pronounstext}>
-                                {data.pronouns}
-                            </TextDefault>
-                        </View>
-                    )}
-                </View>
+                <ProfileImage data={data} />
 
                 <View
                     style={{
@@ -243,7 +167,7 @@ export default function ProfileHeader({
 
                 <PlayingOnLastFM data={data} />
             </View>
-        </View>
+        </Animated.View>
     );
 }
 
@@ -251,6 +175,7 @@ const styles = StyleSheet.create({
     scene: {
         overflow: "hidden",
         position: "relative",
+        zIndex: 99,
     },
     header: {
         padding: 16,

@@ -1,7 +1,13 @@
 import { truncateMarkdown } from "@/lib/util/truncate";
-import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
+import {
+    ActivityIndicator,
+    Pressable,
+    StyleSheet,
+    View,
+    Dimensions,
+} from "react-native";
 import { EnrichedMarkdownText } from "react-native-enriched-markdown";
-
+import { Image } from "expo-image";
 import Avatar from "@/components/core/avatar";
 import TextDefault from "@/components/core/text-core";
 import { AlbumCard } from "@/components/home/album-section";
@@ -12,13 +18,13 @@ import * as Linking from "expo-linking";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
-import { FlagIcon } from '@solar-icons/react-native/bold/flag'
-import { ForbiddenCircleIcon } from '@solar-icons/react-native/bold/forbidden-circle'
-import { PenIcon } from '@solar-icons/react-native/bold/pen'
-import { TrashBinMinimalisticIcon } from '@solar-icons/react-native/bold/trash-bin-minimalistic'
-import { UserIcon } from '@solar-icons/react-native/bold/user'
-import { VinylRecordIcon } from '@solar-icons/react-native/bold/vinyl-record'
-import { MenuDotsVerticalIcon } from '@solar-icons/react-native/bold/menu-dots-vertical'
+import { FlagIcon } from "@solar-icons/react-native/bold/flag";
+import { ForbiddenCircleIcon } from "@solar-icons/react-native/bold/forbidden-circle";
+import { PenIcon } from "@solar-icons/react-native/bold/pen";
+import { TrashBinMinimalisticIcon } from "@solar-icons/react-native/bold/trash-bin-minimalistic";
+import { UserIcon } from "@solar-icons/react-native/bold/user";
+import { VinylRecordIcon } from "@solar-icons/react-native/bold/vinyl-record";
+import { MenuDotsVerticalIcon } from "@solar-icons/react-native/bold/menu-dots-vertical";
 
 import {
     BottomSheetBackdrop,
@@ -41,15 +47,21 @@ const MAX_PREVIEW_CHARS = 500;
 export default function FeedCard({
     review,
     onRefresh,
-    refreshing
+    refreshing,
+    type = "list",
 }: {
     review: ReviewWithAlbum;
     onRefresh: () => void;
     refreshing: boolean;
+    type?: "list" | "grid";
 }) {
     const router = useRouter();
 
     const insets = useSafeAreaInsets();
+
+    const width = Dimensions.get("window").width - 32; // Subtraia a margem horizontal (16 + 16)
+    const [cardWidth, setCardWidth] = useState(width / 3 - 6); // Ajuste para o espaçamento entre os cards
+    console.log(cardWidth);
 
     const [content, setContent] = useState<{
         jsonContent: any;
@@ -132,189 +144,242 @@ export default function FeedCard({
         <>
             {refreshing ? (
                 <SkeletonFeedCard />
-            ) : (
+            ) : type === "list" ? (
                 <Pressable
-                onPress={() => router.push(`/review/${review.id}`)}
-                style={({ pressed }) => [
-                    styles.main,
-                    pressed && styles.mainPressed,
-                ]}
-                onLongPress={openSheet}
-            >
-                <View style={styles.card}>
-                    <Avatar
-                        data={review.Profile}
-                        size={40}
-                    />
-                    {review.album ? (
-                        <View style={styles.cardContent}>
-                            <View
-                                style={{
-                                    flexDirection: "row",
-                                    justifyContent: "space-between",
-                                    alignItems: "flex-end",
-                                    // backgroundColor: "blue",
-                                }}
-                            >
-                                <Pressable
-                                    onPress={() =>
-                                        router.push({
-                                            pathname: "/user/[username]",
-                                            params: {
-                                                username:
-                                                    review.Profile.username,
-                                            },
-                                        })
-                                    }
-                                    style={{
-                                        flexDirection: "row",
-                                        maxWidth: "90%",
-                                        alignItems: "flex-end",
-                                        gap: 6,
-                                        // backgroundColor: "red",
-                                        // maxHeight: 22,
-                                    }}
-                                >
-                                    <TextDefault
-                                        numberOfLines={1}
-                                        style={[
-                                            styles.cardTitle,
-                                            { maxWidth: "80%", flexShrink: 1 },
-                                        ]}
-                                    >
-                                        {review.Profile.name}
-                                    </TextDefault>
-                                    <TextDefault
-                                        style={{
-                                            color: "#777",
-                                            fontSize: 12,
-                                            marginBottom: 1,
-                                        }}
-                                    >
-                                        ·
-                                    </TextDefault>
-                                    <TextDefault
-                                        style={{
-                                            color: "#777",
-                                            fontSize: 12,
-                                            marginBottom: 1,
-                                        }}
-                                    >
-                                        @{review.Profile.username}
-                                    </TextDefault>
-                                </Pressable>
+                    onPress={() => router.push(`/review/${review.id}`)}
+                    style={({ pressed }) => [
+                        styles.main,
+                        pressed && styles.mainPressed,
+                    ]}
+                    onLongPress={openSheet}
+                >
+                    <View style={styles.card}>
+                        <Avatar data={review.Profile} size={40} />
+                        {review.album ? (
+                            <View style={styles.cardContent}>
                                 <View
                                     style={{
                                         flexDirection: "row",
+                                        justifyContent: "space-between",
                                         alignItems: "flex-end",
-                                        marginBottom: 1,
+                                        // backgroundColor: "blue",
                                     }}
                                 >
-                                    <TextDefault
-                                        style={{ color: "#777", fontSize: 12 }}
+                                    <Pressable
+                                        onPress={() =>
+                                            router.push({
+                                                pathname: "/user/[username]",
+                                                params: {
+                                                    username:
+                                                        review.Profile.username,
+                                                },
+                                            })
+                                        }
+                                        style={{
+                                            flexDirection: "row",
+                                            maxWidth: "90%",
+                                            alignItems: "flex-end",
+                                            gap: 6,
+                                            // backgroundColor: "red",
+                                            // maxHeight: 22,
+                                        }}
                                     >
-                                        {getPastShortRelativeTime(
-                                            new Date(review.created_at),
-                                            new Date(),
+                                        <TextDefault
+                                            numberOfLines={1}
+                                            style={[
+                                                styles.cardTitle,
+                                                {
+                                                    maxWidth: "80%",
+                                                    flexShrink: 1,
+                                                },
+                                            ]}
+                                        >
+                                            {review.Profile.name}
+                                        </TextDefault>
+                                        <TextDefault
+                                            style={{
+                                                color: "#777",
+                                                fontSize: 12,
+                                                marginBottom: 1,
+                                            }}
+                                        >
+                                            ·
+                                        </TextDefault>
+                                        <TextDefault
+                                            style={{
+                                                color: "#777",
+                                                fontSize: 12,
+                                                marginBottom: 1,
+                                            }}
+                                        >
+                                            @{review.Profile.username}
+                                        </TextDefault>
+                                    </Pressable>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            alignItems: "flex-end",
+                                            marginBottom: 1,
+                                        }}
+                                    >
+                                        <TextDefault
+                                            style={{
+                                                color: "#777",
+                                                fontSize: 12,
+                                            }}
+                                        >
+                                            {getPastShortRelativeTime(
+                                                new Date(review.created_at),
+                                                new Date(),
+                                            )}
+                                        </TextDefault>
+                                    </View>
+                                </View>
+                                {content ? (
+                                    <>
+                                        <EnrichedMarkdownText
+                                            markdown={
+                                                previewContent
+                                                    ? previewContent
+                                                    : ""
+                                            }
+                                            selectable={false}
+                                            onLinkPress={({ url }) => {
+                                                if (url.startsWith("http")) {
+                                                    Linking.openURL(url);
+                                                } else {
+                                                    router.push({
+                                                        pathname:
+                                                            "/(app)/(tabs)/(drafts)/user/[username]",
+                                                        params: {
+                                                            username:
+                                                                url.replace(
+                                                                    "@",
+                                                                    "",
+                                                                ),
+                                                        },
+                                                    });
+                                                }
+                                            }}
+                                            markdownStyle={{
+                                                paragraph: {
+                                                    color: "#fff",
+                                                    fontSize: 14,
+                                                    marginTop: 4,
+                                                    lineHeight: 20,
+                                                    fontFamily: "Walsheim",
+                                                    fontWeight: "400",
+                                                },
+                                                h1: {
+                                                    color: "#fff",
+                                                    fontSize: 18,
+                                                    fontWeight: "bold",
+                                                    lineHeight: 24,
+                                                    marginTop: 8,
+                                                },
+                                                h2: {
+                                                    color: "#fff",
+                                                    fontSize: 16,
+                                                    fontWeight: "bold",
+                                                    marginTop: 4,
+                                                    lineHeight: 20,
+                                                },
+                                            }}
+                                        />
+                                        {isTruncated && (
+                                            <TextDefault
+                                                style={styles.readMore}
+                                            >
+                                                ler mais
+                                            </TextDefault>
                                         )}
-                                    </TextDefault>
+                                    </>
+                                ) : null}
+
+                                <AlbumCard
+                                    image={review.album.images[0].url}
+                                    value={
+                                        review.total
+                                            ? `${Number(review.total).toFixed(1)}/100`
+                                            : "0/100"
+                                    }
+                                    subtitle={review.ratings.length}
+                                    review={review}
+                                />
+                                <View style={styles.buttonSection}>
+                                    <LikeButton
+                                        ratingId={review.id}
+                                        initialCount={review.likesCount} // vem da query pública
+                                        size="md"
+                                    />
+                                    <CommentButton
+                                        reviewId={review.id}
+                                        initialCount={review.commentsCount} // vem da query pública
+                                        size="md"
+                                    />
+
+                                    <ShareSmBtn
+                                        url={`https://whistle.kaizin.work/r/${review.shorten}`}
+                                    />
+                                    <Pressable
+                                        onPress={(e) => {
+                                            e.stopPropagation();
+                                            openSheet();
+                                        }}
+                                    >
+                                        <MenuDotsVerticalIcon
+                                            color="#aaa"
+                                            size={20}
+                                        />
+                                    </Pressable>
                                 </View>
                             </View>
-                            {content ? (
-                                <>
-                                    <EnrichedMarkdownText
-                                        markdown={
-                                            previewContent ? previewContent : ""
-                                        }
-                                        selectable={false}
-                                        onLinkPress={({ url }) => {
-                                            if (url.startsWith("http")) {
-                                                Linking.openURL(url);
-                                            } else {
-                                                router.push({
-                                                    pathname:
-                                                        "/(app)/(tabs)/(drafts)/user/[username]",
-                                                    params: {
-                                                        username: url.replace(
-                                                            "@",
-                                                            "",
-                                                        ),
-                                                    },
-                                                });
-                                            }
-                                        }}
-                                        markdownStyle={{
-                                            paragraph: {
-                                                color: "#fff",
-                                                fontSize: 14,
-                                                marginTop: 4,
-                                                lineHeight: 20,
-                                                fontFamily: "Walsheim",
-                                                fontWeight: "400",
-                                            },
-                                            h1: {
-                                                color: "#fff",
-                                                fontSize: 18,
-                                                fontWeight: "bold",
-                                                lineHeight: 24,
-                                                marginTop: 8,
-                                            },
-                                            h2: {
-                                                color: "#fff",
-                                                fontSize: 16,
-                                                fontWeight: "bold",
-                                                marginTop: 4,
-                                                lineHeight: 20,
-                                            },
-                                        }}
-                                    />
-                                    {isTruncated && (
-                                        <TextDefault style={styles.readMore}>
-                                            ler mais
-                                        </TextDefault>
-                                    )}
-                                </>
-                            ) : null}
-
-                            <AlbumCard
-                                image={review.album.images[0].url}
-                                value={
-                                    review.total
-                                        ? `${Number(review.total).toFixed(1)}/100`
-                                        : "0/100"
-                                }
-                                subtitle={review.ratings.length}
-                                review={review}
+                        ) : null}
+                    </View>
+                </Pressable>
+            ) : type === "grid" ? (
+                <Pressable
+                    onPress={() => router.push(`/review/${review.id}`)}
+                    style={({ pressed }) => [
+                        styles.main,
+                        pressed && styles.mainPressed,
+                        {
+                            width: cardWidth,
+                            // backgroundColor: "green",
+                        },
+                    ]}
+                    onLongPress={openSheet}
+                >
+                    {review.album ? (
+                        <>
+                            <Image
+                                source={{ uri: review.album.images[0].url }}
+                                style={{
+                                    width: cardWidth,
+                                    borderRadius: 8,
+                                    aspectRatio: 1,
+                                }}
                             />
-                            <View style={styles.buttonSection}>
-                                <LikeButton
-                                    ratingId={review.id}
-                                    initialCount={review.likesCount} // vem da query pública
-                                    size="md"
-                                />
-                                <CommentButton
-                                    reviewId={review.id}
-                                    initialCount={review.commentsCount} // vem da query pública
-                                    size="md"
-                                />
-
-                                <ShareSmBtn
-                                    url={`https://whistle.kaizin.work/r/${review.shorten}`}
-                                />
-                                <Pressable
-                                    onPress={(e) => {
-                                        e.stopPropagation();
-                                        openSheet();
-                                    }}
-                                >
-                                    <MenuDotsVerticalIcon color="#aaa" size={20} />
-                                </Pressable>
-                            </View>
-                        </View>
+                            <TextDefault
+                                numberOfLines={1}
+                                style={[
+                                    styles.cardTitle,
+                                    {
+                                        maxWidth: "80%",
+                                        flexShrink: 1,
+                                        fontSize: 12,
+                                        marginTop: 4,
+                                    },
+                                ]}
+                            >
+                                {review.total
+                                    ? `${Number(review.total).toFixed(1)}/100`
+                                    : "0/100"}
+                            </TextDefault>
+                        </>
                     ) : null}
-                </View>
-            </Pressable>
-            )}
+                </Pressable>
+            ) : null}
 
             <BottomSheetModal
                 ref={bottomSheetRef}
@@ -356,7 +421,10 @@ export default function FeedCard({
                                         setShowDeleteModal(true);
                                     }}
                                 >
-                                    <TrashBinMinimalisticIcon size={24} color="#eee" />
+                                    <TrashBinMinimalisticIcon
+                                        size={24}
+                                        color="#eee"
+                                    />
                                     <TextDefault style={styles.optText}>
                                         Excluir
                                     </TextDefault>

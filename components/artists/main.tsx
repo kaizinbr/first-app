@@ -10,30 +10,28 @@ import Animated, {
     useSharedValue,
 } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { ColorThiefColorData } from "expo-color-thief-native";
 
 import ArtistAlbuns from "@/components/artists/albuns";
 import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
 import Header from "@/components/artists/header";
 import FixedHeader from "@/components/core/fixed-header";
-import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import { AltArrowLeftIcon } from "@solar-icons/react-native/linear/alt-arrow-left";
 import { ArtistResponse } from "@/lib/types";
-function hexToRgb(hex: string) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-}
+import ArtistData from "@/components/artists/data";
+import { selectAlbumColor } from "@/lib/util/selectRightColor";
+
 export default function ArtistScreen({
     data,
-    mainColor,
-    accentColor,
+    palette,
 }: {
     data: ArtistResponse;
-    mainColor: string;
-    accentColor: string;
+    palette: ColorThiefColorData[];
 }) {
     const insets = useSafeAreaInsets();
     const router = useRouter();
+
+    const mainColor = selectAlbumColor(palette).hex;
 
     const scrollY = useSharedValue(0);
 
@@ -85,45 +83,12 @@ export default function ArtistScreen({
 
     return (
         <View style={styles.container}>
-            <Animated.View
-                style={[
-                    styles.gradientContainer,
-                    { height: HEADER_MAX_HEIGHT },
-                    backgroundStyle,
-                ]}
-            >
-                <LinearGradient
-                    colors={[mainColor, "#161718"]}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                />
-                <LinearGradient
-                    colors={[accentColor, "#161718"]}
-                    start={{ x: 1, y: 0 }}
-                    end={{ x: 0, y: 1 }}
-                    style={[StyleSheet.absoluteFill, { opacity: 0.5 }]}
-                />
-                <LinearGradient
-                    colors={["transparent", "rgba(22, 23, 24, 1)"]}
-                    start={{ x: 0.5, y: 0.2 }}
-                    end={{ x: 0.5, y: 1 }}
-                    style={StyleSheet.absoluteFill}
-                />
-            </Animated.View>
-
-            <FixedHeader data={data} mainColor={mainColor} scrollY={scrollY} />
-
-            <Pressable
-                onPress={() => router.back()}
-                style={[styles.backButton, { top: insets.top + 4 }]}
-            >
-                <AltArrowLeftIcon size={32} color="#eee" />
-            </Pressable>
-
-            <View style={[styles.favoriteBtn, { top: insets.top + 4 }]}>
-                <FavoriteArtistBtn artistData={data} size={32} />
-            </View>
+            <FixedHeader
+                data={data}
+                mainColor={mainColor}
+                scrollY={scrollY}
+                type="artist"
+            />
 
             <Animated.ScrollView
                 onScroll={onScroll}
@@ -136,19 +101,41 @@ export default function ArtistScreen({
                     headerContentStyle={headerContentStyle}
                 />
 
-                <View style={{ padding: 16, gap: 16 }}>
-                    {data.description && (
-                        <View style={styles.sec}>
-                            <TextDefault style={styles.title}>
-                                Biografia
-                            </TextDefault>
-                            <TextDefault style={styles.textDefault}>
-                                {data.description}
-                            </TextDefault>
-                        </View>
-                    )}
-                    <ArtistAlbuns data={data} />
+                <View
+                    style={{
+                        position: "absolute",
+                        top: HEADER_MAX_HEIGHT - 180,
+                        height: 330,
+                        zIndex: 1,
+                        width: "100%",
+                    }}
+                >
+                    <LinearGradient
+                        colors={["transparent", selectAlbumColor(palette).hex]}
+                        style={{
+                            height: 162,
+                            width: "100%",
+                        }}
+                    />
+                    <View
+                        style={{
+                            height: 16,
+                            width: "100%",
+                            backgroundColor: selectAlbumColor(palette).hex,
+                        }}
+                    />
+                    <LinearGradient
+                        colors={[selectAlbumColor(palette).hex, "transparent"]}
+                        style={{
+                            height: 162,
+                            width: "100%",
+                        }}
+                    />
                 </View>
+
+                <ArtistData data={data} />
+
+                <ArtistAlbuns data={data} />
 
                 <View style={{ height: 124 }} />
             </Animated.ScrollView>

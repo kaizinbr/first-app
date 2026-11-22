@@ -472,6 +472,7 @@ export default function EditProfile() {
                 uploadedUrl = await uploadImageToVercel(avatarAsset);
                 setAvatar(uploadedUrl);
             }
+            console.log("aqui")
 
             const response = await api.put("/me", {
                 name,
@@ -496,6 +497,8 @@ export default function EditProfile() {
                 "Erro ao atualizar perfil",
                 "Não foi possível salvar suas informações.",
             );
+            setIsLoading(false);
+
         }
     };
 

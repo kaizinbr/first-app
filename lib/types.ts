@@ -70,6 +70,7 @@ export interface Album {
         previous: string | null;
         total: number;
     };
+    label?: string; // Adicionado para incluir o campo label
 }
 
 // Track

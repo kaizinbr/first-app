@@ -395,8 +395,6 @@ export function selectAlbumColor(
         return { background: FALLBACK_COLOR, hex: FALLBACK_COLOR, textColor: "#ffffff" };
     }
 
-    // console.log("Colors received for album color selection:", colors);
-
     if (colors[0].hex === "#071525") {
         return { background: "#071525", hex: "#071525", textColor: "#ffffff" };
     }

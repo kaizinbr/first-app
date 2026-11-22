@@ -19,13 +19,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { AltArrowLeftIcon } from "@solar-icons/react-native/outline/alt-arrow-left";
-
-function hexToRgb(hex: string) {
-    const r = parseInt(hex.slice(1, 3), 16);
-    const g = parseInt(hex.slice(3, 5), 16);
-    const b = parseInt(hex.slice(5, 7), 16);
-    return `${r}, ${g}, ${b}`;
-}
+import FavoriteArtistBtn from "@/components/artists/favorite-artist-btn";
 
 export default function FixedHeader({
     mainColor,
@@ -41,7 +35,7 @@ export default function FixedHeader({
     const router = useRouter();
     const insets = useSafeAreaInsets();
 
-    const HEADER_MAX_HEIGHT = 264; // Tamanho total da área do gradiente
+    const HEADER_MAX_HEIGHT = 400; // Tamanho total da área do gradiente
     const HEADER_MIN_HEIGHT = insets.top + 50; // Tamanho da barrinha que vai ficar fixa
     const SCROLL_DISTANCE = HEADER_MAX_HEIGHT - HEADER_MIN_HEIGHT;
 
@@ -129,6 +123,13 @@ export default function FixedHeader({
                         strokeWidth={3}
                     />
                 </View>
+            ) : type === "artist" ? (
+                <View style={[styles.favoriteBtn, { top: insets.top + 4, backgroundColor: darkenColor(mainColor, 0.3) }]}>
+                    <FavoriteArtistBtn
+                        artistData={data as ArtistResponse}
+                        size={24}
+                    />
+                </View>
             ) : null}
 
             <Animated.View
@@ -137,7 +138,6 @@ export default function FixedHeader({
                     {
                         height: HEADER_MIN_HEIGHT,
                         paddingTop: insets.top,
-                        // backgroundColor: darkenColor(mainColor, 0.3),
                     },
                     topBarStyle,
                 ]}
@@ -202,11 +202,16 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         backgroundColor: "rgba(22,23,24,0.7)",
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     fixedTitle: {
         color: "#fff",
         fontSize: 16,
-        fontWeight: "bold",
+        fontWeight: "semibold",
     },
     backButton: {
         position: "absolute",
@@ -218,6 +223,11 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(22,23,24,0.7)",
         alignItems: "center",
         borderRadius: 999,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     favoriteBtn: {
         position: "absolute",
@@ -229,6 +239,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "center",
         borderRadius: 999,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     reviewButton: {
         position: "absolute",

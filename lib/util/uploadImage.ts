@@ -12,7 +12,8 @@ export default async function uploadImageToVercel(asset: ImagePickerAsset) {
     const formData = new FormData();
     formData.append("file", file);
 
-    const cookies = authClient.getCookie();
+    console.log("Uploading image to Vercel:", filename);
+    const cookies = await authClient.getCookie();
     const response = await fetch(
         `https://api.kaizin.work/api/avatar/upload?filename=${filename}`,
         {
@@ -26,8 +27,8 @@ export default async function uploadImageToVercel(asset: ImagePickerAsset) {
         },
     );
 
-    if (!response.data.ok) throw new Error("Falha ao subir a imagem");
+    if (!response.ok) throw new Error("Falha ao subir a imagem");
 
-    const data = await response.data.json();
+    const data = await response.json();
     return data.url;
 }

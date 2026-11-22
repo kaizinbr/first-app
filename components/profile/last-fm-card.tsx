@@ -1,12 +1,12 @@
 import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
 import { UserProfile } from "@/lib/types";
-import { selectRightColorLastFm } from "@/lib/util/selectRightColor";
+import { selectAlbumColor, selectRightColorLastFm } from "@/lib/util/selectRightColor";
 import { useRouter } from "expo-router";
 import { useIsFocused } from "expo-router/react-navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Pressable, StyleSheet, View } from "react-native";
-import { getColors } from "react-native-image-colors";
+import { getColor, getPalette, ColorThiefColorData } from "expo-color-thief-native";
 import Animated, {
     interpolateColor,
     runOnJS,
@@ -14,6 +14,7 @@ import Animated, {
     useSharedValue,
     withTiming,
 } from "react-native-reanimated";
+import { darkenColor } from "@/lib/util/workWithColors";
 
 const POLL_INTERVAL = 10_000;
 const FADE_MS = 400;
@@ -79,13 +80,14 @@ export default function PlayingOnLastFM({ data }: { data: UserProfile }) {
                 `/users/${data.username}/lastfm/playing`,
             );
             const newTrack = response.data.recenttracks.track[0];
-            const resultColors = await getColors(newTrack.image[1]["#text"], {
-                fallback: "#000",
-                cache: true,
+            const resultColor = await getColor(newTrack.image[1]["#text"]);
+            const resultColors = await getPalette(newTrack.image[1]["#text"], {
+                colorCount: 6,
+                quality: 10,
             });
 
             const newColor =
-                selectRightColorLastFm(resultColors as any) ??
+                selectAlbumColor(resultColors as any).hex ??
                 "rgba(22, 23, 24, 0.8)";
 
             if (currentTrackName.current !== newTrack?.name) {
@@ -93,10 +95,10 @@ export default function PlayingOnLastFM({ data }: { data: UserProfile }) {
 
                 if (currentTrackName.current === null) {
                     prevColor.value = newColor;
-                    nextColor.value = newColor;
+                    nextColor.value = darkenColor(newColor, 0.3);
                     applyNewTrack(newTrack, resultColors);
                 } else {
-                    animateTransition(newTrack, resultColors, newColor);
+                    animateTransition(newTrack, resultColors, darkenColor(newColor, 0.3));
                 }
             }
         } catch (err) {

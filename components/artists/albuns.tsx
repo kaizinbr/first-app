@@ -1,6 +1,6 @@
 import TextDefault from "@/components/core/text-core";
 import api from "@/lib/api";
-import { Palette } from "@/lib/types";
+import { Album, Palette } from "@/lib/types";
 import { selectRightColor } from "@/lib/util/selectRightColor";
 import { darkenColor } from "@/lib/util/workWithColors";
 import { LinearGradient } from "expo-linear-gradient";
@@ -12,22 +12,25 @@ import {
     Pressable,
     StyleSheet,
     View,
+    Dimensions,
 } from "react-native";
-import { getColors } from "react-native-image-colors";
+import { getColor } from "@/modules/expo-color-thief-native/src";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useArtistAlbuns } from "@/lib/queries/artist";
 
-function AlbumCard({ album }: { album: any }) {
+function AlbumCard({ album, width }: { album: any; width: number }) {
     const router = useRouter();
+    console.log("album data:", width);
+    const cardWidth = width / 2 - 24; // Ajuste para o espaçamento entre os cards
 
-    const [colors, setColors] = useState<Palette | any>(null);
+    const [color, setColor] = useState<string | null>(null);
     useEffect(() => {
         const fetchColors = async () => {
             try {
-                const result = await getColors(album.images[0]?.url, {
-                    fallback: "#000",
-                    quality: "low",
+                const result = await getColor(album.images[0]?.url, {
+                    quality: 5,
                 });
-                setColors(result);
+                setColor(result!.hex);
             } catch (error) {
                 console.error("Error fetching colors:", error);
             }
@@ -38,9 +41,10 @@ function AlbumCard({ album }: { album: any }) {
     return (
         <Pressable
             style={{
-                marginBottom: 24,
-                position: "relative",
-                width: "100%",
+                // position: "relative",
+                minWidth: cardWidth,
+                minHeight: cardWidth,
+                flex: 1,
                 aspectRatio: 1,
                 overflow: "hidden",
                 borderRadius: 12,
@@ -49,7 +53,7 @@ function AlbumCard({ album }: { album: any }) {
                 router.push(`/album/${album.id}`);
             }}
         >
-            {album.images[0]?.url && colors ? (
+            {album.images[0]?.url && color ? (
                 <>
                     <Image
                         source={{ uri: album.images[0]?.url }}
@@ -66,7 +70,6 @@ function AlbumCard({ album }: { album: any }) {
                             zIndex: 10,
                         }}
                     >
-                        {/* <TextDefault style={styles.albumType}>{album.album_type}</TextDefault> */}
                         <TextDefault style={styles.albumTitle}>
                             {album.name}
                         </TextDefault>
@@ -75,12 +78,9 @@ function AlbumCard({ album }: { album: any }) {
                         </TextDefault>
                     </View>
                     <LinearGradient
-                        colors={[
-                            "transparent",
-                            darkenColor(selectRightColor(colors), 0.4),
-                        ]}
+                        colors={["transparent", darkenColor(color, 0.3)]}
                         style={{
-                            height: "50%",
+                            height: "60%",
                             bottom: 0,
                             left: 0,
                             right: 0,
@@ -109,46 +109,15 @@ function AlbumCard({ album }: { album: any }) {
 
 export default function ArtistAlbuns({ data }: any) {
     const insets = useSafeAreaInsets();
+    const width = Dimensions.get("screen").width;
 
-    const [albuns, setAlbuns] = useState<any[]>([]);
-
-    useEffect(() => {
-        const fetchAlbuns = async () => {
-            try {
-                const response = await api(`/artists/${data.id}/albuns`);
-                setAlbuns(response.data.items);
-            } catch (error) {
-                console.error("Error fetching artist albuns:", error);
-            }
-        };
-        fetchAlbuns();
-    }, [data.id]);
-
-    function loadMoreAlbuns() {
-        // Implementar lógica para carregar mais álbuns, se necessário
-    }
+    const { data: albunsData, isPending, isError } = useArtistAlbuns(data.id, 0, 50);
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top + 16 }]}>
-            {albuns.map((album) => (
-                <AlbumCard key={album.id} album={album} />
+        <View style={[styles.container, { paddingTop: 16, zIndex: 10 }]}>
+            {albunsData?.items?.map((album: Album) => (
+                <AlbumCard key={album.id} album={album} width={width} />
             ))}
-
-            {/* <FlatList
-                data={albuns}
-                keyExtractor={(item) => item.id}
-                renderItem={({ item }) => (
-                    <Pressable key={item.id} style={{ marginBottom: 24 }} onPress={() => { }}>
-                        <Image
-                            source={{ uri: item.images[0]?.url }}
-                            style={styles.album}
-                        />
-                    </Pressable>
-                )}
-                // estimatedItemSize={200}
-                onEndReached={loadMoreAlbuns}
-                onEndReachedThreshold={0.5}
-            /> */}
         </View>
     );
 }
@@ -156,8 +125,12 @@ export default function ArtistAlbuns({ data }: any) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // paddingHorizontal: 16,
-        backgroundColor: "transparent",
+        paddingHorizontal: 16,
+        // backgroundColor: "red",
+        flexDirection: "row",
+        flexWrap: "wrap",
+        gap: 16,
+        // justifyContent: "space-between",
     },
     artist: {
         width: "60%",
@@ -175,17 +148,20 @@ const styles = StyleSheet.create({
         shadowRadius: 15,
         elevation: 10,
     },
-    albumType: { color: "#c4c4c4", fontSize: 12, fontWeight: "500" },
+    albumType: {
+        color: "#dbdbdb",
+        fontSize: 12,
+        fontWeight: "500",
+    },
     albumTitle: {
         color: "#fff",
-        fontSize: 22,
+        fontSize: 16,
         fontWeight: "700",
         marginTop: 4,
     },
     albumArtist: {
-        color: "#ccc",
-        fontSize: 16,
-        fontWeight: "bold",
+        color: "#dbdbdb",
+        fontSize: 12,
         marginTop: 4,
     },
     album: {

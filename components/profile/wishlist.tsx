@@ -9,7 +9,7 @@ import {
     View
 } from "react-native";
 import { Tabs } from "react-native-collapsible-tab-view";
-
+import api from "@/lib/api";
 import { SimpleGrid } from "react-native-super-grid";
 
 export default function WishlistRoute({ data }: { data: UserProfile }) {
@@ -29,7 +29,7 @@ export default function WishlistRoute({ data }: { data: UserProfile }) {
                 const response = await api.get(
                     `/users/${data.username}/wishlist`,
                 );
-                setWishlistAlbums(response || []);
+                setWishlistAlbums(response.data || []);
                 console.log("Álbuns na wishlist:", response);
             } catch (error) {
                 console.error("Erro ao buscar wishlist:", error);

@@ -1,12 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "@/lib/api";
 
-export function enxugarReview(review: any) {
-    if (!review.Profile) return review;
-    const { pushToken, ...perfil } = review.Profile;
-    return { ...review, Profile: perfil };
-}
-
 export function useAlbum(id: string) {
     return useQuery({
         queryKey: ["album", id],

@@ -12,14 +12,18 @@ import {
 import TextDefault from "@/components/core/text-core";
 import { Album } from "@/lib/types";
 import { useRouter } from "expo-router";
+import * as Linking from "expo-linking";
 
 export default function AlbumData({ data }: any) {
     const router = useRouter();
     return (
-        <View style={[styles.container]}>
+        <View style={[styles.container, { marginTop: -24 }]}>
             <TextDefault style={styles.albumType}>
-                
-                {data.total_tracks < 4 ? "Single" : data.total_tracks < 8 ? "EP" : "Álbum"}{" "}
+                {data.total_tracks < 4
+                    ? "Single"
+                    : data.total_tracks < 8
+                      ? "EP"
+                      : "Álbum"}{" "}
                 • {new Date(data.release_date).getFullYear()} •{" "}
                 {data.total_tracks} faixa{data.total_tracks > 1 ? "s" : ""}
             </TextDefault>
@@ -29,6 +33,14 @@ export default function AlbumData({ data }: any) {
             >
                 <TextDefault style={styles.albumArtist}>
                     {data.artists.map((artist: any) => artist.name).join(", ")}
+                </TextDefault>
+            </Pressable>
+            <Pressable
+                onPress={() => Linking.openURL(data.external_urls.spotify)}
+                style={styles.spotifyButton}
+            >
+                <TextDefault style={styles.spotifyText}>
+                    Ouça no Spotify
                 </TextDefault>
             </Pressable>
         </View>
@@ -60,6 +72,9 @@ export function AlbumExtraData({ data }: { data: Album }) {
                 {totalDurationHours > 0 ? `${totalDurationHours}h` : ""}
                 {totalDurationMin}m
             </TextDefault>
+            <TextDefault style={styles.extraInfo}>
+                {data.label ? `Gravadora: ${data.label}` : "Gravadora: N/A"}
+            </TextDefault>
         </View>
     );
 }
@@ -84,7 +99,11 @@ const styles = StyleSheet.create({
         shadowRadius: 15,
         elevation: 10,
     },
-    albumType: { color: "#c4c4c4", fontSize: 12, fontWeight: "500" },
+    albumType: {
+        color: "#dbdbdb",
+        fontSize: 12,
+        fontWeight: "500",
+    },
     albumTitle: {
         color: "#fff",
         fontSize: 22,
@@ -92,10 +111,25 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     albumArtist: {
-        color: "#ccc",
+        color: "#dbdbdb",
         fontSize: 16,
         fontWeight: "500",
         marginTop: 4,
+    },
+    spotifyButton: {
+        backgroundColor: "#A2BCF7",
+        borderWidth: 1,
+        borderColor: "#A2BCF7",
+        padding: 8,
+        borderRadius: 999,
+        marginTop: 16,
+        width: 164,
+        alignItems: "center",
+    },
+    spotifyText: {
+        color: "#161718",
+        fontSize: 14,
+        fontWeight: "500",
     },
     moreData: {
         marginTop: 24,

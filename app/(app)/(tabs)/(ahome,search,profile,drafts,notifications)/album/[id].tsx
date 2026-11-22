@@ -17,39 +17,11 @@ export default function AlbumPage() {
     console.log("id from params:", id);
 
     const [userData, setUserData] = useState<any>(null);
-    // const [albumData, setAlbumData] = useState<Album | null>(null);
 
     const [colors, setColors] = useState<Palette | any>(null);
-    // const [palette, setPalette] = useState<Palette | any>(null);
 
     const { data: albumData, isPending, isError } = useAlbum(id as string);
     const { data: palette } = usePalette(albumData?.images[0].url, { quality: 10 });
-    // console.log("albumData:", albumData);
-    // console.log("palette:", palette);
-
-    // useEffect(() => {
-    //     const fetchAlbumData = async () => {
-    //         setAlbumData(null);
-    //         // console.log("Fetching album data for id:", id, albumData);
-    //         try {
-    //             const response = await api.get(`/albuns/${id}`);
-    //             const user = await api.get("/me");
-    //             setUserData(user);
-    //             // console.log("Album data fetched successfully:", response);
-    //             setAlbumData(response.data);
-    //             if (response.data.images && response.data.images.length > 0) {
-    //                 const imageUrl = response.data.images[0].url;
-
-    //                 const palette = await getPalette(imageUrl, { quality: 10 });
-    //                 setPalette(palette);
-    //                 console.log("Palette fetched successfully:", palette);
-    //             }
-    //         } catch (error) {
-    //             console.error("Error fetching album data:", error);
-    //         }
-    //     };
-    //     fetchAlbumData();
-    // }, [id]);
 
     return (
         <>

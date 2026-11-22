@@ -1,152 +1,180 @@
 import {
     View,
-    Text,
-    Image,
-    Button,
     StyleSheet,
-    ScrollView,
-    RefreshControl,
     Pressable,
+    ActivityIndicator,
+    RefreshControl,
+    Platform,
 } from "react-native";
 import TextDefault from "@/components/core/text-core";
-import { UserProfile, ReviewWithAlbum } from "@/lib/types";
-import { useEffect, useState, useCallback } from "react";
-import api from "@/lib/api";
+import { UserProfile } from "@/lib/types";
+import { useState } from "react";
 import { Tabs } from "react-native-collapsible-tab-view";
-import { ActivityIndicator } from "react-native";
 import FeedCard from "@/components/home/feed-card";
-import { usePaginatedReviews } from "@/lib/util/usePaginatedReviews";
+import { useReviews } from "@/lib/queries/review";
 
-import { SortFromTopToBottomIcon } from '@solar-icons/react-native/bold/sort-from-top-to-bottom'
-import { SortFromBottomToTopIcon } from '@solar-icons/react-native/bold/sort-from-bottom-to-top'
+import { SortFromTopToBottomIcon } from "@solar-icons/react-native/bold/sort-from-top-to-bottom";
+import { SortFromBottomToTopIcon } from "@solar-icons/react-native/bold/sort-from-bottom-to-top";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+import { WidgetIcon } from "@solar-icons/react-native/bold/widget";
 
 export default function PostsRoute({ data }: { data: UserProfile }) {
+    const insets = useSafeAreaInsets();
+
     const [sort, setSort] = useState<"asc" | "desc">("desc");
+    const [type, setType] = useState<"grid" | "list">("list");
     const {
-        reviews,
-        loadingInitial,
-        loadingMore,
-        hasMore,
-        loadMoreForTabs,
-        reload,
-    } = usePaginatedReviews({
+        data: pages,
+        isLoading,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        isRefetching,
+        refetch,
+    } = useReviews({
         endpoint: `/users/${data.username}/reviews`,
-        data,
         sort,
     });
 
-    const ItemSeparator = () => {
-        return <View style={styles.separator} />;
-    };
-
-    const [refreshing, setRefreshing] = useState(false);
-
-    const [localReviews, setLocalReviews] = useState(reviews);
-
-    const onRefresh = useCallback(async () => {
-        setRefreshing(true);
-        await reload();
-        setRefreshing(false);
-    }, []);
-
-    const handleScroll = useCallback(
-        (event: any) => {
-            const { layoutMeasurement, contentOffset, contentSize } =
-                event.nativeEvent;
-            const distanceFromEnd =
-                contentSize.height - layoutMeasurement.height - contentOffset.y;
-            if (distanceFromEnd < 300) {
-                loadMoreForTabs();
-            }
-        },
-        [loadMoreForTabs],
-    );
-
-    useEffect(() => {
-        setLocalReviews(reviews);
-    }, [reviews]);
-
-    const onDelete = useCallback((id: string) => {
-        setLocalReviews((prev) => prev.filter((r) => r.id !== id));
-    }, []);
+    const reviews = pages?.pages.flatMap((page) => page.reviews) ?? [];
+    const refreshing = isRefetching && !isFetchingNextPage;
 
     return (
         <Tabs.FlatList
             style={styles.container}
             contentContainerStyle={{
                 paddingBottom: 80,
-                flexGrow: 1,
+                // flexGrow: 1,
                 width: "100%",
+                flexDirection: type === "grid" ? "row" : "column",
+                flexWrap: type === "grid" ? "wrap" : "nowrap",
+                gap: 8,
                 // backgroundColor: "red",
+                paddingHorizontal: type === "grid" ? 16 : 0,
             }}
             data={reviews}
             keyExtractor={(item) => item.id.toString()}
             renderItem={({ item }) => (
-                <FeedCard review={item} onRefresh={onRefresh} refreshing={refreshing} />
+                <FeedCard
+                    review={item}
+                    onRefresh={() => refetch()}
+                    refreshing={refreshing}
+                    type={type}
+                />
             )}
-            ItemSeparatorComponent={() => (
-                <View
-                    style={{
-                        height: 0.5,
-                        width: "100%",
-                        alignItems: "center",
-                        justifyContent: "center",
-                    }}
-                >
-                    <View
-                        style={{
-                            height: 0.5,
-                            backgroundColor: "#3d3d3d",
-                            width: "95%",
-                        }}
-                    />
-                </View>
-            )}
+            ItemSeparatorComponent={() => {
+                if (type === "list") {
+                    return (
+                        <View
+                            style={{
+                                height: 0.5,
+                                width: "100%",
+                                alignItems: "center",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <View
+                                style={{
+                                    height: 0.5,
+                                    backgroundColor: "#3d3d3d",
+                                    width: "95%",
+                                }}
+                            />
+                        </View>
+                    );
+                }
+                return null;
+            }}
             onEndReached={() => {
-                console.log("onEndReached fired");
-                loadMoreForTabs();
+                if (hasNextPage && !isFetchingNextPage) fetchNextPage();
             }}
             onEndReachedThreshold={0.5}
             refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={() => {
+                        void refetch();
+                    }}
+                    progressViewOffset={
+                        Platform.OS === "android" ? 24 + insets.top : 0
+                    }
+                    progressBackgroundColor="#282828"
+                    colors={["#8065ef", "#8065ef"]}
+                    style={{
+                        borderWidth: 0.5,
+                        borderColor: "#56595D",
+                    }}
+                />
             }
             showsVerticalScrollIndicator={false}
             ListHeaderComponent={() => (
-                <View style={{ flexDirection: "row", padding: 12, paddingBottom: 0, gap: 8 }}>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        paddingHorizontal: type === "grid" ? 0 : 16,
+                        width: "100%",
+                        paddingBottom: 16,
+                        gap: 8,
+                        justifyContent: "space-between",
+                    }}
+                >
+                    <View style={{ flexDirection: "row", gap: 8 }}>
+                        <Pressable
+                            style={[
+                                styles.sortBtn,
+                                sort === "desc" && styles.sortBtnActive,
+                            ]}
+                            onPress={() => setSort("desc")}
+                        >
+                            <SortFromBottomToTopIcon
+                                size={16}
+                                color={sort === "desc" ? "#8065ef" : "#777"}
+                            />
+                            <TextDefault style={styles.sortText}>
+                                Recentes
+                            </TextDefault>
+                        </Pressable>
+                        <Pressable
+                            style={[
+                                styles.sortBtn,
+                                sort === "asc" && styles.sortBtnActive,
+                            ]}
+                            onPress={() => setSort("asc")}
+                        >
+                            <SortFromTopToBottomIcon
+                                size={16}
+                                color={sort === "asc" ? "#8065ef" : "#777"}
+                            />
+                            <TextDefault style={styles.sortText}>
+                                Antigas
+                            </TextDefault>
+                        </Pressable>
+                    </View>
                     <Pressable
                         style={[
                             styles.sortBtn,
-                            sort === "desc" && styles.sortBtnActive,
+                            type === "grid" && styles.sortBtnActive,
                         ]}
-                        onPress={() => setSort("desc")}
+                        onPress={() =>
+                            setType(type === "grid" ? "list" : "grid")
+                        }
                     >
-                        <SortFromBottomToTopIcon size={16} color={sort === "desc" ? "#8065ef" : "#777"} />
-                        <TextDefault style={styles.sortText}>
-                            Recentes
-                        </TextDefault>
-                    </Pressable>
-                    <Pressable
-                        style={[
-                            styles.sortBtn,
-                            sort === "asc" && styles.sortBtnActive,
-                        ]}
-                        onPress={() => setSort("asc")}
-                    >
-                        <SortFromTopToBottomIcon size={16} color={sort === "asc" ? "#8065ef" : "#777"} />
-                        <TextDefault style={styles.sortText}>
-                            Antigas
-                        </TextDefault>
+                        <WidgetIcon
+                            size={16}
+                            color={sort === "asc" ? "#8065ef" : "#777"}
+                        />
                     </Pressable>
                 </View>
             )}
             ListFooterComponent={
-                loadingMore ? (
+                isFetchingNextPage ? (
                     <ActivityIndicator
                         size="small"
                         color="#00a8ff"
                         style={{ marginTop: 20 }}
                     />
-                ) :  (
+                ) : (
                     <TextDefault
                         style={{
                             color: "#777",
@@ -159,7 +187,7 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
                 )
             }
             ListEmptyComponent={
-                loadingInitial ? (
+                isLoading ? (
                     <ActivityIndicator
                         size="large"
                         color="#8065ef"
@@ -182,28 +210,11 @@ export default function PostsRoute({ data }: { data: UserProfile }) {
 }
 
 const styles = StyleSheet.create({
-    
     container: { flex: 1, width: "100%" },
-    scene: {
-        flex: 1,
-
-        gap: 16,
-        width: "100%",
-    },
-    separator: {
-        height: 1,
-        backgroundColor: "#333", // Uma cor cinza escura sutil que combina com seu modo dark
-        marginVertical: 4, // O espaço entre o separador e os posts
-    },
-    textDefault: {
-        color: "#eee", // A cor clara para o seu modo escuro
-        fontSize: 16,
-    },
     sortBtn: {
         paddingVertical: 6,
         paddingHorizontal: 14,
         borderRadius: 32,
-        // backgroundColor: "#282828",
         flexDirection: "row",
         alignItems: "center",
         gap: 6,

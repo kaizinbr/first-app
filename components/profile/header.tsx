@@ -2,38 +2,35 @@ import { UserProfile } from "@/lib/types";
 
 import { useRouter } from "expo-router";
 
-import {
-    Pressable,
-    StyleSheet,
-    View
-} from "react-native";
-import {
-    useHeaderMeasurements
-} from "react-native-collapsible-tab-view";
+import { Pressable, StyleSheet, View } from "react-native";
+import { useHeaderMeasurements } from "react-native-collapsible-tab-view";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import ShareBtn from "@/components/core/share-btn";
 import ProfileHeader from "@/components/profile/profile-header";
-import { SettingsIcon } from '@solar-icons/react-native/linear/settings'
-import { AltArrowLeftIcon } from '@solar-icons/react-native/linear/alt-arrow-left'
+import { SettingsIcon } from "@solar-icons/react-native/linear/settings";
+import { AltArrowLeftIcon } from "@solar-icons/react-native/linear/alt-arrow-left";
 import Animated, {
     Extrapolation,
     interpolate,
     useAnimatedStyle,
 } from "react-native-reanimated";
+import { darkenColor } from "@/lib/util/workWithColors";
+import { selectAlbumColor } from "@/lib/util/selectRightColor";
 
 export default function Header({
     data,
-    dominantColor = "#161718",
+    palette,
     itsUser = false,
 }: {
     data: UserProfile;
-    dominantColor?: string;
+    palette?: any;
     itsUser?: boolean;
 }) {
     const insets = useSafeAreaInsets();
 
-    const { top } = useHeaderMeasurements();
+    const mainColor = selectAlbumColor(palette).hex;
+    const { top, height } = useHeaderMeasurements();
 
     const router = useRouter();
 
@@ -43,95 +40,124 @@ export default function Header({
         };
     });
 
-    const bgOpacityStyle = useAnimatedStyle(() => {
-        return {
-            opacity: interpolate(
-                -top.value,
-                [100, 160],
-                [0, 1],
-                Extrapolation.CLAMP,
-            ),
-        };
-    });
+    const contentOpacityStyle = useAnimatedStyle(() => {
+        const maxCollapse = height - (insets.top + 50);
 
-    const titleOpacityStyle = useAnimatedStyle(() => {
         return {
             opacity: interpolate(
                 -top.value,
-                [130, 180],
-                [0, 1],
+                [maxCollapse - 80, maxCollapse],
+                [1, 0],
                 Extrapolation.CLAMP,
             ),
         };
     });
 
     return (
-        <View style={styles.headerWrapper}>
-            <ProfileHeader data={data} itsUser={itsUser} />
-
-            <Animated.View
-                style={[
-                    styles.fixedTopBar,
-                    { height: insets.top + 50 },
-                    fixedBarStyle,
-                ]}
-            >
-                {/* <Animated.View
+        <>
+            <Animated.View style={[styles.headerWrapper]}>
+                <ProfileHeader
+                    data={data}
+                    itsUser={itsUser}
+                    style={contentOpacityStyle}
+                    palette={palette}
+                />
+                <Animated.View
                     style={[
-                        StyleSheet.absoluteFill,
-                        styles.fixedBg,
-                        bgOpacityStyle,
-                        { backgroundColor: dominantColor },
-                    ]}
-                /> */}
-
-                <View
-                    style={[
-                        styles.fixedTopBarContent,
-                        { marginTop: insets.top },
+                        styles.fixedTopBar,
+                        { height: insets.top + 50 },
+                        fixedBarStyle,
                     ]}
                 >
-                    <Pressable
-                        style={styles.backButton}
-                        onPress={() => router.back()}
-                    >
-                        <AltArrowLeftIcon size={32} color="#eee" />
-                    </Pressable>
 
-                    {/* <Animated.Text
-                        style={[styles.smallTitle, titleOpacityStyle]}
+                    <View
+                        style={[
+                            styles.fixedTopBarContent,
+                            { marginTop: insets.top },
+                        ]}
                     >
-                        {data.name || "Perfil"}
-                    </Animated.Text> */}
-
-                    {itsUser ? (
-                        <View
-                            style={{
-                                flexDirection: "row",
-                                gap: 8,
-                                zIndex: 1000,
-                            }}
+                        <Pressable
+                            style={[
+                                styles.backButton,
+                                {
+                                    backgroundColor: darkenColor(
+                                        mainColor,
+                                        0.3,
+                                    ),
+                                },
+                            ]}
+                            onPress={() => router.back()}
                         >
-                            <ShareBtn
-                                type="profile"
-                                url={`https://whistle.kaizin.work/${data.username}`}
+                            <AltArrowLeftIcon
+                                style={{ left: -2 }}
+                                size={24}
+                                strokeWidth={3}
+                                color="#eee"
                             />
-                            <Pressable
-                                style={[styles.confBtn, { width: 30 }]}
-                                onPress={() => router.push("/settings/menu")}
-                            >
-                                <SettingsIcon size={28} color="#eee" />
-                            </Pressable>
-                        </View>
-                    ) : (
-                        <ShareBtn
-                            type="profile"
-                            url={`https://whistle.kaizin.work/${data.username}`}
-                        />
-                    )}
-                </View>
+                        </Pressable>
+
+                        {itsUser ? (
+                            <>
+                                <View
+                                    style={[
+                                        styles.fixedBtn,
+                                        {
+                                            backgroundColor: darkenColor(
+                                                mainColor,
+                                                0.3,
+                                            ),
+                                        },
+                                    ]}
+                                >
+                                    <ShareBtn
+                                        type="profile"
+                                        url={`https://whistle.kaizin.work/${data.username}`}
+                                    />
+                                </View>
+                                <View
+                                    style={[
+                                        styles.fixedBtn,
+                                        {
+                                            right: 16,
+                                            backgroundColor: darkenColor(
+                                                mainColor,
+                                                0.3,
+                                            ),
+                                        },
+                                    ]}
+                                >
+                                    <Pressable
+                                        style={[styles.confBtn]}
+                                        onPress={() =>
+                                            router.push("/settings/menu")
+                                        }
+                                    >
+                                        <SettingsIcon size={24} color="#eee" />
+                                    </Pressable>
+                                </View>
+                            </>
+                        ) : (
+                            <View 
+                                    style={[
+                                        styles.fixedBtn,
+                                        {
+                                            right: 16,
+                                            backgroundColor: darkenColor(
+                                                mainColor,
+                                                0.3,
+                                            ),
+                                        },
+                                    ]}>
+                                <ShareBtn
+                                    type="profile"
+                                    url={`https://whistle.kaizin.work/${data.username}`}
+                                />
+                            </View>
+                        )}
+                    </View>
+                </Animated.View>
             </Animated.View>
-        </View>
+        </>
     );
 }
 
@@ -176,16 +202,42 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
     },
     backButton: {
+        position: "absolute",
+        left: 16,
+        zIndex: 11,
         width: 40,
         height: 40,
         justifyContent: "center",
-        alignItems: "flex-start",
+        backgroundColor: "rgba(22,23,24,0.7)",
+        alignItems: "center",
+        borderRadius: 999,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    fixedBtn: {
+        position: "absolute",
+        right: 64,
+        zIndex: 11,
+        width: 40,
+        height: 40,
+        justifyContent: "center",
+        backgroundColor: "rgba(22,23,24,0.7)",
+        alignItems: "center",
+        borderRadius: 999,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.3,
+        shadowRadius: 4,
+        elevation: 5,
     },
     confBtn: {
         width: 40,
-        height: 30,
+        height: 40,
         justifyContent: "center",
-        alignItems: "flex-end",
+        alignItems: "center",
     },
     smallTitle: {
         color: "#eee",

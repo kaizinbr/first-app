@@ -25,7 +25,7 @@ export default function ShareBtn({ type, url }: { type: string; url: string }) {
 
     return (
         <Pressable style={styles.confBtn} onPress={onShare}>
-            <ShareIcon size={28} color="#eee" />
+            <ShareIcon size={24} color="#eee" />
         </Pressable>
     );
 }
@@ -113,8 +113,6 @@ export function ShareLargeBtn({
 
 const styles = StyleSheet.create({
     confBtn: {
-        width: 40,
-        height: 30,
         justifyContent: "center",
         alignItems: "flex-end",
         zIndex: 9999,

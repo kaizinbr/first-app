@@ -63,7 +63,7 @@ export default function FavoriteArtistBtn({
             {isFavorite ? (
                 <StarIcon color="#FFD700" size={size} />
             ) : (
-                <Star size={size} color="#eee" />
+                <Star size={size} color="#eee" strokeWidth={3} />
             )}
         </Pressable>
     );
